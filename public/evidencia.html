@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biblioteca de Evidencia · iNurse</title>
+<style>
+  :root{
+    --bg:#0e1418; --surface:#161d23; --surface2:#1c252c; --border:#26313a;
+    --text:#e8eef2; --muted:#93a4b0; --faint:#5f6f7b;
+    --teal:#35c9c0; --teal-dim:#1f4f4c; --open:#57d38a; --danger:#ff6b6b;
+    --radius:14px; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    padding:0 16px calc(48px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:820px; margin:0 auto}
+
+  /* Header */
+  header{padding:26px 0 18px; position:sticky; top:0; background:linear-gradient(var(--bg) 72%,transparent); z-index:5}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); margin:0 0 6px}
+  .back{display:inline-block; margin:0 0 12px; color:var(--muted); text-decoration:none; font-size:13px}
+  .back:hover{color:var(--teal)}
+  .back:focus-visible{outline:2px solid var(--teal); outline-offset:2px; border-radius:4px}
+  h1{margin:0; font-size:26px; font-weight:640; letter-spacing:-.02em}
+  .sub{margin:6px 0 0; color:var(--muted); font-size:13.5px}
+
+  /* Search */
+  .searchbar{display:flex; gap:8px; margin:18px 0 12px}
+  .searchbar input{
+    flex:1; background:var(--surface); border:1px solid var(--border); color:var(--text);
+    padding:13px 15px; border-radius:var(--radius); font-size:15px; font-family:var(--sans);
+  }
+  .searchbar input::placeholder{color:var(--faint)}
+  .searchbar input:focus{outline:2px solid var(--teal); outline-offset:1px; border-color:transparent}
+  .btn{
+    border:none; border-radius:var(--radius); cursor:pointer; font-family:var(--sans);
+    font-size:15px; font-weight:600; padding:13px 18px; background:var(--teal); color:#04211f;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid #fff; outline-offset:2px}
+
+  /* Chips */
+  .chips{display:flex; gap:8px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto; background:var(--surface); border:1px solid var(--border); color:var(--muted);
+    padding:8px 14px; border-radius:999px; font-size:13.5px; cursor:pointer; white-space:nowrap;
+    font-family:var(--sans);
+  }
+  .chip[aria-pressed="true"]{background:var(--teal-dim); border-color:var(--teal); color:var(--teal)}
+  .chip:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+
+  /* Controls row */
+  .controls{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:2px 0 4px; color:var(--muted); font-size:13px}
+  .toggle{display:inline-flex; align-items:center; gap:8px; cursor:pointer; user-select:none}
+  .toggle input{position:absolute; opacity:0; width:0; height:0}
+  .track{width:38px; height:22px; border-radius:999px; background:var(--surface2); border:1px solid var(--border); position:relative; transition:.15s}
+  .track::after{content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--faint); transition:.15s}
+  .toggle input:checked + .track{background:var(--teal-dim); border-color:var(--teal)}
+  .toggle input:checked + .track::after{left:18px; background:var(--teal)}
+  .toggle input:focus-visible + .track{outline:2px solid var(--teal); outline-offset:2px}
+  .seg{display:inline-flex; border:1px solid var(--border); border-radius:9px; overflow:hidden}
+  .seg button{background:var(--surface); border:none; color:var(--muted); padding:7px 12px; font-size:12.5px; cursor:pointer; font-family:var(--sans)}
+  .seg button[aria-pressed="true"]{background:var(--surface2); color:var(--text)}
+
+  /* Status line */
+  .count{color:var(--faint); font-size:12.5px; font-family:var(--mono); padding:14px 2px 6px; letter-spacing:.02em}
+
+  /* Result card — the "carné de evidencia" */
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--teal);
+    border-radius:var(--radius); padding:16px 16px 14px; margin-bottom:12px;
+  }
+  .card.oa{border-left-color:var(--open)}
+  .card h2{margin:0 0 8px; font-size:16.5px; line-height:1.35; font-weight:600; letter-spacing:-.01em}
+  .card h2 a{color:var(--text); text-decoration:none}
+  .card h2 a:hover{text-decoration:underline; text-decoration-color:var(--teal)}
+  .authors{color:var(--muted); font-size:13px; margin:0 0 10px}
+
+  /* trazabilidad line */
+  .trace{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; font-family:var(--mono); font-size:11.5px; color:var(--faint); letter-spacing:.02em}
+  .trace .src{color:var(--muted)}
+  .badge-oa{color:var(--open); border:1px solid var(--teal-dim); border-radius:4px; padding:1px 6px; letter-spacing:.08em}
+  .trace .cited{color:var(--muted)}
+
+  .abstract{margin:12px 0 0; color:#c7d2da; font-size:14px; line-height:1.6; display:none}
+  .abstract.show{display:block}
+  .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+  .link{
+    font-size:13px; font-family:var(--sans); background:transparent; border:1px solid var(--border);
+    color:var(--teal); padding:8px 13px; border-radius:9px; cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .link:hover{border-color:var(--teal)}
+  .link.primary{background:var(--teal-dim); border-color:var(--teal)}
+
+  /* States */
+  .state{text-align:center; padding:54px 20px; color:var(--muted)}
+  .state .big{font-size:15px; color:var(--text); margin-bottom:6px}
+  .spinner{width:26px; height:26px; border:3px solid var(--border); border-top-color:var(--teal); border-radius:50%; margin:0 auto 14px; animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .more{display:block; width:100%; margin:6px 0 8px; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:14px; border-radius:var(--radius); font-size:14px; cursor:pointer; font-family:var(--sans)}
+  .more:hover{border-color:var(--teal)}
+
+  footer{margin:30px 0 10px; padding-top:16px; border-top:1px solid var(--border); color:var(--faint); font-size:12px; line-height:1.6}
+  footer strong{color:var(--muted); font-weight:600}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" id="back" class="back">← Volver a iNurse</a>
+    <p class="kicker">iNurse · fuente externa</p>
+    <h1>Biblioteca de Evidencia</h1>
+    <p class="sub">Literatura clínica de Europe PMC · más de 40 millones de referencias de PubMed, PMC y preprints.</p>
+
+    <div class="searchbar">
+      <input id="q" type="search" placeholder="Busca por tema, patología, fármaco o técnica…" autocomplete="off" enterkeyhint="search">
+      <button class="btn" id="go">Buscar</button>
+    </div>
+
+    <div class="chips" id="chips" role="group" aria-label="Especialidades"></div>
+
+    <div class="controls">
+      <label class="toggle">
+        <input type="checkbox" id="openOnly">
+        <span class="track"></span>
+        <span>Solo acceso abierto</span>
+      </label>
+      <div class="seg" role="group" aria-label="Ordenar">
+        <button id="sortRel" aria-pressed="true">Relevancia</button>
+        <button id="sortDate" aria-pressed="false">Más recientes</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="count" id="count" hidden></div>
+  <main id="results"></main>
+  <div id="stateHost"></div>
+
+  <footer>
+    <strong>Fuente:</strong> Europe PMC (EMBL-EBI). La mayoría de la literatura está en inglés; cada referencia enlaza a su publicación original.<br>
+    Uso educativo y de apoyo a la decisión. No sustituye el juicio clínico ni las guías locales.
+  </footer>
+</div>
+
+<script>
+"use strict";
+document.getElementById("back").addEventListener("click", function(e){
+  if (history.length > 1){ e.preventDefault(); history.back(); }
+});
+const AREAS = [
+  { id:"all",  label:"Todas",            terms:"" },
+  { id:"card", label:"Cardiología",      terms:'(cardiology OR cardiac OR MESH:"Heart Diseases")' },
+  { id:"urg",  label:"Urgencias",        terms:'("emergency medicine" OR emergency OR MESH:"Emergencies")' },
+  { id:"uci",  label:"Cuidados críticos",terms:'("critical care" OR "intensive care" OR MESH:"Critical Care")' },
+  { id:"anes", label:"Anestesia",        terms:'(anaesthesia OR anesthesia OR anesthesiology OR MESH:"Anesthesia")' },
+  { id:"resp", label:"Respiratorio",     terms:'(respiratory OR pulmonary OR MESH:"Respiratory Tract Diseases")' },
+  { id:"inf",  label:"Infeccioso",       terms:'(sepsis OR infection OR MESH:"Communicable Diseases")' },
+  { id:"neuro",label:"Neurología",       terms:'(stroke OR neurology OR MESH:"Nervous System Diseases")' },
+  { id:"farm", label:"Farmacología",     terms:'("drug therapy" OR pharmacology OR MESH:"Pharmacology")' },
+  { id:"enf",  label:"Enfermería",       terms:'(nursing OR "nursing care" OR MESH:"Nursing")' }
+];
+
+const state = { area:"all", openOnly:false, sort:"relevance", cursor:"*", lastCursor:null, loading:false };
+const $ = s => document.querySelector(s);
+const results = $("#results"), stateHost = $("#stateHost"), countEl = $("#count");
+const esc = s => String(s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const base = (location.protocol.startsWith("http") ? location.origin : "");
+
+// Build chips
+const chipHost = $("#chips");
+AREAS.forEach(a => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = a.label; b.dataset.id = a.id;
+  b.setAttribute("aria-pressed", a.id === "all" ? "true" : "false");
+  b.onclick = () => {
+    state.area = a.id;
+    document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.id === a.id ? "true" : "false"));
+    runSearch(true);
+  };
+  chipHost.appendChild(b);
+});
+
+$("#go").onclick = () => runSearch(true);
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") runSearch(true); });
+$("#openOnly").onchange = e => { state.openOnly = e.target.checked; runSearch(true); };
+$("#sortRel").onclick = () => setSort("relevance");
+$("#sortDate").onclick = () => setSort("date");
+function setSort(s){
+  state.sort = s;
+  $("#sortRel").setAttribute("aria-pressed", s === "relevance");
+  $("#sortDate").setAttribute("aria-pressed", s === "date");
+  runSearch(true);
+}
+
+function buildQuery(){
+  const text = $("#q").value.trim();
+  const area = AREAS.find(a => a.id === state.area);
+  const areaTerms = area ? area.terms : "";
+  if (text && areaTerms) return `(${text}) AND ${areaTerms}`;
+  if (text) return text;
+  if (areaTerms) return areaTerms;
+  return "";
+}
+
+function showState(html){ stateHost.innerHTML = html ? `<div class="state">${html}</div>` : ""; }
+
+async function runSearch(reset){
+  const query = buildQuery();
+  if (!query){
+    results.innerHTML = ""; countEl.hidden = true;
+    showState('<div class="big">Empieza una búsqueda</div>Elige una especialidad o escribe un término clínico.');
+    return;
+  }
+  if (state.loading) return;
+  state.loading = true;
+  if (reset){ state.cursor = "*"; state.lastCursor = null; results.innerHTML = ""; countEl.hidden = true; }
+  showState('<div class="spinner"></div>Buscando en Europe PMC…');
+
+  try{
+    const url = `${base}/api/pmc/search?q=${encodeURIComponent(query)}&open=${state.openOnly?1:0}&sort=${state.sort}&cursor=${encodeURIComponent(state.cursor)}`;
+    const r = await fetch(url);
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+
+    if (reset && (!data.items || !data.items.length)){
+      showState('<div class="big">Sin coincidencias</div>Prueba con otros términos o desactiva el filtro de acceso abierto.');
+      state.loading = false; return;
+    }
+    showState("");
+    countEl.hidden = false;
+    countEl.textContent = `${Number(data.total).toLocaleString("es-ES")} resultados · orden: ${state.sort === "date" ? "recientes" : "relevancia"}`;
+    (data.items || []).forEach(renderCard);
+
+    state.lastCursor = state.cursor;
+    state.cursor = data.nextCursor || null;
+    renderMore(data.items ? data.items.length : 0);
+  }catch(err){
+    showState(`<div class="big">No se pudo completar la búsqueda</div>${esc(err.message)}. Reinténtalo en unos segundos.`);
+  }finally{
+    state.loading = false;
+  }
+}
+
+function renderCard(it){
+  const card = document.createElement("article");
+  card.className = "card" + (it.isOpen ? " oa" : "");
+  const titleHtml = it.url
+    ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title || "(sin título)")}</a>`
+    : esc(it.title || "(sin título)");
+  const srcLabel = ({ MED:"PubMed", PMC:"PMC", PPR:"Preprint" }[it.source] || it.source || "—");
+  const trace = [
+    `<span class="src">${esc(srcLabel)}</span>`,
+    it.year ? `<span>${esc(it.year)}</span>` : "",
+    it.isOpen ? `<span class="badge-oa">ACCESO ABIERTO</span>` : "",
+    it.citedBy ? `<span class="cited">${it.citedBy} citas</span>` : ""
+  ].filter(Boolean).join("");
+
+  card.innerHTML = `
+    <h2>${titleHtml}</h2>
+    ${it.authors ? `<p class="authors">${esc(it.authors)}${it.journal ? " · <em>" + esc(it.journal) + "</em>" : ""}</p>` : (it.journal ? `<p class="authors"><em>${esc(it.journal)}</em></p>` : "")}
+    <div class="trace">${trace}</div>
+    ${it.abstract ? `<p class="abstract">${esc(it.abstract)}</p>` : ""}
+    <div class="row">
+      ${it.abstract ? `<button class="link toggleAbs">Ver resumen</button>` : ""}
+      ${it.url ? `<a class="link primary" href="${esc(it.url)}" target="_blank" rel="noopener">Abrir original ↗</a>` : ""}
+    </div>`;
+
+  const tog = card.querySelector(".toggleAbs");
+  if (tog){
+    const abs = card.querySelector(".abstract");
+    tog.onclick = () => { const open = abs.classList.toggle("show"); tog.textContent = open ? "Ocultar resumen" : "Ver resumen"; };
+  }
+  results.appendChild(card);
+}
+
+function renderMore(got){
+  const old = $("#moreBtn"); if (old) old.remove();
+  const hasMore = state.cursor && state.cursor !== state.lastCursor && got >= 25;
+  if (!hasMore) return;
+  const b = document.createElement("button");
+  b.className = "more"; b.id = "moreBtn"; b.textContent = "Cargar más resultados";
+  b.onclick = () => runSearch(false);
+  results.after(b);
+}
+
+showState('<div class="big">Empieza una búsqueda</div>Elige una especialidad o escribe un término clínico.');
+</script>
+</body>
+</html>

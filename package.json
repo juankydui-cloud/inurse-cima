@@ -1,0 +1,13 @@
+{
+  "name": "inurse-cima",
+  "version": "28.1.0",
+  "description": "iNurse - Vademecum CIMA-AEMPS (proxy Node + frontend)",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
