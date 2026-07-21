@@ -292,17 +292,32 @@ const server = http.createServer(async (req, res) => {
     }
     if (u.pathname.startsWith("/api/article/") && req.method === "GET") {
       const id = u.pathname.split("/").pop();
+      const useTest = u.searchParams.get("test") === "1";
       if (!id || id.length < 2) return json(res, 400, { error: "ID de artículo no válido" });
 
       try {
         const [source, identifier] = id.includes(":") ? id.split(":", 2) : ["pubmed", id];
 
         if (source === "pubmed") {
-          const article = await fetchPubMedArticle(identifier);
-          return json(res, 200, article);
+          try {
+            const article = await fetchPubMedArticle(identifier);
+            return json(res, 200, article);
+          } catch (err) {
+            if (useTest) {
+              return json(res, 200, await fetchMockArticle(`pubmed:${identifier}`));
+            }
+            throw err;
+          }
         } else if (source === "crossref" || source === "doi") {
-          const article = await fetchCrossrefWork(identifier);
-          return json(res, 200, article);
+          try {
+            const article = await fetchCrossrefWork(identifier);
+            return json(res, 200, article);
+          } catch (err) {
+            if (useTest) {
+              return json(res, 200, await fetchMockArticle(`crossref:${identifier}`));
+            }
+            throw err;
+          }
         } else {
           return json(res, 400, { error: "Formato de ID no soportado" });
         }

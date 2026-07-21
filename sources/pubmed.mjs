@@ -127,9 +127,11 @@ export async function fetchPubMedArticle(pmid) {
     });
 
     const url = `${PUBMED_BASE}/efetch.fcgi?${params}`;
-    const xml = await fetch(url).then(r => r.text());
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`PubMed respondió ${response.status}`);
+    const xml = await response.text();
+    if (!xml.includes("<PubmedArticle>")) throw new Error("PubMed no devolvió datos válidos");
 
-    const pmidMatch = xml.match(/<PMID[^>]*>([^<]+)<\/PMID>/)?.[1];
     const title = xml.match(/<ArticleTitle>([^<]+)<\/ArticleTitle>/)?.[1] || "";
     const abstract = xml.match(/<AbstractText>([^<]+)<\/AbstractText>/)?.[1] || "";
     const journal = xml.match(/<Title>([^<]+)<\/Title>/)?.[1] || "";
