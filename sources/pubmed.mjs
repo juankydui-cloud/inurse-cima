@@ -1,156 +1,113 @@
-import { requestJSON } from "../cache.mjs";
+import { requestJSON, requestText } from "../cache.mjs";
 
-const PUBMED_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
-const EMAIL = "contact@inurse-cima.local";
+const PUBMED_BASE = (process.env.PUBMED_BASE || "https://eutils.ncbi.nlm.nih.gov/entrez/eutils").replace(/\/$/, "");
+const EMAIL = process.env.PUBMED_EMAIL || "contact@inurse-cima.local";
+const API_KEY = process.env.PUBMED_API_KEY || "";
 
-function normalizeAuthors(authorList) {
-  if (!authorList) return [];
-  if (!Array.isArray(authorList)) return [];
-  return authorList.slice(0, 10).map(author => ({
-    name: author.Name || "",
-    initials: author.Initials || "",
-    affiliation: author.Affiliation || ""
-  })).filter(a => a.name);
+function baseParams() {
+  const p = { db: "pubmed", email: EMAIL };
+  if (API_KEY) p.api_key = API_KEY;
+  return p;
 }
 
-function parseArticleXML(article) {
-  const pmid = article.MedlineCitation?.[0]?.PMID?.[0]?._ || article.MedlineCitation?.[0]?.PMID?.[0] || "";
-  const article_ = article.MedlineCitation?.[0]?.Article?.[0] || {};
+function extractAll(xml, tag) {
+  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "g");
+  const out = [];
+  let m;
+  while ((m = re.exec(xml))) out.push(m[1].trim());
+  return out;
+}
+
+function extractFirst(xml, tag) {
+  const m = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`));
+  return m ? m[1].trim() : "";
+}
+
+function parseArticleBlock(block) {
+  const pmid = extractFirst(block, "PMID");
+  const title = extractFirst(block, "ArticleTitle");
+  if (!pmid || !title) return null;
+
+  const abstractTexts = extractAll(block, "AbstractText");
+  const abstract = abstractTexts.join(" ").slice(0, 1400);
+  const journal = extractFirst(block, "Title");
+  const year = parseInt(extractFirst(block, "Year") || "0", 10);
+  const doi = (block.match(/<ELocationID EIdType="doi"[^>]*>([^<]+)<\/ELocationID>/) || [])[1] || "";
+
+  const authorBlocks = extractAll(block, "Author");
+  const authors = authorBlocks.slice(0, 10).map(a => {
+    const last = extractFirst(a, "LastName");
+    const fore = extractFirst(a, "ForeName");
+    return last ? `${last} ${fore}`.trim() : "";
+  }).filter(Boolean);
 
   return {
-    pmid: String(pmid),
-    title: article_.ArticleTitle?.[0]?._ || article_.ArticleTitle?.[0] || "",
-    abstract: article_.Abstract?.[0]?.AbstractText?.[0]?._ || article_.Abstract?.[0]?.AbstractText?.[0] || "",
-    journal: article_.Journal?.[0]?.Title?.[0] || "",
-    year: parseInt(article_.Article?.[0]?.Journal?.[0]?.JournalIssue?.[0]?.PubDate?.[0]?.Year?.[0] ||
-                   article_.PublicationTypeList?.[0]?.PublicationType || 0),
-    authors: normalizeAuthors(article_.AuthorList?.[0]?.Author),
-    doi: article_.ELocationID?.find(e => e.$.EIdType === "doi")?._ || "",
-    pubTypes: article_.PublicationTypeList?.[0]?.PublicationType?.map(p => p._) || [],
-    mesh: article_.MeshHeadingList?.[0]?.MeshHeading?.map(m => m.DescriptorName?.[0]?._) || []
+    id: `pubmed:${pmid}`,
+    pmid,
+    title,
+    abstract,
+    authors,
+    journal,
+    year,
+    doi,
+    source: "PubMed",
+    url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}`
   };
 }
 
 export async function searchPubMed(query, { page = 1, limit = 25 } = {}) {
   const retstart = (page - 1) * limit;
+  const searchParams = new URLSearchParams({
+    ...baseParams(),
+    term: query,
+    retmode: "json",
+    retstart: String(retstart),
+    retmax: String(limit)
+  });
 
-  try {
-    const searchParams = new URLSearchParams({
-      db: "pubmed",
-      term: query,
-      rettype: "json",
-      retmode: "json",
-      retstart: String(retstart),
-      retmax: String(limit),
-      email: EMAIL,
-      api_key: process.env.PUBMED_API_KEY || ""
-    });
+  const searchResult = await requestJSON(`${PUBMED_BASE}/esearch.fcgi?${searchParams}`, {
+    ttl: 15 * 60 * 1000,
+    label: "PubMed ESearch"
+  });
 
-    const searchUrl = `${PUBMED_BASE}/esearch.fcgi?${searchParams}`;
-    const searchResponse = await fetch(searchUrl);
-    const searchResult = await searchResponse.json();
+  const pmids = searchResult?.esearchresult?.idlist || [];
+  const total = parseInt(searchResult?.esearchresult?.count || "0", 10);
 
-    const pmids = searchResult?.esearchresult?.idlist || [];
-    if (pmids.length === 0) {
-      return {
-        items: [],
-        total: 0,
-        page,
-        query,
-        source: "PubMed"
-      };
-    }
-
-    const fetchParams = new URLSearchParams({
-      db: "pubmed",
-      id: pmids.join(","),
-      rettype: "xml",
-      retmode: "xml",
-      email: EMAIL,
-      api_key: process.env.PUBMED_API_KEY || ""
-    });
-
-    const fetchUrl = `${PUBMED_BASE}/efetch.fcgi?${fetchParams}`;
-    const fetchResponse = await fetch(fetchUrl);
-    const fetchXml = await fetchResponse.text();
-
-    const articles = [];
-    const articleRegex = /<PubmedArticle>[\s\S]*?<\/PubmedArticle>/g;
-    const matches = fetchXml.match(articleRegex) || [];
-
-    for (const match of matches.slice(0, limit)) {
-      try {
-        const pmid = match.match(/<PMID[^>]*>([^<]+)<\/PMID>/)?.[1] || "";
-        const title = match.match(/<ArticleTitle>([^<]+)<\/ArticleTitle>/)?.[1] || "";
-        const abstract = match.match(/<AbstractText>([^<]+)<\/AbstractText>/)?.[1] || "";
-        const journal = match.match(/<Title>([^<]+)<\/Title>/)?.[1] || "";
-        const year = parseInt(match.match(/<Year>(\d{4})<\/Year>/)?.[1] || 0);
-
-        if (pmid && title) {
-          articles.push({
-            pmid,
-            title,
-            abstract: abstract.slice(0, 1400),
-            journal,
-            year,
-            source: "PubMed",
-            url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}`
-          });
-        }
-      } catch (e) {
-        console.error("Error parsing article:", e.message);
-      }
-    }
-
-    return {
-      items: articles,
-      total: parseInt(searchResult?.esearchresult?.count || 0),
-      page,
-      query,
-      source: "PubMed",
-      fetchedAt: new Date().toISOString()
-    };
-  } catch (error) {
-    throw new Error(`PubMed search failed: ${error.message}`);
+  if (pmids.length === 0) {
+    return { items: [], total, page, query, source: "PubMed", fetchedAt: new Date().toISOString() };
   }
+
+  const fetchParams = new URLSearchParams({
+    ...baseParams(),
+    id: pmids.join(","),
+    retmode: "xml"
+  });
+
+  const xml = await requestText(`${PUBMED_BASE}/efetch.fcgi?${fetchParams}`, {
+    ttl: 15 * 60 * 1000,
+    label: "PubMed EFetch"
+  });
+
+  const blocks = xml.match(/<PubmedArticle>[\s\S]*?<\/PubmedArticle>/g) || [];
+  const items = blocks.map(parseArticleBlock).filter(Boolean);
+
+  return { items, total, page, query, source: "PubMed", fetchedAt: new Date().toISOString() };
 }
 
 export async function fetchPubMedArticle(pmid) {
-  try {
-    const params = new URLSearchParams({
-      db: "pubmed",
-      id: pmid,
-      rettype: "xml",
-      retmode: "xml",
-      email: EMAIL,
-      api_key: process.env.PUBMED_API_KEY || ""
-    });
+  const params = new URLSearchParams({ ...baseParams(), id: pmid, retmode: "xml" });
+  const xml = await requestText(`${PUBMED_BASE}/efetch.fcgi?${params}`, {
+    ttl: 30 * 60 * 1000,
+    label: "PubMed EFetch"
+  });
 
-    const url = `${PUBMED_BASE}/efetch.fcgi?${params}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`PubMed respondió ${response.status}`);
-    const xml = await response.text();
-    if (!xml.includes("<PubmedArticle>")) throw new Error("PubMed no devolvió datos válidos");
-
-    const title = xml.match(/<ArticleTitle>([^<]+)<\/ArticleTitle>/)?.[1] || "";
-    const abstract = xml.match(/<AbstractText>([^<]+)<\/AbstractText>/)?.[1] || "";
-    const journal = xml.match(/<Title>([^<]+)<\/Title>/)?.[1] || "";
-    const year = parseInt(xml.match(/<Year>(\d{4})<\/Year>/)?.[1] || 0);
-    const doi = xml.match(/<ELocationID EIdType="doi">([^<]+)<\/ELocationID>/)?.[1] || "";
-
-    return {
-      id: `pubmed:${pmid}`,
-      pmid,
-      title,
-      abstract,
-      journal,
-      year,
-      doi,
-      source: "PubMed",
-      url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}`,
-      fetchedAt: new Date().toISOString()
-    };
-  } catch (error) {
-    throw new Error(`Failed to fetch PubMed article ${pmid}: ${error.message}`);
+  if (!xml.includes("<PubmedArticle>")) {
+    throw new Error(`PubMed no encontró el artículo ${pmid}`);
   }
+
+  const block = xml.match(/<PubmedArticle>[\s\S]*?<\/PubmedArticle>/)?.[0] || "";
+  const article = parseArticleBlock(block);
+  if (!article) throw new Error(`No se pudo parsear el artículo ${pmid}`);
+
+  return { ...article, fetchedAt: new Date().toISOString() };
 }

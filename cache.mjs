@@ -16,12 +16,8 @@ export function cacheSet(key, data, ttl = 10 * 60 * 1000) {
   cache.set(key, { data, expires: Date.now() + ttl });
 }
 
-export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 * 60 * 1000, label = "La fuente externa" } = {}) {
+function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, accept = "application/json", contentType = "application/json" } = {}) {
   const bodyText = body ? JSON.stringify(body) : "";
-  const key = `${method}:${urlString}:${bodyText}`;
-  const hit = cacheGet(key);
-  if (hit) return Promise.resolve(hit);
-
   return new Promise((resolve, reject) => {
     const target = new URL(urlString);
     const transport = target.protocol === "http:" ? http : https;
@@ -31,10 +27,10 @@ export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 *
       port: target.port || (target.protocol === "http:" ? 80 : 443),
       path: target.pathname + target.search,
       method,
-      timeout: 18000,
+      timeout,
       headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        "Accept": accept,
+        "Content-Type": contentType,
         "User-Agent": "iNurse-CIMA/28.1",
         ...(bodyText ? { "Content-Length": Buffer.byteLength(bodyText) } : {})
       }
@@ -42,22 +38,45 @@ export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 *
       const chunks = [];
       response.on("data", chunk => chunks.push(chunk));
       response.on("end", () => {
-        const text = Buffer.concat(chunks).toString("utf8");
-        let data;
-        try { data = text ? JSON.parse(text) : null; }
-        catch { reject(new Error(`${label} devolvió una respuesta no válida`)); return; }
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(data?.error || data?.message || `${label} respondió ${response.statusCode}`));
-          return;
-        }
-        cacheSet(key, data, ttl);
-        resolve(data);
+        resolve({ status: response.statusCode, text: Buffer.concat(chunks).toString("utf8") });
       });
     });
-    req.on("timeout", () => req.destroy(new Error(`${label} tardó demasiado en responder`)));
+    req.on("timeout", () => req.destroy(new Error("Timeout")));
     req.on("error", reject);
     if (bodyText) req.write(bodyText);
     req.end();
+  });
+}
+
+export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 * 60 * 1000, label = "La fuente externa" } = {}) {
+  const bodyText = body ? JSON.stringify(body) : "";
+  const key = `${method}:${urlString}:${bodyText}`;
+  const hit = cacheGet(key);
+  if (hit) return Promise.resolve(hit);
+
+  return httpRequest(urlString, { method, body }).then(({ status, text }) => {
+    let data;
+    try { data = text ? JSON.parse(text) : null; }
+    catch { throw new Error(`${label} devolvió una respuesta no válida`); }
+    if (status < 200 || status >= 300) {
+      throw new Error(data?.error || data?.message || `${label} respondió ${status}`);
+    }
+    cacheSet(key, data, ttl);
+    return data;
+  });
+}
+
+export function requestText(urlString, { method = "GET", ttl = 10 * 60 * 1000, label = "La fuente externa", accept = "application/xml" } = {}) {
+  const key = `TEXT:${method}:${urlString}`;
+  const hit = cacheGet(key);
+  if (hit) return Promise.resolve(hit);
+
+  return httpRequest(urlString, { method, accept }).then(({ status, text }) => {
+    if (status < 200 || status >= 300) {
+      throw new Error(`${label} respondió ${status}`);
+    }
+    cacheSet(key, text, ttl);
+    return text;
   });
 }
 
