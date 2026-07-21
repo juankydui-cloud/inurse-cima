@@ -5,3 +5,4 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: node server.mjs
+    autoDeploy: true
