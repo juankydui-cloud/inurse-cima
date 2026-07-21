@@ -6,3 +6,10 @@ services:
     buildCommand: npm install
     startCommand: node server.mjs
     autoDeploy: true
+    envVars:
+      - key: PUBMED_API_KEY
+        sync: false
+      - key: PUBMED_EMAIL
+        sync: false
+      - key: CROSSREF_MAILTO
+        sync: false
