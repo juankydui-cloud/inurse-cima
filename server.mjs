@@ -4,13 +4,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { URL } from "node:url";
+import { cacheGet, cacheSet, requestJSON, cache_obj } from "./cache.mjs";
+import { searchPubMed, fetchPubMedArticle } from "./sources/pubmed.mjs";
+import { searchCrossref, fetchCrossrefWork } from "./sources/crossref.mjs";
+import { searchMockPubMed, searchMockCrossref, fetchMockArticle } from "./sources/test-mock.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, "public");
 const PORT = Number(process.env.PORT || 8787);
 const CIMA_BASE = (process.env.CIMA_BASE || "https://cima.aemps.es/cima/rest").replace(/\/$/, "");
 const EPMC_BASE = (process.env.EPMC_BASE || "https://www.ebi.ac.uk/europepmc/webservices/rest").replace(/\/$/, "");
-const cache = new Map();
+const cache = cache_obj;
 
 function json(res, status, data) {
   const body = Buffer.from(JSON.stringify(data));
@@ -25,16 +29,6 @@ function json(res, status, data) {
   res.end(body);
 }
 
-function cacheGet(key) {
-  const hit = cache.get(key);
-  if (!hit) return null;
-  if (hit.expires < Date.now()) { cache.delete(key); return null; }
-  return hit.data;
-}
-function cacheSet(key, data, ttl = 10 * 60 * 1000) {
-  if (cache.size > 500) cache.delete(cache.keys().next().value);
-  cache.set(key, { data, expires: Date.now() + ttl });
-}
 function normalizeList(data) {
   if (Array.isArray(data)) return data;
   return data?.resultados || data?.medicamentos || data?.items || data?.content || [];
@@ -59,50 +53,6 @@ function readBody(req) {
     });
     req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     req.on("error", reject);
-  });
-}
-function requestJSON(urlString, { method = "GET", body = null, ttl = 10 * 60 * 1000, label = "La fuente externa" } = {}) {
-  const bodyText = body ? JSON.stringify(body) : "";
-  const key = `${method}:${urlString}:${bodyText}`;
-  const hit = cacheGet(key);
-  if (hit) return Promise.resolve(hit);
-
-  return new Promise((resolve, reject) => {
-    const target = new URL(urlString);
-    const transport = target.protocol === "http:" ? http : https;
-    const req = transport.request({
-      protocol: target.protocol,
-      hostname: target.hostname,
-      port: target.port || (target.protocol === "http:" ? 80 : 443),
-      path: target.pathname + target.search,
-      method,
-      timeout: 18000,
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "iNurse-CIMA/28.1",
-        ...(bodyText ? { "Content-Length": Buffer.byteLength(bodyText) } : {})
-      }
-    }, response => {
-      const chunks = [];
-      response.on("data", chunk => chunks.push(chunk));
-      response.on("end", () => {
-        const text = Buffer.concat(chunks).toString("utf8");
-        let data;
-        try { data = text ? JSON.parse(text) : null; }
-        catch { reject(new Error(`${label} devolvió una respuesta no válida`)); return; }
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(data?.error || data?.message || `${label} respondió ${response.statusCode}`));
-          return;
-        }
-        cacheSet(key, data, ttl);
-        resolve(data);
-      });
-    });
-    req.on("timeout", () => req.destroy(new Error(`${label} tardó demasiado en responder`)));
-    req.on("error", reject);
-    if (bodyText) req.write(bodyText);
-    req.end();
   });
 }
 function cima(pathname, options = {}) {
@@ -275,6 +225,90 @@ const server = http.createServer(async (req, res) => {
         query: q, sort, openOnly,
         source: "Europe PMC", fetchedAt: new Date().toISOString()
       });
+    }
+    if (u.pathname === "/api/literature/health") {
+      return json(res, 200, {
+        ok: true, service: "iNurse Literature Search",
+        sources: ["pubmed", "crossref"],
+        pubmedBase: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils",
+        crossrefBase: "https://api.crossref.org/v1"
+      });
+    }
+    if (u.pathname === "/api/literature/search" && req.method === "GET") {
+      const q = clean(u.searchParams.get("q"), 300);
+      if (q.length < 2) return json(res, 400, { error: "Escribe al menos dos caracteres" });
+      const page = Math.max(1, Math.min(100, Number(u.searchParams.get("page")) || 1));
+      const sources = (u.searchParams.get("sources") || "pubmed,crossref").split(",").map(s => s.trim()).filter(s => ["pubmed", "crossref"].includes(s));
+      const limit = 20;
+      const useTest = u.searchParams.get("test") === "1";
+
+      try {
+        const results = [];
+        const errors = [];
+
+        if (sources.includes("pubmed")) {
+          try {
+            const pubmedResult = useTest
+              ? await searchMockPubMed(q, { page, limit })
+              : await searchPubMed(q, { page, limit });
+            results.push(...pubmedResult.items.map(item => ({
+              ...item,
+              relevance: 1.0,
+              source: "pubmed"
+            })));
+          } catch (err) {
+            errors.push({ source: "pubmed", error: err.message });
+          }
+        }
+
+        if (sources.includes("crossref")) {
+          try {
+            const crossrefResult = useTest
+              ? await searchMockCrossref(q, { page, limit })
+              : await searchCrossref(q, { page, limit });
+            results.push(...crossrefResult.items.map(item => ({
+              ...item,
+              relevance: 0.9,
+              source: "crossref"
+            })));
+          } catch (err) {
+            errors.push({ source: "crossref", error: err.message });
+          }
+        }
+
+        return json(res, 200, {
+          items: results.slice(0, limit),
+          total: results.length,
+          page,
+          query: q,
+          sources: sources,
+          errors: errors.length > 0 ? errors : null,
+          test: useTest,
+          fetchedAt: new Date().toISOString()
+        });
+      } catch (error) {
+        return json(res, 502, { error: error.message || "Error en búsqueda de literatura" });
+      }
+    }
+    if (u.pathname.startsWith("/api/article/") && req.method === "GET") {
+      const id = u.pathname.split("/").pop();
+      if (!id || id.length < 2) return json(res, 400, { error: "ID de artículo no válido" });
+
+      try {
+        const [source, identifier] = id.includes(":") ? id.split(":", 2) : ["pubmed", id];
+
+        if (source === "pubmed") {
+          const article = await fetchPubMedArticle(identifier);
+          return json(res, 200, article);
+        } else if (source === "crossref" || source === "doi") {
+          const article = await fetchCrossrefWork(identifier);
+          return json(res, 200, article);
+        } else {
+          return json(res, 400, { error: "Formato de ID no soportado" });
+        }
+      } catch (error) {
+        return json(res, 502, { error: error.message || "Error al recuperar artículo" });
+      }
     }
     if (u.pathname.startsWith("/api/vivi") || u.pathname.startsWith("/api/live")) {
       return json(res, 503, {
