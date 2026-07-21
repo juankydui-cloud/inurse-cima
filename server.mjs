@@ -276,6 +276,48 @@ const server = http.createServer(async (req, res) => {
         source: "Europe PMC", fetchedAt: new Date().toISOString()
       });
     }
+    if (u.pathname === "/api/pmc/bibi-response" && req.method === "POST") {
+      const rawBody = await readBody(req);
+      const parsed = rawBody ? JSON.parse(rawBody) : {};
+      const query = clean(parsed.query, 300);
+      if (query.length < 2) return json(res, 400, { error: "Consulta insuficiente" });
+
+      const params = new URLSearchParams({
+        query, format: "json", resultType: "core",
+        pageSize: "12", cursorMark: "*"
+      });
+      params.set("sort", "P_PDATE_D desc");
+      params.set("sort", "Relevance");
+
+      try {
+        const raw = await epmc(`search?${params}`, { ttl: 10 * 60 * 1000 });
+        const list = raw?.resultList?.result || [];
+        const processed = list.slice(0, 8).map(r => ({
+          title: clean(stripTags(r.title), 400),
+          abstract: clean(stripTags(r.abstractText), 1000),
+          authors: clean(r.authorString, 180),
+          year: r.pubYear || "",
+          journal: clean(r.journalInfo?.journal?.title || r.journalTitle || "", 120),
+          isOpen: r.isOpenAccess === "Y",
+          url: r.doi ? `https://doi.org/${r.doi}`
+            : (r.source && r.id ? `https://europepmc.org/article/${r.source}/${r.id}` : "")
+        }));
+
+        return json(res, 200, {
+          query,
+          articles: processed,
+          total: raw?.hitCount ?? processed.length,
+          source: "Europe PMC",
+          timestamp: new Date().toISOString()
+        });
+      } catch (err) {
+        return json(res, 502, {
+          error: "No se pudo consultar Europe PMC",
+          query,
+          articles: []
+        });
+      }
+    }
     if (u.pathname.startsWith("/api/vivi") || u.pathname.startsWith("/api/live")) {
       return json(res, 503, {
         error: "Este iniciador activa CIMA. Vivi Live necesita su configuración de Gemini independiente."
