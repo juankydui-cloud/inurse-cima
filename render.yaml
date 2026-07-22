@@ -13,3 +13,5 @@ services:
         sync: false
       - key: CROSSREF_MAILTO
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
