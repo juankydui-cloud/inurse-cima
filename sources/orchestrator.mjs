@@ -1,6 +1,8 @@
 import { requestJSON } from "../cache.mjs";
 import { searchPubMed } from "./pubmed.mjs";
 import { searchCrossref } from "./crossref.mjs";
+import { searchNICE } from "./nice.mjs";
+import { searchOpenFDA } from "./openfda.mjs";
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -14,7 +16,8 @@ const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNu
 2. **Busca siempre en las fuentes disponibles.** Antes de responder cualquier pregunta clínica:
    - Consulta las fichas validadas de iNurse (contenido interno verificado).
    - Integra la evidencia publicada recuperada de PubMed, Crossref y Europe PMC.
-   - Si la pregunta involucra fármacos, consulta también las fichas del vademécum interno.
+   - Consulta las guías NICE (National Institute for Health and Care Excellence) cuando estén disponibles.
+   - Si la pregunta involucra fármacos, consulta las fichas técnicas de la FDA (OpenFDA) y el vademécum interno.
    - Integra toda la información recuperada en una respuesta cohesionada.
 
 3. **Nunca respondas solo de memoria.** Siempre fundamenta tus afirmaciones en fuentes recuperadas. Si no encuentras evidencia suficiente, indícalo explícitamente.
@@ -53,8 +56,10 @@ Organiza SIEMPRE tu respuesta siguiendo esta estructura narrativa (sin usar esto
 
 ## Citación en el texto
 
-- Cita cada afirmación clínica relevante con un número entre corchetes que remita a la lista de referencias: [1], [2], etc.
+- Cita cada afirmación clínica relevante con un número entre corchetes que remita a la lista de referencias: [REF-1], [REF-2], etc.
 - Si una afirmación proviene de una ficha validada de iNurse, márcala como [iNurse-código].
+- Si proviene de una guía NICE, cítala como [NICE-N].
+- Si proviene de una ficha técnica de la FDA, cítala como [FDA].
 - No hagas afirmaciones clínicas sin respaldo de fuente.
 
 ## Tono y estilo
@@ -165,6 +170,67 @@ function generateQueries(question) {
   return [...new Set(queries)].slice(0, 3);
 }
 
+const DRUG_KEYWORDS = new Set([
+  "farmaco", "medicamento", "dosis", "posologia", "antibiotico", "analgesico",
+  "antihipertensivo", "anticoagulante", "diuretico", "corticoide", "insulina",
+  "perfusion", "infusion", "bolo", "via oral", "via intravenosa", "via subcutanea",
+  "interaccion", "contraindicacion", "efecto adverso", "sobredosis", "antidoto"
+]);
+
+const DRUG_NAMES = {
+  "paracetamol": "acetaminophen", "ibuprofeno": "ibuprofen", "amoxicilina": "amoxicillin",
+  "omeprazol": "omeprazole", "metformina": "metformin", "enalapril": "enalapril",
+  "losartan": "losartan", "atorvastatina": "atorvastatin", "simvastatina": "simvastatin",
+  "amlodipino": "amlodipine", "furosemida": "furosemide", "hidroclorotiazida": "hydrochlorothiazide",
+  "warfarina": "warfarin", "heparina": "heparin", "enoxaparina": "enoxaparin",
+  "clopidogrel": "clopidogrel", "aspirina": "aspirin", "acido acetilsalicilico": "aspirin",
+  "metoprolol": "metoprolol", "atenolol": "atenolol", "bisoprolol": "bisoprolol",
+  "propranolol": "propranolol", "digoxina": "digoxin", "amiodarona": "amiodarone",
+  "nitroglicerina": "nitroglycerin", "dopamina": "dopamine", "dobutamina": "dobutamine",
+  "noradrenalina": "norepinephrine", "adrenalina": "epinephrine",
+  "morfina": "morphine", "fentanilo": "fentanyl", "tramadol": "tramadol",
+  "metadona": "methadone", "naloxona": "naloxone", "flumazenilo": "flumazenil",
+  "midazolam": "midazolam", "diazepam": "diazepam", "lorazepam": "lorazepam",
+  "propofol": "propofol", "ketamina": "ketamine", "lidocaina": "lidocaine",
+  "atropina": "atropine", "adenosina": "adenosine", "verapamilo": "verapamil",
+  "diltiazem": "diltiazem", "captopril": "captopril", "ramipril": "ramipril",
+  "espironolactona": "spironolactone", "manitol": "mannitol",
+  "dexametasona": "dexamethasone", "prednisona": "prednisone", "prednisolona": "prednisolone",
+  "hidrocortisona": "hydrocortisone", "metilprednisolona": "methylprednisolone",
+  "salbutamol": "albuterol", "ipratropio": "ipratropium", "budesonida": "budesonide",
+  "insulina glargina": "insulin glargine", "insulina lispro": "insulin lispro",
+  "metoclopramida": "metoclopramide", "ondansetron": "ondansetron",
+  "ciprofloxacino": "ciprofloxacin", "levofloxacino": "levofloxacin",
+  "azitromicina": "azithromycin", "claritromicina": "clarithromycin",
+  "ceftriaxona": "ceftriaxone", "cefazolina": "cefazolin", "meropenem": "meropenem",
+  "vancomicina": "vancomycin", "gentamicina": "gentamicin", "clindamicina": "clindamycin",
+  "metronidazol": "metronidazole", "fluconazol": "fluconazole",
+  "levotiroxina": "levothyroxine", "cloruro potasico": "potassium chloride",
+  "bicarbonato sodico": "sodium bicarbonate", "sulfato magnesio": "magnesium sulfate",
+  "gluconato calcio": "calcium gluconate", "alteplasa": "alteplase", "tenecteplasa": "tenecteplase",
+  "acido tranexamico": "tranexamic acid", "fitomenadiona": "phytonadione",
+  "clexane": "enoxaparin", "nolotil": "metamizole", "metamizol": "metamizole",
+  "enantyum": "dexketoprofen", "dexketoprofeno": "dexketoprofen",
+  "ventolin": "albuterol", "urbason": "methylprednisolone"
+};
+
+function detectDrugName(question) {
+  const norm = normalize(question);
+  for (const [es, en] of Object.entries(DRUG_NAMES)) {
+    if (norm.includes(normalize(es))) return en;
+  }
+  return null;
+}
+
+function isDrugRelated(question) {
+  const norm = normalize(question);
+  if (detectDrugName(question)) return true;
+  for (const kw of DRUG_KEYWORDS) {
+    if (norm.includes(normalize(kw))) return true;
+  }
+  return false;
+}
+
 const GUIDELINE_ORGS = [
   '"NICE guideline" OR "National Institute for Health and Care Excellence"',
   '"ESC guideline" OR "European Society of Cardiology"',
@@ -175,13 +241,19 @@ const GUIDELINE_ORGS = [
 async function searchAllSources(question) {
   const queries = generateQueries(question);
   const guidelineQuery = `(${queries[0]}) AND (${GUIDELINE_ORGS.join(" OR ")})`;
+  const drugName = detectDrugName(question);
 
-  const [pmcResult, pubmedResult, crossrefResult, guidelineResult] = await Promise.allSettled([
+  const searches = [
     searchPubMed(queries[0], { limit: 8 }),
     queries[1] ? searchPubMed(queries[1], { limit: 5 }) : Promise.resolve({ items: [] }),
     searchCrossref(queries[0], { limit: 5 }),
-    searchPubMed(guidelineQuery, { limit: 5 })
-  ]);
+    searchPubMed(guidelineQuery, { limit: 5 }),
+    searchNICE(queries[0], { limit: 5 }),
+    drugName ? searchOpenFDA(drugName) : Promise.resolve(null)
+  ];
+
+  const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult] =
+    await Promise.allSettled(searches);
 
   const articles = [];
   const seen = new Set();
@@ -200,16 +272,24 @@ async function searchAllSources(question) {
   if (crossrefResult.status === "fulfilled") addUnique(crossrefResult.value.items, "Crossref");
   if (guidelineResult.status === "fulfilled") addUnique(guidelineResult.value.items, "Guías internacionales");
 
+  const niceGuidelines = niceResult.status === "fulfilled" ? (niceResult.value?.items || []) : [];
+  const fdaDrug = fdaResult.status === "fulfilled" ? fdaResult.value : null;
+
+  const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult];
+
   return {
     articles: articles.slice(0, 12),
+    niceGuidelines: niceGuidelines.slice(0, 5),
+    fdaDrug,
+    drugDetected: drugName,
     queries,
-    errors: [pmcResult, pubmedResult, crossrefResult, guidelineResult]
+    errors: allSettled
       .filter(r => r.status === "rejected")
       .map(r => r.reason?.message || "Error desconocido")
   };
 }
 
-function assembleContext(question, externalArticles, clientContext) {
+function assembleContext(question, { articles, niceGuidelines, fdaDrug }, clientContext) {
   let ctx = "";
 
   if (clientContext?.guides) {
@@ -222,9 +302,38 @@ function assembleContext(question, externalArticles, clientContext) {
     ctx += clientContext.library + "\n\n";
   }
 
-  if (externalArticles.length > 0) {
+  if (niceGuidelines.length > 0) {
+    ctx += "--- GUÍAS NICE (National Institute for Health and Care Excellence) ---\n";
+    niceGuidelines.forEach((g, i) => {
+      ctx += `\n[NICE-${i + 1}] ${g.title}`;
+      if (g.type) ctx += ` (${g.type})`;
+      if (g.date) ctx += ` — ${g.date}`;
+      if (g.url) ctx += `\nURL: ${g.url}`;
+      if (g.summary) ctx += `\nResumen: ${g.summary}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
+  if (fdaDrug) {
+    ctx += "--- FICHA TÉCNICA FDA (OpenFDA Drug Label) ---\n";
+    ctx += `Fármaco: ${fdaDrug.genericName}`;
+    if (fdaDrug.brandName) ctx += ` (${fdaDrug.brandName})`;
+    ctx += "\n";
+    if (fdaDrug.manufacturer) ctx += `Fabricante: ${fdaDrug.manufacturer} | Vía: ${fdaDrug.route || "N/D"}\n`;
+    if (fdaDrug.boxedWarning) ctx += `⚠️ BLACK BOX WARNING: ${fdaDrug.boxedWarning}\n`;
+    if (fdaDrug.indications) ctx += `Indicaciones: ${fdaDrug.indications}\n`;
+    if (fdaDrug.dosage) ctx += `Posología: ${fdaDrug.dosage}\n`;
+    if (fdaDrug.contraindications) ctx += `Contraindicaciones: ${fdaDrug.contraindications}\n`;
+    if (fdaDrug.interactions) ctx += `Interacciones: ${fdaDrug.interactions}\n`;
+    if (fdaDrug.adverseReactions) ctx += `Reacciones adversas: ${fdaDrug.adverseReactions}\n`;
+    if (fdaDrug.specialPopulations) ctx += `Poblaciones especiales: ${fdaDrug.specialPopulations}\n`;
+    ctx += "\n";
+  }
+
+  if (articles.length > 0) {
     ctx += "--- LITERATURA RECUPERADA (PubMed + Crossref + Guías internacionales) ---\n";
-    externalArticles.forEach((art, i) => {
+    articles.forEach((art, i) => {
       const authors = Array.isArray(art.authors) ? art.authors.join(", ") : (art.authors || "");
       ctx += `\n[REF-${i + 1}] ${authors}. ${art.title}. ${art.journal || ""}. ${art.year || ""}.`;
       if (art.doi) ctx += ` DOI: ${art.doi}`;
@@ -237,9 +346,14 @@ function assembleContext(question, externalArticles, clientContext) {
   }
 
   ctx += `--- INSTRUCCIÓN ---
-Utiliza las fuentes anteriores para responder la siguiente pregunta clínica.
-Cita cada afirmación con [REF-N] para literatura externa o [iNurse-código] para fichas internas.
+Utiliza TODAS las fuentes anteriores para responder la siguiente pregunta clínica.
+Cita cada afirmación así:
+- [iNurse-código] para fichas internas validadas
+- [NICE-N] para guías NICE
+- [FDA] para información de la ficha técnica FDA
+- [REF-N] para artículos de PubMed/Crossref
 Incluye un bloque de REFERENCIAS al final con formato bibliográfico completo.
+Si una fuente se contradice con otra, señálalo y prioriza la de mayor nivel de evidencia.
 Si las fuentes no cubren algún aspecto, indícalo explícitamente.
 
 PREGUNTA DEL USUARIO: ${question}`;
@@ -279,11 +393,13 @@ export async function orchestrate({ question, context: clientContext, history, a
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
   }
 
-  const { articles, queries, errors } = await searchAllSources(question);
-  console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length}` +
+  const searchResults = await searchAllSources(question);
+  const { articles, niceGuidelines, fdaDrug, drugDetected, queries, errors } = searchResults;
+  console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length} | NICE: ${niceGuidelines.length} | FDA: ${fdaDrug ? "sí" : "no"}` +
+    (drugDetected ? ` | Fármaco: ${drugDetected}` : "") +
     (errors.length ? ` | Errores: ${errors.join("; ")}` : ""));
 
-  const userPrompt = assembleContext(question, articles, clientContext);
+  const userPrompt = assembleContext(question, searchResults, clientContext);
 
   let sys = SYSTEM_PROMPT;
   if (caseMemory?.length) {
@@ -306,6 +422,15 @@ export async function orchestrate({ question, context: clientContext, history, a
         journal: a.journal, year: a.year, doi: a.doi, pmid: a.pmid,
         source: a.retrievedFrom || a.source, url: a.url
       })),
+      niceGuidelines: niceGuidelines.map(g => ({
+        title: g.title, id: g.id, url: g.url, date: g.date,
+        type: g.type, summary: g.summary, source: "NICE"
+      })),
+      fdaDrug: fdaDrug ? {
+        genericName: fdaDrug.genericName, brandName: fdaDrug.brandName,
+        manufacturer: fdaDrug.manufacturer, route: fdaDrug.route,
+        boxedWarning: !!fdaDrug.boxedWarning, source: "OpenFDA"
+      } : null,
       queries,
       errors: errors.length ? errors : undefined
     },

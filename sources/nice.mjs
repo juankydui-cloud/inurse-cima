@@ -1,6 +1,7 @@
 import { requestJSON } from "../cache.mjs";
 
 const NICE_BASE = "https://api.nice.org.uk/services";
+const NICE_API_KEY = process.env.NICE_API_KEY || "";
 
 export async function searchNICE(query, { limit = 10 } = {}) {
   const params = new URLSearchParams({
@@ -9,9 +10,11 @@ export async function searchNICE(query, { limit = 10 } = {}) {
     pa: "1",
     sp: "Relevance"
   });
+  const niceHeaders = NICE_API_KEY ? { "Api-Key": NICE_API_KEY } : {};
   const raw = await requestJSON(`${NICE_BASE}/search?${params}`, {
     ttl: 30 * 60 * 1000,
-    label: "NICE"
+    label: "NICE",
+    headers: niceHeaders
   });
   const docs = raw?.documents || raw?.Documents || [];
   return {
