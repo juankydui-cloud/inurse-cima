@@ -438,4 +438,28 @@ export async function orchestrate({ question, context: clientContext, history, a
   };
 }
 
+// Transcribe audio (base64) a texto usando Gemini. Devuelve "" si no hay voz clara.
+export async function transcribeAudio(audioBase64, mimeType = "audio/wav", apiKeyArg) {
+  const apiKey = apiKeyArg || process.env.GEMINI_API_KEY || "";
+  if (!apiKey) throw new Error("Falta la API Key de Gemini (GEMINI_API_KEY)");
+  if (!audioBase64) return "";
+
+  const url = `${GEMINI_BASE}/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const body = {
+    contents: [{
+      role: "user",
+      parts: [
+        { text: "Transcribe literalmente este audio de una consulta clínica hablada en español. Devuelve ÚNICAMENTE el texto transcrito, sin comillas, sin comentarios ni explicaciones. Si el audio no contiene voz clara, devuelve una cadena vacía." },
+        { inlineData: { mimeType, data: audioBase64 } }
+      ]
+    }],
+    generationConfig: { temperature: 0, maxOutputTokens: 512 }
+  };
+
+  const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini Transcribe" });
+  const candidate = data?.candidates?.[0];
+  if (!candidate?.content?.parts) return "";
+  return candidate.content.parts.map(p => p.text || "").join("").trim();
+}
+
 export { SYSTEM_PROMPT, generateQueries, searchAllSources };
