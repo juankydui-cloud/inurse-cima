@@ -16,7 +16,7 @@ export function cacheSet(key, data, ttl = 10 * 60 * 1000) {
   cache.set(key, { data, expires: Date.now() + ttl });
 }
 
-function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, accept = "application/json", contentType = "application/json" } = {}) {
+function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, accept = "application/json", contentType = "application/json", headers: extraHeaders = {} } = {}) {
   const bodyText = body ? JSON.stringify(body) : "";
   return new Promise((resolve, reject) => {
     const target = new URL(urlString);
@@ -32,7 +32,8 @@ function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, 
         "Accept": accept,
         "Content-Type": contentType,
         "User-Agent": "iNurse-CIMA/28.1",
-        ...(bodyText ? { "Content-Length": Buffer.byteLength(bodyText) } : {})
+        ...(bodyText ? { "Content-Length": Buffer.byteLength(bodyText) } : {}),
+        ...extraHeaders
       }
     }, response => {
       const chunks = [];
@@ -48,13 +49,13 @@ function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, 
   });
 }
 
-export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 * 60 * 1000, label = "La fuente externa" } = {}) {
+export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 * 60 * 1000, label = "La fuente externa", headers = {} } = {}) {
   const bodyText = body ? JSON.stringify(body) : "";
   const key = `${method}:${urlString}:${bodyText}`;
   const hit = cacheGet(key);
   if (hit) return Promise.resolve(hit);
 
-  return httpRequest(urlString, { method, body }).then(({ status, text }) => {
+  return httpRequest(urlString, { method, body, headers }).then(({ status, text }) => {
     let data;
     try { data = text ? JSON.parse(text) : null; }
     catch { throw new Error(`${label} devolvió una respuesta no válida`); }
