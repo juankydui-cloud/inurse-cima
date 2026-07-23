@@ -3,6 +3,9 @@ import { searchPubMed } from "./pubmed.mjs";
 import { searchCrossref } from "./crossref.mjs";
 import { searchNICE } from "./nice.mjs";
 import { searchOpenFDA } from "./openfda.mjs";
+import { searchClinicalTrials } from "./clinicaltrials.mjs";
+import { searchSemanticScholar } from "./semanticscholar.mjs";
+import { searchWHO } from "./who.mjs";
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -17,6 +20,9 @@ const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNu
    - Consulta las fichas validadas de iNurse (contenido interno verificado).
    - Integra la evidencia publicada recuperada de PubMed, Crossref y Europe PMC.
    - Consulta las guías NICE (National Institute for Health and Care Excellence) cuando estén disponibles.
+   - Consulta los ensayos clínicos activos de ClinicalTrials.gov para evidencia emergente.
+   - Consulta papers académicos en Semantic Scholar para perspectiva amplia de la literatura.
+   - Consulta documentos de la OMS (WHO IRIS) para recomendaciones internacionales.
    - Si la pregunta involucra fármacos, consulta las fichas técnicas de la FDA (OpenFDA) y el vademécum interno.
    - Integra toda la información recuperada en una respuesta cohesionada.
 
@@ -249,10 +255,13 @@ async function searchAllSources(question) {
     searchCrossref(queries[0], { limit: 5 }),
     searchPubMed(guidelineQuery, { limit: 5 }),
     searchNICE(queries[0], { limit: 5 }),
-    drugName ? searchOpenFDA(drugName) : Promise.resolve(null)
+    drugName ? searchOpenFDA(drugName) : Promise.resolve(null),
+    searchClinicalTrials(queries[0], { limit: 5 }),
+    searchSemanticScholar(queries[0], { limit: 5 }),
+    searchWHO(queries[0], { limit: 5 })
   ];
 
-  const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult] =
+  const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult] =
     await Promise.allSettled(searches);
 
   const articles = [];
@@ -274,13 +283,19 @@ async function searchAllSources(question) {
 
   const niceGuidelines = niceResult.status === "fulfilled" ? (niceResult.value?.items || []) : [];
   const fdaDrug = fdaResult.status === "fulfilled" ? fdaResult.value : null;
+  const clinicalTrials = ctResult.status === "fulfilled" ? (ctResult.value?.items || []) : [];
+  const semanticScholar = scholarResult.status === "fulfilled" ? (scholarResult.value?.items || []) : [];
+  const whoDocuments = whoResult.status === "fulfilled" ? (whoResult.value?.items || []) : [];
 
-  const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult];
+  const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult];
 
   return {
     articles: articles.slice(0, 12),
     niceGuidelines: niceGuidelines.slice(0, 5),
     fdaDrug,
+    clinicalTrials: clinicalTrials.slice(0, 3),
+    semanticScholar: semanticScholar.slice(0, 3),
+    whoDocuments: whoDocuments.slice(0, 3),
     drugDetected: drugName,
     queries,
     errors: allSettled
@@ -289,7 +304,7 @@ async function searchAllSources(question) {
   };
 }
 
-function assembleContext(question, { articles, niceGuidelines, fdaDrug }, clientContext) {
+function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments }, clientContext) {
   let ctx = "";
 
   if (clientContext?.guides) {
@@ -345,13 +360,55 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug }, client
     ctx += "\n";
   }
 
+  if (clinicalTrials.length > 0) {
+    ctx += "--- ENSAYOS CLÍNICOS EN CURSO (ClinicalTrials.gov) ---\n";
+    clinicalTrials.forEach((ct, i) => {
+      ctx += `\n[CT-${i + 1}] ${ct.title} (${ct.nctId})`;
+      if (ct.status) ctx += `\nEstado: ${ct.status}`;
+      if (ct.phase) ctx += ` | Fase: ${ct.phase}`;
+      if (ct.organization) ctx += `\nOrganización: ${ct.organization}`;
+      if (ct.startDate) ctx += ` | Inicio: ${ct.startDate}`;
+      ctx += `\nURL: ${ct.url}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
+  if (semanticScholar.length > 0) {
+    ctx += "--- PAPERS ACADÉMICOS (Semantic Scholar) ---\n";
+    semanticScholar.forEach((paper, i) => {
+      ctx += `\n[SCHOLAR-${i + 1}] ${paper.authors}. ${paper.title}. ${paper.year || ""}.`;
+      if (paper.doi) ctx += ` DOI: ${paper.doi}`;
+      if (paper.isOpenAccess) ctx += " [OPEN ACCESS]";
+      if (paper.abstract) ctx += `\nAbstract: ${String(paper.abstract).slice(0, 400)}`;
+      ctx += `\nURL: ${paper.url}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
+  if (whoDocuments.length > 0) {
+    ctx += "--- DOCUMENTOS DE LA OMS (WHO IRIS) ---\n";
+    whoDocuments.forEach((doc, i) => {
+      ctx += `\n[WHO-${i + 1}] ${doc.title}`;
+      if (doc.type) ctx += ` (${doc.type})`;
+      if (doc.date) ctx += ` — ${doc.date}`;
+      ctx += `\nURL: ${doc.url}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
   ctx += `--- INSTRUCCIÓN ---
 Utiliza TODAS las fuentes anteriores para responder la siguiente pregunta clínica.
 Cita cada afirmación así:
 - [iNurse-código] para fichas internas validadas
 - [NICE-N] para guías NICE
 - [FDA] para información de la ficha técnica FDA
-- [REF-N] para artículos de PubMed/Crossref
+- [REF-N] para artículos de PubMed/Crossref/Guías internacionales
+- [CT-N] para ensayos clínicos en curso
+- [SCHOLAR-N] para papers académicos
+- [WHO-N] para documentos de la OMS
 Incluye un bloque de REFERENCIAS al final con formato bibliográfico completo.
 Si una fuente se contradice con otra, señálalo y prioriza la de mayor nivel de evidencia.
 Si las fuentes no cubren algún aspecto, indícalo explícitamente.
