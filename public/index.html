@@ -1876,6 +1876,19 @@ body.in195-open{overflow:hidden!important}
 .cc-followup-btn{padding:5px 10px;border-radius:20px;border:1px solid rgba(120,150,220,.22);background:rgba(120,150,220,.08);
   color:#a8b8d8;font-size:11px;cursor:pointer;transition:all .18s;font-weight:600}
 .cc-followup-btn:hover{background:rgba(56,189,248,.14);border-color:rgba(56,189,248,.4);color:#e2e8f0}
+.cc-alg-msg{max-width:92% !important}
+.cc-alg-card{display:flex;flex-direction:column;gap:8px}
+.cc-alg-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#e6edf9;flex-wrap:wrap}
+.cc-alg-cat{margin-left:auto;font-size:10px;font-weight:700;color:#a8b8d8;background:rgba(56,189,248,.12);
+  border:1px solid rgba(56,189,248,.28);border-radius:999px;padding:2px 9px;text-transform:uppercase;letter-spacing:.03em}
+.cc-alg-src{font-size:11px;color:#8ea3c4;line-height:1.45}
+.cc-alg-steps{margin:2px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.cc-alg-steps li{font-size:13px;line-height:1.5;color:#dbe6f7}
+.cc-alg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.cc-alg-btn{padding:7px 12px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(139,92,246,.18));
+  color:#e6edf9;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
+.cc-alg-btn:hover{filter:brightness(1.15)}
+.cc-alg-btn.alt{background:rgba(120,150,220,.1);border-color:rgba(120,150,220,.28);color:#a8b8d8}
 .v21-route-context{
   margin:8px 0 0;padding:7px 9px;border-left:3px solid #6366F1;border-radius:7px;
   background:rgba(99,102,241,.06);color:#9fb0cb;font-size:9.5px;line-height:1.45
@@ -17744,6 +17757,31 @@ render();
   }
   chat.appendChild(d);return d;
  }
+ function _ccNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
+ function maybeAlgBubble(text){
+  try{
+   if(!text||!window.iNurseAlgLib||typeof window.iNurseAlgLib.find!=='function')return false;
+   var n=_ccNorm(text);
+   var intent=/algoritmo|protocolo|pauta|actuacion|paso a paso|como (actuo|actuar|manejo|trato|procedo)|que hago (con|ante|si)|manejo (de|del|inicial)/.test(n);
+   if(!intent)return false;
+   var m=window.iNurseAlgLib.find(text);
+   if(!m)return false;
+   var d=document.createElement('div');d.className='cc-msg b cc-alg-msg';
+   var steps=m.steps.map(function(s){return '<li>'+esc(s)+'</li>';}).join('');
+   d.innerHTML='<div class="cc-alg-card">'
+    +'<div class="cc-alg-head">🧩 <b>'+esc(m.name)+'</b>'+(m.cat?'<span class="cc-alg-cat">'+esc(m.cat)+'</span>':'')+'</div>'
+    +'<div class="cc-alg-src">Fuente: '+esc(m.src)+' · Adáptalo siempre al protocolo y las competencias de tu centro.</div>'
+    +'<ol class="cc-alg-steps">'+steps+'</ol>'
+    +'<div class="cc-alg-actions">'
+    +'<button class="cc-alg-btn" data-alg-open="'+esc(m.name)+'">📖 Abrir ficha completa</button>'
+    +'<button class="cc-alg-btn alt" data-alg-ev="'+esc(m.name)+'">🔬 Buscar evidencia</button>'
+    +'</div></div>';
+   d.querySelector('[data-alg-open]').onclick=function(){ try{ window.iNurseAlgLib.open(m.name); }catch(e){} };
+   d.querySelector('[data-alg-ev]').onclick=function(){ ta.value='Busca evidencia reciente en PubMed, PMC y NICE sobre '+m.name+' y resume las recomendaciones actuales con sus fuentes.'; resize();upd(); send(); };
+   chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+   return true;
+  }catch(e){ return false; }
+ }
  function paint(){ if(!messages.length){welcome();return} chat.innerHTML='';messages.forEach(function(m,i){rmsg(m,i===messages.length-1&&m.role==='bot');});chat.scrollTop=chat.scrollHeight; }
 
  /* ---- voz conversacional ---- */
@@ -18200,6 +18238,7 @@ render();
   }
   if(messages.length===1)chat.innerHTML='';
   rmsg(um);chat.scrollTop=chat.scrollHeight;
+  maybeAlgBubble(text);
   var typ=document.createElement('div');typ.className='cc-typing';typ.innerHTML='<span></span><span></span><span></span>';chat.appendChild(typ);chat.scrollTop=chat.scrollHeight;
   var route=routeQuestion(text||'',att);var snapshot=caseSnapshot(text||'',route);window.__v21LastQuestion=text||'';
   var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='';
@@ -26106,6 +26145,57 @@ if(id==='procedures')document.querySelectorAll('[data-proc]').forEach(x=>x.oncli
 function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-screen','main'];let host;for(const q of qs){host=document.querySelector(q);if(host)break}if(!host||document.getElementById('icHomeCard'))return;const c=document.createElement('div');c.id='icHomeCard';c.className='icHomeCard';c.innerHTML='<b>🧠 Espacio clínico inteligente</b><small>10 calculadoras, 8 algoritmos y 8 procedimientos con contenido interno.</small>';c.onclick=open;host.appendChild(c)}
 function init(){$('#icTabs').innerHTML=tabs.map((t,i)=>`<button class="icTab${i===0?' on':''}" data-id="${t[0]}">${t[2]?`<span class="icTab-ic">${t[2]}</span>`:''}${t[1]}</button>`).join('');$('#icTabs').onclick=e=>{const x=e.target.closest('.icTab');if(x)renderTab(x.dataset.id)};$('#icFab').onclick=open;$('#icClose').onclick=close;$('#icOverlay').onclick=e=>{if(e.target.id==='icOverlay')close()};renderTab('assistant');addHomeCard();setTimeout(addHomeCard,1200);setTimeout(addHomeCard,3000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+
+/* ---- API global: biblioteca de algoritmos accesible por Vivi ---- */
+function _algNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+/* Palabras clave (sinónimos, abreviaturas y términos coloquiales) por algoritmo */
+var ALG_KW={
+'Sepsis':'shock septico infeccion','PCR':'parada cardiorrespiratoria paro cardiaco reanimacion rcp soporte vital','Trauma':'politraumatismo traumatismo abcde atls','Hemorragia masiva':'sangrado masivo transfusion masiva','Soporte vital avanzado y arritmias peri-parada':'sva arritmias periparada desfibrilacion',
+'IAM':'infarto agudo miocardio sindrome coronario sca dolor toracico stemi','Fibrilación auricular':'fa arritmia','Insuficiencia cardiaca aguda y edema agudo de pulmón':'icc eap edema pulmonar insuficiencia cardiaca',
+'Ictus':'acv accidente cerebrovascular isquemico codigo ictus','Status epiléptico':'crisis convulsiva convulsion convulsiones epilepsia estatus','Hemorragia intracerebral':'hic hemorragia cerebral ictus hemorragico',
+'Hipoglucemia':'glucemia baja azucar bajo','Cetoacidosis diabética':'cad','Estado hiperglucémico hiperosmolar':'ehh hiperosmolar',
+'Crisis asmática':'asma broncoespasmo agudizacion','Exacerbación de EPOC':'epoc reagudizacion agudizacion','Neumonía y criterios de gravedad':'neumonia infeccion respiratoria',
+'Anafilaxia':'reaccion alergica shock anafilactico','Angioedema con afectación de vía aérea':'angioedema edema glotis','Urticaria / reacción alérgica aguda':'urticaria habones alergia',
+'Sepsis pediátrica':'sepsis niño pediatrica shock septico','Bronquiolitis':'bronquiolitis lactante vrs','Crisis asmática pediátrica':'asma niño pediatrica',
+'Hemorragia posparto':'hpp posparto','Preeclampsia / eclampsia':'preeclampsia eclampsia hipertension gestacional','Sepsis o colapso materno':'sepsis materna colapso obstetrico',
+'Embarazo ectópico':'ectopico tubarico','Enfermedad inflamatoria pélvica':'eip','Sangrado o dolor en embarazo inicial':'amenaza aborto primer trimestre',
+'Hemorragia digestiva alta':'hda melenas hematemesis','Hemorragia varicosa en cirrosis':'varices esofagicas cirrosis hipertension portal','Colangitis / obstrucción biliar':'colangitis coledoco ictericia biliar',
+'TVP / TEP':'tromboembolismo pulmonar trombosis venosa profunda embolia','Trombocitopenia inducida por heparina':'hit trombopenia heparina','Hemorragia en paciente anticoagulado':'sangrado anticoagulacion sintrom acenocumarol',
+'Isquemia aguda de extremidad':'isquemia arterial aguda extremidad','Enfermedad arterial periférica con extremidad amenazada':'eap arteriopatia periferica',
+'Lesión renal aguda':'lra aki fracaso renal insuficiencia renal','Hiperpotasemia':'potasio hiperkaliemia','Cólico renal con uropatía obstructiva infectada':'colico nefritico litiasis urosepsis obstruccion',
+'Tormenta tiroidea':'crisis tirotoxica hipertiroidismo tirotoxicosis','Coma mixedematoso':'hipotiroidismo grave mixedema','Nódulo tiroideo':'nodulo tiroides',
+'Oclusión arterial retiniana':'oclusion arteria retina perdida vision','Glaucoma agudo de ángulo cerrado':'glaucoma ojo rojo doloroso','Pérdida visual aguda':'perdida vision ceguera brusca',
+'Epistaxis':'sangrado nasal nariz','Hipoacusia neurosensorial súbita':'sordera subita perdida audicion','Infección cervical profunda':'absceso cervical flemon cuello',
+'Riesgo suicida / autolesión':'suicidio autolisis ideacion suicida autolesion','Agitación: desescalada y tranquilización rápida':'agitacion desescalada contencion','Síndrome serotoninérgico':'serotonina toxicidad serotoninergica',
+'Artritis reumatoide: escalada terapéutica':'artritis reumatoide ar fame','Arteritis de células gigantes':'arteritis temporal horton','Monoartritis aguda / descarte de artritis séptica':'monoartritis artritis septica gota',
+'Lesión pigmentada sospechosa':'melanoma lunar nevus mancha','Dermatitis atópica por gravedad':'eccema dermatitis atopica','Psoriasis: criterios de escalada':'psoriasis',
+'Valoración del dolor agudo':'dolor agudo valoracion','Analgesia multimodal escalonada':'analgesia escalera analgesica','Prevención del daño por opioides':'opioides morfina fentanilo naloxona',
+'Dolor dental agudo':'dolor dental muela odontalgia','Infección odontógena con tumefacción':'flemon dental absceso odontogeno','Complicaciones tras extracción dental':'alveolitis extraccion dental',
+'Intervención breve 5A':'tabaco 5a intervencion breve','Tratamiento para dejar de fumar':'dejar fumar cesacion tabaquica','Prevención de recaídas del tabaquismo':'recaida tabaco'
+};
+var ALG_STOP={algoritmo:1,algoritmos:1,protocolo:1,protocolos:1,pauta:1,pautas:1,manejo:1,actuacion:1,de:1,del:1,la:1,el:1,los:1,las:1,un:1,una:1,dame:1,muestra:1,muestrame:1,abre:1,abrir:1,quiero:1,ver:1,busca:1,buscar:1,ensename:1,vivi:1,por:1,favor:1,sobre:1,para:1,como:1,en:1,y:1,e:1,que:1,con:1,ante:1,si:1,hago:1,actuo:1,actuar:1,trato:1,procedo:1,inicial:1};
+function algFind(query){
+  var raw=_algNorm(query); if(!raw) return null;
+  var toks=raw.split(' ').filter(function(t){return t&&!ALG_STOP[t];});
+  if(!toks.length) return null;
+  var best=null,bestScore=0;
+  Object.keys(ALG).forEach(function(name){
+    var hay=' '+_algNorm(name)+' '+_algNorm(ALG_CAT[name]||'')+' '+_algNorm(ALG_KW[name]||'')+' ';
+    var score=0;
+    toks.forEach(function(t){ if(hay.indexOf(' '+t+' ')!==-1) score+=3; else if(t.length>=4&&hay.indexOf(t)!==-1) score+=1; });
+    if(raw.indexOf(_algNorm(name))!==-1) score+=4;
+    if(score>bestScore){ bestScore=score; best=name; }
+  });
+  if(!best||bestScore<3) return null;
+  var a=ALG[best];
+  return { name:best, src:a.src, steps:a.steps.slice(), cat:ALG_CAT[best]||'' };
+}
+window.iNurseAlgLib={
+  find:algFind,
+  get:function(name){ var a=ALG[name]; return a?{name:name,src:a.src,steps:a.steps.slice(),cat:ALG_CAT[name]||''}:null; },
+  open:function(name){ if(!ALG[name]) return false; open(); renderTab('alg'); setTimeout(function(){ showAlg(name); },30); return true; },
+  list:function(){ return Object.keys(ALG).map(function(n){ return {name:n,src:ALG[n].src,cat:ALG_CAT[n]||''}; }); }
+};
 })();
 </script>
 
