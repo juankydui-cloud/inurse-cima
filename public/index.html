@@ -556,6 +556,16 @@
   .chi-detail{color:var(--text-dim);font-size:11px;line-height:1.4}
   .calc-empty{text-align:center;color:var(--text-dim);font-size:12px;padding:20px}
 
+  /* Formulario de fármaco personalizado */
+  .perf-custom{border:1px dashed rgba(14,165,233,.4);border-radius:12px;padding:14px;margin-bottom:12px;
+    background:rgba(14,165,233,.04)}
+  .perf-custom-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:12px}
+  .perf-row{display:flex;gap:8px}
+  .perf-row input{flex:1}
+  .perf-row select{width:auto;min-width:76px}
+  .perf-custom-preview{font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);
+    border-radius:8px;padding:9px 12px;margin-bottom:12px}
+
   /* FAB Calculadora */
   #calcFab{position:fixed;left:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;
     background:linear-gradient(135deg,#0EA5E9,#8B5CF6);color:#fff;font-size:24px;border:none;
@@ -18848,6 +18858,12 @@ let calcHistory = [];
 try { calcHistory = JSON.parse(store.get("guiaHJ23_calc_hist") || "[]"); } catch(e) { calcHistory = []; }
 let perfPeso = parseFloat(store.get("guiaHJ23_perf_peso") || "70") || 70;
 
+/* Fármacos de perfusión personalizados (guardados en el dispositivo) */
+let PERF_CUSTOM = {};
+try { PERF_CUSTOM = JSON.parse(store.get("inurse_perf_custom_v1") || "{}") || {}; } catch(e) { PERF_CUSTOM = {}; }
+function allPerfDrugs(){ return Object.assign({}, DILUCIONES, PERF_CUSTOM); }
+function savePerfCustomStore(){ try{ store.set("inurse_perf_custom_v1", JSON.stringify(PERF_CUSTOM)); }catch(e){} }
+
 function pushCalcHistory(id, main, detail){
   const item = { id, title:(CALCS[id]||{}).title||"Perfusión", main, detail, ts:Date.now() };
   calcHistory = [item, ...calcHistory.filter(x=>x.id!==id || x.main!==main)].slice(0,15);
@@ -18948,15 +18964,21 @@ function saveCalc(){
 
 /* ---------- WIDGET DE PERFUSIONES ---------- */
 function renderPerf(){
-  const opts = Object.entries(DILUCIONES).map(([k,d])=>
-    `<option value="${k}">${escapeHtml(d.n)}</option>`).join("");
+  const customKeys = Object.keys(PERF_CUSTOM);
+  const customOpts = customKeys.length
+    ? `<optgroup label="Mis fármacos">${customKeys.map(k=>
+        `<option value="${k}">★ ${escapeHtml(PERF_CUSTOM[k].n)}</option>`).join("")}</optgroup>`
+    : "";
+  const baseOpts = `<optgroup label="Fármacos habituales">${Object.entries(DILUCIONES).map(([k,d])=>
+    `<option value="${k}">${escapeHtml(d.n)}</option>`).join("")}</optgroup>`;
+  const addOpt = `<option value="__new__">➕ Añadir fármaco personalizado…</option>`;
   return `<div class="calc-widget">
     <div class="calc-title"><span class="calc-icon">💉</span>Widget de Perfusiones HJ23
       <span class="calc-tag">Bomba mL/h</span></div>
     <div class="calc-fields">
       <div class="calc-field">
         <label>Fármaco</label>
-        <select id="perf-farm" onchange="onPerfFarm()">${opts}</select>
+        <select id="perf-farm" onchange="onPerfFarm()">${customOpts}${baseOpts}${addOpt}</select>
       </div>
       <div class="calc-field">
         <label>Peso paciente (kg)</label>
@@ -18972,8 +18994,9 @@ function renderPerf(){
         <input type="number" inputmode="decimal" id="perf-dosis" oninput="runPerf()">
       </div>
     </div>
+    <div id="perfCustomForm"></div>
     <div class="calc-result" id="perfResult">—</div>
-    <div class="calc-actions">
+    <div class="calc-actions" id="perfActions">
       <button class="btn-outline" onclick="perfReset()">↻ Limpiar</button>
       <button class="btn-primary" onclick="perfSave()">💾 Guardar</button>
     </div>
@@ -18981,21 +19004,174 @@ function renderPerf(){
   </div>`;
 }
 
-function onPerfFarm(){
-  const k = document.getElementById("perf-farm").value;
-  const f = DILUCIONES[k];
+/* Formulario de fármaco personalizado */
+function renderPerfCustomForm(){
+  return `<div class="perf-custom" id="perfCustomBox">
+    <div class="perf-custom-title">➕ Nuevo fármaco personalizado</div>
+    <div class="calc-fields">
+      <div class="calc-field">
+        <label>Nombre del fármaco</label>
+        <input type="text" id="pc-name" placeholder="Ej. Milrinona" oninput="pcPreview()">
+      </div>
+      <div class="calc-field">
+        <label>Cantidad de fármaco en el suero</label>
+        <div class="perf-row">
+          <input type="number" inputmode="decimal" id="pc-amount" min="0" step="any" placeholder="Ej. 20" oninput="pcPreview()">
+          <select id="pc-amount-unit" onchange="pcPreview()">
+            <option value="mg">mg</option>
+            <option value="mcg">mcg</option>
+            <option value="UI">UI</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-field">
+        <label>Volumen total del suero (mL)</label>
+        <input type="number" inputmode="decimal" id="pc-vol" min="1" step="any" placeholder="Ej. 100" oninput="pcPreview()">
+      </div>
+      <div class="calc-field">
+        <label>Tipo de dosificación</label>
+        <select id="pc-unit" onchange="pcPreview()">
+          <option value="mcg/kg/min">mcg/kg/min</option>
+          <option value="mcg/kg/h">mcg/kg/h</option>
+          <option value="mcg/min">mcg/min</option>
+          <option value="mg/kg/h">mg/kg/h</option>
+          <option value="mg/h">mg/h</option>
+          <option value="UI/kg/h">UI/kg/h</option>
+          <option value="UI/h">UI/h</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Dosis objetivo habitual</label>
+        <input type="number" inputmode="decimal" id="pc-dose" min="0" step="any" placeholder="Ej. 0.5" oninput="pcPreview()">
+      </div>
+    </div>
+    <div class="perf-custom-preview" id="pcPreview">Rellena los datos para ver la concentración.</div>
+    <div class="calc-actions">
+      <button class="btn-outline" onclick="onPerfFarm(true)">✕ Cancelar</button>
+      <button class="btn-primary" onclick="savePerfCustom()">💾 Guardar fármaco</button>
+    </div>
+  </div>`;
+}
+
+/* Vista previa de la concentración mientras se rellena */
+function pcPreview(){
+  const box = document.getElementById("pcPreview");
+  if(!box) return;
+  const amount = parseFloat((document.getElementById("pc-amount")||{}).value) || 0;
+  const vol = parseFloat((document.getElementById("pc-vol")||{}).value) || 0;
+  const aUnit = (document.getElementById("pc-amount-unit")||{}).value || "mg";
+  if(amount>0 && vol>0){
+    const conc = amount/vol;
+    box.innerHTML = `Concentración: <b>${conc.toFixed(conc<1?4:2)} ${aUnit}/mL</b>`;
+  } else {
+    box.textContent = "Rellena la cantidad y el volumen para ver la concentración.";
+  }
+}
+
+/* Guardar un fármaco personalizado */
+function savePerfCustom(){
+  const name = (document.getElementById("pc-name").value||"").trim();
+  const amount = parseFloat(document.getElementById("pc-amount").value) || 0;
+  const aUnit = document.getElementById("pc-amount-unit").value;
+  const vol = parseFloat(document.getElementById("pc-vol").value) || 0;
+  const unidad = document.getElementById("pc-unit").value;
+  const dose = parseFloat(document.getElementById("pc-dose").value) || 0;
+  if(!name){ alert("Escribe el nombre del fármaco."); return; }
+  if(amount<=0 || vol<=0){ alert("Indica la cantidad de fármaco y el volumen del suero."); return; }
+  const conc = amount/vol; // en aUnit por mL (para mostrar)
+  // Unidad base de la dosis y del fármaco
+  const doseBase = unidad.startsWith("mcg") ? "mcg" : unidad.startsWith("mg") ? "mg" : "UI";
+  const massUnits = (u)=> u==="mcg" || u==="mg";
+  // UI y mg/mcg son incompatibles entre sí
+  if((doseBase==="UI") !== (aUnit==="UI")){
+    alert(`No se puede combinar dosis en ${doseBase} con un fármaco medido en ${aUnit}. Revisa las unidades.`);
+    return;
+  }
+  // Concentración convertida a la unidad base de la dosis (mcg o mg)
+  let concBase = conc;
+  if(massUnits(doseBase) && massUnits(aUnit) && doseBase !== aUnit){
+    concBase = aUnit==="mg" ? conc*1000 : conc/1000; // mg→mcg = ×1000 ; mcg→mg = ÷1000
+  }
+  const dilObj = { l: `${amount} ${aUnit} / ${vol} mL (${conc.toFixed(conc<1?4:2)} ${aUnit}/mL)` };
+  if(doseBase==="mcg") dilObj.cMcgMl = concBase;
+  else if(doseBase==="mg") dilObj.cMgMl = concBase;
+  else dilObj.cUIMl = concBase;
+  const isMg = doseBase==="mg", isUi = doseBase==="UI";
+  const key = "custom_" + Date.now();
+  PERF_CUSTOM[key] = {
+    n: name,
+    dosis: { unidad, min: 0, max: dose*10 || 9999, def: dose || 0, step: "any" },
+    diluciones: [ dilObj ],
+    ppw: unidad.includes("/kg"),
+    tiempo: unidad.endsWith("/h") ? "h" : undefined,
+    mg: isMg, ui: isUi,
+    custom: true
+  };
+  savePerfCustomStore();
+  // Re-renderizar el widget y seleccionar el nuevo fármaco
+  const body = document.getElementById("calcBody");
+  if(body){ body.innerHTML = renderPerf(); }
+  const sel = document.getElementById("perf-farm");
+  if(sel){ sel.value = key; onPerfFarm(); }
+}
+
+/* Borrar el fármaco personalizado seleccionado */
+function deletePerfCustom(key){
+  if(!PERF_CUSTOM[key]) return;
+  if(!confirm(`¿Eliminar "${PERF_CUSTOM[key].n}" de tus fármacos guardados?`)) return;
+  delete PERF_CUSTOM[key];
+  savePerfCustomStore();
+  const body = document.getElementById("calcBody");
+  if(body){ body.innerHTML = renderPerf(); onPerfFarm(); }
+}
+
+function onPerfFarm(fromCancel){
+  const sel = document.getElementById("perf-farm");
+  const k = sel.value;
+  const customForm = document.getElementById("perfCustomForm");
+  const actions = document.getElementById("perfActions");
+  const fields = document.querySelectorAll("#calcBody .calc-fields")[0];
+  // Modo "añadir fármaco personalizado"
+  if(k === "__new__"){
+    if(customForm) customForm.innerHTML = renderPerfCustomForm();
+    if(fields) fields.style.display = "none";
+    if(actions) actions.style.display = "none";
+    const res = document.getElementById("perfResult"); if(res) res.style.display = "none";
+    pcPreview();
+    return;
+  }
+  if(customForm) customForm.innerHTML = "";
+  if(fields) fields.style.display = "";
+  if(actions) actions.style.display = "";
+  const res = document.getElementById("perfResult"); if(res) res.style.display = "";
+  const drugs = allPerfDrugs();
+  const f = drugs[k];
+  if(!f) return;
   const dilSel = document.getElementById("perf-dil");
   dilSel.innerHTML = f.diluciones.map((d,i)=>`<option value="${i}">${escapeHtml(d.l)}</option>`).join("");
   const dosisInput = document.getElementById("perf-dosis");
   dosisInput.min = f.dosis.min; dosisInput.max = f.dosis.max;
   dosisInput.step = f.dosis.step; dosisInput.value = f.dosis.def;
   document.getElementById("perf-dosis-label").textContent = `Dosis objetivo (${f.dosis.unidad})`;
+  // Botón de borrar para fármacos personalizados
+  if(actions){
+    const oldDel = document.getElementById("perfDelBtn");
+    if(oldDel) oldDel.remove();
+    if(f.custom){
+      const del = document.createElement("button");
+      del.id = "perfDelBtn"; del.className = "btn-outline"; del.textContent = "🗑 Borrar";
+      del.onclick = function(){ deletePerfCustom(k); };
+      actions.appendChild(del);
+    }
+  }
   runPerf();
 }
 
 function runPerf(){
   const k = document.getElementById("perf-farm").value;
-  const f = DILUCIONES[k];
+  if(k === "__new__") return;
+  const f = allPerfDrugs()[k];
+  if(!f) return;
   const peso = parseFloat(document.getElementById("perf-peso").value) || 0;
   const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
   const dosis = parseFloat(document.getElementById("perf-dosis").value) || 0;
@@ -19057,7 +19233,9 @@ function runPerf(){
 
 function perfReset(){
   const k = document.getElementById("perf-farm").value;
-  const f = DILUCIONES[k];
+  if(k === "__new__") return;
+  const f = allPerfDrugs()[k];
+  if(!f) return;
   document.getElementById("perf-dosis").value = f.dosis.def;
   document.getElementById("perf-dil").selectedIndex = 0;
   runPerf();
