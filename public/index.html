@@ -29179,7 +29179,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "literatura": location.href="literatura.html"; return;
       case "patologias": if(window.openPatoSistemas){ window.openPatoSistemas(); return; } if(window.iNurse21&&window.iNurse21.organize){ window.iNurse21.organize("pathology","all"); return; } { var pb=document.querySelector('[data-in192-organize="pathology"]'); if(pb){ pb.click(); return; } } clickId("v29MenuBtn"); return;
       case "farmaco":    if(window.iNurseCima&&window.iNurseCima.open){ window.iNurseCima.open(); return; } clickId("vadeBtn"); return;
-      case "calc":       openIC("calc"); return;
+      case "calc":       if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
       case "rx":         clickId("rxFab") || (window.openRx&&window.openRx()); return;
       case "ecg":        clickId("ecgFab") || (window.openEcg&&window.openEcg()); return;
       case "procedimientos": openIC("procedures"); return;
