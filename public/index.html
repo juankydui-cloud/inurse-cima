@@ -21618,12 +21618,19 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
   function toggleFav(id){var a=favs(); var i=a.indexOf(id); if(i>=0){a.splice(i,1);toast('Eliminado de favoritos')}else{a.unshift(id);toast('Añadido a favoritos')} setFavs(a); renderHomeLists(); if(typeof render==='function')render()}
   function openDocId(id){window.__INURSE_HOME=false; if(typeof query!=='undefined') query=''; var s=document.getElementById('search'); if(s)s.value=''; if(typeof activeCat!=='undefined') activeCat='all'; if(typeof render==='function')render(); setTimeout(function(){var el=document.getElementById('card-'+id); if(el){ if(typeof toggle==='function'&&!el.classList.contains('open'))toggle(id); el.scrollIntoView({behavior:'smooth',block:'center'}); addRecent({type:'doc',id:id,title:(docs().find(function(d){return d.id===id})||{}).title||id,em:'📄'});} },90)}
   function openDrugId(id){var btn=document.getElementById('vadeBtn'); if(btn)btn.click(); setTimeout(function(){var inp=document.getElementById('vadeSearch'); if(inp){var d=vadem().find(function(x){return x.id===id}); inp.value=d?d.name:id; inp.dispatchEvent(new Event('input',{bubbles:true})); addRecent({type:'drug',id:id,title:(d&&d.name)||id,em:'💊'});} },180)}
-  function searchAll(raw){var q=norm(raw).trim(); var terms=q.split(/\s+/).filter(Boolean); if(!q)return []; var res=[]; docs().forEach(function(d){var st=score(docText(d),terms); if(st)res.push({type:'doc',id:d.id,title:d.title,summary:d.summary||d.source||'',em:iconForDoc(d),tag:'Protocolo',color:colorForDoc(d),score:st})}); vadem().forEach(function(d){var st=score(drugText(d),terms); if(st)res.push({type:'drug',id:d.id,title:d.name||d.title,summary:d.accion||d.indicacion||d.dosis||'',em:'💊',tag:'Fármaco',color:'#EC4899',score:st})}); SCALES.forEach(function(s){var st=score(norm([s.title,s.tags,s.summary].join(' ')),terms); if(st)res.push({type:'scale',id:s.id,title:s.title,summary:s.summary,em:s.em,tag:'Escala',color:'#0EA5E9',score:st})}); return res.sort(function(a,b){return b.score-a.score}).slice(0,30)}
+  function searchAll(raw){var q=norm(raw).trim(); var terms=q.split(/\s+/).filter(Boolean); if(!q)return []; var res=[]; docs().forEach(function(d){var st=score(docText(d),terms); if(st)res.push({type:'doc',id:d.id,title:d.title,summary:d.summary||d.source||'',em:iconForDoc(d),tag:'Protocolo',color:colorForDoc(d),score:st})}); vadem().forEach(function(d){var st=score(drugText(d),terms); if(st)res.push({type:'drug',id:d.id,title:d.name||d.title,summary:d.accion||d.indicacion||d.dosis||'',em:'💊',tag:'Fármaco',color:'#EC4899',score:st})}); SCALES.forEach(function(s){var st=score(norm([s.title,s.tags,s.summary].join(' ')),terms); if(st)res.push({type:'scale',id:s.id,title:s.title,summary:s.summary,em:s.em,tag:'Escala',color:'#0EA5E9',score:st})});
+    // Algoritmos de actuación (biblioteca interna de Vivi)
+    try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.search){ window.iNurseAlgLib.search(raw,12).forEach(function(a){ res.push({type:'alg',id:a.name,title:a.name,summary:'Algoritmo de actuación · '+(a.cat||'')+(a.src?' · '+a.src:''),em:'🧩',tag:'Algoritmo',color:'#22D3EE',score:a.score*4}); }); } }catch(e){}
+    // Secciones / módulos de la app (biblioteca, guías, evidencia, patologías, farmacología, rayos X, electro, procedimientos, algoritmos, proyectos…)
+    try{ if(Array.isArray(window.INURSE_SECTIONS)){ window.INURSE_SECTIONS.forEach(function(sec){ var st=score(norm([sec.t,sec.kw].join(' ')),terms); if(st)res.push({type:'section',id:sec.id,title:sec.t,summary:'Abrir sección · '+sec.t,em:sec.em||'🔷',tag:'Sección',color:'#8B5CF6',score:st+2}); }); } }catch(e){}
+    // Calculadoras clínicas
+    try{ if(typeof CALCS!=='undefined'){ var CALC_KW={cha2ds2:'cha2ds2 chadsvasc fibrilacion auricular anticoagulacion riesgo embolico fa',hasbled:'hasbled riesgo sangrado hemorragico anticoagulacion',qsofa:'qsofa sepsis cribado',sofa:'sofa fallo organico sepsis',gcs:'glasgow gcs coma conciencia',nihss:'nihss ictus escala',pafi:'pafi pao2 fio2 sdra oxigenacion',parkland:'parkland quemados fluidos',wellsTvp:'wells tvp trombosis venosa',wellsTep:'wells tep embolia pulmonar',dosisPed:'dosis pediatrica niños peso'}; var calcList=Object.keys(CALCS).map(function(k){return {id:k,title:CALCS[k].title,tag:(CALCS[k].tag||'')+' '+(CALC_KW[k]||''),em:CALCS[k].icon||'🧮'};}); calcList.push({id:'perf',title:'Perfusiones (mL/h en bomba)',tag:'perfusion bomba dilucion vasoactivos noradrenalina',em:'💉'}); calcList.forEach(function(c){var st=score(norm([c.title,c.tag].join(' ')),terms); if(st)res.push({type:'calc',id:c.id,title:c.title,summary:'Calculadora clínica',em:c.em,tag:'Calculadora',color:'#F59E0B',score:st}); }); } }catch(e){}
+    return res.sort(function(a,b){return b.score-a.score}).slice(0,40)}
   function iconForDoc(d){var c=catsOf(d).join(' '),t=norm((d.title||'')+' '+(d.tags||'')); if(/cardio|iam|coronario|ecg/.test(c+' '+t))return '❤️'; if(/ictus|neuro|glasgow/.test(c+' '+t))return '🧠'; if(/resp|asma|epoc|ventila/.test(c+' '+t))return '🫁'; if(/trauma|politrauma/.test(c+' '+t))return '🚑'; if(/uci|critico/.test(c+' '+t))return '🏥'; if(/farm|medic/.test(c+' '+t))return '💊'; return '📄'}
   function colorForDoc(d){var c=catsOf(d).join(' '); if(c.indexOf('cardio')>=0)return '#F43F5E'; if(c.indexOf('ictus')>=0||c.indexOf('neuro')>=0)return '#8B5CF6'; if(c.indexOf('resp')>=0)return '#22D3EE'; if(c.indexOf('trauma')>=0||c.indexOf('emer')>=0)return '#FB923C'; if(c.indexOf('uci')>=0)return '#6366F1'; if(c.indexOf('farm')>=0)return '#EC4899'; return '#14B8A6'}
-  function showResults(q){var host=document.getElementById('in50GlobalResults'); if(!host)return; var r=searchAll(q); if(!q.trim()){host.style.display='none'; return} host.style.display='block'; host.innerHTML='<div class="in50-results-head"><b>Resultados globales para “'+esc(q)+'”</b><button id="in50CloseResults">Cerrar</button></div>'+ (r.length?r.map(renderResult).join(''):'<div class="in50-empty">No he encontrado resultados en protocolos, fármacos ni escalas.</div>'); var close=document.getElementById('in50CloseResults'); if(close)close.onclick=function(){host.style.display='none'}; host.querySelectorAll('[data-in50-open]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-in50-open')))}})}
+  function showResults(q){var host=document.getElementById('in50GlobalResults'); if(!host)return; var r=searchAll(q); if(!q.trim()){host.style.display='none'; return} host.style.display='block'; host.innerHTML='<div class="in50-results-head"><b>Resultados globales para “'+esc(q)+'”</b><button id="in50CloseResults">Cerrar</button></div>'+ (r.length?r.map(renderResult).join(''):'<div class="in50-empty">No he encontrado resultados en protocolos, fármacos, escalas, algoritmos ni calculadoras.</div>'); var close=document.getElementById('in50CloseResults'); if(close)close.onclick=function(){host.style.display='none'}; host.querySelectorAll('[data-in50-open]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-in50-open')))}})}
   function renderResult(r){return '<div class="in50-result" style="--rc:'+r.color+'" data-in50-open=\''+JSON.stringify({type:r.type,id:r.id,title:r.title}).replace(/'/g,'&#39;')+'\'><span class="em">'+r.em+'</span><div style="flex:1"><b>'+esc(r.title)+'</b><p>'+esc(String(r.summary||'').replace(/<[^>]*>/g,'').slice(0,160))+'</p></div><span class="tag">'+esc(r.tag)+'</span></div>'}
-  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
+  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else if(r.type==='alg'){ addRecent({type:'alg',id:r.id,title:r.title,em:'🧩'}); try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.open){ window.iNurseAlgLib.open(r.id); return; } }catch(e){} toast('Algoritmo: '+r.title); } else if(r.type==='calc'){ addRecent({type:'calc',id:r.id,title:r.title,em:'🧮'}); try{ if(typeof window.openCalcs==='function'){ window.openCalcs(r.id); return; } }catch(e){} toast('Calculadora: '+r.title); } else if(r.type==='section'){ try{ if(typeof window.iNurseOpenSection==='function'){ window.iNurseOpenSection(r.id); return; } }catch(e){} toast('Sección: '+r.title); } else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
   function buildHome(){var main=document.querySelector('main'); if(!main||document.getElementById('in50Home'))return; var home=document.createElement('section'); home.id='in50Home'; home.innerHTML='<div class="in50-hero"><div class="in50-top"><div class="in50-logo">'+LOGO+'</div><div class="in50-title"><h2>iNurse</h2><p>Apoyo clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos en menos de 5 segundos.</p><div class="in50-badges"><span class="in50-badge">🌙 modo oscuro</span><span class="in50-badge">🔎 búsqueda global</span><span class="in50-badge">⭐ favoritos</span><span class="in50-badge">📡 guías actualizables</span></div></div></div><div class="in50-critical">'+CRITICAL.map(function(c){return '<button style="--qc:'+c.color+'" data-crit="'+c.key+'"><span class="em">'+c.em+'</span><b>'+c.label+'</b><small>'+c.sub+'</small></button>'}).join('')+'</div></div><div class="in50-section-title">📚 Guías clínicas</div><div class="in50-grid"><button class="in50-card" data-menu="1"><span class="em">☰</span><span><b>Abrir menú de guías</b><small>Organizadas por especialidad, con Farmacología UCI dentro de UCI.</small></span></button><button class="in50-card" data-searchfocus="1"><span class="em">🔎</span><span><b>Buscador global</b><small>Protocolos, fármacos, escalas y algoritmos.</small></span></button><button class="in50-card" data-evidence="1"><span class="em">📚</span><span><b>Biblioteca de Evidencia</b><small>Literatura clínica de Europe PMC. Estudios y guías por especialidad.</small></span></button><button class="in50-card" data-settings="1"><span class="em">⚙️</span><span><b>Configuración</b><small>Tema, actualización de guías y contenido offline.</small></span></button></div><div class="in50-section-title">⭐ </div><div id="in50Favs"></div><div class="in50-section-title">🕘 Últimos consultados</div><div id="in50Recent"></div>'; var res=document.createElement('section'); res.id='in50GlobalResults'; main.insertBefore(res,main.firstChild); main.insertBefore(home,res); home.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; if(b.dataset.library){if(window.iNurse21&&typeof window.iNurse21.open==='function')window.iNurse21.open('all');else document.getElementById('library21Btn')?.click();} if(b.dataset.menu)document.getElementById('v29MenuBtn')?.click(); if(b.dataset.searchfocus)document.getElementById('search')?.focus(); if(b.dataset.evidence)location.href='evidencia.html'; if(b.dataset.settings)showSettings(); if(b.dataset.crit)openCritical(b.dataset.crit)}); }
   function renderHomeLists(){var fhost=document.getElementById('in50Favs'),rhost=document.getElementById('in50Recent'); if(fhost){var ids=favs(); var ds=ids.map(function(id){return docs().find(function(d){return d.id===id})}).filter(Boolean).slice(0,6); fhost.innerHTML=ds.length?'<div class="in50-grid">'+ds.map(function(d){return '<button class="in50-card" data-doc="'+esc(d.id)+'"><span class="em">'+iconForDoc(d)+'</span><span><b>'+esc(d.title)+'</b><small>'+esc(d.summary||d.source||'')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">Todavía no tienes favoritos. Pulsa la estrella de cualquier protocolo para guardarlo aquí.</div>'; fhost.querySelectorAll('[data-doc]').forEach(function(b){b.onclick=function(){openDocId(b.dataset.doc)}})} if(rhost){var arr=readLS('inurse_recent_v5',[]).slice(0,6); rhost.innerHTML=arr.length?'<div class="in50-grid">'+arr.map(function(x){return '<button class="in50-card" data-recent=\''+JSON.stringify(x).replace(/'/g,'&#39;')+'\'><span class="em">'+(x.em||'📄')+'</span><span><b>'+esc(x.title)+'</b><small>'+esc(x.type==='drug'?'Fármaco':x.type==='scale'?'Escala':'Protocolo')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">El historial se generará automáticamente al abrir protocolos, fármacos o escalas.</div>'; rhost.querySelectorAll('[data-recent]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-recent')))}})} }
   function openCritical(k){var c=CRITICAL.find(function(x){return x.key===k}); if(!c)return; var res=searchAll(c.q); var first=res.find(function(r){return r.type==='doc'}); if(first)openDocId(first.id); else showResults(c.q)}
@@ -26184,24 +26191,35 @@ var ALG_KW={
 'Intervención breve 5A':'tabaco 5a intervencion breve','Tratamiento para dejar de fumar':'dejar fumar cesacion tabaquica','Prevención de recaídas del tabaquismo':'recaida tabaco'
 };
 var ALG_STOP={algoritmo:1,algoritmos:1,protocolo:1,protocolos:1,pauta:1,pautas:1,manejo:1,actuacion:1,de:1,del:1,la:1,el:1,los:1,las:1,un:1,una:1,dame:1,muestra:1,muestrame:1,abre:1,abrir:1,quiero:1,ver:1,busca:1,buscar:1,ensename:1,vivi:1,por:1,favor:1,sobre:1,para:1,como:1,en:1,y:1,e:1,que:1,con:1,ante:1,si:1,hago:1,actuo:1,actuar:1,trato:1,procedo:1,inicial:1};
+function algScore(name,toks,raw){
+  var hay=' '+_algNorm(name)+' '+_algNorm(ALG_CAT[name]||'')+' '+_algNorm(ALG_KW[name]||'')+' ';
+  var score=0;
+  toks.forEach(function(t){ if(hay.indexOf(' '+t+' ')!==-1) score+=3; else if(t.length>=4&&hay.indexOf(t)!==-1) score+=1; });
+  if(raw&&raw.indexOf(_algNorm(name))!==-1) score+=4;
+  return score;
+}
 function algFind(query){
   var raw=_algNorm(query); if(!raw) return null;
   var toks=raw.split(' ').filter(function(t){return t&&!ALG_STOP[t];});
   if(!toks.length) return null;
   var best=null,bestScore=0;
-  Object.keys(ALG).forEach(function(name){
-    var hay=' '+_algNorm(name)+' '+_algNorm(ALG_CAT[name]||'')+' '+_algNorm(ALG_KW[name]||'')+' ';
-    var score=0;
-    toks.forEach(function(t){ if(hay.indexOf(' '+t+' ')!==-1) score+=3; else if(t.length>=4&&hay.indexOf(t)!==-1) score+=1; });
-    if(raw.indexOf(_algNorm(name))!==-1) score+=4;
-    if(score>bestScore){ bestScore=score; best=name; }
-  });
+  Object.keys(ALG).forEach(function(name){ var s=algScore(name,toks,raw); if(s>bestScore){ bestScore=s; best=name; } });
   if(!best||bestScore<3) return null;
   var a=ALG[best];
   return { name:best, src:a.src, steps:a.steps.slice(), cat:ALG_CAT[best]||'' };
 }
+function algSearch(query,limit){
+  var raw=_algNorm(query); if(!raw) return [];
+  var toks=raw.split(' ').filter(function(t){return t&&!ALG_STOP[t];});
+  if(!toks.length) return [];
+  var out=[];
+  Object.keys(ALG).forEach(function(name){ var s=algScore(name,toks,raw); if(s>=3) out.push({name:name,src:ALG[name].src,cat:ALG_CAT[name]||'',score:s}); });
+  out.sort(function(a,b){return b.score-a.score;});
+  return limit?out.slice(0,limit):out;
+}
 window.iNurseAlgLib={
   find:algFind,
+  search:algSearch,
   get:function(name){ var a=ALG[name]; return a?{name:name,src:a.src,steps:a.steps.slice(),cat:ALG_CAT[name]||''}:null; },
   open:function(name){ if(!ALG[name]) return false; open(); renderTab('alg'); setTimeout(function(){ showAlg(name); },30); return true; },
   list:function(){ return Object.keys(ALG).map(function(n){ return {name:n,src:ALG[n].src,cat:ALG_CAT[n]||''}; }); }
@@ -26768,6 +26786,19 @@ function handleEnhancedVoice(text){
   }
   if(/^(desactiva|apaga|deten|para) (el )?(modo )?(oye vivi|manos libres|escucha)$/.test(c)){
     window.HJ23HandsFree?.stop?.();syncVoiceButton();vtoast('🎙️ Oye Vivi desactivado');return true;
+  }
+
+  // Secciones adicionales (evidencia, procedimientos, algoritmos, proyectos…) vía el lanzador global
+  if(/^(abre |abrir |muestra |ve a |ir a )?(la )?(evidencia|literatura|estudios|pubmed|papers|articulos)$/.test(c)&&window.iNurseOpenSection){window.iNurseOpenSection('evidencia');acknowledge('🔬 Abriendo Evidencia');return true}
+  if(/^(abre |abrir |muestra )?(los )?procedimientos$/.test(c)&&window.iNurseOpenSection){window.iNurseOpenSection('procedimientos');acknowledge('📝 Abriendo Procedimientos');return true}
+  if(/^(abre |abrir |muestra )?(los )?algoritmos$/.test(c)&&window.iNurseOpenSection){window.iNurseOpenSection('algoritmos');acknowledge('🔀 Abriendo Algoritmos');return true}
+  if(/^(abre |abrir |muestra )?(los )?(proyectos|proyectos convive|convive)$/.test(c)&&window.iNurseOpenSection){window.iNurseOpenSection('proyectos');acknowledge('👥 Abriendo Proyectos ConVive');return true}
+  if(/^(abre |abrir |muestra )?(la )?(farmacologia|pharmacology)$/.test(c)&&window.iNurseOpenSection){window.iNurseOpenSection('farmaco');acknowledge('💊 Abriendo Farmacología');return true}
+  // Fallback genérico: "abre/muestra/ve a <sección>" contra el registro de secciones
+  if(/^(abre|abrir|muestra|muestrame|ve a|ir a|ensename|entra en)\b/.test(c)&&Array.isArray(window.INURSE_SECTIONS)){
+    var _cmd=c.replace(/^(abre|abrir|muestra|muestrame|ve a|ir a|ensename|entra en)\s+(el |la |los |las )?/,'').trim();
+    var _hit=window.INURSE_SECTIONS.filter(function(sec){ var kw=norm(sec.t+' '+sec.kw).split(' '); return _cmd&&kw.some(function(w){return w.length>3&&_cmd.indexOf(w)!==-1}); })[0];
+    if(_hit&&window.iNurseOpenSection){window.iNurseOpenSection(_hit.id);acknowledge((_hit.em||'')+' Abriendo '+_hit.t);return true}
   }
   return false;
 }
@@ -29592,6 +29623,21 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
     }
   }
+  /* Exponer el lanzador de secciones y el registro para el buscador global y la voz */
+  window.iNurseOpenSection=fire;
+  window.INURSE_SECTIONS=[
+    {id:'biblioteca',   t:'Biblioteca virtual',    em:'📚', kw:'biblioteca virtual libros manuales recursos referencia documentacion'},
+    {id:'guias',        t:'Guías clínicas',        em:'📋', kw:'guias clinicas protocolos menu especialidad'},
+    {id:'evidencia',    t:'Evidencia',             em:'🔬', kw:'evidencia literatura pubmed pmc preprints estudios papers investigacion articulos ciencia'},
+    {id:'patologias',   t:'Patologías',            em:'🫁', kw:'patologias enfermedades sistemas alertas tratamiento clinica'},
+    {id:'farmaco',      t:'Farmacología',          em:'💊', kw:'farmacologia farmacos vademecum medicamentos cima posologia dosis interacciones pharmacology'},
+    {id:'calc',         t:'Calculadoras y cálculos',em:'🧮', kw:'calculadoras calculos escalas perfusiones dosis formulas'},
+    {id:'rx',           t:'Rayos X y POCUS',       em:'🩻', kw:'rayos x radiografia imagen pocus ecografia radiologia'},
+    {id:'ecg',          t:'Electro / ECG',         em:'📈', kw:'electro ecg electrocardiograma ritmo arritmia electros'},
+    {id:'procedimientos',t:'Procedimientos',       em:'📝', kw:'procedimientos tecnicas enfermeria paso a paso material checklist'},
+    {id:'algoritmos',   t:'Algoritmos',            em:'🔀', kw:'algoritmos protocolos criticos actuacion pauta emergencia'},
+    {id:'proyectos',    t:'Proyectos ConVive',     em:'👥', kw:'proyectos convive documentos colaborativo trabajo equipo'}
+  ];
   var SPECS = [
     {key:'cardio',    em:'❤️', t:'Cardiología',      sc:'#F43F5E'},
     {key:'intensiva', em:'🏥', t:'UCI',               sc:'#6366F1'},
