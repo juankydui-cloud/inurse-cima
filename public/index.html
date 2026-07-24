@@ -17760,12 +17760,12 @@ render();
  function _ccNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
  function maybeAlgBubble(text){
   try{
-   if(!text||!window.iNurseAlgLib||typeof window.iNurseAlgLib.find!=='function')return false;
+   if(!text||!window.iNurseAlgLib||typeof window.iNurseAlgLib.find!=='function')return null;
    var n=_ccNorm(text);
-   var intent=/algoritmo|protocolo|pauta|actuacion|paso a paso|como (actuo|actuar|manejo|trato|procedo)|que hago (con|ante|si)|manejo (de|del|inicial)/.test(n);
-   if(!intent)return false;
+   var intent=/algoritmo|protocolo|pauta|actuacion|paso a paso|como (actuo|actuar|manejo|trato|procedo)|que hago (con|ante|si)|manejo (de|del|inicial)|lee(me)? el|leer/.test(n);
+   if(!intent)return null;
    var m=window.iNurseAlgLib.find(text);
-   if(!m)return false;
+   if(!m)return null;
    var d=document.createElement('div');d.className='cc-msg b cc-alg-msg';
    var steps=m.steps.map(function(s){return '<li>'+esc(s)+'</li>';}).join('');
    d.innerHTML='<div class="cc-alg-card">'
@@ -17779,8 +17779,11 @@ render();
    d.querySelector('[data-alg-open]').onclick=function(){ try{ window.iNurseAlgLib.open(m.name); }catch(e){} };
    d.querySelector('[data-alg-ev]').onclick=function(){ ta.value='Busca evidencia reciente en PubMed, PMC y NICE sobre '+m.name+' y resume las recomendaciones actuales con sus fuentes.'; resize();upd(); send(); };
    chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
-   return true;
-  }catch(e){ return false; }
+   return m;
+  }catch(e){ return null; }
+ }
+ function algSpeechText(m){
+  return 'Algoritmo de '+m.name+', según '+m.src+'. '+m.steps.map(function(s,i){return 'Paso '+(i+1)+'. '+s;}).join(' ')+' Recuerda adaptarlo al protocolo de tu centro.';
  }
  function paint(){ if(!messages.length){welcome();return} chat.innerHTML='';messages.forEach(function(m,i){rmsg(m,i===messages.length-1&&m.role==='bot');});chat.scrollTop=chat.scrollHeight; }
 
@@ -18238,7 +18241,12 @@ render();
   }
   if(messages.length===1)chat.innerHTML='';
   rmsg(um);chat.scrollTop=chat.scrollHeight;
-  maybeAlgBubble(text);
+  var algMatch=maybeAlgBubble(text);
+  var spokenAlg=false;
+  if(algMatch&&(voiceSession||autoVoice)&&connectionMode()!=='local'){
+   spokenAlg=true;voiceBusy=true;
+   speak(algSpeechText(algMatch),function(){voiceBusy=false;if(voiceSession)scheduleVoiceRestart(500)});
+  }
   var typ=document.createElement('div');typ.className='cc-typing';typ.innerHTML='<span></span><span></span><span></span>';chat.appendChild(typ);chat.scrollTop=chat.scrollHeight;
   var route=routeQuestion(text||'',att);var snapshot=caseSnapshot(text||'',route);window.__v21LastQuestion=text||'';
   var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='';
@@ -18266,7 +18274,9 @@ render();
    if(connectionMode()==='local')node.insertAdjacentHTML('beforeend','<div class="v20-mode-note">Vivi está en modo local: recupera y abre información, pero no genera una síntesis clínica nueva.</div>');
    attachActionEvents(node,route);attachSourceEvents(node);chat.scrollTop=chat.scrollHeight;jset(CHATK,messages);updateConn();
    v31Save(text,reply,allSources);
-   if(voiceSession&&handsFree&&connectionMode()!=='local'){
+   if(spokenAlg){
+    /* La lectura del algoritmo ya gestiona la voz y el reinicio de la escucha */
+   }else if(voiceSession&&handsFree&&connectionMode()!=='local'){
     speak(reply,function(){voiceBusy=false;scheduleVoiceRestart(500)});
    }else{
     voiceBusy=false;
