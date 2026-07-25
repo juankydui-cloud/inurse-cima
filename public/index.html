@@ -29419,7 +29419,17 @@ body:not(.in60-content-mode) #ecgFab,
 body:not(.in60-content-mode) #viviFab { display:none !important; }
 
 .nx-wrap{ max-width:1160px; margin:0 auto; padding:6px 14px 26px; display:flex; flex-direction:column; gap:16px; color:#e7ecff; }
-.nx-top{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.nx-top{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; position:relative; }
+.nx-hmenu{ position:absolute; z-index:70; min-width:260px; padding:8px; border-radius:18px;
+  background:linear-gradient(180deg,rgba(24,32,66,.98),rgba(14,18,42,.98)); border:1px solid rgba(120,150,220,.3);
+  box-shadow:0 24px 60px rgba(0,0,0,.5); display:grid; grid-template-columns:1fr 1fr; gap:4px;
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); animation:nxHmenuIn .16s ease; }
+@keyframes nxHmenuIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+.nx-hmenu-item{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; border:0; background:transparent;
+  color:#e7ecff; cursor:pointer; text-align:left; font-size:13px; font-weight:600; transition:.14s; }
+.nx-hmenu-item:hover{ background:rgba(120,170,255,.16); }
+.nx-hmenu-item .ic{ font-size:18px; }
+@media(max-width:620px){ .nx-hmenu{ grid-template-columns:1fr; left:8px!important; right:8px; min-width:0; } }
 .nx-brand{ display:flex; align-items:center; gap:12px; }
 .nx-brand .nx-logo{ width:46px; height:46px; flex:0 0 46px; display:grid; place-items:center; border-radius:14px;
   background:linear-gradient(135deg,#22d3ee,#8b5cf6); box-shadow:0 8px 24px rgba(56,189,248,.35); font-size:24px; }
@@ -29644,6 +29654,20 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
     }
   }
+  /* Menú desplegable del botón Inicio con todos los apartados */
+  function buildHomeMenu(){
+    var secs=window.INURSE_SECTIONS||[];
+    var items=secs.map(function(s){ return '<button class="nx-hmenu-item" data-hmenu="'+s.id+'"><span class="ic">'+(s.em||'🔷')+'</span>'+esc(s.t)+'</button>'; }).join('');
+    return '<div class="nx-hmenu" id="nxHomeMenu">'+items+'</div>';
+  }
+  function closeHomeMenu(){ var m=document.getElementById('nxHomeMenu'); if(m&&m.parentNode) m.parentNode.removeChild(m); }
+  function toggleHomeMenu(btn){
+    if(document.getElementById('nxHomeMenu')){ closeHomeMenu(); return; }
+    var top=btn.closest('.nx-top')||document.querySelector('.nx-top'); if(!top) return;
+    top.insertAdjacentHTML('beforeend', buildHomeMenu());
+    var menu=document.getElementById('nxHomeMenu');
+    if(menu){ menu.style.left=btn.offsetLeft+'px'; menu.style.top=(btn.offsetTop+btn.offsetHeight+8)+'px'; }
+  }
   /* Exponer el lanzador de secciones y el registro para el buscador global y la voz */
   window.iNurseOpenSection=fire;
   window.INURSE_SECTIONS=[
@@ -29740,9 +29764,17 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   }
   function wire(home){
     home.addEventListener("click",function(e){
-      var f=e.target.closest("[data-fire]"); if(f){ fire(f.dataset.fire);
+      // Ítem del menú de Inicio → abre esa sección
+      var hm=e.target.closest("[data-hmenu]"); if(hm){ var hid=hm.dataset.hmenu; closeHomeMenu(); if(window.iNurseOpenSection) window.iNurseOpenSection(hid); return; }
+      var f=e.target.closest("[data-fire]"); if(f){
+        // El botón "Inicio" despliega el menú de apartados en lugar de solo hacer scroll
+        if(f.dataset.fire==='inicio'){ toggleHomeMenu(f); return; }
+        closeHomeMenu();
+        fire(f.dataset.fire);
         if(f.parentElement&&f.parentElement.classList.contains("nx-nav")){ home.querySelectorAll(".nx-nav button").forEach(function(b){b.classList.toggle("on",b===f);}); }
         return; }
+      // Click fuera del menú lo cierra
+      if(!e.target.closest("#nxHomeMenu")) closeHomeMenu();
       var v=e.target.closest("[data-vivi]"); if(v){ clickId("ccFab"); return; }
       var r=e.target.closest(".nx-recent-item"); if(r){ forwardSearch(r.getAttribute("data-q")); return; }
       var sb=e.target.closest(".nx-spec-btn"); if(sb){
@@ -30757,36 +30789,9 @@ closeBtn.onclick = close;
 window.openSbar = open;
 window.closeSbar = close;
 
-// Add button to home (works with both old in50 and new nx layouts)
+// "Parte de turno" retirado de la home: eliminar cualquier tarjeta existente.
 function addSbarCard() {
-  // Try new nx layout first
-  var nxQuick = document.querySelector('.nx-quick');
-  if (nxQuick) {
-    var existing = document.getElementById('in32NxCard');
-    if (!existing) {
-      var card = document.createElement('button');
-      card.id = 'in32NxCard';
-      card.className = 'nx-card';
-      card.innerHTML = '<span class="ic">📋</span><b>Parte de turno</b><small>SBAR estructurado con Vivi.</small>';
-      card.onclick = open;
-      nxQuick.appendChild(card);
-    }
-    return true;
-  }
-  // Fallback to old in50 layout
-  var grid = document.querySelector('#in50Home .in50-grid');
-  if (grid) {
-    var existing = document.getElementById('in32HomeCard');
-    if (!existing) {
-      var card = document.createElement('button');
-      card.id = 'in32HomeCard';
-      card.className = 'in50-card';
-      card.innerHTML = '<span class="em">📋</span><span><b>Parte de turno</b><small>Genera SBAR estructurado con Vivi.</small></span>';
-      card.onclick = open;
-      grid.appendChild(card);
-    }
-    return true;
-  }
+  ['in32NxCard','in32HomeCard'].forEach(function(id){ var el=document.getElementById(id); if(el&&el.parentNode) el.parentNode.removeChild(el); });
   return false;
 }
 // Añadir el card repetidamente para compensar los reloads
