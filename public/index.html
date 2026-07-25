@@ -29437,6 +29437,27 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-vivi-mini b{ display:block; color:#fff; font-size:15px; }
 .nx-vivi-mini small{ color:#9fb0d6; font-size:11.5px; }
 
+/* Hero: Vivi grande + buscador prominente */
+.nx-hero{ display:flex; gap:14px; flex-wrap:wrap; align-items:stretch; margin-bottom:4px; }
+.nx-vivi-hero{ flex:1 1 340px; display:flex; align-items:center; gap:18px; padding:20px 22px; border-radius:24px; cursor:pointer; text-align:left;
+  border:1px solid rgba(139,92,246,.4); color:#fff; transition:.2s;
+  background:radial-gradient(220px 130px at 18% 0%,rgba(139,92,246,.38),transparent),linear-gradient(180deg,rgba(32,26,70,.72),rgba(16,14,40,.72));
+  box-shadow:0 20px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08); }
+.nx-vivi-hero:hover{ transform:translateY(-2px); border-color:rgba(170,150,255,.7); box-shadow:0 26px 74px rgba(90,60,220,.42),inset 0 1px 0 rgba(255,255,255,.12); }
+.nx-vivi-hero .av{ display:inline-block; width:82px; height:82px; border-radius:50%; object-fit:cover; flex-shrink:0;
+  border:2px solid rgba(170,150,255,.65); box-shadow:0 0 26px rgba(139,92,246,.65); background-color:#141a3a; }
+.nx-vivi-hero-txt{ flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+.nx-vivi-hero-txt b{ font-size:24px; font-weight:800; line-height:1.1; }
+.nx-vivi-hero-txt small{ color:#c3b4ff; font-size:13px; font-weight:600; }
+.nx-vivi-hero-hint{ color:#9fb0d6; font-size:12.5px; margin-top:5px; line-height:1.35; }
+.nx-vivi-hero-cta{ align-self:center; padding:10px 16px; border-radius:15px; white-space:nowrap; font-weight:800; font-size:13.5px; color:#fff;
+  background:linear-gradient(135deg,#0EA5E9,#8B5CF6); box-shadow:0 8px 22px rgba(56,120,240,.45); }
+.nx-search-hero{ flex:2 1 400px; padding:18px 20px; border-radius:24px; border-color:rgba(120,150,220,.28);
+  background:linear-gradient(180deg,rgba(20,26,58,.7),rgba(12,16,38,.7)); box-shadow:0 20px 60px rgba(0,0,0,.3); }
+.nx-search-hero .ico{ font-size:20px; }
+.nx-search-hero input{ font-size:16px; }
+@media(max-width:620px){ .nx-vivi-hero{ flex-basis:100%; } .nx-vivi-hero .av{ width:64px; height:64px; } .nx-vivi-hero-txt b{ font-size:20px; } .nx-vivi-hero-cta{ display:none; } .nx-search-hero{ flex-basis:100%; } }
+
 .nx-panel{ border:1px solid rgba(120,150,220,.16); border-radius:24px; padding:18px;
   background:linear-gradient(180deg,rgba(24,32,66,.55),rgba(14,18,42,.55)); box-shadow:0 20px 60px rgba(0,0,0,.35); }
 .nx-grid{ display:grid; gap:12px; }
@@ -29661,7 +29682,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
     { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
   ];
-  var NAV = [ {k:"inicio",ic:"🏠",t:"Inicio"}, {k:"calc",ic:"🧮",t:"Cálculos"}, {k:"rx",ic:"🩻",t:"Rx"}, {k:"ecg",ic:"📈",t:"Electros"} ];
+  var NAV = [ {k:"inicio",ic:"🏠",t:"Inicio"} ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function card(x){ return '<button class="nx-card" data-fire="'+x.k+'"><span class="ic">'+x.ic+'</span><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></button>'; }
   function recentHTML(){
@@ -29693,14 +29714,14 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +   '<div class="nx-top">'
       +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>iNurse</h1><small>Apoyo clínico rápido</small></div></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
-      +     '<div class="nx-vivi-mini" data-vivi="1" title="Abrir a Vivi">'+viviAvatar()+'<div><b>Vivi</b><small>Tu asistente clínico</small></div></div>'
       +   '</div>'
-      +   '<div class="nx-section">Mi especialidad</div>'
-      +   '<div class="nx-panel" id="nxSpecPanel">'+specPanel()+'</div>'
+      +   '<div class="nx-hero">'
+      +     '<button class="nx-vivi-hero" data-vivi="1" title="Hablar con Vivi">'+viviAvatar()+'<div class="nx-vivi-hero-txt"><b>Vivi</b><small>Tu asistente clínico</small><span class="nx-vivi-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span></div><span class="nx-vivi-hero-cta">Hablar ▸</span></button>'
+      +     '<div class="nx-search nx-search-hero"><span class="ico">🔎</span><input id="nxSearch" placeholder="Buscar protocolos, fármacos, algoritmos, calculadoras…"></div>'
+      +   '</div>'
       +   '<div class="nx-panel"><div class="nx-grid nx-main">'+MAIN.map(card).join("")+'</div></div>'
       +   '<div class="nx-section">Accesos rápidos</div>'
       +   '<div class="nx-panel"><div class="nx-grid nx-quick">'+QUICK.map(card).join("")+'</div></div>'
-      +   '<div class="nx-panel"><h3>Consulta rápida</h3><div class="nx-search"><span class="ico">🔎</span><input id="nxSearch" placeholder="Buscar protocolos, fármacos, patologías, escalas..."></div></div>'
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
   }
