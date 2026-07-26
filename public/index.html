@@ -1889,6 +1889,14 @@ body.in195-open{overflow:hidden!important}
   color:#e6edf9;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
 .cc-alg-btn:hover{filter:brightness(1.15)}
 .cc-alg-btn.alt{background:rgba(120,150,220,.1);border-color:rgba(120,150,220,.28);color:#a8b8d8}
+/* Respuesta compacta (menos separación entre párrafos y secciones) */
+.cc-msg.b p{margin:0 0 7px}
+.cc-msg.b p:last-child{margin-bottom:0}
+.cc-msg.b h1,.cc-msg.b h2,.cc-msg.b h3,.cc-msg.b h4{margin:12px 0 5px;line-height:1.25}
+.cc-msg.b ul,.cc-msg.b ol{margin:4px 0 8px;padding-left:20px}
+.cc-msg.b li{margin:1px 0;line-height:1.45}
+.cc-msg.b hr{display:none}
+.cc-msg.b br{line-height:1.2}
 /* Citas inline estilo OpenEvidence */
 .cc-cite-wrap{font-size:.72em;line-height:0;margin-left:1px}
 .cc-cite{display:inline-block;min-width:15px;height:15px;padding:0 3px;margin:0 1px;border-radius:5px;text-align:center;
@@ -18276,9 +18284,11 @@ render();
    "como [1, 3] o [2-4]. Coloca la cita justo después de la afirmación que la respalda. "+
    "NO escribas al final una lista de referencias ni una bibliografía: la aplicación añade automáticamente la lista "+
    "numerada de referencias debajo de tu respuesta, así que termina el texto sin listarlas. "+
-   "Si una afirmación procede de las fuentes internas de iNurse (guías/vademécum/biblioteca) y no de la lista de "+
-   "referencias, indícalo en el texto como '(ficha validada de iNurse)' sin número. Si la pregunta involucra fármacos, "+
-   "indica explícitamente si los datos proceden de la ficha técnica de CIMA-AEMPS. "+
+   "IMPORTANTE sobre las fuentes internas: NO ensucies el texto repitiendo '(ficha validada de iNurse)', "+
+   "'(guía clínica de iNurse)' ni '(biblioteca virtual de iNurse)' después de cada frase. No etiquetes las afirmaciones "+
+   "internas; simplemente redáctalas con naturalidad. Reserva las citas para la evidencia externa con [n]. "+
+   "Solo si la pregunta involucra un fármaco concreto, puedes indicar UNA vez que los datos proceden de la ficha técnica "+
+   "de CIMA-AEMPS. "+
    "ESTRUCTURA (estilo OpenEvidence — respuesta directa, sintetizada y citada): "+
    "1) EMPIEZA SIEMPRE con una RESPUESTA DIRECTA a la pregunta en la primera línea, en negrita. Si la pregunta admite "+
    "sí/no, empieza literalmente por '**Sí,**', '**No,**' o '**Depende:**' seguido de la idea principal en una o dos frases. "+
@@ -18290,6 +18300,9 @@ render();
    "afirmación relevante. Usa subtítulos temáticos (p. ej. Diagnóstico, Tratamiento, Monitorización y enfermería) y "+
    "viñetas cuando aporten claridad; el objetivo es una respuesta tan útil y detallada como una consulta profesional, "+
    "pero siempre abierta con la respuesta directa y cerrada con el resumen. "+
+   "FORMATO COMPACTO: NO uses líneas separadoras ni reglas horizontales ('---', '***', '___') en ningún caso. "+
+   "No dejes líneas en blanco de más entre párrafos; escribe el texto seguido y denso, con los subtítulos pegados a su "+
+   "contenido. Prefiere párrafos completos a listas fragmentadas de una línea. "+
    "3) TERMINA SIEMPRE con una línea que empiece por '**En resumen,**' y condense la conclusión práctica en 1-2 frases. "+
    "NO añadas después una lista de referencias (la aplicación la agrega automáticamente). "+
    "Varía la redacción entre respuestas; no repitas la misma plantilla palabra por palabra. "+
