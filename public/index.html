@@ -1889,6 +1889,24 @@ body.in195-open{overflow:hidden!important}
   color:#e6edf9;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
 .cc-alg-btn:hover{filter:brightness(1.15)}
 .cc-alg-btn.alt{background:rgba(120,150,220,.1);border-color:rgba(120,150,220,.28);color:#a8b8d8}
+/* Citas inline estilo OpenEvidence */
+.cc-cite-wrap{font-size:.72em;line-height:0;margin-left:1px}
+.cc-cite{display:inline-block;min-width:15px;height:15px;padding:0 3px;margin:0 1px;border-radius:5px;text-align:center;
+  font-size:11px;font-weight:700;line-height:15px;text-decoration:none;color:#0b1020;background:#38bdf8;vertical-align:super}
+.cc-cite:hover{background:#0ea5e9;color:#fff}
+.cc-cite-nolink{background:rgba(120,150,220,.4);color:#e7ecff}
+/* Panel de referencias */
+.cc-refs{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
+.cc-refs-title{font-size:12px;font-weight:800;letter-spacing:.03em;color:#8ea3c4;text-transform:uppercase;margin-bottom:8px}
+.cc-ref-item{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:12px;margin-bottom:6px;text-decoration:none;
+  border:1px solid rgba(120,150,220,.16);background:rgba(120,150,220,.06);color:#dbe6f7;transition:.15s}
+a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.1)}
+.cc-ref-n{flex-shrink:0;width:22px;height:22px;border-radius:6px;background:#38bdf8;color:#0b1020;font-weight:800;font-size:12px;
+  display:grid;place-items:center;margin-top:1px}
+.cc-ref-body{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cc-ref-body b{font-size:13px;font-weight:600;line-height:1.35;color:#eaf1ff}
+.cc-ref-body small{font-size:11.5px;color:#93a6cf}
+.cc-ref-go{flex-shrink:0;color:#7f93bd;font-size:14px}
 .v21-route-context{
   margin:8px 0 0;padding:7px 9px;border-left:3px solid #6366F1;border-radius:7px;
   background:rgba(99,102,241,.06);color:#9fb0cb;font-size:9.5px;line-height:1.45
@@ -17314,6 +17332,52 @@ render();
   lines.push('','> Modo local educativo: no genera recomendaciones clínicas nuevas ni valida dosis.');
   return lines.join('\n');
  }
+ /* ===== Estilo OpenEvidence: referencias numeradas + citas [n] clicables ===== */
+ function buildNumberedRefs(){
+  var refs=[]; var seen={};
+  function add(arr){ (arr||[]).forEach(function(s){ if(!s) return; var url=s.id||''; var keyk=(url||s.title||'').toLowerCase(); if(!keyk||seen[keyk]) return; seen[keyk]=1; refs.push({ n:refs.length+1, title:s.title||'(sin título)', url:url, meta:s.meta||'', type:s.type||'' }); }); }
+  // Prioridad: literatura y guías con enlace (evidencia externa citable)
+  add(window.__v20LiteratureSources);
+  add(window.__v20PmcSources);
+  add(window.__v20GuidelineSources);
+  add(window.__v20NiceSources);
+  return refs.slice(0,12);
+ }
+ function refsContextBlock(refs){
+  if(!refs||!refs.length) return '';
+  var s='## REFERENCIAS DISPONIBLES (usa EXACTAMENTE estos números al citar [n])\n';
+  refs.forEach(function(r){ s+='['+r.n+'] '+r.title+(r.meta?' — '+r.meta:'')+(r.url?' — '+r.url:'')+'\n'; });
+  return s;
+ }
+ function linkifyCitations(html, refs){
+  if(!html||!refs||!refs.length) return html;
+  // Reemplaza [n], [n, m], [n-m] por superíndices clicables enlazados a la referencia
+  return html.replace(/\[(\d+(?:\s*[-,]\s*\d+)*)\]/g, function(m, inner){
+   var parts=inner.split(/\s*,\s*/).reduce(function(acc,tok){
+    var range=tok.match(/^(\d+)\s*-\s*(\d+)$/);
+    if(range){ for(var i=+range[1];i<=+range[2];i++) acc.push(i); } else { acc.push(+tok); }
+    return acc;
+   },[]);
+   var out=parts.map(function(num){
+    var r=refs[num-1];
+    if(!r) return '['+num+']';
+    if(r.url) return '<a class="cc-cite" href="'+esc(r.url)+'" target="_blank" rel="noopener" title="'+esc(r.title)+'">'+num+'</a>';
+    return '<span class="cc-cite cc-cite-nolink" title="'+esc(r.title)+'">'+num+'</span>';
+   }).join('');
+   return '<sup class="cc-cite-wrap">'+out+'</sup>';
+  });
+ }
+ function renderRefsPanel(refs){
+  if(!refs||!refs.length) return '';
+  var items=refs.map(function(r){
+   var head='<span class="cc-ref-n">'+r.n+'</span>';
+   var body='<span class="cc-ref-body"><b>'+esc(r.title)+'</b>'+(r.meta?'<small>'+esc(r.meta)+'</small>':'')+'</span>';
+   if(r.url) return '<a class="cc-ref-item" href="'+esc(r.url)+'" target="_blank" rel="noopener" id="ccref-'+r.n+'">'+head+body+'<span class="cc-ref-go">↗</span></a>';
+   return '<div class="cc-ref-item" id="ccref-'+r.n+'">'+head+body+'</div>';
+  }).join('');
+  return '<div class="cc-refs"><div class="cc-refs-title">🔬 Referencias basadas en evidencia</div>'+items+'</div>';
+ }
+
  function sourcePanel(sources){
   var guides=sources.filter(function(s){return s.type==='guide'||s.type==='drug'}).slice(0,6);
   var library=sources.filter(function(s){return s.type==='library'}).slice(0,6);
@@ -17737,7 +17801,7 @@ render();
  function rmsg(m,isLast){
   var d=document.createElement('div');d.className='cc-msg '+(m.role==='user'?'u':'b');var inner='';
   if(m.att){ if(m.att.kind==='image')inner+='<img class="att" src="data:'+m.att.mime+';base64,'+m.att.data+'">'; else inner+='<span class="doc">📄 '+esc(m.att.name||'documento')+'</span>'; }
-  inner+= m.role==='user'? esc(m.content).replace(/\n/g,'<br>') : md(m.content);
+  inner+= m.role==='user'? esc(m.content).replace(/\n/g,'<br>') : (function(){ var h=md(m.content); if(m.role==='bot'&&m.refs&&m.refs.length) h=linkifyCitations(h,m.refs); return h; })();
   if(m.role==='bot'){
    inner+='<div class="v30-actions"><button class="cc-spk">🔊 Leer</button><button class="v30-copy" title="Copiar">📋</button><button class="v30-share" title="Compartir">📤</button><button class="v30-pdf" title="Exportar PDF">📄</button></div>';
    if(isLast!==false){
@@ -17986,6 +18050,7 @@ render();
 
  /* ---- PMC Retrieval (RAG) ---- */
  async function pmcRetrieve(query, limit) {
+  window.__v20PmcSources = [];
   if (!query || query.trim().length === 0) return '';
   limit = limit || 8;
   try {
@@ -18006,6 +18071,13 @@ render();
       if (article.pmcid) pmcCtx += '**PMC ID:** ' + article.pmcid + '\n';
       if (article.doi) pmcCtx += '**DOI:** ' + article.doi + '\n';
       pmcCtx += '\n';
+      var pmcUrl = article.url || (article.pmcid ? 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + article.pmcid + '/' : (article.doi ? 'https://doi.org/' + article.doi : ''));
+      window.__v20PmcSources.push({
+        type: 'literature',
+        title: article.title || '(sin título)',
+        id: pmcUrl,
+        meta: 'Europe PMC' + ((article.year || article.pubYear) ? ' · ' + (article.year || article.pubYear) : '')
+      });
     });
 
     return pmcCtx;
@@ -18160,12 +18232,15 @@ render();
    "Puedes combinar fuentes para razonar, pero conserva la procedencia y señala las discrepancias entre ellas cuando existan. "+
    "No inventes datos, bibliografía, dosis, concentraciones ni protocolos; las dosis deben marcarse para verificación "+
    "institucional/farmacéutica. "+
-   "CITACIÓN Y REFERENCIAS: cita cada afirmación clínica relevante con un número entre corchetes [1], [2]… que remita a "+
-   "la lista de referencias al final. Diferencia las fuentes internas de iNurse (márcalas como [iNurse · Ficha validada]) "+
-   "de la literatura externa (PubMed, Europe PMC, Crossref, CIMA). Para la literatura externa usa el formato: Autores. "+
-   "Título. Revista. Año. PMID o DOI. Incluye siempre al menos 3-5 referencias de la literatura recuperada cuando estén "+
-   "disponibles. Si la pregunta involucra fármacos, indica explícitamente si los datos proceden de la ficha técnica de "+
-   "CIMA-AEMPS. No fabriques referencias bibliográficas: cita solo artículos que aparezcan en el contexto recuperado. "+
+   "CITACIÓN Y REFERENCIAS (estilo OpenEvidence): cita cada afirmación clínica relevante con un número entre corchetes "+
+   "[1], [2]… USANDO EXACTAMENTE los números del bloque 'REFERENCIAS DISPONIBLES' que se te adjunta en el contexto. "+
+   "No inventes números que no estén en esa lista ni cites fuentes que no aparezcan en ella. Puedes agrupar varias citas "+
+   "como [1, 3] o [2-4]. Coloca la cita justo después de la afirmación que la respalda. "+
+   "NO escribas al final una lista de referencias ni una bibliografía: la aplicación añade automáticamente la lista "+
+   "numerada de referencias debajo de tu respuesta, así que termina el texto sin listarlas. "+
+   "Si una afirmación procede de las fuentes internas de iNurse (guías/vademécum/biblioteca) y no de la lista de "+
+   "referencias, indícalo en el texto como '(ficha validada de iNurse)' sin número. Si la pregunta involucra fármacos, "+
+   "indica explícitamente si los datos proceden de la ficha técnica de CIMA-AEMPS. "+
    "ESTRUCTURA: para una consulta clínica de fondo (patología, procedimiento, fármaco), desarrolla un discurso narrativo "+
    "fluido -sin encabezados literales tipo 'Bloque 1'- que recorra de forma natural: contexto clínico (definición, "+
    "epidemiología y fisiopatología breve), presentación clínica (signos, criterios diagnósticos, diagnóstico diferencial), "+
@@ -18192,6 +18267,8 @@ render();
   if(litCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE D · PUBMED + CROSSREF (LITERATURA CIENTÍFICA)\n'+litCtx;
   if(guidelineCtx)ctx+=(ctx?'\n\n':'')+'## RESULTADOS DE PUBMED FILTRADOS POR GUÍAS CLÍNICAS INTERNACIONALES\n'+guidelineCtx;
   if(niceCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE F · NICE (GUÍAS OFICIALES)\n'+niceCtx;
+  var refsBlock=refsContextBlock(window.__v20Refs||[]);
+  if(refsBlock)ctx+=(ctx?'\n\n':'')+refsBlock;
   var prompt=routePrompt(route);
   if(memory)prompt+='[MEMORIA TEMPORAL DEL CASO — no contiene nombres ni identificadores]\n'+memory+'\n[FIN MEMORIA]\n\n';
   if(ctx)prompt+='[CONTEXTO INTERNO RECUPERADO]\n'+ctx+'\n[FIN CONTEXTO]\n\n';
@@ -18202,7 +18279,7 @@ render();
   if(backend){
    updateConn('backend');
    return fetch(backend+'/api/vivi/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:litCtx||'',guidelines:guidelineCtx||'',nice:niceCtx||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
+    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
     attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
    })}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
     if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
@@ -18259,11 +18336,13 @@ render();
   var librarySources=parseLibrarySources(libraryCtx);
   window.__v20GuideSources=gd.sources||[];window.__v20LibrarySources=librarySources;
   window.__v20OrchestratorSources=[];
-  var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]);
+  var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20PmcSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]);
+  var refs=buildNumberedRefs(); window.__v20Refs=refs;
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route).then(function(reply){
    if(window.__v20OrchestratorSources&&window.__v20OrchestratorSources.length)allSources=allSources.concat(window.__v20OrchestratorSources);
-   typ.remove();var bm={role:'bot',content:reply};messages.push(bm);var node=rmsg(bm);
+   typ.remove();var bm={role:'bot',content:reply,refs:refs};messages.push(bm);var node=rmsg(bm);
    node.insertAdjacentHTML('beforeend',mediaResultPanel(att,text));
+   node.insertAdjacentHTML('beforeend',renderRefsPanel(refs));
    node.insertAdjacentHTML('beforeend',casePanel(snapshot));
    node.insertAdjacentHTML('beforeend',actionPanel(route));
    node.insertAdjacentHTML('beforeend',sourcePanel(allSources));
