@@ -17333,10 +17333,24 @@ render();
   return lines.join('\n');
  }
  /* ===== Estilo OpenEvidence: referencias numeradas + citas [n] clicables ===== */
- function buildNumberedRefs(){
+ var REF_STOP={de:1,la:1,el:1,los:1,las:1,un:1,una:1,en:1,con:1,para:1,del:1,al:1,que:1,cual:1,cuales:1,sobre:1,como:1,actual:1,actuales:1,manejo:1,tratamiento:1,paciente:1,pacientes:1,cuidados:1,segun:1,mediante:1,puede:1,pueden:1};
+ function refRelevanceTokens(q){
+  var n=String(q||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ');
+  var toks=n.split(/\s+/).filter(function(t){return t.length>=5 && !REF_STOP[t];});
+  var out=[];
+  toks.forEach(function(t){ out.push(t); if(t.length>=7) out.push(t.slice(0,6)); });
+  return out.filter(function(t,i,a){return t&&a.indexOf(t)===i;});
+ }
+ function buildNumberedRefs(query){
   var refs=[]; var seen={};
-  function add(arr){ (arr||[]).forEach(function(s){ if(!s) return; var url=s.id||''; var keyk=(url||s.title||'').toLowerCase(); if(!keyk||seen[keyk]) return; seen[keyk]=1; refs.push({ n:refs.length+1, title:s.title||'(sin título)', url:url, meta:s.meta||'', type:s.type||'' }); }); }
-  // Prioridad: literatura y guías con enlace (evidencia externa citable)
+  var qtok=refRelevanceTokens(query);
+  function relevant(title){
+   if(!qtok.length) return true; // sin términos útiles → no filtrar
+   var t=String(title||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+   return qtok.some(function(tok){ return t.indexOf(tok)!==-1; });
+  }
+  function add(arr){ (arr||[]).forEach(function(s){ if(!s) return; var url=s.id||''; var keyk=(url||s.title||'').toLowerCase(); if(!keyk||seen[keyk]) return; if(!relevant(s.title)) return; seen[keyk]=1; refs.push({ n:refs.length+1, title:s.title||'(sin título)', url:url, meta:s.meta||'', type:s.type||'' }); }); }
+  // Prioridad: literatura y guías con enlace (evidencia externa citable), filtradas por relevancia al tema
   add(window.__v20LiteratureSources);
   add(window.__v20PmcSources);
   add(window.__v20GuidelineSources);
@@ -18337,7 +18351,7 @@ render();
   window.__v20GuideSources=gd.sources||[];window.__v20LibrarySources=librarySources;
   window.__v20OrchestratorSources=[];
   var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20PmcSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]);
-  var refs=buildNumberedRefs(); window.__v20Refs=refs;
+  var refs=buildNumberedRefs(text); window.__v20Refs=refs;
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route).then(function(reply){
    if(window.__v20OrchestratorSources&&window.__v20OrchestratorSources.length)allSources=allSources.concat(window.__v20OrchestratorSources);
    typ.remove();var bm={role:'bot',content:reply,refs:refs};messages.push(bm);var node=rmsg(bm);
