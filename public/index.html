@@ -1907,6 +1907,11 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 .cc-ref-body b{font-size:13px;font-weight:600;line-height:1.35;color:#eaf1ff}
 .cc-ref-body small{font-size:11.5px;color:#93a6cf}
 .cc-ref-go{flex-shrink:0;color:#7f93bd;font-size:14px}
+.cc-ref-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.cc-ref-badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;line-height:1.5;white-space:nowrap}
+.cc-ref-badge.recent{background:rgba(52,211,153,.16);color:#6ee7b7;border:1px solid rgba(52,211,153,.35)}
+.cc-ref-badge.lead{background:rgba(251,191,36,.16);color:#fcd34d;border:1px solid rgba(251,191,36,.35)}
+.cc-ref-badge.guide{background:rgba(56,189,248,.16);color:#7dd3fc;border:1px solid rgba(56,189,248,.35)}
 .v21-route-context{
   margin:8px 0 0;padding:7px 9px;border-left:3px solid #6366F1;border-radius:7px;
   background:rgba(99,102,241,.06);color:#9fb0cb;font-size:9.5px;line-height:1.45
@@ -17349,7 +17354,7 @@ render();
    var t=String(title||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
    return qtok.some(function(tok){ return t.indexOf(tok)!==-1; });
   }
-  function add(arr){ (arr||[]).forEach(function(s){ if(!s) return; var url=s.id||''; var keyk=(url||s.title||'').toLowerCase(); if(!keyk||seen[keyk]) return; if(!relevant(s.title)) return; seen[keyk]=1; refs.push({ n:refs.length+1, title:s.title||'(sin título)', url:url, meta:s.meta||'', type:s.type||'' }); }); }
+  function add(arr){ (arr||[]).forEach(function(s){ if(!s) return; var url=s.id||''; var keyk=(url||s.title||'').toLowerCase(); if(!keyk||seen[keyk]) return; if(!relevant(s.title)) return; seen[keyk]=1; refs.push({ n:refs.length+1, title:s.title||'(sin título)', url:url, meta:s.meta||'', type:s.type||'', journal:s.journal||'', year:s.year||'' }); }); }
   // Prioridad: literatura y guías con enlace (evidencia externa citable), filtradas por relevancia al tema
   add(window.__v20LiteratureSources);
   add(window.__v20PmcSources);
@@ -17381,11 +17386,21 @@ render();
    return '<sup class="cc-cite-wrap">'+out+'</sup>';
   });
  }
+ var TOP_JOURNALS=/(new england journal|n engl j med|nejm|lancet|\bjama\b|\bbmj\b|british medical journal|nature|circulation|european heart journal|annals of internal medicine|intensive care medicine|critical care|\bchest\b|diabetes care|american journal of respiratory|blood\b|journal of clinical oncology|cochrane|american heart association|american college|european society)/i;
+ function refBadges(r){
+  var out=[];
+  var ym=String(r.year||'').match(/(20\d{2})/); var y=ym?parseInt(ym[1],10):0;
+  var cy=new Date().getFullYear();
+  if(y && y>=cy-2) out.push('<span class="cc-ref-badge recent">🟢 Reciente</span>');
+  if(r.journal && TOP_JOURNALS.test(r.journal)) out.push('<span class="cc-ref-badge lead">⭐ Revista líder</span>');
+  if(r.type==='nice'||r.type==='guideline') out.push('<span class="cc-ref-badge guide">📋 Guía oficial</span>');
+  return out.length?'<span class="cc-ref-badges">'+out.join('')+'</span>':'';
+ }
  function renderRefsPanel(refs){
   if(!refs||!refs.length) return '';
   var items=refs.map(function(r){
    var head='<span class="cc-ref-n">'+r.n+'</span>';
-   var body='<span class="cc-ref-body"><b>'+esc(r.title)+'</b>'+(r.meta?'<small>'+esc(r.meta)+'</small>':'')+'</span>';
+   var body='<span class="cc-ref-body"><b>'+esc(r.title)+'</b>'+(r.meta?'<small>'+esc(r.meta)+'</small>':'')+refBadges(r)+'</span>';
    if(r.url) return '<a class="cc-ref-item" href="'+esc(r.url)+'" target="_blank" rel="noopener" id="ccref-'+r.n+'">'+head+body+'<span class="cc-ref-go">↗</span></a>';
    return '<div class="cc-ref-item" id="ccref-'+r.n+'">'+head+body+'</div>';
   }).join('');
@@ -18090,7 +18105,9 @@ render();
         type: 'literature',
         title: article.title || '(sin título)',
         id: pmcUrl,
-        meta: 'Europe PMC' + ((article.year || article.pubYear) ? ' · ' + (article.year || article.pubYear) : '')
+        meta: (article.journal || article.journalTitle || 'Europe PMC') + ((article.year || article.pubYear) ? ' · ' + (article.year || article.pubYear) : ''),
+        journal: article.journal || article.journalTitle || '',
+        year: article.year || article.pubYear || ''
       });
     });
 
@@ -18129,7 +18146,9 @@ render();
         type: 'literature',
         title: article.title || '(sin título)',
         id: article.url || (article.doi ? 'https://doi.org/' + article.doi : ''),
-        meta: (article.source || 'PubMed/Crossref') + (article.year ? ' · ' + article.year : '')
+        meta: (article.journal || article.source || 'PubMed/Crossref') + (article.year ? ' · ' + article.year : ''),
+        journal: article.journal || '',
+        year: article.year || ''
       });
     });
 
@@ -18173,7 +18192,9 @@ render();
         type: 'guideline',
         title: article.title || '(sin título)',
         id: article.url || (article.doi ? 'https://doi.org/' + article.doi : (article.pmid ? 'https://pubmed.ncbi.nlm.nih.gov/' + article.pmid + '/' : '')),
-        meta: (article.journal || 'Guía internacional') + (article.year ? ' · ' + article.year : '')
+        meta: (article.journal || 'Guía internacional') + (article.year ? ' · ' + article.year : ''),
+        journal: article.journal || '',
+        year: article.year || ''
       });
     });
 
@@ -18208,7 +18229,9 @@ render();
         type: 'nice',
         title: g.title || '(sin título)',
         id: g.url || '',
-        meta: 'NICE' + (g.date ? ' · ' + g.date : '')
+        meta: 'NICE' + (g.date ? ' · ' + g.date : ''),
+        journal: 'NICE',
+        year: (String(g.date||'').match(/(20\d{2})/)||[])[1] || ''
       });
     });
 
@@ -18226,11 +18249,12 @@ render();
   var memory=caseMemory.slice(-6).join('\n');
   var mySpec='';try{mySpec=localStorage.getItem('inurse_myspec_v1')||'';}catch(e){}
   var specCtx=mySpec&&SPEC_NAMES_CC[mySpec]?'CONTEXTO DE ESPECIALIZACIÓN: La profesional que consulta trabaja en '+SPEC_NAMES_CC[mySpec]+'. Cuando sea pertinente, adapta el enfoque de tus respuestas a este contexto clínico (fármacos de referencia, protocolos y monitorización habitual en esa área).\n\n':'';
-  var sys=specCtx+"Eres Vivi, la asistente clínica de referencia de iNurse. Tu función es dar respuestas clínicas exhaustivas, "+
-   "basadas en evidencia, al nivel de una herramienta profesional de consulta como UpToDate. Responde SIEMPRE en español "+
-   "(o en catalán si te preguntan en catalán). "+
-   "Responde siempre con profundidad clínica, aunque la pregunta sea breve o coloquial: si alguien escribe solo el nombre "+
-   "de una patología o un fármaco, trátalo como si te hubieran pedido una revisión clínica completa del tema. "+
+  var sys=specCtx+"Eres Vivi, la asistente clínica de referencia de iNurse. Das respuestas clínicas basadas en evidencia, "+
+   "SINTETIZADAS Y DIRECTAS al estilo de OpenEvidence (con el rigor de UpToDate pero sin extenderte de más). Responde SIEMPRE "+
+   "en español (o en catalán si te preguntan en catalán). "+
+   "Responde con precisión clínica pero yendo al grano: contesta primero lo que se pregunta y desarrolla solo lo necesario. "+
+   "Si alguien escribe solo el nombre de una patología o un fármaco, ofrece una síntesis clínica útil y directa (no una "+
+   "revisión enciclopédica), salvo que pida expresamente una revisión completa. "+
    "No respondas nunca solo de memoria: fundamenta tus afirmaciones en las fuentes recuperadas que se te adjuntan. Si falta "+
    "evidencia suficiente sobre algún punto, indícalo explícitamente en vez de inventarlo. "+
    "Trabaja con los repositorios integrados en iNurse: "+
@@ -18255,23 +18279,24 @@ render();
    "Si una afirmación procede de las fuentes internas de iNurse (guías/vademécum/biblioteca) y no de la lista de "+
    "referencias, indícalo en el texto como '(ficha validada de iNurse)' sin número. Si la pregunta involucra fármacos, "+
    "indica explícitamente si los datos proceden de la ficha técnica de CIMA-AEMPS. "+
-   "ESTRUCTURA: para una consulta clínica de fondo (patología, procedimiento, fármaco), desarrolla un discurso narrativo "+
-   "fluido -sin encabezados literales tipo 'Bloque 1'- que recorra de forma natural: contexto clínico (definición, "+
-   "epidemiología y fisiopatología breve), presentación clínica (signos, criterios diagnósticos, diagnóstico diferencial), "+
-   "manejo basado en evidencia (valoración inicial, tratamiento de primera línea, monitorización, consideraciones "+
-   "especiales), puntos clave para enfermería (cuidados, vigilancia, educación al paciente) y, al final, la lista numerada "+
-   "de fuentes utilizadas con su procedencia. Varía el orden, el énfasis y la redacción de una respuesta a otra según lo "+
-   "que la pregunta realmente pida: no repitas la misma plantilla palabra por palabra en cada respuesta. "+
-   "Ante un caso clínico concreto (paciente, situación urgente, escenario a resolver) prioriza en su lugar: valoración "+
-   "inmediata (ABCDE si hay riesgo vital), datos relevantes y datos faltantes, señales de alarma, actuaciones priorizadas, "+
-   "cuidados y monitorización de enfermería, e incertidumbres o diagnóstico diferencial; adapta estos apartados de forma "+
-   "natural, sin forzarlos si no aplican, y sin repetir literalmente los mismos títulos en cada caso. "+
-   "Para preguntas breves y muy concretas (una dosis puntual, un dato aislado) responde de forma directa y proporcionada, "+
-   "sin desplegar la estructura completa. Para proyectos, redacción o dudas no clínicas responde como asistente general "+
-   "experto, organizando el trabajo y desarrollando el contenido solicitado. "+
-   "Evita respuestas telegráficas o solo de bullets: desarrolla un discurso clínico completo y cohesionado, con "+
-   "terminología médica apropiada explicada cuando haga falta. Si detectas una emergencia vital, prioriza el manejo "+
-   "inmediato antes del desarrollo teórico e indica cuándo una recomendación es de bajo nivel de evidencia o consenso. "+
+   "ESTRUCTURA (estilo OpenEvidence — respuesta directa, sintetizada y citada): "+
+   "1) EMPIEZA SIEMPRE con una RESPUESTA DIRECTA a la pregunta en la primera línea, en negrita. Si la pregunta admite "+
+   "sí/no, empieza literalmente por '**Sí,**', '**No,**' o '**Depende:**' seguido de la idea principal en una o dos frases. "+
+   "Si es una pregunta abierta (una patología, un fármaco), abre con una frase-tesis en negrita que resuma lo esencial. "+
+   "2) A continuación, desarrolla una NARRATIVA SINTETIZADA y CONCISA (normalmente 2-5 párrafos breves): explica el porqué "+
+   "integrando la evidencia recuperada, con una CITA [n] al final de cada afirmación relevante. No copies extractos sueltos: "+
+   "sintetiza. Prioriza responder lo que se pregunta; no despliegues una revisión exhaustiva salvo que te la pidan. "+
+   "Usa subtítulos cortos solo si aportan claridad (p. ej. Diagnóstico, Tratamiento, Enfermería), no en preguntas simples. "+
+   "3) TERMINA SIEMPRE con una línea que empiece por '**En resumen,**' y condense la conclusión práctica en 1-2 frases. "+
+   "NO añadas después una lista de referencias (la aplicación la agrega automáticamente). "+
+   "Varía la redacción entre respuestas; no repitas la misma plantilla palabra por palabra. "+
+   "Ante un caso clínico concreto (paciente, urgencia, escenario) mantén el mismo espíritu directo pero prioriza: valoración "+
+   "inmediata (ABCDE si hay riesgo vital), datos relevantes y faltantes, señales de alarma, actuaciones priorizadas, "+
+   "cuidados y monitorización de enfermería, e incertidumbres; adáptalo sin forzar apartados que no apliquen. "+
+   "Para preguntas breves y muy concretas (una dosis, un dato) responde en 1-3 frases directas con su cita, sin más. "+
+   "Para proyectos, redacción o dudas no clínicas responde como asistente general experto. "+
+   "Sé conciso y clínico: evita relleno y evita respuestas de solo bullets sin hilo. Si detectas una emergencia vital, "+
+   "prioriza el manejo inmediato e indica cuándo una recomendación es de bajo nivel de evidencia o consenso. "+
    "No menciones Hospital Joan XXIII, Hospital Juan XXIII ni HJ23 salvo petición expresa. "+
    "La aplicación es educativa y no sustituye el juicio profesional ni los protocolos locales vigentes.";
   var ctx='';
