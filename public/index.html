@@ -18697,6 +18697,268 @@ const DILUCIONES = {
 
 /* ---------- DEFINICIÓN DE CALCULADORAS ---------- */
 const CALCS = {
+
+  /* ---------- Escalas de valoración enfermera ---------- */
+
+  norton: {
+    title: "Norton (riesgo de UPP)", icon: "🛏️", tag: "Enfermería / UPP",
+    fields: [
+      { id:"fis", label:"Estado físico general", options:[
+        {v:4,l:"4 — Bueno"},{v:3,l:"3 — Mediano"},{v:2,l:"2 — Regular"},{v:1,l:"1 — Muy malo"}]},
+      { id:"men", label:"Estado mental", options:[
+        {v:4,l:"4 — Alerta"},{v:3,l:"3 — Apático"},{v:2,l:"2 — Confuso"},{v:1,l:"1 — Estuporoso o comatoso"}]},
+      { id:"act", label:"Actividad", options:[
+        {v:4,l:"4 — Ambulante"},{v:3,l:"3 — Camina con ayuda"},{v:2,l:"2 — Sentado"},{v:1,l:"1 — Encamado"}]},
+      { id:"mov", label:"Movilidad", options:[
+        {v:4,l:"4 — Total"},{v:3,l:"3 — Disminuida"},{v:2,l:"2 — Muy limitada"},{v:1,l:"1 — Inmóvil"}]},
+      { id:"inc", label:"Incontinencia", options:[
+        {v:4,l:"4 — Ninguna"},{v:3,l:"3 — Ocasional"},{v:2,l:"2 — Urinaria o fecal"},{v:1,l:"1 — Doble incontinencia"}]}
+    ],
+    compute(v){
+      const t = v.fis+v.men+v.act+v.mov+v.inc;
+      let i;
+      if(t<=12) i="🔴 Riesgo alto — superficie especial de manejo de presión, cambios posturales y revisión diaria de la piel";
+      else if(t<=14) i="🟠 Riesgo medio — pauta de cambios posturales y protección de prominencias óseas";
+      else i="🟢 Riesgo mínimo — mantener vigilancia y reevaluar si cambia la situación";
+      return { main:"Norton "+t+" / 20", detail:"Físico "+v.fis+" · Mental "+v.men+" · Actividad "+v.act+" · Movilidad "+v.mov+" · Incontinencia "+v.inc, interp:i };
+    }
+  },
+
+  braden: {
+    title: "Braden (riesgo de UPP)", icon: "🛏️", tag: "Enfermería / UPP",
+    fields: [
+      { id:"sens", label:"Percepción sensorial", options:[
+        {v:4,l:"4 — Sin limitación"},{v:3,l:"3 — Ligeramente limitada"},
+        {v:2,l:"2 — Muy limitada"},{v:1,l:"1 — Completamente limitada"}]},
+      { id:"hum", label:"Exposición a la humedad", options:[
+        {v:4,l:"4 — Raramente húmeda"},{v:3,l:"3 — Ocasionalmente húmeda"},
+        {v:2,l:"2 — A menudo húmeda"},{v:1,l:"1 — Constantemente húmeda"}]},
+      { id:"act", label:"Actividad", options:[
+        {v:4,l:"4 — Deambula con frecuencia"},{v:3,l:"3 — Deambula ocasionalmente"},
+        {v:2,l:"2 — En silla"},{v:1,l:"1 — Encamado"}]},
+      { id:"mov", label:"Movilidad", options:[
+        {v:4,l:"4 — Sin limitaciones"},{v:3,l:"3 — Ligeramente limitada"},
+        {v:2,l:"2 — Muy limitada"},{v:1,l:"1 — Completamente inmóvil"}]},
+      { id:"nut", label:"Nutrición", options:[
+        {v:4,l:"4 — Excelente"},{v:3,l:"3 — Adecuada"},
+        {v:2,l:"2 — Probablemente inadecuada"},{v:1,l:"1 — Muy pobre"}]},
+      { id:"roce", label:"Roce y peligro de lesiones", options:[
+        {v:3,l:"3 — Sin problema aparente"},{v:2,l:"2 — Problema potencial"},{v:1,l:"1 — Problema"}]}
+    ],
+    compute(v){
+      const t = v.sens+v.hum+v.act+v.mov+v.nut+v.roce;
+      let i;
+      if(t<=9) i="🔴 Riesgo muy alto — superficie especial, cambios posturales frecuentes y control de humedad y nutrición";
+      else if(t<=12) i="🔴 Riesgo alto — plan de prevención completo de UPP";
+      else if(t<=14) i="🟠 Riesgo moderado — cambios posturales pautados y protección de prominencias";
+      else if(t<=18) i="🟡 Riesgo bajo — medidas preventivas básicas y reevaluación";
+      else i="🟢 Sin riesgo aparente — reevaluar si cambia la situación clínica";
+      return { main:"Braden "+t+" / 23", detail:"Sensorial "+v.sens+" · Humedad "+v.hum+" · Actividad "+v.act+" · Movilidad "+v.mov+" · Nutrición "+v.nut+" · Roce "+v.roce, interp:i };
+    }
+  },
+
+  barthel: {
+    title: "Barthel (autonomía en AVD)", icon: "🚶", tag: "Enfermería / Funcional",
+    fields: [
+      { id:"com", label:"Comer", options:[
+        {v:10,l:"10 — Independiente"},{v:5,l:"5 — Necesita ayuda"},{v:0,l:"0 — Dependiente"}]},
+      { id:"lav", label:"Lavarse o bañarse", options:[
+        {v:5,l:"5 — Independiente"},{v:0,l:"0 — Dependiente"}]},
+      { id:"ves", label:"Vestirse", options:[
+        {v:10,l:"10 — Independiente"},{v:5,l:"5 — Necesita ayuda"},{v:0,l:"0 — Dependiente"}]},
+      { id:"arr", label:"Arreglarse", options:[
+        {v:5,l:"5 — Independiente"},{v:0,l:"0 — Dependiente"}]},
+      { id:"dep", label:"Deposición", options:[
+        {v:10,l:"10 — Continente"},{v:5,l:"5 — Accidente ocasional"},{v:0,l:"0 — Incontinente"}]},
+      { id:"mic", label:"Micción", options:[
+        {v:10,l:"10 — Continente"},{v:5,l:"5 — Accidente ocasional"},{v:0,l:"0 — Incontinente"}]},
+      { id:"ret", label:"Uso del retrete", options:[
+        {v:10,l:"10 — Independiente"},{v:5,l:"5 — Necesita ayuda"},{v:0,l:"0 — Dependiente"}]},
+      { id:"tra", label:"Traslado sillón y cama", options:[
+        {v:15,l:"15 — Independiente"},{v:10,l:"10 — Mínima ayuda"},
+        {v:5,l:"5 — Gran ayuda"},{v:0,l:"0 — Dependiente"}]},
+      { id:"dea", label:"Deambulación", options:[
+        {v:15,l:"15 — Independiente"},{v:10,l:"10 — Necesita ayuda"},
+        {v:5,l:"5 — Independiente en silla de ruedas"},{v:0,l:"0 — Dependiente"}]},
+      { id:"esc", label:"Subir y bajar escaleras", options:[
+        {v:10,l:"10 — Independiente"},{v:5,l:"5 — Necesita ayuda"},{v:0,l:"0 — Dependiente"}]}
+    ],
+    compute(v){
+      const t = v.com+v.lav+v.ves+v.arr+v.dep+v.mic+v.ret+v.tra+v.dea+v.esc;
+      let i;
+      if(t<20) i="🔴 Dependencia total — precisa ayuda en prácticamente todas las actividades";
+      else if(t<=35) i="🟠 Dependencia grave";
+      else if(t<=55) i="🟡 Dependencia moderada";
+      else if(t<100) i="🟢 Dependencia leve";
+      else i="🟢 Independiente para las actividades básicas";
+      return { main:"Barthel "+t+" / 100", detail:"Suma de las diez actividades básicas de la vida diaria", interp:i };
+    }
+  },
+
+  aldrete: {
+    title: "Aldrete (recuperación postanestésica)", icon: "🏥", tag: "Enfermería / URPA",
+    fields: [
+      { id:"act", label:"Actividad motora", options:[
+        {v:2,l:"2 — Mueve las cuatro extremidades"},{v:1,l:"1 — Mueve dos extremidades"},
+        {v:0,l:"0 — No mueve ninguna"}]},
+      { id:"res", label:"Respiración", options:[
+        {v:2,l:"2 — Respira profundo y tose"},{v:1,l:"1 — Disnea o respiración limitada"},
+        {v:0,l:"0 — Apnea"}]},
+      { id:"cir", label:"Circulación (TA respecto a la basal)", options:[
+        {v:2,l:"2 — Variación menor del 20 por ciento"},{v:1,l:"1 — Variación del 20 al 49 por ciento"},
+        {v:0,l:"0 — Variación del 50 por ciento o mayor"}]},
+      { id:"con", label:"Nivel de consciencia", options:[
+        {v:2,l:"2 — Despierto y orientado"},{v:1,l:"1 — Despierta al llamarlo"},
+        {v:0,l:"0 — No responde"}]},
+      { id:"sat", label:"Saturación de oxígeno", options:[
+        {v:2,l:"2 — Mayor del 92 por ciento con aire ambiente"},
+        {v:1,l:"1 — Necesita oxígeno para mantener más del 90 por ciento"},
+        {v:0,l:"0 — Menor del 90 por ciento incluso con oxígeno"}]}
+    ],
+    compute(v){
+      const t = v.act+v.res+v.cir+v.con+v.sat;
+      let i;
+      if(t>=9) i="🟢 Cumple criterios de alta de la URPA — confirmar con el protocolo de la unidad";
+      else if(t>=8) i="🟠 Próximo al alta — reevaluar en breve";
+      else i="🔴 No cumple criterios de alta — mantener vigilancia estrecha";
+      return { main:"Aldrete "+t+" / 10", detail:"Actividad "+v.act+" · Respiración "+v.res+" · Circulación "+v.cir+" · Consciencia "+v.con+" · SatO2 "+v.sat, interp:i };
+    }
+  },
+
+  mews: {
+    title: "MEWS (deterioro clínico)", icon: "📈", tag: "Enfermería / Deterioro",
+    fields: [
+      { id:"fr", label:"Frecuencia respiratoria (rpm)", options:[
+        {v:0,l:"0 — 9 a 14"},{v:1,l:"1 — 15 a 20"},{v:2,l:"2 — 21 a 29, o menos de 9"},{v:3,l:"3 — 30 o más"}]},
+      { id:"fc", label:"Frecuencia cardiaca (lpm)", options:[
+        {v:0,l:"0 — 51 a 100"},{v:1,l:"1 — 41 a 50, o 101 a 110"},
+        {v:2,l:"2 — Menos de 40, o 111 a 129"},{v:3,l:"3 — 130 o más"}]},
+      { id:"tas", label:"Tensión arterial sistólica (mmHg)", options:[
+        {v:0,l:"0 — 101 a 199"},{v:1,l:"1 — 81 a 100"},
+        {v:2,l:"2 — 71 a 80, o 200 o más"},{v:3,l:"3 — 70 o menos"}]},
+      { id:"tem", label:"Temperatura (grados C)", options:[
+        {v:0,l:"0 — 35 a 38,4"},{v:2,l:"2 — Menos de 35, o 38,5 o más"}]},
+      { id:"con", label:"Nivel de consciencia (AVDN)", options:[
+        {v:0,l:"0 — Alerta"},{v:1,l:"1 — Responde a la voz"},
+        {v:2,l:"2 — Responde al dolor"},{v:3,l:"3 — No responde"}]}
+    ],
+    compute(v){
+      const t = v.fr+v.fc+v.tas+v.tem+v.con;
+      let i;
+      if(t>=5) i="🔴 Riesgo alto de deterioro — avisar al médico y valorar cuidados intensivos";
+      else if(t>=3) i="🟠 Riesgo intermedio — aumentar la frecuencia de controles y comunicar";
+      else i="🟢 Riesgo bajo — mantener la monitorización habitual";
+      return { main:"MEWS "+t, detail:"FR "+v.fr+" · FC "+v.fc+" · TAS "+v.tas+" · Temperatura "+v.tem+" · Consciencia "+v.con, interp:i };
+    }
+  },
+
+  news2: {
+    title: "NEWS2 (deterioro clínico)", icon: "📊", tag: "Enfermería / Deterioro",
+    fields: [
+      { id:"fr", label:"Frecuencia respiratoria (rpm)", options:[
+        {v:0,l:"0 — 12 a 20"},{v:1,l:"1 — 9 a 11"},{v:2,l:"2 — 21 a 24"},{v:3,l:"3 — 8 o menos, o 25 o más"}]},
+      { id:"spo2", label:"Saturación de oxígeno (por ciento)", options:[
+        {v:0,l:"0 — 96 o más"},{v:1,l:"1 — 94 a 95"},{v:2,l:"2 — 92 a 93"},{v:3,l:"3 — 91 o menos"}]},
+      { id:"o2", label:"Oxigenoterapia", options:[
+        {v:0,l:"0 — Aire ambiente"},{v:2,l:"2 — Oxígeno suplementario"}]},
+      { id:"tas", label:"Tensión arterial sistólica (mmHg)", options:[
+        {v:0,l:"0 — 111 a 219"},{v:1,l:"1 — 101 a 110"},{v:2,l:"2 — 91 a 100"},
+        {v:3,l:"3 — 90 o menos, o 220 o más"}]},
+      { id:"fc", label:"Frecuencia cardiaca (lpm)", options:[
+        {v:0,l:"0 — 51 a 90"},{v:1,l:"1 — 41 a 50, o 91 a 110"},
+        {v:2,l:"2 — 111 a 130"},{v:3,l:"3 — 40 o menos, o 131 o más"}]},
+      { id:"tem", label:"Temperatura (grados C)", options:[
+        {v:0,l:"0 — 36,1 a 38"},{v:1,l:"1 — 35,1 a 36, o 38,1 a 39"},
+        {v:2,l:"2 — 39,1 o más"},{v:3,l:"3 — 35 o menos"}]},
+      { id:"con", label:"Consciencia (ACVDN)", options:[
+        {v:0,l:"0 — Alerta"},{v:3,l:"3 — Confusión nueva, responde a voz o dolor, o no responde"}]}
+    ],
+    compute(v){
+      const t = v.fr+v.spo2+v.o2+v.tas+v.fc+v.tem+v.con;
+      const mx = Math.max(v.fr,v.spo2,v.o2,v.tas,v.fc,v.tem,v.con);
+      let i;
+      if(t>=7) i="🔴 Riesgo alto — respuesta de emergencia y valoración por cuidados críticos";
+      else if(t>=5) i="🟠 Riesgo medio — respuesta urgente del equipo médico";
+      else if(mx>=3) i="🟠 Un solo parámetro con 3 puntos — valoración urgente aunque el total sea bajo";
+      else if(t>=1) i="🟡 Riesgo bajo — reevaluar según protocolo";
+      else i="🟢 Sin alteración — monitorización rutinaria";
+      return { main:"NEWS2 "+t, detail:"FR "+v.fr+" · SatO2 "+v.spo2+" · O2 "+v.o2+" · TAS "+v.tas+" · FC "+v.fc+" · Temperatura "+v.tem+" · Consciencia "+v.con, interp:i };
+    }
+  },
+
+  rass: {
+    title: "RASS (sedación y agitación)", icon: "😴", tag: "Enfermería / Intensiva",
+    fields: [
+      { id:"r", label:"Nivel observado", options:[
+        {v:4,l:"+4 — Combativo"},{v:3,l:"+3 — Muy agitado"},
+        {v:2,l:"+2 — Agitado"},{v:1,l:"+1 — Inquieto"},
+        {v:0,l:"0 — Alerta y tranquilo"},
+        {v:-1,l:"-1 — Somnoliento, mantiene la mirada más de 10 segundos"},
+        {v:-2,l:"-2 — Sedación leve, mantiene la mirada menos de 10 segundos"},
+        {v:-3,l:"-3 — Sedación moderada, se mueve pero no fija la mirada"},
+        {v:-4,l:"-4 — Sedación profunda, responde al estímulo físico"},
+        {v:-5,l:"-5 — No despertable"}]}
+    ],
+    compute(v){
+      const t = v.r;
+      let i;
+      if(t>=2) i="🔴 Agitación — descartar dolor, delirio, hipoxia o abstinencia antes de aumentar la sedación";
+      else if(t===1) i="🟠 Inquietud — vigilar y valorar la causa";
+      else if(t>=-2) i="🟢 Objetivo habitual de sedación ligera en el paciente crítico";
+      else if(t>=-4) i="🟠 Sedación profunda — revisar si el objetivo pautado lo justifica";
+      else i="🔴 No despertable — reevaluar la pauta de sedación y descartar causa neurológica";
+      return { main:"RASS "+(t>0?"+"+t:t), detail:"Escala de agitación y sedación de Richmond, de -5 a +4", interp:i };
+    }
+  },
+
+  morse: {
+    title: "Morse (riesgo de caídas)", icon: "⚠️", tag: "Enfermería / Seguridad",
+    fields: [
+      { id:"ant", label:"Antecedente de caídas recientes", options:[
+        {v:0,l:"0 — No"},{v:25,l:"25 — Sí"}]},
+      { id:"dx", label:"Más de un diagnóstico médico", options:[
+        {v:0,l:"0 — No"},{v:15,l:"15 — Sí"}]},
+      { id:"ayu", label:"Ayuda para deambular", options:[
+        {v:0,l:"0 — Ninguna, reposo en cama o ayuda de enfermería"},
+        {v:15,l:"15 — Muletas, bastón o andador"},
+        {v:30,l:"30 — Se apoya en el mobiliario"}]},
+      { id:"iv", label:"Terapia intravenosa o vía heparinizada", options:[
+        {v:0,l:"0 — No"},{v:20,l:"20 — Sí"}]},
+      { id:"mar", label:"Marcha", options:[
+        {v:0,l:"0 — Normal, reposo en cama o inmovilidad"},
+        {v:10,l:"10 — Débil"},{v:20,l:"20 — Alterada o inestable"}]},
+      { id:"men", label:"Estado mental", options:[
+        {v:0,l:"0 — Consciente de sus limitaciones"},
+        {v:15,l:"15 — Olvida o sobreestima sus limitaciones"}]}
+    ],
+    compute(v){
+      const t = v.ant+v.dx+v.ayu+v.iv+v.mar+v.men;
+      let i;
+      if(t>=45) i="🔴 Riesgo alto — medidas específicas de prevención de caídas y registro en el plan de cuidados";
+      else if(t>=25) i="🟠 Riesgo medio — medidas preventivas estándar";
+      else i="🟢 Riesgo bajo — medidas básicas de seguridad";
+      return { main:"Morse "+t+" / 125", detail:"Antecedente "+v.ant+" · Diagnósticos "+v.dx+" · Ayuda "+v.ayu+" · Vía IV "+v.iv+" · Marcha "+v.mar+" · Mental "+v.men, interp:i };
+    }
+  },
+
+  dolor: {
+    title: "Dolor (EVA y escala numérica)", icon: "🤕", tag: "Enfermería / Dolor",
+    fields: [
+      { id:"d", label:"Intensidad referida por el paciente", options:[
+        {v:0,l:"0 — Sin dolor"},{v:1,l:"1"},{v:2,l:"2"},{v:3,l:"3"},{v:4,l:"4"},{v:5,l:"5"},
+        {v:6,l:"6"},{v:7,l:"7"},{v:8,l:"8"},{v:9,l:"9"},{v:10,l:"10 — El peor dolor imaginable"}]}
+    ],
+    compute(v){
+      const t = v.d;
+      let i;
+      if(t===0) i="🟢 Sin dolor — mantener la reevaluación pautada";
+      else if(t<=3) i="🟡 Dolor leve — medidas no farmacológicas y analgesia de primer escalón si procede";
+      else if(t<=6) i="🟠 Dolor moderado — revisar la pauta analgésica y reevaluar tras administrarla";
+      else i="🔴 Dolor intenso — analgesia de rescate y reevaluación precoz";
+      return { main:"Dolor "+t+" / 10", detail:"Escala visual analógica o escala numérica verbal", interp:i };
+    }
+  },
+
   gcs: {
     title: "Glasgow (GCS)", icon: "🧠", tag: "Neuro / Trauma",
     fields: [
@@ -20553,6 +20815,15 @@ function dermPick(el){
       <button class="calc-tab" data-c="sofa" data-spec="intensiva" onclick="showCalc('sofa')">🏥 SOFA</button>
       <button class="calc-tab" data-c="cha2ds2" data-spec="cardio" onclick="showCalc('cha2ds2')">❤️ CHA₂DS₂-VASc</button>
       <button class="calc-tab" data-c="hasbled" data-spec="cardio" onclick="showCalc('hasbled')">💊 HAS-BLED</button>
+<button class="calc-tab" data-c="norton" onclick="showCalc('norton')">🛏️ Norton</button>
+<button class="calc-tab" data-c="braden" onclick="showCalc('braden')">🛏️ Braden</button>
+<button class="calc-tab" data-c="barthel" onclick="showCalc('barthel')">🚶 Barthel</button>
+<button class="calc-tab" data-c="aldrete" onclick="showCalc('aldrete')">🏥 Aldrete</button>
+<button class="calc-tab" data-c="mews" data-spec="intensiva urgencias" onclick="showCalc('mews')">📈 MEWS</button>
+<button class="calc-tab" data-c="news2" data-spec="intensiva urgencias" onclick="showCalc('news2')">📊 NEWS2</button>
+<button class="calc-tab" data-c="rass" data-spec="intensiva" onclick="showCalc('rass')">😴 RASS</button>
+<button class="calc-tab" data-c="morse" onclick="showCalc('morse')">⚠️ Morse</button>
+<button class="calc-tab" data-c="dolor" onclick="showCalc('dolor')">🤕 Dolor</button>
       <button class="calc-tab v27-calc-alg-tab" type="button" onclick="closeCalcs();window.iNurseAlgorithms.openHub()">🧩 Algoritmos</button>
     </div>
     <div class="calc-body">
@@ -21754,7 +22025,7 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
     {key:'trauma',label:'Trauma',sub:'ABCDE',em:'🚑',q:'politrauma trauma abcde hemorragia shock traumatologico',color:'#FB923C'}
   ];
   var SCALES=[
-    {id:'glasgow',title:'Escala de Glasgow (GCS)',tags:'glasgow gcs conciencia ocular verbal motor trauma neuro',summary:'Cálculo de nivel de conciencia: ocular + verbal + motor.',em:'🧠'},
+    {id:'norton',title:'Escala de Norton',tags:'norton upp ulceras presion riesgo piel encamado movilidad incontinencia',summary:'Riesgo de úlceras por presión: físico, mental, actividad, movilidad e incontinencia.',em:'🛏️'},{id:'barthel',title:'Índice de Barthel',tags:'barthel autonomia dependencia avd actividades vida diaria funcional',summary:'Autonomía en las actividades básicas de la vida diaria.',em:'🚶'},{id:'aldrete',title:'Escala de Aldrete',tags:'aldrete postanestesia urpa reanimacion alta quirofano recuperacion',summary:'Recuperación postanestésica y criterios de alta de la URPA.',em:'🏥'},{id:'mews',title:'MEWS',tags:'mews deterioro clinico constantes vitales riesgo alerta precoz',summary:'Escala de alerta precoz de deterioro clínico.',em:'📈'},{id:'morse',title:'Escala de Morse',tags:'morse caidas riesgo seguridad paciente deambulacion marcha',summary:'Riesgo de caídas del paciente hospitalizado.',em:'⚠️'},{id:'dolor',title:'Escala del dolor (EVA)',tags:'dolor eva ena analgesia intensidad valoracion escala visual analogica',summary:'Intensidad del dolor de 0 a 10 y actuación según el nivel.',em:'🤕'},{id:'glasgow',title:'Escala de Glasgow (GCS)',tags:'glasgow gcs conciencia ocular verbal motor trauma neuro',summary:'Cálculo de nivel de conciencia: ocular + verbal + motor.',em:'🧠'},
     {id:'news2',title:'NEWS2',tags:'news2 constantes vitales deterioro sepsis riesgo respiratorio tension pulso sat',summary:'Escala de deterioro clínico basada en constantes vitales.',em:'📊'},
     {id:'sofa',title:'SOFA / qSOFA',tags:'sofa qsofa sepsis shock septico organos lactato uci',summary:'Valoración de fallo orgánico y cribado de sepsis.',em:'🦠'},
     {id:'nihss',title:'NIHSS',tags:'nihss ictus escala neurologia deficit focal codigo ictus',summary:'Escala neurológica para ictus agudo.',em:'🧠'},
@@ -21793,7 +22064,7 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
   function colorForDoc(d){var c=catsOf(d).join(' '); if(c.indexOf('cardio')>=0)return '#F43F5E'; if(c.indexOf('ictus')>=0||c.indexOf('neuro')>=0)return '#8B5CF6'; if(c.indexOf('resp')>=0)return '#22D3EE'; if(c.indexOf('trauma')>=0||c.indexOf('emer')>=0)return '#FB923C'; if(c.indexOf('uci')>=0)return '#6366F1'; if(c.indexOf('farm')>=0)return '#EC4899'; return '#14B8A6'}
   function showResults(q){var host=document.getElementById('in50GlobalResults'); if(!host)return; var r=searchAll(q); if(!q.trim()){host.style.display='none'; return} host.style.display='block'; host.innerHTML='<div class="in50-results-head"><b>Resultados globales para “'+esc(q)+'”</b><button id="in50CloseResults">Cerrar</button></div>'+ (r.length?r.map(renderResult).join(''):'<div class="in50-empty">No he encontrado resultados en protocolos, fármacos, escalas, algoritmos ni calculadoras.</div>'); var close=document.getElementById('in50CloseResults'); if(close)close.onclick=function(){host.style.display='none'}; host.querySelectorAll('[data-in50-open]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-in50-open')))}})}
   function renderResult(r){return '<div class="in50-result" style="--rc:'+r.color+'" data-in50-open=\''+JSON.stringify({type:r.type,id:r.id,title:r.title}).replace(/'/g,'&#39;')+'\'><span class="em">'+r.em+'</span><div style="flex:1"><b>'+esc(r.title)+'</b><p>'+esc(String(r.summary||'').replace(/<[^>]*>/g,'').slice(0,160))+'</p></div><span class="tag">'+esc(r.tag)+'</span></div>'}
-  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else if(r.type==='alg'){ addRecent({type:'alg',id:r.id,title:r.title,em:'🧩'}); try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.open){ window.iNurseAlgLib.open(r.id); return; } }catch(e){} toast('Algoritmo: '+r.title); } else if(r.type==='calc'){ addRecent({type:'calc',id:r.id,title:r.title,em:'🧮'}); try{ if(typeof window.openCalcs==='function'){ window.openCalcs(r.id); return; } }catch(e){} toast('Calculadora: '+r.title); } else if(r.type==='section'){ try{ if(typeof window.iNurseOpenSection==='function'){ window.iNurseOpenSection(r.id); return; } }catch(e){} toast('Sección: '+r.title); } else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
+  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else if(r.type==='alg'){ addRecent({type:'alg',id:r.id,title:r.title,em:'🧩'}); try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.open){ window.iNurseAlgLib.open(r.id); return; } }catch(e){} toast('Algoritmo: '+r.title); } else if(r.type==='calc'){ addRecent({type:'calc',id:r.id,title:r.title,em:'🧮'}); try{ if(typeof window.openCalcs==='function'){ window.openCalcs(r.id); return; } }catch(e){} toast('Calculadora: '+r.title); } else if(r.type==='section'){ try{ if(typeof window.iNurseOpenSection==='function'){ window.iNurseOpenSection(r.id); return; } }catch(e){} toast('Sección: '+r.title); } else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); /* Las escalas del índice tienen calculadora propia; en CALCS 'glasgow' se llama 'gcs'. */ var cid=({glasgow:'gcs'})[r.id]||r.id; try{ if(typeof window.openCalcs==='function' && typeof CALCS!=='undefined' && CALCS[cid]){ window.openCalcs(cid); return; } }catch(e){} var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
   function buildHome(){var main=document.querySelector('main'); if(!main||document.getElementById('in50Home'))return; var home=document.createElement('section'); home.id='in50Home'; home.innerHTML='<div class="in50-hero"><div class="in50-top"><div class="in50-logo">'+LOGO+'</div><div class="in50-title"><h2>iNurse</h2><p>Apoyo clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos en menos de 5 segundos.</p><div class="in50-badges"><span class="in50-badge">🌙 modo oscuro</span><span class="in50-badge">🔎 búsqueda global</span><span class="in50-badge">⭐ favoritos</span><span class="in50-badge">📡 guías actualizables</span></div></div></div><div class="in50-critical">'+CRITICAL.map(function(c){return '<button style="--qc:'+c.color+'" data-crit="'+c.key+'"><span class="em">'+c.em+'</span><b>'+c.label+'</b><small>'+c.sub+'</small></button>'}).join('')+'</div></div><div class="in50-section-title">📚 Guías clínicas</div><div class="in50-grid"><button class="in50-card" data-menu="1"><span class="em">☰</span><span><b>Abrir menú de guías</b><small>Organizadas por especialidad, con Farmacología UCI dentro de UCI.</small></span></button><button class="in50-card" data-searchfocus="1"><span class="em">🔎</span><span><b>Buscador global</b><small>Protocolos, fármacos, escalas y algoritmos.</small></span></button><button class="in50-card" data-evidence="1"><span class="em">📚</span><span><b>Biblioteca de Evidencia</b><small>Literatura clínica de Europe PMC. Estudios y guías por especialidad.</small></span></button><button class="in50-card" data-settings="1"><span class="em">⚙️</span><span><b>Configuración</b><small>Tema, actualización de guías y contenido offline.</small></span></button></div><div class="in50-section-title">⭐ </div><div id="in50Favs"></div><div class="in50-section-title">🕘 Últimos consultados</div><div id="in50Recent"></div>'; var res=document.createElement('section'); res.id='in50GlobalResults'; main.insertBefore(res,main.firstChild); main.insertBefore(home,res); home.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; if(b.dataset.library){if(window.iNurse21&&typeof window.iNurse21.open==='function')window.iNurse21.open('all');else document.getElementById('library21Btn')?.click();} if(b.dataset.menu)document.getElementById('v29MenuBtn')?.click(); if(b.dataset.searchfocus)document.getElementById('search')?.focus(); if(b.dataset.evidence)location.href='evidencia.html'; if(b.dataset.settings)showSettings(); if(b.dataset.crit)openCritical(b.dataset.crit)}); }
   function renderHomeLists(){var fhost=document.getElementById('in50Favs'),rhost=document.getElementById('in50Recent'); if(fhost){var ids=favs(); var ds=ids.map(function(id){return docs().find(function(d){return d.id===id})}).filter(Boolean).slice(0,6); fhost.innerHTML=ds.length?'<div class="in50-grid">'+ds.map(function(d){return '<button class="in50-card" data-doc="'+esc(d.id)+'"><span class="em">'+iconForDoc(d)+'</span><span><b>'+esc(d.title)+'</b><small>'+esc(d.summary||d.source||'')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">Todavía no tienes favoritos. Pulsa la estrella de cualquier protocolo para guardarlo aquí.</div>'; fhost.querySelectorAll('[data-doc]').forEach(function(b){b.onclick=function(){openDocId(b.dataset.doc)}})} if(rhost){var arr=readLS('inurse_recent_v5',[]).slice(0,6); rhost.innerHTML=arr.length?'<div class="in50-grid">'+arr.map(function(x){return '<button class="in50-card" data-recent=\''+JSON.stringify(x).replace(/'/g,'&#39;')+'\'><span class="em">'+(x.em||'📄')+'</span><span><b>'+esc(x.title)+'</b><small>'+esc(x.type==='drug'?'Fármaco':x.type==='scale'?'Escala':'Protocolo')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">El historial se generará automáticamente al abrir protocolos, fármacos o escalas.</div>'; rhost.querySelectorAll('[data-recent]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-recent')))}})} }
   function openCritical(k){var c=CRITICAL.find(function(x){return x.key===k}); if(!c)return; var res=searchAll(c.q); var first=res.find(function(r){return r.type==='doc'}); if(first)openDocId(first.id); else showResults(c.q)}
