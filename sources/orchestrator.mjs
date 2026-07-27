@@ -7,7 +7,7 @@ import { searchClinicalTrials } from "./clinicaltrials.mjs";
 import { searchSemanticScholar } from "./semanticscholar.mjs";
 import { searchWHO } from "./who.mjs";
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNurse. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
