@@ -4784,7 +4784,17 @@ render();
  var caseMemory=[];
  try{caseMemory=JSON.parse(sessionStorage.getItem(CASEK)||'[]')||[]}catch(e){caseMemory=[]}
  function saveCase(){try{sessionStorage.setItem(CASEK,JSON.stringify(caseMemory.slice(-8)))}catch(e){}}
- function backendUrl(){return (lget(BACKENDK,'')||'').trim().replace(/\/$/,'')}
+ function backendUrl(){
+  var saved=(lget(BACKENDK,'')||'').trim().replace(/\/$/,'');
+  if(saved)return saved;
+  /* Sin backend propio ni clave de Gemini configurados por el usuario: usar el
+     servidor de iNurse (mismo origen), que ya integra Gemini + PubMed, Crossref,
+     NICE, OpenFDA, ClinicalTrials, Semantic Scholar y WHO con citas verificables. */
+  if(!lget(KEYK,'')&&typeof window!=='undefined'&&window.location&&/^https?:$/.test(window.location.protocol)){
+   return window.location.origin;
+  }
+  return '';
+ }
  function connectionMode(){return backendUrl()?'backend':(lget(KEYK,'')?'direct':'local')}
  function updateConn(mode){
   var el=q('#v20Conn');if(!el)return;mode=mode||connectionMode();
@@ -5852,11 +5862,22 @@ render();
     attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
    })}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
     if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
+    var orchSources=[];
     if(data.sources&&data.sources.articles){
-     window.__v20OrchestratorSources=(data.sources.articles||[]).map(function(a){
+     orchSources=orchSources.concat((data.sources.articles||[]).map(function(a){
       return{type:'literature',title:a.title||'',id:a.url||(a.doi?'https://doi.org/'+a.doi:''),meta:(a.source||'')+(a.year?' · '+a.year:'')};
-     });
+     }));
     }
+    if(data.sources&&data.sources.niceGuidelines){
+     orchSources=orchSources.concat((data.sources.niceGuidelines||[]).map(function(g){
+      return{type:'guideline',title:g.title||'',id:g.url||'',meta:'NICE'+(g.date?' · '+g.date:'')};
+     }));
+    }
+    if(data.sources&&data.sources.fdaDrug){
+     var f=data.sources.fdaDrug;
+     orchSources.push({type:'drug',title:(f.brandName||f.genericName||'Ficha FDA'),id:'',meta:'OpenFDA'+(f.manufacturer?' · '+f.manufacturer:'')});
+    }
+    window.__v20OrchestratorSources=orchSources;
     return data.answer||data.text||'(sin respuesta)';
    })});
   }
