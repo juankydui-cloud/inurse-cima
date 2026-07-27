@@ -60,7 +60,10 @@ export function requestJSON(urlString, { method = "GET", body = null, ttl = 10 *
     try { data = text ? JSON.parse(text) : null; }
     catch { throw new Error(`${label} devolvió una respuesta no válida`); }
     if (status < 200 || status >= 300) {
-      throw new Error(data?.error || data?.message || `${label} respondió ${status}`);
+      const errPayload = data?.error;
+      const errMessage = typeof errPayload === "string" ? errPayload
+        : errPayload?.message || data?.message || `${label} respondió ${status}`;
+      throw new Error(errMessage);
     }
     cacheSet(key, data, ttl);
     return data;
