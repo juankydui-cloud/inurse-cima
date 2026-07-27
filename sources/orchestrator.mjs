@@ -436,7 +436,9 @@ async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, ma
     generationConfig: { temperature, maxOutputTokens, topP: 0.8, topK: 40 }
   };
 
-  const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini" });
+  // Una respuesta clínica completa (hasta maxOutputTokens) puede tardar más que el
+  // timeout genérico de 18s de httpRequest, pensado para APIs de búsqueda rápidas.
+  const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini", timeout: 55000 });
 
   const candidate = data?.candidates?.[0];
   if (!candidate?.content?.parts) throw new Error("Respuesta vacía del modelo");
@@ -609,7 +611,7 @@ export async function transcribeAudio(audioBase64, mimeType = "audio/wav", apiKe
     generationConfig: { temperature: 0, maxOutputTokens: 512 }
   };
 
-  const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini Transcribe" });
+  const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini Transcribe", timeout: 45000 });
   const candidate = data?.candidates?.[0];
   if (!candidate?.content?.parts) return "";
   return candidate.content.parts.map(p => p.text || "").join("").trim();
