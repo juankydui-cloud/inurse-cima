@@ -31275,6 +31275,44 @@ function addSbarCard() {
 setInterval(addSbarCard, 500);
 })();
 </script>
+<style id="a11y-css">
+/* iNurse · Accesibilidad — reglas globales, añadidas al final para que ganen
+   la cascada sin tocar el CSS existente. Solo afectan a foco de teclado,
+   tamaño táctil mínimo, alto contraste y movimiento reducido. */
+
+/* Foco de teclado siempre visible (Tab), sin afectar al clic con ratón. */
+:focus-visible{
+  outline: 3px solid #22D3EE !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible){ outline: none; }
+
+/* Tamaño táctil mínimo (44x44px, WCAG 2.5.5) en pestañas y tarjetas. */
+.calc-tab{ min-height: 44px; display: inline-flex; align-items: center; }
+.tool-card{ min-height: 44px; }
+
+/* Alto contraste del sistema: refuerza bordes y texto atenuado. */
+@media (prefers-contrast: more){
+  :root{
+    --border: #64748B;
+    --text-dim: #CBD5E1;
+  }
+  button, input, select, textarea, .calc-tab, .tool-card{
+    border-width: 2px !important;
+  }
+}
+
+/* Red de seguridad: si algo no respetó prefers-reduced-motion, esto lo frena. */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
 
 </body>
 </html>
