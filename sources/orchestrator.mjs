@@ -441,9 +441,17 @@ async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, ma
   const data = await requestJSON(url, { method: "POST", body, ttl: 0, label: "Gemini", timeout: 55000 });
 
   const candidate = data?.candidates?.[0];
-  if (!candidate?.content?.parts) throw new Error("Respuesta vacía del modelo");
+  const blockReason = data?.promptFeedback?.blockReason;
+  if (blockReason) throw new Error(`Gemini bloqueó la respuesta por seguridad de contenido (${blockReason}). Reformula la pregunta.`);
+  if (!candidate) throw new Error("Gemini no devolvió ningún candidato de respuesta.");
+  if (candidate.finishReason && candidate.finishReason !== "STOP" && !candidate.content?.parts?.length) {
+    throw new Error(`Gemini interrumpió la respuesta sin generar texto (motivo: ${candidate.finishReason}).`);
+  }
+  if (!candidate.content?.parts) throw new Error("Respuesta vacía del modelo");
 
-  return candidate.content.parts.map(p => p.text || "").join("").trim();
+  const text = candidate.content.parts.map(p => p.text || "").join("").trim();
+  if (!text) throw new Error("Gemini devolvió una respuesta vacía.");
+  return text;
 }
 
 // Variante en streaming de callGemini: usa el endpoint SSE de Gemini con fetch()
@@ -481,7 +489,21 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder("utf-8");
-  let buf = "", full = "";
+  let buf = "", full = "", blockReason = "", finishReason = "", sawCandidate = false;
+
+  function handleEvent(jsonStr) {
+    if (!jsonStr || jsonStr === "[DONE]") return;
+    let evt;
+    try { evt = JSON.parse(jsonStr); } catch { return; /* fragmento SSE incompleto: se completa en el siguiente trozo */ }
+    if (evt?.promptFeedback?.blockReason) blockReason = evt.promptFeedback.blockReason;
+    const cand = evt?.candidates?.[0];
+    if (cand) {
+      sawCandidate = true;
+      if (cand.finishReason && cand.finishReason !== "STOP") finishReason = cand.finishReason;
+      const t = cand?.content?.parts ? cand.content.parts.map(p => p.text || "").join("") : "";
+      if (t) { full += t; if (onDelta) onDelta(full); }
+    }
+  }
 
   while (true) {
     const chunk = await reader.read();
@@ -492,18 +514,21 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
     for (const raw of events) {
       const line = raw.trim();
       if (line.indexOf("data:") !== 0) continue;
-      const jsonStr = line.replace(/^data:\s*/, "").trim();
-      if (!jsonStr || jsonStr === "[DONE]") continue;
-      try {
-        const evt = JSON.parse(jsonStr);
-        const cand = evt?.candidates?.[0];
-        const t = cand?.content?.parts ? cand.content.parts.map(p => p.text || "").join("") : "";
-        if (t) { full += t; if (onDelta) onDelta(full); }
-      } catch { /* fragmento SSE incompleto: se completa en el siguiente chunk */ }
+      handleEvent(line.replace(/^data:\s*/, "").trim());
     }
   }
+  // Último evento sin salto de línea final tras él (la conexión se cerró justo después).
+  const lastLine = buf.trim();
+  if (lastLine.indexOf("data:") === 0) handleEvent(lastLine.replace(/^data:\s*/, "").trim());
 
-  return full.trim() || "(sin respuesta)";
+  if (!full.trim()) {
+    if (blockReason) throw new Error(`Gemini bloqueó la respuesta por seguridad de contenido (${blockReason}). Reformula la pregunta.`);
+    if (finishReason) throw new Error(`Gemini interrumpió la respuesta sin generar texto (motivo: ${finishReason}).`);
+    if (!sawCandidate) throw new Error("Gemini no devolvió ningún candidato de respuesta (posible cambio en el formato de streaming del modelo).");
+    throw new Error("Gemini devolvió una respuesta vacía.");
+  }
+
+  return full.trim();
 }
 
 function buildSourcesPayload({ articles, niceGuidelines, fdaDrug, queries, errors }) {
