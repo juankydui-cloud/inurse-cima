@@ -20,6 +20,7 @@ const SHELL_ASSETS = [
   "/icon-192.png",
   "/icon-512.png",
   "/icon-512-maskable.png",
+  "/data/escalas.js",
 ];
 
 self.addEventListener("install", (event) => {
