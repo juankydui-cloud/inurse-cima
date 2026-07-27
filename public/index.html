@@ -932,6 +932,9 @@
 .cc-msg.u{align-self:flex-end;background:linear-gradient(135deg,#4f46e5,#6d28d9);color:#fff;border-bottom-right-radius:5px;box-shadow:0 4px 14px rgba(79,70,229,.35)}
 .cc-msg.b{align-self:flex-start;background:#132038;border:1px solid #1f2c49;border-bottom-left-radius:5px}
 .cc-msg.b b,.cc-msg.b strong{color:#fff}.cc-msg.b ul{margin:7px 0;padding-left:20px}.cc-msg.b li{margin:3px 0}
+.cc-streaming{white-space:pre-wrap}
+.cc-streaming::after{content:'▍';display:inline-block;margin-left:2px;color:#38bdf8;animation:ccStreamBlink 1s steps(1) infinite}
+@keyframes ccStreamBlink{50%{opacity:0}}
 .cc-msg.b h3{margin:8px 0 4px;font-size:14.5px;color:#22d3ee}
 .cc-msg.b code{background:#0a1120;padding:1px 6px;border-radius:6px;font-size:13px;color:#9fd}
 .cc-msg .att{display:block;margin:-2px 0 8px;border-radius:11px;max-width:220px;max-height:200px;border:1px solid rgba(255,255,255,.25)}
@@ -5774,9 +5777,47 @@ render();
   }
  }
 
- /* ---- Gemini ---- */
+ /* ---- Gemini (streaming, modo directo con clave propia) ---- */
+ async function streamGeminiDirect(sys,contents,key,onDelta){
+  var url='https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':streamGenerateContent?alt=sse&key='+encodeURIComponent(key);
+  var body={systemInstruction:{parts:[{text:sys}]},contents:contents,generationConfig:{temperature:0.18,maxOutputTokens:8192}};
+  var res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok||!res.body){
+   var errData=await res.json().catch(function(){return {};});
+   throw new Error(errData&&errData.error&&errData.error.message?errData.error.message:('Error '+res.status));
+  }
+  var reader=res.body.getReader(),decoder=new TextDecoder('utf-8'),buf='',full='';
+  while(true){
+   var chunk=await reader.read();
+   if(chunk.done)break;
+   buf+=decoder.decode(chunk.value,{stream:true});
+   var events=buf.split('\n\n');
+   buf=events.pop();
+   for(var i=0;i<events.length;i++){
+    var line=events[i].trim();
+    if(line.indexOf('data:')!==0)continue;
+    var jsonStr=line.replace(/^data:\s*/,'').trim();
+    if(!jsonStr||jsonStr==='[DONE]')continue;
+    try{
+     var evt=JSON.parse(jsonStr);
+     var cand=evt.candidates&&evt.candidates[0];
+     var t=cand&&cand.content&&cand.content.parts?cand.content.parts.map(function(p){return p.text||'';}).join(''):'';
+     if(t){ full+=t; if(onDelta)onDelta(full); }
+    }catch(e){ /* fragmento SSE incompleto: se completa en el siguiente chunk */ }
+   }
+  }
+  return full.trim()||'(sin respuesta)';
+ }
+ function withTimeout(promise,ms){
+  return new Promise(function(resolve){
+   var settled=false;
+   var t=setTimeout(function(){ if(!settled){ settled=true; resolve(''); } },ms);
+   Promise.resolve(promise).then(function(v){ if(!settled){ settled=true; clearTimeout(t); resolve(v); } }).catch(function(){ if(!settled){ settled=true; clearTimeout(t); resolve(''); } });
+  });
+ }
+
  var SPEC_NAMES_CC={cardio:'Cardiología',intensiva:'UCI / Medicina Intensiva',urgencias:'Urgencias',neuro:'Neurología',trauma:'Traumatología y Quemados',otras:'Otras especialidades'};
- function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,hist,route){
+ function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,hist,route,onDelta){
   var key=lget(KEYK,''),backend=backendUrl();
   var memory=caseMemory.slice(-6).join('\n');
   var mySpec='';try{mySpec=localStorage.getItem('inurse_myspec_v1')||'';}catch(e){}
@@ -5863,16 +5904,19 @@ render();
    })}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
     if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
     var orchSources=[];
-    if(data.sources&&data.sources.articles){
-     orchSources=orchSources.concat((data.sources.articles||[]).map(function(a){
-      return{type:'literature',title:a.title||'',id:a.url||(a.doi?'https://doi.org/'+a.doi:''),meta:(a.source||'')+(a.year?' · '+a.year:'')};
-     }));
-    }
-    if(data.sources&&data.sources.niceGuidelines){
-     orchSources=orchSources.concat((data.sources.niceGuidelines||[]).map(function(g){
-      return{type:'guideline',title:g.title||'',id:g.url||'',meta:'NICE'+(g.date?' · '+g.date:'')};
-     }));
-    }
+    // El servidor (searchAllSources) ya busca en paralelo PubMed/Crossref/NICE/FDA/etc.
+    // Reconstruimos aquí las referencias numeradas [n] a partir de SUS resultados
+    // (no de una búsqueda redundante del navegador) para que el panel de evidencia
+    // y las citas [n] sigan funcionando también en modo backend, sin duplicar peticiones.
+    window.__v20LiteratureSources=(data.sources&&data.sources.articles||[]).map(function(a){
+     return{type:'literature',title:a.title||'',id:a.url||(a.doi?'https://doi.org/'+a.doi:''),meta:(a.journal||a.source||'')+(a.year?' · '+a.year:''),journal:a.journal||a.source||'',year:a.year||''};
+    });
+    window.__v20GuidelineSources=(data.sources&&data.sources.niceGuidelines||[]).map(function(g){
+     return{type:'guideline',title:g.title||'',id:g.url||'',meta:'NICE'+(g.date?' · '+g.date:''),journal:'NICE',year:(String(g.date||'').match(/(20\d{2})/)||[])[1]||''};
+    });
+    window.__v20PmcSources=[];window.__v20NiceSources=[];
+    window.__v20Refs=buildNumberedRefs(userText);
+    orchSources=orchSources.concat(window.__v20LiteratureSources).concat(window.__v20GuidelineSources);
     if(data.sources&&data.sources.fdaDrug){
      var f=data.sources.fdaDrug;
      orchSources.push({type:'drug',title:(f.brandName||f.genericName||'Ficha FDA'),id:'',meta:'OpenFDA'+(f.manufacturer?' · '+f.manufacturer:'')});
@@ -5885,18 +5929,25 @@ render();
   var contents=[];
   hist.slice(-10).forEach(function(m){contents.push({role:m.role==='user'?'user':'model',parts:[{text:m.content}]})});
   var parts=[{text:prompt}];
-  if(att&&(att.kind==='image'||att.kind==='pdf'))parts.push({inlineData:{mimeType:att.mime,data:att.data}});
+  var hasMedia=att&&(att.kind==='image'||att.kind==='pdf');
+  if(hasMedia)parts.push({inlineData:{mimeType:att.mime,data:att.data}});
   contents.push({role:'user',parts:parts});
-  var body={systemInstruction:{parts:[{text:sys}]},contents:contents,generationConfig:{temperature:0.18,maxOutputTokens:8192}};
-  var url='https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+encodeURIComponent(key);
-  return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(res){
-   return res.json().catch(function(){return {}}).then(function(data){
-    if(!res.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:('Error '+res.status));
-    var c=data.candidates&&data.candidates[0];
-    if(!c||!c.content||!c.content.parts)throw new Error('Respuesta vacía del modelo');
-    return c.content.parts.map(function(p){return p.text||''}).join('').trim()||'(sin respuesta)';
+  function callDirectNonStreaming(){
+   var body={systemInstruction:{parts:[{text:sys}]},contents:contents,generationConfig:{temperature:0.18,maxOutputTokens:8192}};
+   var url='https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+encodeURIComponent(key);
+   return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(res){
+    return res.json().catch(function(){return {}}).then(function(data){
+     if(!res.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:('Error '+res.status));
+     var c=data.candidates&&data.candidates[0];
+     if(!c||!c.content||!c.content.parts)throw new Error('Respuesta vacía del modelo');
+     return c.content.parts.map(function(p){return p.text||''}).join('').trim()||'(sin respuesta)';
+    });
    });
-  });
+  }
+  if(!hasMedia&&typeof onDelta==='function'){
+   return streamGeminiDirect(sys,contents,key,onDelta).catch(function(){ return callDirectNonStreaming(); });
+  }
+  return callDirectNonStreaming();
  }
  async function send(){
   var text=ta.value.trim();if(!text&&!attachment)return;pauseVoiceInput();voiceBusy=voiceSession;
@@ -5916,23 +5967,46 @@ render();
   }
   var typ=document.createElement('div');typ.className='cc-typing';typ.innerHTML='<span></span><span></span><span></span>';chat.appendChild(typ);chat.scrollTop=chat.scrollHeight;
   var route=routeQuestion(text||'',att);var snapshot=caseSnapshot(text||'',route);window.__v21LastQuestion=text||'';
-  var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='';
+  var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='',niceCtx='';
   try{if(typeof window.iNurseLibraryRetrieve==='function')libraryCtx=window.iNurseLibraryRetrieve(text||'',8)||''}catch(e){}
-  try{pmcCtx=await pmcRetrieve(text||'',8)||''}catch(e){console.error('PMC error:',e)}
-  try{litCtx=await literatureRetrieve(text||'',8)||''}catch(e){console.error('Literature error:',e)}
-  try{guidelineCtx=await guidelineRetrieve(text||'',6)||''}catch(e){console.error('Guideline error:',e)}
-  var niceCtx='';
-  try{niceCtx=await niceRetrieve(text||'',6)||''}catch(e){console.error('NICE error:',e)}
+  var _mode=connectionMode();
+  if(_mode==='backend'){
+   /* El servidor (searchAllSources) ya busca en PubMed/Crossref/NICE/guías EN PARALELO
+      antes de llamar a Gemini; repetir esas 4 búsquedas aquí solo añadía espera sin
+      aportar nada (el servidor las ignoraba). Se dejan vacías: call() reconstruye las
+      referencias a partir de lo que devuelve el propio backend. */
+   window.__v20PmcSources=[];window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20NiceSources=[];
+  } else {
+   var _r=await Promise.all([
+    withTimeout(pmcRetrieve(text||'',8).catch(function(){return '';}),7000),
+    withTimeout(literatureRetrieve(text||'',8).catch(function(){return '';}),7000),
+    withTimeout(guidelineRetrieve(text||'',6).catch(function(){return '';}),7000),
+    withTimeout(niceRetrieve(text||'',6).catch(function(){return '';}),7000)
+   ]);
+   pmcCtx=_r[0]||'';litCtx=_r[1]||'';guidelineCtx=_r[2]||'';niceCtx=_r[3]||'';
+  }
   var librarySources=parseLibrarySources(libraryCtx);
   window.__v20GuideSources=gd.sources||[];window.__v20LibrarySources=librarySources;
   window.__v20OrchestratorSources=[];
   var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20PmcSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]);
   var refs=buildNumberedRefs(text); window.__v20Refs=refs;
-  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route).then(function(reply){
+  var streamNode=null;
+  function onStreamDelta(fullText){
+   if(!streamNode){
+    typ.remove();
+    streamNode=document.createElement('div');streamNode.className='cc-msg b cc-streaming';
+    chat.appendChild(streamNode);
+   }
+   streamNode.textContent=fullText;chat.scrollTop=chat.scrollHeight;
+  }
+  var canStream=_mode==='direct'&&!att;
+  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null).then(function(reply){
+   if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
+   var refsNow=window.__v20Refs||refs;
    if(window.__v20OrchestratorSources&&window.__v20OrchestratorSources.length)allSources=allSources.concat(window.__v20OrchestratorSources);
-   typ.remove();var bm={role:'bot',content:reply,refs:refs};messages.push(bm);var node=rmsg(bm);
+   typ.remove();var bm={role:'bot',content:reply,refs:refsNow};messages.push(bm);var node=rmsg(bm);
    node.insertAdjacentHTML('beforeend',mediaResultPanel(att,text));
-   node.insertAdjacentHTML('beforeend',renderRefsPanel(refs));
+   node.insertAdjacentHTML('beforeend',renderRefsPanel(refsNow));
    node.insertAdjacentHTML('beforeend',casePanel(snapshot));
    node.insertAdjacentHTML('beforeend',actionPanel(route));
    var localCheck=localVerify(reply,text,route,allSources,snapshot);
@@ -5953,6 +6027,7 @@ render();
    }
    if(verifyEnabled&&connectionMode()!=='local')remoteVerify(reply,text,route,allSources,localCheck).then(function(v){var host=document.getElementById(verifyId);if(host)host.innerHTML=verificationHTML(v,false)});
   }).catch(function(err){
+   if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    typ.remove();updateConn('error');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
   });
  }
