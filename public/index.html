@@ -5935,7 +5935,6 @@ render();
    node.insertAdjacentHTML('beforeend',renderRefsPanel(refs));
    node.insertAdjacentHTML('beforeend',casePanel(snapshot));
    node.insertAdjacentHTML('beforeend',actionPanel(route));
-   node.insertAdjacentHTML('beforeend',sourcePanel(allSources));
    var localCheck=localVerify(reply,text,route,allSources,snapshot);
    var verifyId='v22verify-'+Date.now()+'-'+Math.floor(Math.random()*1000);
    node.insertAdjacentHTML('beforeend','<div id="'+verifyId+'">'+verificationHTML(localCheck,verifyEnabled&&connectionMode()!=='local')+'</div>');
@@ -5954,7 +5953,7 @@ render();
    }
    if(verifyEnabled&&connectionMode()!=='local')remoteVerify(reply,text,route,allSources,localCheck).then(function(v){var host=document.getElementById(verifyId);if(host)host.innerHTML=verificationHTML(v,false)});
   }).catch(function(err){
-   typ.remove();updateConn('error');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',sourcePanel(allSources));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
+   typ.remove();updateConn('error');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
   });
  }
 
