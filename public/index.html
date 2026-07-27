@@ -1612,7 +1612,7 @@ main{perspective:1400px}
 #in192PrimaryNav{
   position:sticky;top:0;z-index:48;
   max-width:960px;margin:9px auto 0;padding:7px;
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;
   border:1px solid var(--border);border-radius:18px;
   background:color-mix(in srgb,var(--card-solid) 88%,transparent);
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
@@ -1701,8 +1701,8 @@ body.in192-library-view .foot{display:none!important}
 body.in192-library-view #in192LibraryHome{display:block!important}
 
 @media(max-width:720px){
-  #in192PrimaryNav{margin:7px 8px 0;grid-template-columns:repeat(4,minmax(72px,1fr));overflow-x:auto}
-  .in192-nav-btn{min-width:72px;flex-direction:column;gap:2px;padding:5px}
+  #in192PrimaryNav{margin:7px 8px 0;grid-template-columns:repeat(5,minmax(0,1fr));overflow-x:auto}
+  .in192-nav-btn{min-width:0;flex-direction:column;gap:2px;padding:5px}
   .in192-nav-btn span{font-size:18px}.in192-nav-btn b{font-size:9px}
   #in192LibraryHome{padding:8px 12px 18px}
   .in192-lib-hero{grid-template-columns:1fr;padding:17px}
@@ -2888,14 +2888,17 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 </header>
 
 <nav id="in192PrimaryNav" aria-label="Navegación principal de iNurse">
-  <button type="button" class="in192-nav-btn on" data-in192-view="home">
-    <span>🏠</span><b>Inicio</b>
+  <button type="button" class="in192-nav-btn" data-in192-view="search">
+    <span>🔍</span><b>Buscar</b>
   </button>
-  <button type="button" class="in192-nav-btn" data-in192-view="guides">
-    <span>🩺</span><b>Guías clínicas</b>
+  <button type="button" class="in192-nav-btn on" data-in192-view="home">
+    <span>👤</span><b>Mi turno</b>
+  </button>
+  <button type="button" class="in192-nav-btn" data-in192-view="tools">
+    <span>🧰</span><b>Herramientas</b>
   </button>
   <button type="button" class="in192-nav-btn library" data-in192-view="library">
-    <span>📚</span><b>Biblioteca virtual</b>
+    <span>📚</span><b>Biblioteca</b>
   </button>
   <button type="button" class="in192-nav-btn" data-in192-view="vivi">
     <span>✨</span><b>Vivi</b>
@@ -14074,6 +14077,18 @@ function showViviView(){
   const btn=$('#ccFab')||$('#viviFab')||$('#in54ViviDock')||$('#in50ViviDock');
   if(btn)btn.click();
 }
+function showSearchView(){
+  hideLibraryLanding();setActive('search');
+  const fab=$('#nxSearchFab');
+  if(fab){fab.click();return;}
+  const inp=$('#search');
+  if(inp){inp.value='';inp.focus();}
+}
+function showToolsView(){
+  hideLibraryLanding();setActive('tools');
+  if(typeof window.openCalcs==='function'){window.openCalcs();return;}
+  const btn=$('#calcFab');if(btn)btn.click();
+}
 function openLibrary(mode='all'){
   if(window.iNurse21&&typeof window.iNurse21.organize==='function'&&mode!=='all'){
     window.iNurse21.organize(mode,'all');return;
@@ -14090,6 +14105,8 @@ function install(){
       const b=e.target.closest('[data-in192-view]');if(!b)return;
       const view=b.dataset.in192View;
       if(view==='home')showHomeView();
+      else if(view==='search')showSearchView();
+      else if(view==='tools')showToolsView();
       else if(view==='guides')showGuidesView();
       else if(view==='library')showLibraryView();
       else if(view==='vivi')showViviView();
@@ -16550,7 +16567,7 @@ activationCheck();
 #in50Home .in60-shell{ display:none !important; }
 /* En el inicio ocultamos la interfaz antigua (barras y botones flotantes) para dejar solo el nuevo diseño */
 body:not(.in60-content-mode) header:has(#search),
-body:not(.in60-content-mode) #in192PrimaryNav,
+/* nav siempre visible — ya no se oculta */
 body:not(.in60-content-mode) .fab-stack,
 body:not(.in60-content-mode) #icFab,
 body:not(.in60-content-mode) #calcFab,
