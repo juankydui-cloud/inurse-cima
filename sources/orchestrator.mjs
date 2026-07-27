@@ -444,26 +444,118 @@ async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, ma
   return candidate.content.parts.map(p => p.text || "").join("").trim();
 }
 
-export async function orchestrate({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }) {
-  const key = apiKey || process.env.GEMINI_API_KEY || "";
-  if (!key) {
-    throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
+// Variante en streaming de callGemini: usa el endpoint SSE de Gemini con fetch()
+// nativo de Node (requestJSON/httpRequest de cache.mjs bufferizan la respuesta
+// completa y no sirven para ir emitiendo texto parcial).
+async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, history, maxOutputTokens = 8192, temperature = 0.3 } = {}, onDelta) {
+  if (!apiKey) throw new Error("Falta la API Key de Gemini (GEMINI_API_KEY)");
+
+  const contents = [];
+  if (history?.length) {
+    for (const m of history.slice(-10)) {
+      contents.push({ role: m.role === "user" ? "user" : "model", parts: [{ text: m.content }] });
+    }
+  }
+  contents.push({ role: "user", parts: [{ text: userPrompt }] });
+
+  const url = `${GEMINI_BASE}/${model || GEMINI_MODEL}:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
+  const body = {
+    systemInstruction: { parts: [{ text: systemPrompt }] },
+    contents,
+    generationConfig: { temperature, maxOutputTokens, topP: 0.8, topK: 40 }
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok || !res.body) {
+    let errData = {};
+    try { errData = await res.json(); } catch { /* respuesta de error no era JSON */ }
+    throw new Error(errData?.error?.message || `Error ${res.status} llamando a Gemini`);
   }
 
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let buf = "", full = "";
+
+  while (true) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    buf += decoder.decode(chunk.value, { stream: true });
+    const events = buf.split("\n\n");
+    buf = events.pop();
+    for (const raw of events) {
+      const line = raw.trim();
+      if (line.indexOf("data:") !== 0) continue;
+      const jsonStr = line.replace(/^data:\s*/, "").trim();
+      if (!jsonStr || jsonStr === "[DONE]") continue;
+      try {
+        const evt = JSON.parse(jsonStr);
+        const cand = evt?.candidates?.[0];
+        const t = cand?.content?.parts ? cand.content.parts.map(p => p.text || "").join("") : "";
+        if (t) { full += t; if (onDelta) onDelta(full); }
+      } catch { /* fragmento SSE incompleto: se completa en el siguiente chunk */ }
+    }
+  }
+
+  return full.trim() || "(sin respuesta)";
+}
+
+function buildSourcesPayload({ articles, niceGuidelines, fdaDrug, queries, errors }) {
+  return {
+    articles: articles.map(a => ({
+      title: a.title, authors: Array.isArray(a.authors) ? a.authors.join(", ") : a.authors,
+      journal: a.journal, year: a.year, doi: a.doi, pmid: a.pmid,
+      source: a.retrievedFrom || a.source, url: a.url
+    })),
+    niceGuidelines: niceGuidelines.map(g => ({
+      title: g.title, id: g.id, url: g.url, date: g.date,
+      type: g.type, summary: g.summary, source: "NICE"
+    })),
+    fdaDrug: fdaDrug ? {
+      genericName: fdaDrug.genericName, brandName: fdaDrug.brandName,
+      manufacturer: fdaDrug.manufacturer, route: fdaDrug.route,
+      boxedWarning: !!fdaDrug.boxedWarning, source: "OpenFDA"
+    } : null,
+    queries,
+    errors: errors.length ? errors : undefined
+  };
+}
+
+async function prepareOrchestration(question, clientContext) {
   const searchResults = await searchAllSources(question);
   const { articles, niceGuidelines, fdaDrug, drugDetected, queries, errors } = searchResults;
   console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length} | NICE: ${niceGuidelines.length} | FDA: ${fdaDrug ? "sí" : "no"}` +
     (drugDetected ? ` | Fármaco: ${drugDetected}` : "") +
     (errors.length ? ` | Errores: ${errors.join("; ")}` : ""));
 
-  const userPrompt = assembleContext(question, searchResults, clientContext);
+  return {
+    searchResults,
+    userPrompt: assembleContext(question, searchResults, clientContext),
+    sources: buildSourcesPayload(searchResults)
+  };
+}
 
+function buildSystemPrompt(caseMemory) {
   let sys = SYSTEM_PROMPT;
   if (caseMemory?.length) {
     sys += "\n\n[MEMORIA TEMPORAL DEL CASO]\n" + caseMemory.slice(-6).join("\n") + "\n[FIN MEMORIA]";
   }
+  return sys;
+}
 
-  const answer = await callGemini(sys, userPrompt, {
+export async function orchestrate({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }) {
+  const key = apiKey || process.env.GEMINI_API_KEY || "";
+  if (!key) {
+    throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
+  }
+
+  const { userPrompt, sources } = await prepareOrchestration(question, clientContext);
+
+  const answer = await callGemini(buildSystemPrompt(caseMemory), userPrompt, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
@@ -471,28 +563,32 @@ export async function orchestrate({ question, context: clientContext, history, a
     temperature: 0.3
   });
 
-  return {
-    answer,
-    sources: {
-      articles: articles.map(a => ({
-        title: a.title, authors: Array.isArray(a.authors) ? a.authors.join(", ") : a.authors,
-        journal: a.journal, year: a.year, doi: a.doi, pmid: a.pmid,
-        source: a.retrievedFrom || a.source, url: a.url
-      })),
-      niceGuidelines: niceGuidelines.map(g => ({
-        title: g.title, id: g.id, url: g.url, date: g.date,
-        type: g.type, summary: g.summary, source: "NICE"
-      })),
-      fdaDrug: fdaDrug ? {
-        genericName: fdaDrug.genericName, brandName: fdaDrug.brandName,
-        manufacturer: fdaDrug.manufacturer, route: fdaDrug.route,
-        boxedWarning: !!fdaDrug.boxedWarning, source: "OpenFDA"
-      } : null,
-      queries,
-      errors: errors.length ? errors : undefined
-    },
-    fetchedAt: new Date().toISOString()
-  };
+  return { answer, sources, fetchedAt: new Date().toISOString() };
+}
+
+// Variante en streaming de orchestrate(): en vez de devolver la respuesta completa
+// de una vez, emite eventos vía onEvent({type,...}) a medida que están disponibles
+// (fuentes en cuanto se resuelve la búsqueda, texto parcial a medida que Gemini lo
+// genera, y un evento final "done"). No escribe nada en la red directamente: eso lo
+// hace el llamador (server.mjs), que decide el formato de transporte (NDJSON).
+export async function orchestrateStream({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }, onEvent) {
+  const key = apiKey || process.env.GEMINI_API_KEY || "";
+  if (!key) {
+    throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
+  }
+
+  const { userPrompt, sources } = await prepareOrchestration(question, clientContext);
+  onEvent({ type: "sources", sources });
+
+  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
+    apiKey: key,
+    model: model || GEMINI_MODEL,
+    history,
+    maxOutputTokens: 8192,
+    temperature: 0.3
+  }, (fullText) => onEvent({ type: "delta", text: fullText }));
+
+  onEvent({ type: "done", answer, sources, fetchedAt: new Date().toISOString() });
 }
 
 // Transcribe audio (base64) a texto usando Gemini. Devuelve "" si no hay voz clara.
