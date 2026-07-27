@@ -5898,32 +5898,70 @@ render();
   if(!backend&&!key)return Promise.resolve(buildLocalAnswer(userText,window.__v20GuideSources||[],window.__v20LibrarySources||[],route));
   if(backend){
    updateConn('backend');
-   return fetch(backend+'/api/vivi/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
-    attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
-   })}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
-    if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
+   // El servidor (searchAllSources) ya busca en paralelo PubMed/Crossref/NICE/FDA/etc.
+   // Reconstruimos aquí las referencias numeradas [n] a partir de SUS resultados
+   // (no de una búsqueda redundante del navegador) para que el panel de evidencia
+   // y las citas [n] sigan funcionando también en modo backend, sin duplicar peticiones.
+   function applyBackendSources(sources){
     var orchSources=[];
-    // El servidor (searchAllSources) ya busca en paralelo PubMed/Crossref/NICE/FDA/etc.
-    // Reconstruimos aquí las referencias numeradas [n] a partir de SUS resultados
-    // (no de una búsqueda redundante del navegador) para que el panel de evidencia
-    // y las citas [n] sigan funcionando también en modo backend, sin duplicar peticiones.
-    window.__v20LiteratureSources=(data.sources&&data.sources.articles||[]).map(function(a){
+    window.__v20LiteratureSources=(sources&&sources.articles||[]).map(function(a){
      return{type:'literature',title:a.title||'',id:a.url||(a.doi?'https://doi.org/'+a.doi:''),meta:(a.journal||a.source||'')+(a.year?' · '+a.year:''),journal:a.journal||a.source||'',year:a.year||''};
     });
-    window.__v20GuidelineSources=(data.sources&&data.sources.niceGuidelines||[]).map(function(g){
+    window.__v20GuidelineSources=(sources&&sources.niceGuidelines||[]).map(function(g){
      return{type:'guideline',title:g.title||'',id:g.url||'',meta:'NICE'+(g.date?' · '+g.date:''),journal:'NICE',year:(String(g.date||'').match(/(20\d{2})/)||[])[1]||''};
     });
     window.__v20PmcSources=[];window.__v20NiceSources=[];
     window.__v20Refs=buildNumberedRefs(userText);
     orchSources=orchSources.concat(window.__v20LiteratureSources).concat(window.__v20GuidelineSources);
-    if(data.sources&&data.sources.fdaDrug){
-     var f=data.sources.fdaDrug;
+    if(sources&&sources.fdaDrug){
+     var f=sources.fdaDrug;
      orchSources.push({type:'drug',title:(f.brandName||f.genericName||'Ficha FDA'),id:'',meta:'OpenFDA'+(f.manufacturer?' · '+f.manufacturer:'')});
     }
     window.__v20OrchestratorSources=orchSources;
-    return data.answer||data.text||'(sin respuesta)';
-   })});
+   }
+   var backendPayload={
+    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
+    attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
+   };
+   function callBackendNonStreaming(){
+    return fetch(backend+'/api/vivi/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(backendPayload)}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
+     if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
+     applyBackendSources(data.sources);
+     return data.answer||data.text||'(sin respuesta)';
+    })});
+   }
+   function callBackendStreaming(){
+    return fetch(backend+'/api/vivi/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(backendPayload)}).then(function(res){
+     if(!res.ok||!res.body)throw new Error('HTTP '+res.status);
+     var reader=res.body.getReader(),decoder=new TextDecoder('utf-8'),buf='',finalAnswer=null,gotSources=false;
+     function processLine(line){
+      line=line.trim();if(!line)return;
+      var evt;try{evt=JSON.parse(line);}catch(e){return;}
+      if(evt.type==='sources'){applyBackendSources(evt.sources);gotSources=true;}
+      else if(evt.type==='delta'){if(onDelta)onDelta(evt.text||'');}
+      else if(evt.type==='done'){if(!gotSources)applyBackendSources(evt.sources);finalAnswer=evt.answer||'(sin respuesta)';}
+      else if(evt.type==='error'){throw new Error(evt.error||'Error del servidor');}
+     }
+     function pump(){
+      return reader.read().then(function(chunk){
+       if(chunk.done){
+        var rest=buf.trim();if(rest)processLine(rest);
+        if(finalAnswer===null)throw new Error('Streaming interrumpido sin respuesta');
+        return finalAnswer;
+       }
+       buf+=decoder.decode(chunk.value,{stream:true});
+       var lines=buf.split('\n');buf=lines.pop();
+       for(var i=0;i<lines.length;i++)processLine(lines[i]);
+       return pump();
+      });
+     }
+     return pump();
+    });
+   }
+   if(!att&&typeof onDelta==='function'){
+    return callBackendStreaming().catch(function(){ return callBackendNonStreaming(); });
+   }
+   return callBackendNonStreaming();
   }
   updateConn('direct');
   var contents=[];
@@ -5999,7 +6037,7 @@ render();
    }
    streamNode.textContent=fullText;chat.scrollTop=chat.scrollHeight;
   }
-  var canStream=_mode==='direct'&&!att;
+  var canStream=(_mode==='direct'||_mode==='backend')&&!att;
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null).then(function(reply){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    var refsNow=window.__v20Refs||refs;
