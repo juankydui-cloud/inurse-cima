@@ -5989,8 +5989,11 @@ render();
     return res.json().catch(function(){return {}}).then(function(data){
      if(!res.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:('Error '+res.status));
      var c=data.candidates&&data.candidates[0];
+     if(data&&data.promptFeedback&&data.promptFeedback.blockReason)throw new Error('Gemini bloqueó la respuesta por seguridad de contenido ('+data.promptFeedback.blockReason+'). Reformula la pregunta.');
      if(!c||!c.content||!c.content.parts)throw new Error('Respuesta vacía del modelo');
-     return c.content.parts.map(function(p){return p.text||''}).join('').trim()||'(sin respuesta)';
+     var dt=c.content.parts.map(function(p){return p.text||''}).join('').trim();
+     if(!dt)throw new Error('Gemini devolvió una respuesta vacía'+(c.finishReason?' (motivo: '+c.finishReason+')':'')+'. Revisa la clave y el modelo en Ajustes.');
+     return dt;
     });
    });
   }
