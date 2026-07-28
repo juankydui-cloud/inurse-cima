@@ -20,6 +20,10 @@ const SHELL_ASSETS = [
   "/icon-192.png",
   "/icon-512.png",
   "/icon-512-maskable.png",
+  "/data/guias.js",
+  "/data/vademecum.js",
+  "/data/diluciones.js",
+  "/data/escalas.js",
 ];
 
 self.addEventListener("install", (event) => {
