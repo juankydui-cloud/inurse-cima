@@ -5806,7 +5806,9 @@ render();
     }catch(e){ /* fragmento SSE incompleto: se completa en el siguiente chunk */ }
    }
   }
-  return full.trim()||'(sin respuesta)';
+  var out=full.trim();
+  if(!out)throw new Error('Gemini devolvió una respuesta vacía. Revisa la clave y el modelo en Ajustes.');
+  return out;
  }
  function withTimeout(promise,ms){
   return new Promise(function(resolve){
