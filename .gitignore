@@ -23,3 +23,9 @@ dist/
 
 # Excepción: los iconos de la PWA sí deben publicarse (si no, la app no es instalable).
 !public/icon-*.png
+
+# graphify: se versiona el grafo (útil en sesiones efímeras), no el caché local.
+graphify-out/cache/
+graphify-out/.graphify_*
+graphify-out/manifest.json
+.graphify_version
