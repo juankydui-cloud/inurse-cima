@@ -590,6 +590,20 @@
   .perf-print-text{width:100%;min-height:120px;padding:10px;border-radius:8px;
     border:1px solid var(--border);background:var(--bg);color:var(--text);
     font-family:monospace;font-size:12px;resize:vertical;margin-bottom:8px}
+  #perf-search{margin-bottom:6px;padding:8px 10px;border-radius:8px;font-size:13px}
+  .perf-multi-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .perf-multi-bar button{font-size:12px;padding:6px 10px}
+  .perf-multi{margin-top:12px;padding:14px;border-radius:12px;
+    border:1px solid rgba(14,165,233,.25);background:rgba(14,165,233,.04)}
+  .perf-multi-title{font-size:13px;font-weight:800;margin-bottom:8px}
+  .perf-multi-table{width:100%;border-collapse:collapse;font-size:13px}
+  .perf-multi-table th{text-align:left;padding:5px 6px;border-bottom:2px solid var(--border);
+    font-size:11px;color:var(--text-dim);font-weight:700}
+  .perf-multi-table td{padding:4px 6px;border-bottom:1px solid var(--border)}
+  .perf-multi-table tfoot td{border-top:2px solid var(--border);padding-top:8px;font-size:14px}
+  .perf-multi-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 6px}
+  .perf-multi-del:hover{color:#EF4444}
+  .perf-multi-empty{font-size:12px;color:var(--text-dim);padding:8px 0}
 
   /* FAB Calculadora */
   #calcFab{position:fixed;left:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;
@@ -6348,6 +6362,8 @@ function renderPerf(){
     <div class="calc-fields">
       <div class="calc-field">
         <label>Fármaco</label>
+        <input type="text" id="perf-search" placeholder="Buscar fármaco…" autocomplete="off"
+          oninput="perfFilterDrugs(this.value)" onfocus="this.select()">
         <select id="perf-farm" onchange="onPerfFarm()">${customOpts}${baseOpts}${addOpt}</select>
       </div>
       <div class="calc-field">
@@ -6384,6 +6400,11 @@ function renderPerf(){
     </div>
     <div id="perfExtra"></div>
     <div class="calc-warn">⚠️ Verifica siempre con la ficha del fármaco y con farmacia. Diluciones habituales; pueden variar por servicio.</div>
+    <div class="perf-multi-bar">
+      <button class="btn-outline" onclick="perfMultiAdd()">➕ Añadir a perfusiones activas</button>
+      <button class="btn-outline" onclick="perfMultiToggle()">📋 Ver perfusiones activas (<span id="perfMultiCount">0</span>)</button>
+    </div>
+    <div id="perfMultiPanel" class="perf-multi" style="display:none"></div>
   </div>`;
 }
 
@@ -6741,6 +6762,98 @@ function perfPrint(){
       <button class="btn-primary" onclick="navigator.clipboard.writeText(this.closest('.perf-print').querySelector('textarea').value);toast('📋 Copiado')">📋 Copiar</button>
     </div>
   </div>`;
+}
+
+function perfFilterDrugs(q){
+  const sel = document.getElementById("perf-farm");
+  if(!sel) return;
+  q = (q||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const opts = sel.querySelectorAll("option, optgroup");
+  if(!q){ opts.forEach(o => o.style.display = ""); return; }
+  sel.querySelectorAll("optgroup").forEach(g => g.style.display = "none");
+  let firstMatch = null;
+  sel.querySelectorAll("option").forEach(o => {
+    if(o.value === "__new__"){ o.style.display = ""; return; }
+    const text = o.textContent.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+    const match = text.includes(q) || o.value.toLowerCase().includes(q);
+    o.style.display = match ? "" : "none";
+    if(match){
+      if(!firstMatch) firstMatch = o.value;
+      const g = o.closest("optgroup");
+      if(g) g.style.display = "";
+    }
+  });
+  if(firstMatch && sel.value !== firstMatch){ sel.value = firstMatch; onPerfFarm(); }
+}
+
+const perfMultiList = [];
+
+function perfMultiAdd(){
+  const k = document.getElementById("perf-farm").value;
+  if(k === "__new__") return;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const dosis = parseFloat(document.getElementById("perf-dosis").value) || 0;
+  const u = f.dosis.unidad;
+  let mlH = 0;
+  if(u.includes("mcg/kg/min")) mlH = dosis * peso * 60 / (dil.cMcgMl||1);
+  else if(u === "mcg/min") mlH = dosis * 60 / (dil.cMcgMl||1);
+  else if(u.includes("mcg/kg/h")) mlH = dosis * peso / (dil.cMcgMl||1);
+  else if(u.includes("mg/kg/h")) mlH = dosis * peso / (dil.cMgMl||1);
+  else if(u === "mg/h") mlH = dosis / (dil.cMgMl||1);
+  else if(u === "UI/kg/h") mlH = dosis * peso / (dil.cUIMl||1);
+  else if(u === "UI/h") mlH = dosis / (dil.cUIMl||1);
+  const existing = perfMultiList.findIndex(e => e.key === k);
+  if(existing >= 0) perfMultiList[existing] = { key: k, name: f.n, dosis, unidad: u, mlH, dil: dil.l };
+  else perfMultiList.push({ key: k, name: f.n, dosis, unidad: u, mlH, dil: dil.l });
+  document.getElementById("perfMultiCount").textContent = perfMultiList.length;
+  perfMultiRender();
+  const panel = document.getElementById("perfMultiPanel");
+  if(panel) panel.style.display = "";
+  toast("➕ " + f.n + " añadida");
+}
+
+function perfMultiRemove(idx){
+  perfMultiList.splice(idx, 1);
+  document.getElementById("perfMultiCount").textContent = perfMultiList.length;
+  perfMultiRender();
+  if(!perfMultiList.length){
+    const panel = document.getElementById("perfMultiPanel");
+    if(panel) panel.style.display = "none";
+  }
+}
+
+function perfMultiToggle(){
+  const panel = document.getElementById("perfMultiPanel");
+  if(!panel) return;
+  panel.style.display = panel.style.display === "none" ? "" : "none";
+  if(panel.style.display !== "none") perfMultiRender();
+}
+
+function perfMultiRender(){
+  const panel = document.getElementById("perfMultiPanel");
+  if(!panel) return;
+  if(!perfMultiList.length){
+    panel.innerHTML = '<div class="perf-multi-empty">No hay perfusiones activas. Pulsa "➕ Añadir" para registrar la perfusión actual.</div>';
+    return;
+  }
+  const totalMlH = perfMultiList.reduce((s,e) => s + e.mlH, 0);
+  const rows = perfMultiList.map((e,i) =>
+    `<tr>
+      <td><b>${escapeHtml(e.name)}</b></td>
+      <td>${e.dosis} ${e.unidad}</td>
+      <td><b>${e.mlH.toFixed(1)}</b></td>
+      <td><button class="perf-multi-del" onclick="perfMultiRemove(${i})">✕</button></td>
+    </tr>`).join("");
+  panel.innerHTML = `<div class="perf-multi-title">📋 Perfusiones activas</div>
+    <table class="perf-multi-table">
+      <thead><tr><th>Fármaco</th><th>Dosis</th><th>mL/h</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2"><b>Total volumen/h</b></td><td><b>${totalMlH.toFixed(1)}</b></td><td></td></tr>
+        <tr><td colspan="2">Volumen/24h</td><td><b>${(totalMlH*24).toFixed(0)} mL</b></td><td></td></tr></tfoot>
+    </table>`;
 }
 
 function runPerfInverse(){
