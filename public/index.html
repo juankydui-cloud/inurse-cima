@@ -7770,65 +7770,7 @@ function dermPick(el){
     });
   }, { passive: true });
 
-  /* ---- 2. Menú desplegable de categorías (espejo de los chips) ---- */
-  const chipsRow = document.getElementById('chips');
-  if (chipsRow) {
-    const COLORS = {
-      all:'#A855F7', resp:'#22D3EE', cardio:'#F43F5E', ictus:'#A855F7',
-      emer:'#FB923C', extra:'#14B8A6', esp:'#FACC15', uci:'#6366F1',
-      imagen:'#8B5CF6', obst:'#EC4899', ped:'#F97316', trauma:'#DC2626',
-      farm:'#0891B2', recent:'#64748B', fav:'#F59E0B'
-    };
-    const bar2 = document.createElement('div');
-    bar2.className = 'cat-bar';
-    bar2.innerHTML =
-      '<button class="cat-toggle" id="catToggle" aria-haspopup="true" aria-expanded="false">' +
-        '<span class="dot"></span><span class="em" id="catEm">📋</span>' +
-        '<span class="lbl"><small>Categoría</small><span id="catLbl">Todos</span></span>' +
-        '<span class="chev">▼</span></button>' +
-      '<div class="cat-panel" id="catPanel" role="menu"><div class="cat-grid" id="catGrid"></div></div>';
-    chipsRow.parentNode.insertBefore(bar2, chipsRow);
-
-    const grid = document.getElementById('catGrid');
-    const toggle = document.getElementById('catToggle');
-    const chips = Array.from(chipsRow.querySelectorAll('.chip'));
-
-    chips.forEach(ch => {
-      const c = ch.dataset.c;
-      const em = (ch.querySelector('.em') || {}).textContent || '📄';
-      const label = ch.textContent.replace(em, '').trim();
-      const tile = document.createElement('button');
-      tile.className = 'cat-tile';
-      tile.dataset.c = c;
-      tile.style.setProperty('--tc', COLORS[c] || '#A855F7');
-      tile.innerHTML = '<span class="em">' + em + '</span><span>' + label + '</span>';
-      tile.addEventListener('click', () => { ch.click(); closePanel(); });
-      grid.appendChild(tile);
-    });
-
-    function syncActive(){
-      const act = chipsRow.querySelector('.chip.active');
-      const c = act ? act.dataset.c : 'all';
-      grid.querySelectorAll('.cat-tile').forEach(t => t.classList.toggle('active', t.dataset.c === c));
-      const em = act ? ((act.querySelector('.em') || {}).textContent || '📋') : '📋';
-      document.getElementById('catEm').textContent = em;
-      document.getElementById('catLbl').textContent = act ? act.textContent.replace(em,'').trim() : 'Todos';
-      toggle.style.setProperty('--cat-ac', COLORS[c] || '#A855F7');
-    }
-    new MutationObserver(syncActive).observe(chipsRow, { attributes:true, subtree:true, attributeFilter:['class'] });
-    syncActive();
-
-    function closePanel(){ bar2.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = bar2.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', e => { if (!bar2.contains(e.target)) closePanel(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-  }
-
-  /* ---- 3. Tilt 3D sutil en las tarjetas de grupo (solo con ratón) ---- */
+  /* ---- 2. Tilt 3D sutil en las tarjetas de grupo (solo con ratón) ---- */
   const content = document.getElementById('content');
   if (content && matchMedia('(hover:hover) and (pointer:fine)').matches && !reduced) {
     content.addEventListener('pointermove', e => {
@@ -7991,7 +7933,7 @@ function dermPick(el){
     active = false; save();
     clearTimeout(restartTimer);
     if (rec){ try{ rec.onend = null; rec.stop(); }catch(e){} rec = null; }
-    showChip(false); syncMenu();
+    showChip(false);
   }
   function save(){ try{ localStorage.setItem('guiaHJ23_handsfree', active ? '1':'0'); }catch(e){} }
   function toggle(){
@@ -7999,48 +7941,12 @@ function dermPick(el){
     else {
       active = true; save();
       if (start()){
-        showChip(true); syncMenu();
+        showChip(true);
         toast && toast('👂 Di "Oye Vivi" seguido del comando');
         if (typeof speak === 'function') speak('Manos libres activo. Di Oye Vivi seguido del comando.');
       } else { active = false; save(); }
     }
   }
-
-  /* ---- Añadir opción al menú de cabecera (v15) ---- */
-  function injectMenuRow(){
-    const panel = document.getElementById('hjMenuPanel');
-    if (!panel || document.getElementById('hfMenuRow')) return;
-    const row = document.createElement('div');
-    row.id = 'hfMenuRow';
-    row.className = 'hj-row hj-hf';
-    row.style.setProperty('--hc', '#22D3EE');
-    row.innerHTML =
-      '<div class="icon-btn" style="pointer-events:none">👂</div>' +
-      '<div><span class="hj-lbl">Manos libres</span>' +
-      '<span class="hj-sub">Di "Oye Vivi" y el comando</span></div>';
-    row.addEventListener('click', toggle);
-    /* Lo insertamos como segundo elemento (justo tras el SOS) */
-    const sos = panel.querySelector('.hj-sos');
-    if (sos && sos.nextSibling) panel.insertBefore(row, sos.nextSibling);
-    else panel.appendChild(row);
-  }
-  function syncMenu(){
-    const row = document.getElementById('hfMenuRow');
-    if (row) row.classList.toggle('active', active);
-  }
-  /* Esperar a que v15 haya creado el menú */
-  const wait = setInterval(()=>{
-    if (document.getElementById('hjMenuPanel')){
-      clearInterval(wait);
-      injectMenuRow();
-      /* Restaurar estado guardado */
-      try {
-        if (localStorage.getItem('guiaHJ23_handsfree') === '1'){
-          localStorage.setItem('guiaHJ23_handsfree','0');
-        }
-      } catch(e){}
-    }
-  }, 200);
 
   /* Comando por voz "manos libres" para desactivar desde dentro */
   const origHVC = window.handleVoiceCommand;
@@ -8568,9 +8474,6 @@ h1 small{color:rgba(226,232,240,.72) !important}
 body.inurse-home main .count, body.inurse-home main #content{display:none!important}
 body.inurse-home main{padding-top:0!important}
 body.inurse-home .disclaimer{margin-top:0!important}
-body:not(.inurse-home) #viviHero{display:none!important}
-body.inurse-home #viviHero{display:block!important}
-#viviHero .vivi-hero-card{border-radius:28px!important}
 .inurse-home-note{margin:14px auto 0;max-width:960px;padding:13px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:var(--text-dim);font-size:13px;line-height:1.45}
 /* Menú */
 .v29-head h2{font-size:17px!important}
@@ -9389,112 +9292,6 @@ main{
   display:block;
 }
 
-/* Hero original: lo convertimos en la tarjeta principal única */
-#viviHero{
-  display:block!important;
-  border:1px solid rgba(255,255,255,.16)!important;
-  border-radius:30px!important;
-  padding:22px!important;
-  margin:18px auto 16px!important;
-  background:
-    radial-gradient(360px 220px at 100% 4%,rgba(236,72,153,.22),transparent 65%),
-    linear-gradient(135deg,rgba(34,211,238,.14),rgba(139,92,246,.14) 48%,rgba(236,72,153,.14))!important;
-  box-shadow:0 26px 70px rgba(0,0,0,.40)!important;
-  overflow:hidden!important;
-}
-#viviHero .vivi-hero-top,
-#viviHero .in50-top{
-  align-items:center!important;
-}
-#viviHero .vivi-avatar,
-#viviHero .vivi-ico,
-#viviHero .in50-logo,
-#viviHero .logo{
-  width:68px!important;
-  height:68px!important;
-  border-radius:20px!important;
-  background:linear-gradient(135deg,var(--n54-cyan),var(--n54-violet),var(--n54-pink))!important;
-  box-shadow:0 16px 34px rgba(139,92,246,.35)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  overflow:hidden!important;
-  flex-shrink:0!important;
-}
-#viviHero h2,
-#viviHero h1{
-  font-size:28px!important;
-  letter-spacing:-.6px!important;
-  margin-bottom:4px!important;
-}
-#viviHero p{
-  color:var(--n54-muted)!important;
-  font-size:15px!important;
-  line-height:1.45!important;
-  max-width:780px!important;
-}
-#viviHero .vivi-hero-actions{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:12px!important;
-  margin-top:20px!important;
-}
-#viviHero .vivi-action{
-  min-height:112px!important;
-  border-radius:20px!important;
-  border:1px solid rgba(255,255,255,.17)!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.20)!important;
-  color:var(--n54-text)!important;
-  font-weight:800!important;
-  font-size:15px!important;
-  transition:transform .16s,border-color .16s,background .16s!important;
-}
-#viviHero .vivi-action span{
-  display:block!important;
-  font-size:34px!important;
-  margin-bottom:10px!important;
-  filter:drop-shadow(0 10px 18px rgba(34,211,238,.22));
-}
-#viviHero .vivi-action:hover{
-  transform:translateY(-3px)!important;
-  border-color:rgba(34,211,238,.55)!important;
-  background:linear-gradient(180deg,rgba(34,211,238,.13),rgba(139,92,246,.07))!important;
-}
-@media(max-width:720px){
-  #viviHero .vivi-hero-actions{grid-template-columns:1fr 1fr!important}
-  #viviHero{padding:18px!important;border-radius:24px!important}
-}
-
-/* Banda de definición: el texto subrayado en verde queda bajo la tarjeta */
-#in54SupportLine{
-  max-width:980px;
-  margin:0 auto 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 16px;
-  border-radius:18px;
-  border:1px solid rgba(34,211,238,.20);
-  background:linear-gradient(90deg,rgba(34,211,238,.12),rgba(139,92,246,.08),rgba(236,72,153,.06));
-  color:#D8F7FF;
-  box-shadow:0 18px 40px rgba(0,0,0,.22);
-}
-#in54SupportLine .ico{
-  width:36px;
-  height:36px;
-  border-radius:13px;
-  display:grid;
-  place-items:center;
-  background:rgba(34,211,238,.13);
-  border:1px solid rgba(34,211,238,.22);
-  color:var(--n54-cyan);
-  flex-shrink:0;
-}
-#in54SupportLine b{
-  color:#67E8F9;
-}
-
 /* Quitamos la tarjeta duplicada V5.0 y la fila de accesos rápidos duplicada */
 #in50Home .in50-hero,
 #in50Home .in50-critical,
@@ -9841,51 +9638,6 @@ body.in54-protocol-open{
     document.title = "iNurse V5.4 · Diseño limpio";
   }
 
-  function tuneHero(){
-    const hero = $("#viviHero");
-    if(!hero) return;
-
-    const avatar = hero.querySelector(".vivi-avatar,.vivi-ico,.in50-logo,.logo");
-    if(avatar) avatar.innerHTML = STETHO;
-
-    const title = hero.querySelector("h2,h1");
-    if(title) title.textContent = "iNurse";
-
-    const p = hero.querySelector("p");
-    if(p){
-      p.textContent = "Protocolos, fármacos, escalas y calculadoras clínicas en una interfaz rápida, clara y orientada a enfermería.";
-    }
-
-    const actions = hero.querySelector(".vivi-hero-actions");
-    if(actions){
-      actions.innerHTML = `
-        <button class="vivi-action" data-in54-act="guides"><span>📚</span>Guías clínicas</button>
-        <button class="vivi-action" data-in54-act="search"><span>🔎</span>Buscar</button>
-        <button class="vivi-action" data-in54-act="calc"><span>🧮</span>Calculadoras</button>
-        <button class="vivi-action" data-in54-act="vivi"><span>💬</span>Hablar con Vivi</button>
-      `;
-      actions.addEventListener("click", function(e){
-        const b = e.target.closest("[data-in54-act]");
-        if(!b) return;
-        const act = b.getAttribute("data-in54-act");
-        if(act === "guides") $("#v29MenuBtn")?.click();
-        if(act === "search") $("#search")?.focus();
-        if(act === "calc") $("#calcFab")?.click();
-        if(act === "vivi") ($("#ccFab") || $("#viviFab") || $("#in50ViviDock"))?.click();
-      }, {capture:true});
-    }
-
-    if(!$("#in54SupportLine")){
-      const line = document.createElement("section");
-      line.id = "in54SupportLine";
-      line.innerHTML = `
-        <div class="ico">🩺</div>
-        <div><b>Apoyo clínico rápido para enfermería:</b> protocolos, algoritmos, fármacos y escalas en menos de 5 segundos.</div>
-      `;
-      hero.insertAdjacentElement("afterend", line);
-    }
-  }
-
   function tuneVivi(){
     $all(".cc-logo,.vivi-tab-avatar,.in54-vivi-avatar").forEach(el => el.innerHTML = VIVI_FACE);
 
@@ -10090,7 +9842,7 @@ body.in54-protocol-open{
 
   ready(function(){
     replaceBranding();
-    tuneHero();
+
     tuneVivi();
     removeDuplicateHome();
     patchOpenDoc();
@@ -10100,7 +9852,7 @@ body.in54-protocol-open{
     // Reaplicar después de capas antiguas que se ejecutan con timeout.
     setTimeout(() => {
       replaceBranding();
-      tuneHero();
+  
       tuneVivi();
       removeDuplicateHome();
     }, 1000);
@@ -11690,7 +11442,7 @@ body.in57-visual .in57-action[data-in57="farmacos"] {
 /* Pantalla principal limpia: cuatro accesos y Vivi, sin duplicados */
 #splash.inurse-force-hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 .top > .icon-btn{display:none!important}
-#viviHero,#in52Critical,.in57-quick-grid,.in57-mini-grid,.in50-quick-grid,.in50-shortcuts,
+#in52Critical,.in57-quick-grid,.in57-mini-grid,.in50-quick-grid,.in50-shortcuts,
 .fab-stack,#calcFab,#in52SettingsFab,#viviFab,#ccFab{display:none!important}
 
 #in50Home{display:block!important;max-width:1060px;margin:0 auto;padding:18px 16px 8px}
@@ -13294,45 +13046,6 @@ renderTabs();renderOrganizer();renderList();
     var shortcut=document.getElementById('library21Btn');
     if(shortcut) shortcut.click();
   }
-  function installVirtualLibrarySection(){
-    return true; /* v19.2: la Biblioteca es un módulo principal independiente */
-    var home=document.getElementById('in50Home');
-    if(!home || document.getElementById('in17VirtualLibrarySection')) return false;
-    var guidesTitle=Array.from(home.querySelectorAll('.in50-section-title'))
-      .find(function(el){return /gu[ií]as cl[ií]nicas/i.test(el.textContent||'')});
-    var title=document.createElement('div');
-    title.id='in17VirtualLibrarySection';
-    title.className='in50-section-title in17-library-title';
-    title.textContent='📚 Biblioteca virtual';
-    var grid=document.createElement('div');
-    grid.className='in50-grid';
-    grid.id='in17VirtualLibraryGrid';
-    var card=document.createElement('button');
-    card.type='button';
-    card.className='in50-card in17-library-card';
-    card.id='in17OpenVirtualLibrary';
-    card.setAttribute('aria-label','Abrir Biblioteca virtual iNurse');
-    card.innerHTML=
-      '<span class="em">📚</span>'+
-      '<span class="in17-library-copy">'+
-        '<b>Biblioteca virtual iNurse</b>'+
-        '<small>Un espacio propio y separado de Guías clínicas. Explora los 21 bloques por patologías, sistemas clínicos, especialidades y áreas de conocimiento.</small>'+
-        '<span class="in17-library-stats">'+
-          '<span>21 bloques</span><span>1.676 recursos</span><span>Buscador propio</span>'+
-          '<span>Favoritos</span><span>Fuentes para Vivi</span>'+
-        '</span>'+
-      '</span>';
-    card.addEventListener('click',openVirtualLibrary);
-    grid.appendChild(card);
-    if(guidesTitle){
-      home.insertBefore(title,guidesTitle);
-      home.insertBefore(grid,guidesTitle);
-    }else{
-      home.appendChild(title);
-      home.appendChild(grid);
-    }
-    return true;
-  }
   function renameShortcut(){
     var btn=document.getElementById('library21Btn');
     if(btn){
@@ -13340,19 +13053,9 @@ renderTabs();renderOrganizer();renderList();
       btn.setAttribute('aria-label','Abrir Biblioteca virtual iNurse');
     }
   }
-  function start(){
-    renameShortcut();
-    if(installVirtualLibrarySection()) return;
-    var tries=0;
-    var timer=setInterval(function(){
-      tries++;
-      renameShortcut();
-      if(installVirtualLibrarySection() || tries>30) clearInterval(timer);
-    },250);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
-  else start();
-  window.iNurseVirtualLibrary={open:openVirtualLibrary,install:installVirtualLibrarySection};
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renameShortcut);
+  else renameShortcut();
+  window.iNurseVirtualLibrary={open:openVirtualLibrary};
 })();
 </script>
 
