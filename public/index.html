@@ -1069,46 +1069,6 @@ header{backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22p
 .search{backdrop-filter:blur(8px)}
 .search:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--ictus) 30%,transparent),0 8px 30px rgba(168,85,247,.25)!important}
 
-/* ---- MENÚ DESPLEGABLE DE CATEGORÍAS (sustituye visualmente los chips) ---- */
-.chips{display:none!important}
-.cat-bar{max-width:960px;margin:12px auto 0;position:relative;display:flex;gap:10px;align-items:center}
-.cat-toggle{flex:1;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;cursor:pointer;
-  border:1px solid var(--border);background:color-mix(in srgb,var(--card-solid) 75%,transparent);
-  backdrop-filter:blur(12px);color:var(--text);font-family:var(--font-family);font-weight:800;font-size:14.5px;
-  transition:transform .18s,box-shadow .25s,border-color .25s;text-align:left}
-.cat-toggle:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--cat-ac,#A855F7) 55%,var(--border));
-  box-shadow:0 10px 32px color-mix(in srgb,var(--cat-ac,#A855F7) 25%,transparent)}
-.cat-toggle .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;background:var(--cat-ac,#A855F7);
-  box-shadow:0 0 12px var(--cat-ac,#A855F7)}
-.cat-toggle .em{font-size:19px}
-.cat-toggle .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cat-toggle .lbl small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim)}
-.cat-toggle .chev{transition:transform .3s;color:var(--cat-ac,#A855F7);font-size:13px}
-.cat-bar.open .cat-toggle .chev{transform:rotate(180deg)}
-
-.cat-panel{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:80;
-  border-radius:22px;border:1px solid var(--border);overflow:hidden;
-  background:color-mix(in srgb,var(--card-solid) 88%,transparent);
-  backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
-  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;
-  transform-origin:top center;transform:scaleY(.92) translateY(-8px);opacity:0;pointer-events:none;
-  transition:transform .28s cubic-bezier(.34,1.4,.5,1),opacity .22s}
-.cat-bar.open .cat-panel{transform:scaleY(1) translateY(0);opacity:1;pointer-events:auto}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;padding:14px;max-height:min(58vh,480px);overflow-y:auto}
-.cat-tile{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;cursor:pointer;
-  border:1px solid var(--border);background:color-mix(in srgb,var(--tc) 7%,transparent);
-  color:var(--text);font-family:var(--font-family);font-weight:700;font-size:13.5px;text-align:left;
-  transition:transform .16s,box-shadow .2s,border-color .2s,background .2s}
-.cat-tile .em{font-size:20px;filter:drop-shadow(0 2px 6px color-mix(in srgb,var(--tc) 60%,transparent))}
-.cat-tile:hover{transform:translateY(-2px) scale(1.02);border-color:color-mix(in srgb,var(--tc) 60%,var(--border));
-  background:color-mix(in srgb,var(--tc) 16%,transparent);box-shadow:0 10px 26px color-mix(in srgb,var(--tc) 30%,transparent)}
-.cat-tile.active{background:var(--tc);color:#fff;border-color:transparent;
-  box-shadow:0 8px 24px color-mix(in srgb,var(--tc) 55%,transparent)}
-.cat-tile.active .em{filter:none}
-[data-theme="light"] .cat-panel{box-shadow:0 30px 70px rgba(15,23,42,.25)}
-[data-theme="night"] .cat-toggle,[data-theme="night"] .cat-panel{backdrop-filter:none;background:var(--card-solid)}
-[data-theme="night"] .cat-tile.active{color:#000}
-
 /* ---- Tarjetas con profundidad 3D ---- */
 main{perspective:1400px}
 .group-card{
@@ -1144,8 +1104,6 @@ main{perspective:1400px}
 [data-theme="night"] .fab::after{display:none}
 @media (prefers-reduced-motion:reduce){.fab::after{animation:none}}
 
-/* Móvil: rejilla del panel a 2 columnas cómodas */
-@media(max-width:520px){.cat-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 <style id="v15-visual">
@@ -1195,42 +1153,6 @@ main{perspective:1400px}
 #askFab::after{display:none!important}
 [data-theme="night"] .fab-stack>button .dk-lbl{color:var(--text-dim)}
 
-/* ---- MENÚ DE CABECERA: acciones agrupadas en desplegable ---- */
-.top .icon-btn{display:none}
-#hjMenuBtn{display:flex!important}
-#hjMenuBtn{
-  width:44px;height:44px;border-radius:13px;border:1px solid var(--border);
-  background:color-mix(in srgb,var(--card-solid) 80%,transparent);backdrop-filter:blur(10px);
-  color:var(--text);font-size:19px;cursor:pointer;flex-shrink:0;
-  align-items:center;justify-content:center;transition:transform .18s,border-color .2s,box-shadow .25s;
-}
-#hjMenuBtn:hover{border-color:color-mix(in srgb,var(--ictus) 55%,var(--border));box-shadow:0 8px 26px color-mix(in srgb,var(--ictus) 25%,transparent)}
-#hjMenuBtn.open{transform:rotate(90deg)}
-.hj-menu-wrap{position:relative;flex-shrink:0}
-#hjMenuPanel{
-  position:absolute;top:calc(100% + 10px);right:0;z-index:90;min-width:238px;
-  border-radius:20px;border:1px solid var(--border);overflow:hidden;
-  background:color-mix(in srgb,var(--card-solid) 90%,transparent);
-  backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
-  box-shadow:0 28px 70px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset;
-  transform-origin:top right;transform:scale(.9) translateY(-6px);opacity:0;pointer-events:none;
-  transition:transform .26s cubic-bezier(.34,1.4,.5,1),opacity .2s;padding:8px;
-}
-.hj-menu-wrap.open #hjMenuPanel{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-[data-theme="night"] #hjMenuPanel{backdrop-filter:none;background:var(--card-solid);border-width:2px}
-.hj-row{
-  display:flex;align-items:center;gap:12px;padding:6px 10px 6px 6px;border-radius:14px;cursor:pointer;
-  transition:background .18s,transform .15s;
-}
-.hj-row:hover{background:color-mix(in srgb,var(--hc,#A855F7) 14%,transparent);transform:translateX(3px)}
-.hj-row .icon-btn{display:flex!important;width:40px;height:40px;border-radius:11px;pointer-events:none}
-.hj-row .hj-lbl{font-size:14px;font-weight:800;color:var(--text);font-family:var(--font-family)}
-.hj-row .hj-sub{display:block;font-size:10.5px;font-weight:600;color:var(--text-dim)}
-.hj-row.hj-sos{background:color-mix(in srgb,#EF4444 14%,transparent);border:1px solid color-mix(in srgb,#EF4444 35%,transparent);margin-bottom:6px}
-.hj-row.hj-sos:hover{background:color-mix(in srgb,#EF4444 26%,transparent)}
-.hj-row.hj-sos .hj-lbl{color:#F87171}
-.hj-sep{height:1px;background:var(--border);margin:6px 8px}
-
 /* ---- EMOJIS VIVOS 🫀🫁🚑👶 ---- */
 @keyframes emBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.22)}56%{transform:scale(1)}}
 @keyframes emBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.18) translateY(-2px)}}
@@ -1257,20 +1179,6 @@ main{perspective:1400px}
 #group-uci .group-header:hover .group-ico,#group-uci .group-header:active .group-ico{animation:emBounce 1.1s ease-in-out infinite}
 #group-obst .group-header:hover .group-ico,#group-obst .group-header:active .group-ico{animation:emSway 1.6s ease-in-out infinite}
 
-/* Menú desplegable de categorías: mismos gestos */
-.cat-tile[data-c="cardio"]:hover .em{animation:emBeat 1s ease-in-out infinite}
-.cat-tile[data-c="resp"]:hover .em{animation:emBreathe 1.8s ease-in-out infinite}
-.cat-tile[data-c="emer"]:hover .em,.cat-tile[data-c="extra"]:hover .em,.cat-tile[data-c="trauma"]:hover .em{animation:emDrive 1s linear infinite}
-.cat-tile[data-c="ped"]:hover .em{animation:emCry .9s ease-in-out infinite}
-.cat-tile[data-c="ictus"]:hover .em{animation:emZap 1.2s ease-in-out infinite}
-.cat-tile[data-c="farm"]:hover .em{animation:emSpin 1.6s ease-in-out infinite}
-.cat-tile[data-c="imagen"]:hover .em{animation:emFlash 1.3s ease-in-out infinite}
-.cat-tile[data-c="esp"]:hover .em{animation:emWobble 1s ease-in-out infinite}
-.cat-tile[data-c="uci"]:hover .em{animation:emBounce 1.1s ease-in-out infinite}
-.cat-tile[data-c="obst"]:hover .em{animation:emSway 1.6s ease-in-out infinite}
-.cat-tile[data-c="fav"]:hover .em{animation:emSpin 1.4s ease-in-out infinite}
-.cat-tile[data-c="all"]:hover .em,.cat-tile[data-c="recent"]:hover .em{animation:emWobble 1s ease-in-out infinite}
-
 /* Dock: el corazón late, la radiografía destella, el mic vibra... */
 #atlasFab:hover .dk-em{animation:emBeat 1s ease-in-out infinite}
 #ecgFab:hover .dk-em{animation:emZap 1.2s ease-in-out infinite}
@@ -1284,7 +1192,7 @@ main{perspective:1400px}
 .hj-row.hj-sos:hover .icon-btn{animation:emBeat .9s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
-  .group-ico,.cat-tile .em,.dk-em,.hj-row .icon-btn{animation:none!important}
+  .group-ico,.dk-em{animation:none!important}
 }
 
 /* Móvil estrecho: el dock se ajusta */
@@ -1336,12 +1244,6 @@ main{perspective:1400px}
 }
 #hfFlash.on{opacity:1;animation:hfFlashOut .8s ease-out forwards}
 @keyframes hfFlashOut{0%{opacity:.9}100%{opacity:0}}
-
-/* Fila del menú de cabecera para el toggle */
-.hj-row.hj-hf{background:color-mix(in srgb,#22D3EE 10%,transparent)}
-.hj-row.hj-hf.active{background:color-mix(in srgb,#22D3EE 22%,transparent);
-  border:1px solid color-mix(in srgb,#22D3EE 45%,transparent)}
-.hj-row.hj-hf.active .hj-lbl::after{content:" · ON";color:#22D3EE}
 
 [data-theme="night"] #hfBar{background:linear-gradient(90deg,transparent,#FFD24A,#FFB020,transparent)}
 [data-theme="night"] #hfChip{border-width:2px}
@@ -8738,30 +8640,6 @@ h1 small{color:rgba(226,232,240,.72) !important}
 .disclaimer{
   background:rgba(251,191,36,.08) !important;border-color:rgba(251,191,36,.22) !important;border-radius:18px !important;
 }
-/* Hero principal Vivi */
-.vivi-hero{
-  max-width:960px;margin:14px auto 4px;padding:0 16px;
-}
-.vivi-hero-card{
-  position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:18px;
-  background:linear-gradient(135deg,rgba(77,231,255,.16),rgba(139,92,246,.12) 45%,rgba(244,114,182,.14));
-  box-shadow:var(--vivi-shadow);backdrop-filter:var(--vivi-glass);
-}
-.vivi-hero-card::after{content:"";position:absolute;right:-80px;top:-90px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.13);filter:blur(8px)}
-.vivi-hero-top{display:flex;gap:14px;align-items:center;position:relative;z-index:1}
-.vivi-avatar{
-  width:76px;height:76px;border-radius:25px;flex:0 0 auto;display:grid;place-items:center;
-  background:linear-gradient(135deg,#4DE7FF,#8B5CF6 52%,#F472B6);
-  box-shadow:0 18px 45px rgba(139,92,246,.38),inset 0 1px 0 rgba(255,255,255,.35);
-}
-.vivi-avatar svg{width:66px;height:66px;filter:drop-shadow(0 8px 12px rgba(0,0,0,.22))}
-.vivi-hero h2{margin:0;font-size:24px;line-height:1.05;letter-spacing:-.8px}
-.vivi-hero p{margin:6px 0 0;color:rgba(248,250,252,.76);font-size:14px;line-height:1.45}
-.vivi-hero-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;position:relative;z-index:1}
-.vivi-action{border:1px solid rgba(255,255,255,.13);background:rgba(5,8,20,.35);color:#fff;border-radius:18px;padding:12px 10px;cursor:pointer;font:inherit;font-weight:800;font-size:12.5px;text-align:left;min-height:64px;transition:transform .15s,border-color .18s,background .18s}
-.vivi-action:hover{transform:translateY(-2px);border-color:rgba(77,231,255,.44);background:rgba(255,255,255,.095)}
-.vivi-action span{display:block;font-size:21px;margin-bottom:5px}
-@media(max-width:720px){.vivi-hero-actions{grid-template-columns:1fr 1fr}.vivi-hero h2{font-size:21px}.vivi-avatar{width:66px;height:66px;border-radius:22px}.vivi-avatar svg{width:58px;height:58px}}
 /* Chat Vivi */
 #ccWrap{
   border:1px solid rgba(255,255,255,.13) !important;border-radius:28px !important;
@@ -8785,7 +8663,7 @@ h1 small{color:rgba(226,232,240,.72) !important}
 .modal-head,.vade-head,.calc-head,.f3-head,.atlas-bar{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03)) !important;border-bottom:1px solid rgba(255,255,255,.11) !important}
 /* modo noche más cómodo */
 [data-theme="night"] body{background:#000 !important}
-[data-theme="night"] .vivi-hero-card,[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
+[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
 </style>
 
 <style id="inurse41-css">
@@ -8804,20 +8682,11 @@ h1 small{color:rgba(226,232,240,.72) !important}
 body.inurse-home main .count, body.inurse-home main #content{display:none!important}
 body.inurse-home main{padding-top:0!important}
 body.inurse-home .disclaimer{margin-top:0!important}
-.inurse-home-note{margin:14px auto 0;max-width:960px;padding:13px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:var(--text-dim);font-size:13px;line-height:1.45}
 /* Menú */
 .v29-head h2{font-size:17px!important}
 .v29-head h2 small{font-size:11px!important}
 .v29-sec.guides-title{color:#E2E8F0!important;margin-top:6px!important}
 .v29-tools .v29-row[data-hide="1"]{display:none!important}
-/* Dock inferior: cálculo, RX, ECG y Vivi alineados */
-.fab-stack{left:50%!important;right:auto!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:4px!important;padding:8px 10px!important;border-radius:26px!important;z-index:8900!important}
-.fab-stack>button,#calcFab{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;margin:0!important;transform:none!important;width:58px!important;height:56px!important;border-radius:16px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;box-shadow:none!important}
-.fab-stack>button:hover,#calcFab:hover{transform:translateY(-3px)!important}
-#calcFab .dk-em,#rxFab .dk-em,#ecgFab .dk-em,#viviFab .dk-em{font-size:23px!important;line-height:1!important}
-#calcFab .dk-lbl,#rxFab .dk-lbl,#ecgFab .dk-lbl,#viviFab .dk-lbl{font-size:9px!important;font-weight:800!important;letter-spacing:.3px!important;text-transform:uppercase!important;color:var(--text-dim)!important}
-#viviFab .dk-lbl{color:var(--text)!important}
-@media(max-width:420px){.fab-stack>button,#calcFab{width:52px!important}}
 </style>
 <script id="inurse41-script">
 (function(){
@@ -10590,270 +10459,6 @@ body.in57-visual .in57-action[data-in57="farmacos"]{
 }
 </style>
 
-
-
-<style id="in57-pathology-detail-css">
-body.in57-visual .in56-pato-item{
-  cursor:pointer!important;
-  transition:transform .15s ease,border-color .15s ease,background .15s ease;
-}
-body.in57-visual .in56-pato-item:hover{
-  transform:translateY(-2px);
-  border-color:rgba(73,216,255,.35)!important;
-  background:rgba(73,216,255,.07)!important;
-}
-.in57-patho-overlay{
-  position:fixed; inset:0; z-index:9800; display:none;
-  background:rgba(0,0,0,.62); backdrop-filter:blur(12px);
-  align-items:flex-end; justify-content:center;
-}
-.in57-patho-overlay.on{display:flex}
-.in57-patho-modal{
-  width:100%; max-width:900px; max-height:92vh; overflow:hidden;
-  border-radius:28px 28px 0 0; border:1px solid rgba(255,255,255,.12);
-  background:linear-gradient(180deg,#071126,#08172f);
-  box-shadow:0 -24px 70px rgba(0,0,0,.55);
-  color:#f8fafc; display:flex; flex-direction:column;
-}
-@media(min-width:900px){.in57-patho-overlay{align-items:center}.in57-patho-modal{border-radius:28px}}
-.in57-patho-head{
-  padding:18px 20px; border-bottom:1px solid rgba(255,255,255,.10);
-  display:flex; gap:14px; align-items:flex-start;
-  background:linear-gradient(135deg,rgba(73,216,255,.12),rgba(125,107,255,.10),rgba(255,95,168,.09));
-}
-.in57-patho-ico{
-  width:56px;height:56px;border-radius:18px;display:grid;place-items:center;font-size:28px;
-  background:linear-gradient(145deg,rgba(73,216,255,.24),rgba(125,107,255,.22));
-  border:1px solid rgba(255,255,255,.12); flex:0 0 auto;
-}
-.in57-patho-title{flex:1}
-.in57-patho-title h2{margin:0 0 5px;font-size:24px;letter-spacing:-.03em}
-.in57-patho-title p{margin:0;color:#aab8ce;font-size:13px;line-height:1.45}
-.in57-patho-close{
-  width:40px;height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);color:#fff;font-size:22px;cursor:pointer;
-}
-.in57-patho-body{padding:18px 20px;overflow:auto}
-.in57-patho-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:760px){.in57-patho-grid{grid-template-columns:1fr}}
-.in57-patho-card{
-  border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:15px;
-  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-}
-.in57-patho-card h3{margin:0 0 10px;color:#67e8f9;font-size:15px}
-.in57-patho-card p,.in57-patho-card li{color:#dbe7ff;line-height:1.5;font-size:13px}
-.in57-patho-card ul,.in57-patho-card ol{margin:0;padding-left:19px}
-.in57-patho-card li{margin:5px 0}
-.in57-patho-related button{
-  width:100%;text-align:left;margin:6px 0;padding:10px 12px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);color:#fff;cursor:pointer;
-}
-.in57-patho-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.in57-patho-actions button{
-  border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;
-  background:linear-gradient(135deg,rgba(73,216,255,.16),rgba(125,107,255,.14));color:#fff;font-weight:800;cursor:pointer;
-}
-.in57-warn{color:#fbbf24!important;font-size:12px!important;margin-top:10px!important}
-</style>
-
-<script id="in57-pathology-detail-js">
-(function(){
-  const DETAILS = {"Sepsis": {"def": "Respuesta desregulada del organismo ante una infección, con disfunción orgánica potencialmente mortal. Puede evolucionar a shock séptico.", "alarm": ["Hipotensión o mala perfusión", "Confusión o somnolencia", "FR elevada", "Fiebre o hipotermia", "Oliguria", "Piel moteada", "Lactato elevado si disponible"], "tx": ["ABCDE y reconocimiento precoz.", "Oxígeno si hipoxemia o dificultad respiratoria.", "Canalización venosa, monitorización y fluidoterapia si hipotensión o hipoperfusión.", "Antibiótico precoz según protocolo local si sepsis probable y no retrasa traslado.", "Preaviso/código sepsis y traslado a centro útil."], "drugs": ["Oxígeno", "Cristaloides", "Antibióticos según foco/protocolo", "Noradrenalina si shock refractario por equipo entrenado", "Glucosa si hipoglucemia"]}, "Shock séptico": {"def": "Forma grave de sepsis con hipotensión persistente, hipoperfusión o necesidad de vasopresores, asociada a alto riesgo vital.", "alarm": ["Hipotensión persistente", "Piel fría o moteada", "Confusión", "Oliguria", "Lactato elevado", "Mala respuesta a fluidos"], "tx": ["ABCDE", "Oxígeno", "Vía venosa y fluidoterapia con reevaluación", "Antibiótico precoz según protocolo", "Vasopresor si shock refractario por equipo entrenado", "Traslado urgente con preaviso"], "drugs": ["Oxígeno", "Cristaloides", "Antibióticos", "Noradrenalina según protocolo"]}, "Parada cardiorrespiratoria": {"def": "Cese brusco de la circulación efectiva y/o respiración normal. Requiere reconocimiento inmediato, RCP y desfibrilación si el ritmo es desfibrilable.", "alarm": ["No responde", "No respira normalmente", "Ausencia de signos de circulación", "Ritmo desfibrilable o no desfibrilable"], "tx": ["Activar emergencias/equipo", "RCP de calidad", "DEA/desfibrilación precoz si FV/TV sin pulso", "Vía aérea y ventilación", "Adrenalina/antiarrítmicos según algoritmo", "Buscar causas reversibles 4H/4T"], "drugs": ["Adrenalina", "Amiodarona", "Oxígeno", "Cristaloides", "Magnesio si torsade según protocolo"]}, "Accidente cerebrovascular": {"def": "Déficit neurológico agudo de origen vascular, isquémico o hemorrágico. Es tiempo-dependiente y requiere activación de código ictus si cumple criterios.", "alarm": ["Inicio brusco", "Asimetría facial", "Pérdida de fuerza", "Alteración del habla", "Alteración visual", "Cefalea brusca intensa", "Bajo nivel de conciencia"], "tx": ["ABCDE", "Determinar hora de inicio/última vez visto bien", "Glucemia capilar", "SatO₂ y oxígeno si precisa", "No administrar antiagregación si no está indicado por protocolo", "Activar código ictus y traslado útil"], "drugs": ["Oxígeno si hipoxemia", "Glucosa si hipoglucemia", "Antihipertensivos solo según protocolo y situación"]}, "Código ictus": {"def": "Sistema de activación urgente ante sospecha de ictus candidato a tratamiento tiempo-dependiente.", "alarm": ["Déficit focal agudo", "Tiempo de inicio conocido", "Disartria/afasia", "Hemiparesia", "Alteración visual", "No demorar traslado"], "tx": ["ABCDE", "Glucemia", "Hora de inicio", "Escala neurológica si disponible", "Preaviso hospitalario", "Traslado a centro con capacidad de ictus"], "drugs": ["Oxígeno si hipoxemia", "Glucosa si hipoglucemia"]}, "Infarto agudo de miocardio": {"def": "Necrosis miocárdica por isquemia aguda, generalmente por obstrucción coronaria. Requiere ECG precoz y manejo como síndrome coronario agudo.", "alarm": ["Dolor torácico opresivo", "Disnea", "Sudoración", "Náuseas", "Síncope", "Elevación ST", "Inestabilidad hemodinámica"], "tx": ["ABCDE", "ECG 12 derivaciones precoz", "Monitorización", "AAS si no contraindicado", "Nitroglicerina si dolor/HTA y TA adecuada", "Analgesia si dolor persistente", "Activar código IAM si criterios"], "drugs": ["AAS", "Nitroglicerina", "Morfina/Fentanilo según protocolo", "Oxígeno si SatO₂ baja", "Anticoagulación/antiagregación según protocolo"]}, "Síndrome coronario agudo": {"def": "Conjunto de cuadros por isquemia miocárdica aguda: angina inestable, IAM sin elevación ST o IAM con elevación ST.", "alarm": ["Dolor torácico típico o equivalente", "ECG alterado", "Hipotensión", "Arritmias", "Disnea", "Síncope"], "tx": ["ABCDE", "ECG precoz y seriado", "AAS si no contraindicado", "Nitroglicerina si procede", "Analgesia", "Preaviso y traslado a centro útil"], "drugs": ["AAS", "Nitroglicerina", "Morfina/Fentanilo", "Oxígeno si hipoxemia"]}, "Crisis asmática": {"def": "Empeoramiento agudo del asma con broncoconstricción, inflamación y aumento del trabajo respiratorio.", "alarm": ["Disnea intensa", "Uso de musculatura accesoria", "SatO₂ baja", "Silencio auscultatorio", "Agotamiento", "Alteración de conciencia", "Cianosis"], "tx": ["ABCDE", "Oxígeno para objetivo de SatO₂", "Salbutamol inhalado/nebulizado", "Ipratropio en crisis moderada-grave", "Corticoide sistémico", "Valorar magnesio/VMNI/IOT si grave según protocolo"], "drugs": ["Oxígeno", "Salbutamol", "Ipratropio", "Corticoides", "Sulfato de magnesio en crisis grave según protocolo"]}, "EPOC": {"def": "Enfermedad respiratoria crónica con limitación persistente al flujo aéreo. En urgencias interesa detectar exacerbación e insuficiencia respiratoria.", "alarm": ["Disnea superior a la basal", "Somnolencia o confusión", "Cianosis", "SatO₂ baja", "FR muy alta o baja", "Silencio auscultatorio", "Sepsis/neumonía"], "tx": ["Oxígeno controlado", "Broncodilatadores inhalados", "Corticoide sistémico si exacerbación", "Antibiótico si esputo purulento/neumonía/protocolo", "VMNI si insuficiencia respiratoria hipercápnica o fracaso inicial"], "drugs": ["Oxígeno controlado", "Salbutamol", "Ipratropio", "Metilprednisolona/Prednisona", "Antibióticos según protocolo"]}, "Edema agudo de pulmón": {"def": "Acumulación aguda de líquido en el intersticio/alvéolos, habitualmente por insuficiencia cardiaca, con disnea intensa e hipoxemia.", "alarm": ["Disnea súbita", "Ortopnea", "Crepitantes", "SatO₂ baja", "Expectoración rosada", "Hipertensión o shock", "Agotamiento"], "tx": ["Posición incorporada", "Oxígeno", "VMNI/CPAP si indicado", "Nitroglicerina si TA adecuada y perfil hipertensivo", "Diurético según perfil/protocolo", "Monitorización y traslado"], "drugs": ["Oxígeno", "Nitroglicerina", "Furosemida según perfil", "Morfina solo si protocolo y situación"]}, "Hipoglucemia": {"def": "Descenso de glucosa en sangre capaz de producir síntomas neurovegetativos o neuroglucopénicos. Se confirma con glucemia capilar/venosa y respuesta al tratamiento.", "alarm": ["Alteración de conciencia", "Convulsiones", "Glucemia baja", "Imposibilidad de vía oral", "Paciente diabético tratado con insulina/sulfonilureas"], "tx": ["Glucemia capilar", "Si consciente y tolera: hidratos de carbono por vía oral", "Si bajo nivel de conciencia: glucosa IV o glucagón si no hay vía", "Reevaluar glucemia y causa", "Traslado/observación si sulfonilureas, recurrencia o causa no aclarada"], "drugs": ["Glucosa oral/IV", "Glucagón", "Suero glucosado según protocolo"]}, "Cetoacidosis diabética": {"def": "Complicación aguda de la diabetes por déficit de insulina, hiperglucemia, cetosis y acidosis metabólica.", "alarm": ["Hiperglucemia", "Cetonemia/cetonuria", "Respiración de Kussmaul", "Vómitos", "Dolor abdominal", "Deshidratación", "Alteración de conciencia"], "tx": ["ABCDE", "Vía venosa", "Fluidoterapia inicial", "Monitorización", "No iniciar insulina sin conocer potasio si protocolo lo exige", "Traslado hospitalario"], "drugs": ["Cristaloides", "Insulina rápida según protocolo y potasio", "Potasio hospitalario según analítica"]}, "Convulsiones": {"def": "Descarga neuronal anormal con manifestaciones motoras, sensitivas o alteración de conciencia. En urgencias importa detener crisis prolongadas y buscar causa.", "alarm": ["Crisis >5 minutos", "Crisis repetidas sin recuperación", "Embarazo", "Trauma", "Hipoglucemia", "Fiebre/sepsis", "Déficit neurológico posterior"], "tx": ["Proteger de lesiones", "ABCDE", "Glucemia capilar", "Benzodiacepina si crisis prolongada/estatus según protocolo", "Tratar causa", "Traslado si primera crisis, estatus, trauma, embarazo o mala recuperación"], "drugs": ["Midazolam", "Diazepam", "Glucosa si hipoglucemia", "Sulfato de magnesio si eclampsia"]}, "Anafilaxia": {"def": "Reacción alérgica sistémica grave, rápida y potencialmente mortal, con afectación respiratoria, cardiovascular o multiorgánica.", "alarm": ["Disnea", "Estridor", "Angioedema lingual", "Hipotensión", "Síncope", "Urticaria generalizada", "Vómitos/diarrea con afectación sistémica"], "tx": ["Adrenalina IM inmediata", "ABCDE", "Oxígeno", "Retirar desencadenante si posible", "Fluidoterapia si hipotensión", "Antihistamínicos/corticoides como coadyuvantes", "Traslado y observación"], "drugs": ["Adrenalina IM", "Oxígeno", "Cristaloides", "Antihistamínicos", "Corticoides", "Salbutamol si broncoespasmo"]}, "Traumatismo craneoencefálico": {"def": "Lesión cerebral o craneal causada por energía externa. La prioridad es evitar hipoxia, hipotensión y detectar lesiones intracraneales.", "alarm": ["Glasgow bajo o descenso", "Pupilas anormales", "Vómitos repetidos", "Convulsiones", "Focalidad", "Anticoagulación", "Signos de fractura base cráneo"], "tx": ["ABCDE con control cervical", "Oxígeno si precisa", "Evitar hipotensión", "Glasgow/pupilas seriadas", "Control de sangrado", "Traslado a centro útil si criterios"], "drugs": ["Oxígeno", "Cristaloides si shock", "Analgesia según protocolo", "Antiemético si vómitos"]}, "Politrauma": {"def": "Paciente con lesiones traumáticas múltiples o de alta energía con riesgo vital real o potencial.", "alarm": ["Vía aérea comprometida", "Shock", "Hemorragia externa", "Alteración neurológica", "Trauma torácico/abdominal", "Dolor pélvico", "Mecanismo de alta energía"], "tx": ["ABCDE", "Control de hemorragias", "Inmovilización/selectiva según lesión", "Oxígeno", "Vía venosa/IO si shock", "Traslado a centro de trauma"], "drugs": ["Oxígeno", "Cristaloides con estrategia según protocolo", "Ácido tranexámico si indicado", "Analgesia"]}, "Hemorragia digestiva": {"def": "Sangrado procedente del tubo digestivo, alto o bajo, manifestado como hematemesis, posos de café, melena, hematoquecia o rectorragia.", "alarm": ["Hipotensión", "Taquicardia", "Síncope", "Hematemesis activa", "Melenas con inestabilidad", "Cirrótico/varices", "Anticoagulación"], "tx": ["ABCDE", "Dieta absoluta", "Vía venosa, fluidoterapia si shock", "Oxígeno si hipoxemia/shock", "IBP IV si HDA no varicosa según protocolo", "Vasoactivo/antibiótico si varices según protocolo", "Traslado a centro con endoscopia"], "drugs": ["Cristaloides", "Omeprazol/Pantoprazol", "Octreótido/Terlipresina si varices", "Antibiótico si cirrosis/varices", "Antiemético"]}, "Retención urinaria": {"def": "Imposibilidad para orinar y vaciar la vejiga pese al deseo miccional, habitualmente con dolor suprapúbico y globo vesical.", "alarm": ["Dolor intenso", "Globo vesical", "Fiebre/prostatitis", "Hematuria con coágulos", "No sale orina tras sondaje", "Trauma pélvico/sangre en meato"], "tx": ["Valorar globo y constantes", "Sondaje vesical con asepsia si no contraindicado", "No forzar si resistencia", "Vaciado controlado y registro de volumen", "Derivación si sondaje imposible, trauma, fiebre o hematuria"], "drugs": ["Lubricante/anestésico urológico si disponible", "Analgesia", "Antibióticos solo si indicación/protocolo"]}, "Hematuria": {"def": "Presencia de hematíes en orina. Puede ser macroscópica o microscópica y proceder de cualquier nivel de la vía urinaria.", "alarm": ["Coágulos", "Inestabilidad", "Retención urinaria", "Anticoagulación", "Trauma", "Insuficiencia renal", "Fiebre/dolor lumbar"], "tx": ["ABCDE si sangrado importante", "Tira de orina y valoración de origen", "Analgesia si dolor", "Sonda triple vía y lavado si retención por coágulos según protocolo", "Derivación si criterios de gravedad"], "drugs": ["Cristaloides si shock", "Analgesia", "Antibiótico si infección según protocolo"]}};
-  const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9ñ\s]/g," ").replace(/\s+/g," ").trim();
-  const esc = s => String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const strip = s => String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
-  const docs = () => Array.isArray(window.DOCS) ? window.DOCS : (typeof DOCS !== "undefined" && Array.isArray(DOCS) ? DOCS : []);
-
-  function iconFor(name){
-    const t = norm(name);
-    if(/sepsis|infeccion|neumonia|mening/.test(t)) return "🦠";
-    if(/cardio|infarto|coronario|arrit|shock/.test(t)) return "🫀";
-    if(/ictus|cerebro|convul|coma|neurolog|craneo/.test(t)) return "🧠";
-    if(/asma|epoc|resp|pulmon|disnea/.test(t)) return "🫁";
-    if(/diabet|gluco|tiroid|endo/.test(t)) return "🧬";
-    if(/trauma|fract|quemadura|herida/.test(t)) return "🚑";
-    if(/hematur|orina|renal|uro/.test(t)) return "🚻";
-    return "🩺";
-  }
-
-  function findDetail(name){
-    if(DETAILS[name]) return DETAILS[name];
-    const n = norm(name);
-    const key = Object.keys(DETAILS).find(k => norm(k) === n || n.includes(norm(k)) || norm(k).includes(n));
-    if(key) return DETAILS[key];
-    return null;
-  }
-
-  function scoreDoc(d, term){
-    const q = norm(term);
-    const rel = d.relations ? JSON.stringify(d.relations) : "";
-    const text = norm([d.title,d.summary,d.tags,d.cat,d.especialidad,rel,(d.sec||[]).map(s=>(s.h||"")+" "+strip(s.b||"")).join(" ")].join(" "));
-    let score = 0;
-    if(norm(d.title||"").includes(q)) score += 12;
-    if(norm(d.tags||"").includes(q)) score += 8;
-    if(norm(rel).includes(q)) score += 7;
-    if(text.includes(q)) score += 4;
-    q.split(" ").filter(x=>x.length>3).forEach(w => { if(text.includes(w)) score += 1; });
-    return score;
-  }
-
-  function relatedDocs(name){
-    return docs().map(d => ({d, s:scoreDoc(d,name)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,6).map(x=>x.d);
-  }
-
-  function extractTreatmentFromDocs(ds){
-    const wanted = /tratamiento|actuaci[oó]n|manejo|terap|f[aá]rmac|cuidados|algoritmo/i;
-    const out = [];
-    ds.forEach(d => {
-      (d.sec||[]).forEach(sec => {
-        if(out.length>=8) return;
-        if(wanted.test(sec.h||"")) {
-          const txt = strip(sec.b||"");
-          if(txt) out.push({title:d.title, section:sec.h, text:txt.slice(0,520)});
-        }
-      });
-    });
-    return out;
-  }
-
-  function collectDrugNames(detail, ds){
-    const set = new Set();
-    (detail?.drugs||[]).forEach(x=>set.add(x));
-    ds.forEach(d => {
-      const meds = d.relations?.farmacos || [];
-      meds.forEach(m=>set.add(m));
-    });
-    return Array.from(set).slice(0,18);
-  }
-
-  function ensureModal(){
-    let ov = document.getElementById("in57PathoOverlay");
-    if(ov) return ov;
-    ov = document.createElement("div");
-    ov.id = "in57PathoOverlay";
-    ov.className = "in57-patho-overlay";
-    ov.innerHTML = `
-      <div class="in57-patho-modal">
-        <div class="in57-patho-head">
-          <div class="in57-patho-ico" id="in57PathoIco">🩺</div>
-          <div class="in57-patho-title"><h2 id="in57PathoTitle">Patología</h2><p id="in57PathoSub">Ficha clínica iNurse</p></div>
-          <button class="in57-patho-close" id="in57PathoClose">×</button>
-        </div>
-        <div class="in57-patho-body" id="in57PathoBody"></div>
-      </div>`;
-    document.body.appendChild(ov);
-    ov.addEventListener("click", e => { if(e.target===ov) ov.classList.remove("on"); });
-    ov.querySelector("#in57PathoClose").onclick = () => ov.classList.remove("on");
-    return ov;
-  }
-
-  function openDocById(id){
-    if(window.openDoc) return window.openDoc(id);
-    if(window.openDocId) return window.openDocId(id);
-    const btn = document.querySelector(`[data-in56-doc="${CSS.escape(id)}"]`);
-    if(btn) btn.click();
-  }
-
-  function askVivi(name){
-    const q = `Explícame ${name}: definición, signos de alarma, tratamiento recomendado y fármacos según el contenido cargado en iNurse.`;
-    const ta = document.getElementById("ccTa") || document.getElementById("in51AiInput");
-    const fab = document.getElementById("ccFab") || document.getElementById("viviFab") || document.getElementById("in50ViviDock");
-    if(fab) fab.click();
-    setTimeout(()=>{
-      const input = document.getElementById("ccTa") || document.getElementById("in51AiInput");
-      if(input) {
-        input.value = q;
-        input.dispatchEvent(new Event("input", {bubbles:true}));
-        input.focus();
-      }
-    }, 250);
-  }
-
-  function openPathology(name){
-    const detail = findDetail(name);
-    const relDocs = relatedDocs(name);
-    const txFromDocs = extractTreatmentFromDocs(relDocs);
-    const drugs = collectDrugNames(detail, relDocs);
-
-    const def = detail?.def || "Ficha pendiente de definición específica. iNurse la relaciona con los protocolos cargados para orientar la consulta clínica.";
-    const alarms = detail?.alarm || ["Valorar ABCDE", "Constantes alteradas", "Dolor intenso o progresivo", "Alteración del nivel de conciencia", "Signos de shock, sepsis o insuficiencia respiratoria"];
-    const tx = detail?.tx || [];
-    const ov = ensureModal();
-
-    ov.querySelector("#in57PathoIco").textContent = iconFor(name);
-    ov.querySelector("#in57PathoTitle").textContent = name;
-    ov.querySelector("#in57PathoSub").textContent = "Definición · tratamiento · fármacos · guías relacionadas";
-
-    const txHtml = tx.length
-      ? `<ol>${tx.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`
-      : (txFromDocs.length
-          ? `<ul>${txFromDocs.slice(0,4).map(x=>`<li><b>${esc(x.title)} · ${esc(x.section)}:</b> ${esc(x.text)}</li>`).join("")}</ul>`
-          : `<p>No hay tratamiento específico precargado para esta patología. Usa los protocolos relacionados y consulta a Vivi para cruzarlo con fármacos y guías.</p>`);
-
-    ov.querySelector("#in57PathoBody").innerHTML = `
-      <div class="in57-patho-grid">
-        <section class="in57-patho-card">
-          <h3>Qué es</h3>
-          <p>${esc(def)}</p>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Signos de alarma</h3>
-          <ul>${alarms.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Tratamiento recomendado</h3>
-          ${txHtml}
-          <p class="in57-warn">Orientativo y educativo: validar siempre con protocolo local vigente y situación clínica real.</p>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Fármacos relacionados</h3>
-          ${drugs.length ? `<ul>${drugs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "<p>Sin fármacos vinculados todavía.</p>"}
-        </section>
-        <section class="in57-patho-card in57-patho-related">
-          <h3>Protocolos iNurse relacionados</h3>
-          ${relDocs.length ? relDocs.map(d=>`<button data-doc="${esc(d.id)}"><b>${esc(d.title)}</b><br><small>${esc(d.especialidad||d.cat||"iNurse")}</small></button>`).join("") : "<p>No se han encontrado protocolos relacionados directos.</p>"}
-        </section>
-        <section class="in57-patho-card">
-          <h3>Acciones</h3>
-          <div class="in57-patho-actions">
-            <button id="in57AskVivi">Preguntar a Vivi</button>
-            <button id="in57SearchPatho">Buscar en iNurse</button>
-          </div>
-        </section>
-      </div>`;
-
-    ov.querySelectorAll("[data-doc]").forEach(b => b.onclick = () => { ov.classList.remove("on"); openDocById(b.dataset.doc); });
-    ov.querySelector("#in57AskVivi").onclick = () => askVivi(name);
-    ov.querySelector("#in57SearchPatho").onclick = () => {
-      ov.classList.remove("on");
-      const s = document.getElementById("search");
-      if(s) {
-        s.value = name;
-        s.dispatchEvent(new Event("input", {bubbles:true}));
-        s.focus();
-        s.scrollIntoView({behavior:"smooth", block:"center"});
-      }
-    };
-    ov.classList.add("on");
-  }
-
-  function installPathologyClicks(){
-    document.addEventListener("click", function(e){
-      const item = e.target.closest(".in56-pato-item");
-      if(!item) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const name = item.textContent.trim();
-      if(name) openPathology(name);
-    }, true);
-  }
-
-  if(document.readyState !== "loading") installPathologyClicks();
-  else document.addEventListener("DOMContentLoaded", installPathologyClicks);
-
-  window.iNurseOpenPathology = openPathology;
-})();
-</script>
 
 
 <style id="in57-pathology-inline-css">
