@@ -16581,7 +16581,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
-      case "ajustes":  if(window.iNurseAjustes&&window.iNurseAjustes.open){ window.iNurseAjustes.open(); return; } return;
+      case "ajustes":  openAjustes(); return;
     }
   }
   /* Menú desplegable del botón Inicio con todos los apartados */
@@ -16750,8 +16750,134 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   else tick(14);
   var obs=new MutationObserver(function(){ var h=document.getElementById("in50Home"); if(h && !(h.dataset.nx==="1" && h.querySelector(".nx-wrap"))) build(); });
   if(document.body) obs.observe(document.body,{childList:true,subtree:true});
+
+  /* ═══════════ AJUSTES ═══════════ */
+  function openAjustes(){
+    if(document.getElementById('nxAjustesOverlay')){ document.getElementById('nxAjustesOverlay').style.display='flex'; return; }
+    var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
+
+    var saved={}; try{ saved=JSON.parse(localStorage.getItem('inurse_profile_v1')||'{}'); }catch(e){}
+    var viviSaved={}; try{ viviSaved=JSON.parse(localStorage.getItem('inurse_vivi_config_v1')||'{}'); }catch(e){}
+    var isDark=document.body.classList.contains('dark')||document.documentElement.getAttribute('data-theme')==='dark'||true;
+
+    ov.innerHTML=''
+      +'<div class="nx-aj-panel">'
+      +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose">✕</button></div>'
+      +'<div class="nx-aj-body">'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🌗</span>Apariencia</div>'
+      +'<div class="nx-aj-card">'
+      +'<div class="nx-aj-row"><span>Modo oscuro</span><label class="nx-aj-toggle"><input type="checkbox" id="nxThemeToggle" '+(isDark?'checked':'')+'><span class="nx-aj-slider"></span></label></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">✨</span>Configurar Vivi</div>'
+      +'<div class="nx-aj-card">'
+      +'<div class="nx-aj-field"><label>Nombre del asistente</label><input type="text" id="nxViviName" value="'+esc(viviSaved.name||'Vivi')+'" placeholder="Vivi"></div>'
+      +'<div class="nx-aj-field"><label>Nivel de detalle</label><select id="nxViviDetail"><option value="breve"'+(viviSaved.detail==='breve'?' selected':'')+'>Breve</option><option value="normal"'+(viviSaved.detail==='normal'||!viviSaved.detail?' selected':'')+'>Normal</option><option value="detallado"'+(viviSaved.detail==='detallado'?' selected':'')+'>Detallado</option></select></div>'
+      +'<div class="nx-aj-field"><label>Idioma de respuesta</label><select id="nxViviLang"><option value="es"'+((viviSaved.lang||'es')==='es'?' selected':'')+'>Español</option><option value="en"'+(viviSaved.lang==='en'?' selected':'')+'>English</option><option value="pt"'+(viviSaved.lang==='pt'?' selected':'')+'>Português</option></select></div>'
+      +'<div class="nx-aj-field"><label>Clave API Gemini</label><input type="password" id="nxViviKey" value="'+esc(viviSaved.apiKey||'')+'" placeholder="AIza..."></div>'
+      +'<button class="nx-aj-btn" id="nxViviSave">Guardar configuración de Vivi</button>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
+      +'<div class="nx-aj-card nx-aj-profile">'
+      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><label class="nx-aj-avatar-edit" for="nxPhotoInput">📷 Cambiar foto</label><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
+      +'<div class="nx-aj-profile-fields">'
+      +'<div class="nx-aj-field"><label>Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
+      +'<div class="nx-aj-field"><label>Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
+      +'<div class="nx-aj-field"><label>Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
+      +'<div class="nx-aj-field"><label>Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
+      +'<div class="nx-aj-field"><label>Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
+      +'</div>'
+      +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
+      +'</div>'
+      +'</div>'
+
+      +'</div>'
+      +'</div>';
+
+    document.body.appendChild(ov);
+
+    document.getElementById('nxAjClose').onclick=function(){ ov.style.display='none'; };
+    ov.addEventListener('click',function(e){ if(e.target===ov) ov.style.display='none'; });
+
+    document.getElementById('nxThemeToggle').onchange=function(){
+      var tb=document.getElementById('themeBtn'); if(tb) tb.click();
+    };
+
+    document.getElementById('nxViviSave').onclick=function(){
+      var cfg={ name:document.getElementById('nxViviName').value.trim()||'Vivi', detail:document.getElementById('nxViviDetail').value, lang:document.getElementById('nxViviLang').value, apiKey:document.getElementById('nxViviKey').value.trim() };
+      try{ localStorage.setItem('inurse_vivi_config_v1',JSON.stringify(cfg)); }catch(e){}
+      if(cfg.apiKey) try{ localStorage.setItem('gemini_api_key',cfg.apiKey); }catch(e){}
+      var btn=document.getElementById('nxViviSave'); btn.textContent='✓ Guardado'; setTimeout(function(){ btn.textContent='Guardar configuración de Vivi'; },1500);
+    };
+
+    document.getElementById('nxPhotoInput').onchange=function(e){
+      var file=e.target.files[0]; if(!file) return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var dataUrl=ev.target.result;
+        var av=document.getElementById('nxProfileAvatar');
+        av.innerHTML='<img src="'+dataUrl+'" alt="Foto">';
+        av.dataset.photo=dataUrl;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    document.getElementById('nxProfileSave').onclick=function(){
+      var av=document.getElementById('nxProfileAvatar');
+      var profile={ name:document.getElementById('nxProfileName').value.trim(), surname:document.getElementById('nxProfileSurname').value.trim(), email:document.getElementById('nxProfileEmail').value.trim(), hospital:document.getElementById('nxProfileHospital').value.trim(), spec:document.getElementById('nxProfileSpec').value.trim(), photo:av.dataset.photo||'' };
+      if(!profile.photo){ var img=av.querySelector('img'); if(img) profile.photo=img.src; }
+      try{ localStorage.setItem('inurse_profile_v1',JSON.stringify(profile)); }catch(e){}
+      var btn=document.getElementById('nxProfileSave'); btn.textContent='✓ Perfil guardado'; setTimeout(function(){ btn.textContent='Guardar perfil'; },1500);
+    };
+  }
+
 })();
 </script>
+
+<style id="inurse-ajustes-css">
+.nx-aj-overlay{position:fixed;inset:0;z-index:10100;background:rgba(6,10,28,.88);backdrop-filter:blur(16px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px 60px}
+.nx-aj-panel{width:100%;max-width:540px;border-radius:24px;border:1px solid rgba(120,150,220,.18);background:linear-gradient(180deg,rgba(20,28,58,.95),rgba(12,16,38,.95));box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;animation:nxAjIn .22s ease}
+@keyframes nxAjIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.nx-aj-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(120,150,220,.12)}
+.nx-aj-header h2{font-size:20px;font-weight:800;color:#e7ecff;margin:0}
+.nx-aj-close{background:none;border:none;color:#8aa0c8;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
+.nx-aj-close:hover{background:rgba(120,150,220,.15);color:#fff}
+.nx-aj-body{padding:20px 24px;display:flex;flex-direction:column;gap:24px}
+.nx-aj-section-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:800;color:#c7d4f2;margin-bottom:10px}
+.nx-aj-section-title .ic{font-size:18px}
+.nx-aj-card{border:1px solid rgba(120,150,220,.12);border-radius:18px;background:rgba(16,22,48,.6);padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.nx-aj-row{display:flex;align-items:center;justify-content:space-between;color:#c7d4f2;font-size:14px;font-weight:600}
+.nx-aj-toggle{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.nx-aj-toggle input{opacity:0;width:0;height:0}
+.nx-aj-slider{position:absolute;cursor:pointer;inset:0;background:rgba(80,100,140,.4);border-radius:26px;transition:.25s}
+.nx-aj-slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.nx-aj-toggle input:checked+.nx-aj-slider{background:linear-gradient(135deg,#22d3ee,#8b5cf6)}
+.nx-aj-toggle input:checked+.nx-aj-slider:before{transform:translateX(22px)}
+.nx-aj-field{display:flex;flex-direction:column;gap:4px}
+.nx-aj-field label{font-size:11px;font-weight:700;color:#8aa0c8;letter-spacing:.5px;text-transform:uppercase}
+.nx-aj-field input,.nx-aj-field select{background:rgba(10,14,34,.7);border:1px solid rgba(120,150,220,.18);border-radius:12px;padding:10px 14px;color:#e7ecff;font-size:14px;font-family:inherit;outline:none;transition:.2s}
+.nx-aj-field input:focus,.nx-aj-field select:focus{border-color:rgba(56,189,248,.5);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.nx-aj-field select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238aa0c8'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.nx-aj-btn{margin-top:4px;padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
+.nx-aj-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(56,189,248,.3)}
+.nx-aj-btn:active{transform:scale(.97)}
+.nx-aj-profile{align-items:center}
+.nx-aj-avatar-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:4px}
+.nx-aj-avatar{width:96px;height:96px;border-radius:50%;border:3px solid rgba(120,150,220,.3);background:rgba(20,28,58,.8);display:grid;place-items:center;overflow:hidden}
+.nx-aj-avatar img{width:100%;height:100%;object-fit:cover}
+.nx-aj-avatar-placeholder{font-size:40px;opacity:.5}
+.nx-aj-avatar-edit{font-size:12px;font-weight:700;color:#38bdf8;cursor:pointer;transition:.15s}
+.nx-aj-avatar-edit:hover{color:#67e8f9}
+.nx-aj-profile-fields{width:100%;display:flex;flex-direction:column;gap:12px}
+@media(max-width:500px){.nx-aj-overlay{padding:0}.nx-aj-panel{border-radius:0;min-height:100vh}}
+</style>
 
 <!-- ═══════════ v29: Voz universal en buscadores + Vivi Life mejorado ═══════════ -->
 <style>
