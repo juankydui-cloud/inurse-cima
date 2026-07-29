@@ -16746,7 +16746,6 @@ async function fetchJSON(url,options={}){
   }finally{clearTimeout(timer)}
 }
 async function checkBackend(){
-  await activationCheck();
   try{
     const data=await fetchJSON(backendBase()+'/api/cima/health');
     setState('ok','CIMA conectada','Servicio CIMA-AEMPS disponible.');
@@ -17210,7 +17209,6 @@ window.iNurseCima={
 
 renderPathologyChips();
 setMode('name');
-activationCheck();
 })();
 </script>
 
