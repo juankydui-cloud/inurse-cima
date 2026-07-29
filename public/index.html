@@ -5313,7 +5313,7 @@ render();
   if(m.att){ if(m.att.kind==='image')inner+='<img class="att" src="data:'+m.att.mime+';base64,'+m.att.data+'">'; else inner+='<span class="doc">📄 '+esc(m.att.name||'documento')+'</span>'; }
   inner+= m.role==='user'? esc(m.content).replace(/\n/g,'<br>') : (function(){ var h=md(m.content); if(m.role==='bot'&&m.refs&&m.refs.length) h=linkifyCitations(h,m.refs); return h; })();
   if(m.role==='bot'){
-   inner+='<div class="v30-actions"><button class="cc-spk">🔊 Leer</button><button class="v30-copy" title="Copiar">📋</button><button class="v30-share" title="Compartir">📤</button><button class="v30-pdf" title="Exportar PDF">📄</button></div>';
+   inner+='<div class="v30-actions"><button class="cc-spk">🔊 Leer</button><button class="v30-copy">📋 Copiar</button><button class="v30-share">📤 Compartir</button><button class="v30-pdf">📄 PDF</button></div>';
    if(isLast!==false){
     var prevUser=messages.slice(0,-1).filter(function(x){return x.role==='user';});
     var lastQ=prevUser.length?prevUser[prevUser.length-1].content:'';
@@ -5325,7 +5325,7 @@ render();
   if(m.role==='bot'){
    d.querySelector('.cc-spk').onclick=function(){speak(m.content)};
    d.querySelector('.v30-copy').onclick=function(){v30Copy(m.content)};
-   d.querySelector('.v30-share').onclick=function(){v30Share(m.content)};
+   d.querySelector('.v30-share').onclick=function(e){v30Share(m.content,e.currentTarget)};
    d.querySelector('.v30-pdf').onclick=function(){v30PDF(m.content)};
    d.querySelectorAll('.cc-followup-btn').forEach(function(btn){btn.onclick=function(){ ta.value=btn.dataset.q;resize();upd();ta.focus(); };});
   }
@@ -17291,6 +17291,9 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .v30-actions{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
 .v30-actions button{background:none;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:12px;padding:4px 10px;border-radius:14px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:4px}
 .v30-actions button:hover{background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.3);color:#2DD4BF}
+.v30-share-menu{position:absolute;top:calc(100% + 6px);left:0;background:#1a2744;border:1px solid rgba(45,212,191,.25);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:2px;z-index:10002;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:v30fade .15s ease;min-width:180px}
+.v30-share-menu button{background:none;border:none;color:#d0d8f0;font-size:14px;padding:10px 14px;border-radius:10px;cursor:pointer;text-align:left;transition:.15s;font-family:inherit;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.v30-share-menu button:hover{background:rgba(45,212,191,.12);color:#2DD4BF}
 .v30-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a2744;color:#2DD4BF;padding:10px 22px;border-radius:22px;font-size:14px;z-index:10001;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:v30fade .3s ease}
 @keyframes v30fade{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
@@ -17374,12 +17377,37 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   document.body.appendChild(ta);ta.select();try{document.execCommand('copy');v30Toast('Copiado al portapapeles')}catch(e){v30Toast('No se pudo copiar')}document.body.removeChild(ta);
  }
 
- window.v30Share=function(content){
+ window.v30Share=function(content,btnEl){
+  var old=document.getElementById('v30ShareMenu');
+  if(old){ old.remove(); return; }
   var text=cleanText(content);
-  var preview=text.length>200?text.substring(0,200)+'…':text;
-  if(navigator.share){
-   navigator.share({title:'iNurse — Consulta clínica',text:preview}).catch(function(e){if(e.name!=='AbortError')window.v30Copy(content)});
-  }else{window.v30Copy(content)}
+  var menu=document.createElement('div');menu.id='v30ShareMenu';menu.className='v30-share-menu';
+  menu.innerHTML=''
+   +'<button data-act="whatsapp">💬 WhatsApp</button>'
+   +'<button data-act="email">📧 Email</button>'
+   +'<button data-act="copy">📋 Copiar texto</button>'
+   +'<button data-act="native">📤 Más opciones…</button>';
+  menu.querySelector('[data-act="whatsapp"]').onclick=function(){
+   var wa=text.length>2000?text.substring(0,2000)+'…':text;
+   window.open('https://wa.me/?text='+encodeURIComponent(wa),'_blank');menu.remove();
+  };
+  menu.querySelector('[data-act="email"]').onclick=function(){
+   var subject='iNurse — Consulta clínica';
+   var body=text.length>4000?text.substring(0,4000)+'…':text;
+   window.open('mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body));menu.remove();
+  };
+  menu.querySelector('[data-act="copy"]').onclick=function(){ window.v30Copy(content); menu.remove(); };
+  menu.querySelector('[data-act="native"]').onclick=function(){
+   if(navigator.share){ navigator.share({title:'iNurse — Consulta clínica',text:text}).catch(function(){}); }
+   else{ window.v30Copy(content); }
+   menu.remove();
+  };
+  if(btnEl&&btnEl.closest){
+   var actions=btnEl.closest('.v30-actions');
+   if(actions){ actions.style.position='relative'; actions.appendChild(menu); }
+   else{ document.body.appendChild(menu); }
+  }else{ document.body.appendChild(menu); }
+  setTimeout(function(){ document.addEventListener('click',function dismiss(e){ if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',dismiss)} },{once:false}); },50);
  };
 
  window.v30PDF=function(content){
