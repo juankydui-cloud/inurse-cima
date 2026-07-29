@@ -604,6 +604,11 @@
   .perf-multi-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 6px}
   .perf-multi-del:hover{color:#EF4444}
   .perf-multi-empty{font-size:12px;color:var(--text-dim);padding:8px 0}
+  .perf-info{margin-top:10px;padding:10px 12px;border-radius:10px;
+    background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15)}
+  .perf-info-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
+    border-radius:6px;background:rgba(14,165,233,.1);color:var(--text);margin:0 4px 6px 0}
+  .perf-info-notas{font-size:12px;color:var(--text);line-height:1.5;margin-top:4px}
 
   /* FAB Calculadora */
   #calcFab{position:fixed;left:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;
@@ -6653,13 +6658,19 @@ function runPerf(){
     agotamiento = `<div class="perf-agot">⏱ Duración bolsa (${dil.volMl} mL): <b>${hh}h ${mm}min</b></div>`;
   }
 
+  const infoHtml = f.info ? `<div class="perf-info">
+    <span class="perf-info-tag">⚡ ${escapeHtml(f.info.inicio)}</span>
+    <span class="perf-info-tag">⏳ t½ ${escapeHtml(f.info.vida)}</span>
+    <div class="perf-info-notas">${escapeHtml(f.info.notas)}</div></div>` : "";
+
   const box = document.getElementById("perfResult");
   if(!box) return;
   box.innerHTML = `<div class="calc-main">${mlH.toFixed(2)} mL/h en bomba</div>
     <div class="calc-detail"><b>${escapeHtml(f.n)}</b> · ${escapeHtml(dil.l)}<br>${calcDetail}</div>
     <div class="perf-gtt">Gravedad: ${gttMacro} gtt/min (macro) · ${gttMicro} µgtt/min (micro)</div>
     ${agotamiento}${doseWarn}
-    <div class="calc-interp">Peso: ${peso} kg · Dosis: ${dosis} ${unidad}</div>`;
+    <div class="calc-interp">Peso: ${peso} kg · Dosis: ${dosis} ${unidad}</div>
+    ${infoHtml}`;
 }
 
 function perfTitTable(){
