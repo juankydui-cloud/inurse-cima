@@ -144,5 +144,125 @@ const DILUCIONES = {
       { l: "900 mg / 500 mL SG5% mantenimiento (1.8 mg/mL)", cMgMl: 1.8 }
     ],
     ppw: false, tiempo: "h", mg: true
+  },
+
+  dexmedetomidina: {
+    n: "Dexmedetomidina",
+    dosis: { unidad: "mcg/kg/h", min: 0.2, max: 1.4, def: 0.5, step: 0.1 },
+    diluciones: [
+      { l: "200 mcg / 50 mL SF (4 mcg/mL)", cMcgMl: 4 },
+      { l: "400 mcg / 100 mL SF (4 mcg/mL)", cMcgMl: 4 }
+    ],
+    ppw: true, tiempo: "h"
+  },
+  vasopresina: {
+    n: "Vasopresina",
+    dosis: { unidad: "UI/h", min: 0.5, max: 6, def: 1.8, step: 0.3 },
+    diluciones: [
+      { l: "20 UI / 100 mL SF (0.2 UI/mL)", cUIMl: 0.2 },
+      { l: "40 UI / 100 mL SF (0.4 UI/mL)", cUIMl: 0.4 }
+    ],
+    ppw: false, tiempo: "h", ui: true
+  },
+  milrinona: {
+    n: "Milrinona",
+    dosis: { unidad: "mcg/kg/min", min: 0.125, max: 0.75, def: 0.375, step: 0.025 },
+    diluciones: [
+      { l: "10 mg / 100 mL SG5% (100 mcg/mL)", cMcgMl: 100 },
+      { l: "20 mg / 100 mL SG5% (200 mcg/mL)", cMcgMl: 200 }
+    ],
+    ppw: true
+  },
+  levosimendan: {
+    n: "Levosimendán",
+    dosis: { unidad: "mcg/kg/min", min: 0.05, max: 0.2, def: 0.1, step: 0.01 },
+    diluciones: [
+      { l: "12.5 mg / 500 mL SG5% (25 mcg/mL)", cMcgMl: 25 }
+    ],
+    ppw: true
+  },
+  esmolol: {
+    n: "Esmolol",
+    dosis: { unidad: "mcg/kg/min", min: 25, max: 300, def: 50, step: 25 },
+    diluciones: [
+      { l: "2500 mg / 250 mL SF (10 mg/mL = 10000 mcg/mL)", cMcgMl: 10000 }
+    ],
+    ppw: true
+  },
+  fenilefrina: {
+    n: "Fenilefrina",
+    dosis: { unidad: "mcg/min", min: 40, max: 360, def: 100, step: 10 },
+    diluciones: [
+      { l: "10 mg / 250 mL SF (40 mcg/mL)", cMcgMl: 40 },
+      { l: "20 mg / 250 mL SF (80 mcg/mL)", cMcgMl: 80 }
+    ],
+    ppw: false
+  },
+  sulfatoMg: {
+    n: "Sulfato de magnesio",
+    dosis: { unidad: "mg/h", min: 500, max: 3000, def: 1000, step: 250 },
+    diluciones: [
+      { l: "4 g / 250 mL SF (16 mg/mL) — eclampsia/arritmias", cMgMl: 16 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  morfina: {
+    n: "Morfina (perfusión continua)",
+    dosis: { unidad: "mg/h", min: 0.5, max: 10, def: 2, step: 0.5 },
+    diluciones: [
+      { l: "40 mg / 100 mL SF (0.4 mg/mL)", cMgMl: 0.4 },
+      { l: "60 mg / 100 mL SF (0.6 mg/mL)", cMgMl: 0.6 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  oxitocina: {
+    n: "Oxitocina",
+    dosis: { unidad: "UI/h", min: 1, max: 40, def: 6, step: 1 },
+    diluciones: [
+      { l: "10 UI / 500 mL SF (20 mUI/mL = 0.02 UI/mL)", cUIMl: 0.02 },
+      { l: "10 UI / 1000 mL SF (10 mUI/mL = 0.01 UI/mL)", cUIMl: 0.01 }
+    ],
+    ppw: false, tiempo: "h", ui: true
+  },
+  clevidipino: {
+    n: "Clevidipino",
+    dosis: { unidad: "mg/h", min: 1, max: 32, def: 2, step: 0.5 },
+    diluciones: [
+      { l: "Emulsión 0.5 mg/mL (listo para uso)", cMgMl: 0.5 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  dexketoprofeno: {
+    n: "Dexketoprofeno (perfusión)",
+    dosis: { unidad: "mg/h", min: 12.5, max: 50, def: 50, step: 12.5 },
+    diluciones: [
+      { l: "50 mg / 100 mL SF (0.5 mg/mL) — pasar en 10-30 min", cMgMl: 0.5 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  metamizol: {
+    n: "Metamizol (perfusión)",
+    dosis: { unidad: "mg/h", min: 1000, max: 2000, def: 2000, step: 500 },
+    diluciones: [
+      { l: "2 g / 100 mL SF (20 mg/mL) — pasar en 15-20 min", cMgMl: 20 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  pantoprazol: {
+    n: "Pantoprazol (perfusión continua)",
+    dosis: { unidad: "mg/h", min: 4, max: 8, def: 8, step: 1 },
+    diluciones: [
+      { l: "80 mg / 100 mL SF (0.8 mg/mL) — HDA", cMgMl: 0.8 }
+    ],
+    ppw: false, tiempo: "h", mg: true
+  },
+  rocuronio: {
+    n: "Rocuronio",
+    dosis: { unidad: "mcg/kg/min", min: 5, max: 20, def: 10, step: 1 },
+    diluciones: [
+      { l: "200 mg / 100 mL SF (2000 mcg/mL)", cMcgMl: 2000 },
+      { l: "500 mg / 250 mL SF (2000 mcg/mL)", cMcgMl: 2000 }
+    ],
+    ppw: true
   }
 };

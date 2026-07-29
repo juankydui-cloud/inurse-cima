@@ -6302,8 +6302,20 @@ function renderPerf(){
     ? `<optgroup label="Mis fármacos">${customKeys.map(k=>
         `<option value="${k}">★ ${escapeHtml(PERF_CUSTOM[k].n)}</option>`).join("")}</optgroup>`
     : "";
-  const baseOpts = `<optgroup label="Fármacos habituales">${Object.entries(DILUCIONES).map(([k,d])=>
-    `<option value="${k}">${escapeHtml(d.n)}</option>`).join("")}</optgroup>`;
+  const perfGrupos = [
+    ["Vasopresores / Inotrópicos", ["noradrenalina","adrenalina","dopamina","dobutamina","milrinona","levosimendan","vasopresina","fenilefrina"]],
+    ["Sedación / Analgesia", ["midazolam","propofol","ketamina","fentanilo","remifentanilo","dexmedetomidina","morfina"]],
+    ["Relajantes neuromusculares", ["cisatracurio","rocuronio"]],
+    ["Cardiovascular", ["nitroglicerina","nitroprusiato","labetalol","amiodarona","esmolol","clevidipino"]],
+    ["Anticoagulación / Endocrino", ["heparina","insulina"]],
+    ["Analgesia no opiácea", ["dexketoprofeno","metamizol"]],
+    ["Otros", ["furosemida","sulfatoMg","oxitocina","pantoprazol"]]
+  ];
+  const baseOpts = perfGrupos.map(([label, keys]) => {
+    const opts = keys.filter(k => DILUCIONES[k]).map(k =>
+      `<option value="${k}">${escapeHtml(DILUCIONES[k].n)}</option>`).join("");
+    return opts ? `<optgroup label="${label}">${opts}</optgroup>` : "";
+  }).join("");
   const addOpt = `<option value="__new__">➕ Añadir fármaco personalizado…</option>`;
   return `<div class="calc-widget">
     <div class="calc-title"><span class="calc-icon">💉</span>Widget de Perfusiones HJ23
