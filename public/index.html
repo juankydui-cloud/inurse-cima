@@ -565,6 +565,50 @@
   .perf-row select{width:auto;min-width:76px}
   .perf-custom-preview{font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);
     border-radius:8px;padding:9px 12px;margin-bottom:12px}
+  #perf-slider{width:100%;margin:6px 0 2px;accent-color:#0EA5E9;height:6px}
+  .perf-range{display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);font-weight:600}
+  .perf-reverse{margin-bottom:12px;padding:10px 14px;border-radius:10px;
+    background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.18)}
+  .perf-reverse label{display:block;font-size:11px;color:var(--text-dim);font-weight:700;margin-bottom:6px}
+  .perf-reverse input{padding:8px 10px;border-radius:8px;border:1px solid var(--border);
+    background:var(--bg);color:var(--text);font-size:14px;width:100px}
+  .perf-inv-out{font-size:14px;color:var(--text);display:flex;align-items:center;padding-left:8px}
+  .perf-gtt{font-size:12px;color:var(--text-dim);margin:4px 0 6px;font-weight:500}
+  .perf-dose-warn{font-size:12px;color:#F59E0B;font-weight:700;margin:4px 0}
+  .perf-agot{font-size:12px;color:var(--text-dim);margin:4px 0;font-weight:500}
+  .perf-tit,.perf-bolo,.perf-print{margin-top:12px;padding:14px;border-radius:12px;
+    border:1px solid var(--border);background:var(--card-solid)}
+  .perf-tit-title,.perf-bolo-title,.perf-print-title{font-size:13px;font-weight:800;margin-bottom:8px}
+  .perf-tit-sub{font-size:11px;color:var(--text-dim);margin-bottom:8px}
+  .perf-tit-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+  .perf-tit-table th{text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);
+    font-size:11px;color:var(--text-dim);font-weight:700}
+  .perf-tit-table td{padding:5px 8px;border-bottom:1px solid var(--border)}
+  .perf-bolo-desc{font-size:13px;color:var(--text);margin-bottom:6px}
+  .perf-bolo-dose{font-size:15px;margin-bottom:6px}
+  .perf-bolo-vol{font-size:13px;color:var(--text-dim);margin-bottom:10px}
+  .perf-print-text{width:100%;min-height:120px;padding:10px;border-radius:8px;
+    border:1px solid var(--border);background:var(--bg);color:var(--text);
+    font-family:monospace;font-size:12px;resize:vertical;margin-bottom:8px}
+  #perf-search{margin-bottom:6px;padding:8px 10px;border-radius:8px;font-size:13px}
+  .perf-multi-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .perf-multi-bar button{font-size:12px;padding:6px 10px}
+  .perf-multi{margin-top:12px;padding:14px;border-radius:12px;
+    border:1px solid rgba(14,165,233,.25);background:rgba(14,165,233,.04)}
+  .perf-multi-title{font-size:13px;font-weight:800;margin-bottom:8px}
+  .perf-multi-table{width:100%;border-collapse:collapse;font-size:13px}
+  .perf-multi-table th{text-align:left;padding:5px 6px;border-bottom:2px solid var(--border);
+    font-size:11px;color:var(--text-dim);font-weight:700}
+  .perf-multi-table td{padding:4px 6px;border-bottom:1px solid var(--border)}
+  .perf-multi-table tfoot td{border-top:2px solid var(--border);padding-top:8px;font-size:14px}
+  .perf-multi-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 6px}
+  .perf-multi-del:hover{color:#EF4444}
+  .perf-multi-empty{font-size:12px;color:var(--text-dim);padding:8px 0}
+  .perf-info{margin-top:10px;padding:10px 12px;border-radius:10px;
+    background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15)}
+  .perf-info-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
+    border-radius:6px;background:rgba(14,165,233,.1);color:var(--text);margin:0 4px 6px 0}
+  .perf-info-notas{font-size:12px;color:var(--text);line-height:1.5;margin-top:4px}
 
   /* FAB Calculadora */
   #calcFab{position:fixed;left:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;
@@ -1025,46 +1069,6 @@ header{backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22p
 .search{backdrop-filter:blur(8px)}
 .search:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--ictus) 30%,transparent),0 8px 30px rgba(168,85,247,.25)!important}
 
-/* ---- MENÚ DESPLEGABLE DE CATEGORÍAS (sustituye visualmente los chips) ---- */
-.chips{display:none!important}
-.cat-bar{max-width:960px;margin:12px auto 0;position:relative;display:flex;gap:10px;align-items:center}
-.cat-toggle{flex:1;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;cursor:pointer;
-  border:1px solid var(--border);background:color-mix(in srgb,var(--card-solid) 75%,transparent);
-  backdrop-filter:blur(12px);color:var(--text);font-family:var(--font-family);font-weight:800;font-size:14.5px;
-  transition:transform .18s,box-shadow .25s,border-color .25s;text-align:left}
-.cat-toggle:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--cat-ac,#A855F7) 55%,var(--border));
-  box-shadow:0 10px 32px color-mix(in srgb,var(--cat-ac,#A855F7) 25%,transparent)}
-.cat-toggle .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;background:var(--cat-ac,#A855F7);
-  box-shadow:0 0 12px var(--cat-ac,#A855F7)}
-.cat-toggle .em{font-size:19px}
-.cat-toggle .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cat-toggle .lbl small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim)}
-.cat-toggle .chev{transition:transform .3s;color:var(--cat-ac,#A855F7);font-size:13px}
-.cat-bar.open .cat-toggle .chev{transform:rotate(180deg)}
-
-.cat-panel{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:80;
-  border-radius:22px;border:1px solid var(--border);overflow:hidden;
-  background:color-mix(in srgb,var(--card-solid) 88%,transparent);
-  backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
-  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;
-  transform-origin:top center;transform:scaleY(.92) translateY(-8px);opacity:0;pointer-events:none;
-  transition:transform .28s cubic-bezier(.34,1.4,.5,1),opacity .22s}
-.cat-bar.open .cat-panel{transform:scaleY(1) translateY(0);opacity:1;pointer-events:auto}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;padding:14px;max-height:min(58vh,480px);overflow-y:auto}
-.cat-tile{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;cursor:pointer;
-  border:1px solid var(--border);background:color-mix(in srgb,var(--tc) 7%,transparent);
-  color:var(--text);font-family:var(--font-family);font-weight:700;font-size:13.5px;text-align:left;
-  transition:transform .16s,box-shadow .2s,border-color .2s,background .2s}
-.cat-tile .em{font-size:20px;filter:drop-shadow(0 2px 6px color-mix(in srgb,var(--tc) 60%,transparent))}
-.cat-tile:hover{transform:translateY(-2px) scale(1.02);border-color:color-mix(in srgb,var(--tc) 60%,var(--border));
-  background:color-mix(in srgb,var(--tc) 16%,transparent);box-shadow:0 10px 26px color-mix(in srgb,var(--tc) 30%,transparent)}
-.cat-tile.active{background:var(--tc);color:#fff;border-color:transparent;
-  box-shadow:0 8px 24px color-mix(in srgb,var(--tc) 55%,transparent)}
-.cat-tile.active .em{filter:none}
-[data-theme="light"] .cat-panel{box-shadow:0 30px 70px rgba(15,23,42,.25)}
-[data-theme="night"] .cat-toggle,[data-theme="night"] .cat-panel{backdrop-filter:none;background:var(--card-solid)}
-[data-theme="night"] .cat-tile.active{color:#000}
-
 /* ---- Tarjetas con profundidad 3D ---- */
 main{perspective:1400px}
 .group-card{
@@ -1100,8 +1104,6 @@ main{perspective:1400px}
 [data-theme="night"] .fab::after{display:none}
 @media (prefers-reduced-motion:reduce){.fab::after{animation:none}}
 
-/* Móvil: rejilla del panel a 2 columnas cómodas */
-@media(max-width:520px){.cat-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 <style id="v15-visual">
@@ -1151,42 +1153,6 @@ main{perspective:1400px}
 #askFab::after{display:none!important}
 [data-theme="night"] .fab-stack>button .dk-lbl{color:var(--text-dim)}
 
-/* ---- MENÚ DE CABECERA: acciones agrupadas en desplegable ---- */
-.top .icon-btn{display:none}
-#hjMenuBtn{display:flex!important}
-#hjMenuBtn{
-  width:44px;height:44px;border-radius:13px;border:1px solid var(--border);
-  background:color-mix(in srgb,var(--card-solid) 80%,transparent);backdrop-filter:blur(10px);
-  color:var(--text);font-size:19px;cursor:pointer;flex-shrink:0;
-  align-items:center;justify-content:center;transition:transform .18s,border-color .2s,box-shadow .25s;
-}
-#hjMenuBtn:hover{border-color:color-mix(in srgb,var(--ictus) 55%,var(--border));box-shadow:0 8px 26px color-mix(in srgb,var(--ictus) 25%,transparent)}
-#hjMenuBtn.open{transform:rotate(90deg)}
-.hj-menu-wrap{position:relative;flex-shrink:0}
-#hjMenuPanel{
-  position:absolute;top:calc(100% + 10px);right:0;z-index:90;min-width:238px;
-  border-radius:20px;border:1px solid var(--border);overflow:hidden;
-  background:color-mix(in srgb,var(--card-solid) 90%,transparent);
-  backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
-  box-shadow:0 28px 70px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset;
-  transform-origin:top right;transform:scale(.9) translateY(-6px);opacity:0;pointer-events:none;
-  transition:transform .26s cubic-bezier(.34,1.4,.5,1),opacity .2s;padding:8px;
-}
-.hj-menu-wrap.open #hjMenuPanel{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-[data-theme="night"] #hjMenuPanel{backdrop-filter:none;background:var(--card-solid);border-width:2px}
-.hj-row{
-  display:flex;align-items:center;gap:12px;padding:6px 10px 6px 6px;border-radius:14px;cursor:pointer;
-  transition:background .18s,transform .15s;
-}
-.hj-row:hover{background:color-mix(in srgb,var(--hc,#A855F7) 14%,transparent);transform:translateX(3px)}
-.hj-row .icon-btn{display:flex!important;width:40px;height:40px;border-radius:11px;pointer-events:none}
-.hj-row .hj-lbl{font-size:14px;font-weight:800;color:var(--text);font-family:var(--font-family)}
-.hj-row .hj-sub{display:block;font-size:10.5px;font-weight:600;color:var(--text-dim)}
-.hj-row.hj-sos{background:color-mix(in srgb,#EF4444 14%,transparent);border:1px solid color-mix(in srgb,#EF4444 35%,transparent);margin-bottom:6px}
-.hj-row.hj-sos:hover{background:color-mix(in srgb,#EF4444 26%,transparent)}
-.hj-row.hj-sos .hj-lbl{color:#F87171}
-.hj-sep{height:1px;background:var(--border);margin:6px 8px}
-
 /* ---- EMOJIS VIVOS 🫀🫁🚑👶 ---- */
 @keyframes emBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.22)}56%{transform:scale(1)}}
 @keyframes emBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.18) translateY(-2px)}}
@@ -1213,20 +1179,6 @@ main{perspective:1400px}
 #group-uci .group-header:hover .group-ico,#group-uci .group-header:active .group-ico{animation:emBounce 1.1s ease-in-out infinite}
 #group-obst .group-header:hover .group-ico,#group-obst .group-header:active .group-ico{animation:emSway 1.6s ease-in-out infinite}
 
-/* Menú desplegable de categorías: mismos gestos */
-.cat-tile[data-c="cardio"]:hover .em{animation:emBeat 1s ease-in-out infinite}
-.cat-tile[data-c="resp"]:hover .em{animation:emBreathe 1.8s ease-in-out infinite}
-.cat-tile[data-c="emer"]:hover .em,.cat-tile[data-c="extra"]:hover .em,.cat-tile[data-c="trauma"]:hover .em{animation:emDrive 1s linear infinite}
-.cat-tile[data-c="ped"]:hover .em{animation:emCry .9s ease-in-out infinite}
-.cat-tile[data-c="ictus"]:hover .em{animation:emZap 1.2s ease-in-out infinite}
-.cat-tile[data-c="farm"]:hover .em{animation:emSpin 1.6s ease-in-out infinite}
-.cat-tile[data-c="imagen"]:hover .em{animation:emFlash 1.3s ease-in-out infinite}
-.cat-tile[data-c="esp"]:hover .em{animation:emWobble 1s ease-in-out infinite}
-.cat-tile[data-c="uci"]:hover .em{animation:emBounce 1.1s ease-in-out infinite}
-.cat-tile[data-c="obst"]:hover .em{animation:emSway 1.6s ease-in-out infinite}
-.cat-tile[data-c="fav"]:hover .em{animation:emSpin 1.4s ease-in-out infinite}
-.cat-tile[data-c="all"]:hover .em,.cat-tile[data-c="recent"]:hover .em{animation:emWobble 1s ease-in-out infinite}
-
 /* Dock: el corazón late, la radiografía destella, el mic vibra... */
 #atlasFab:hover .dk-em{animation:emBeat 1s ease-in-out infinite}
 #ecgFab:hover .dk-em{animation:emZap 1.2s ease-in-out infinite}
@@ -1240,7 +1192,7 @@ main{perspective:1400px}
 .hj-row.hj-sos:hover .icon-btn{animation:emBeat .9s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
-  .group-ico,.cat-tile .em,.dk-em,.hj-row .icon-btn{animation:none!important}
+  .group-ico,.dk-em{animation:none!important}
 }
 
 /* Móvil estrecho: el dock se ajusta */
@@ -1292,12 +1244,6 @@ main{perspective:1400px}
 }
 #hfFlash.on{opacity:1;animation:hfFlashOut .8s ease-out forwards}
 @keyframes hfFlashOut{0%{opacity:.9}100%{opacity:0}}
-
-/* Fila del menú de cabecera para el toggle */
-.hj-row.hj-hf{background:color-mix(in srgb,#22D3EE 10%,transparent)}
-.hj-row.hj-hf.active{background:color-mix(in srgb,#22D3EE 22%,transparent);
-  border:1px solid color-mix(in srgb,#22D3EE 45%,transparent)}
-.hj-row.hj-hf.active .hj-lbl::after{content:" · ON";color:#22D3EE}
 
 [data-theme="night"] #hfBar{background:linear-gradient(90deg,transparent,#FFD24A,#FFB020,transparent)}
 [data-theme="night"] #hfChip{border-width:2px}
@@ -6302,8 +6248,20 @@ function renderPerf(){
     ? `<optgroup label="Mis fármacos">${customKeys.map(k=>
         `<option value="${k}">★ ${escapeHtml(PERF_CUSTOM[k].n)}</option>`).join("")}</optgroup>`
     : "";
-  const baseOpts = `<optgroup label="Fármacos habituales">${Object.entries(DILUCIONES).map(([k,d])=>
-    `<option value="${k}">${escapeHtml(d.n)}</option>`).join("")}</optgroup>`;
+  const perfGrupos = [
+    ["Vasopresores / Inotrópicos", ["noradrenalina","adrenalina","dopamina","dobutamina","milrinona","levosimendan","vasopresina","fenilefrina"]],
+    ["Sedación / Analgesia", ["midazolam","propofol","ketamina","fentanilo","remifentanilo","dexmedetomidina","morfina"]],
+    ["Relajantes neuromusculares", ["cisatracurio","rocuronio"]],
+    ["Cardiovascular", ["nitroglicerina","nitroprusiato","labetalol","amiodarona","esmolol","clevidipino"]],
+    ["Anticoagulación / Endocrino", ["heparina","insulina"]],
+    ["Analgesia no opiácea", ["dexketoprofeno","metamizol"]],
+    ["Otros", ["furosemida","sulfatoMg","oxitocina","pantoprazol"]]
+  ];
+  const baseOpts = perfGrupos.map(([label, keys]) => {
+    const opts = keys.filter(k => DILUCIONES[k]).map(k =>
+      `<option value="${k}">${escapeHtml(DILUCIONES[k].n)}</option>`).join("");
+    return opts ? `<optgroup label="${label}">${opts}</optgroup>` : "";
+  }).join("");
   const addOpt = `<option value="__new__">➕ Añadir fármaco personalizado…</option>`;
   return `<div class="calc-widget">
     <div class="calc-title"><span class="calc-icon">💉</span>Widget de Perfusiones HJ23
@@ -6311,6 +6269,8 @@ function renderPerf(){
     <div class="calc-fields">
       <div class="calc-field">
         <label>Fármaco</label>
+        <input type="text" id="perf-search" placeholder="Buscar fármaco…" autocomplete="off"
+          oninput="perfFilterDrugs(this.value)" onfocus="this.select()">
         <select id="perf-farm" onchange="onPerfFarm()">${customOpts}${baseOpts}${addOpt}</select>
       </div>
       <div class="calc-field">
@@ -6325,15 +6285,33 @@ function renderPerf(){
       <div class="calc-field">
         <label id="perf-dosis-label">Dosis objetivo</label>
         <input type="number" inputmode="decimal" id="perf-dosis" oninput="runPerf()">
+        <input type="range" id="perf-slider" oninput="document.getElementById('perf-dosis').value=this.value;runPerf()">
+        <div class="perf-range" id="perf-range"></div>
+      </div>
+    </div>
+    <div class="perf-reverse" id="perfReverse">
+      <label>Cálculo inverso: mL/h → dosis</label>
+      <div class="perf-row">
+        <input type="number" inputmode="decimal" id="perf-mlh-inv" min="0" step="any" placeholder="mL/h" oninput="runPerfInverse()">
+        <span id="perf-inv-result" class="perf-inv-out">—</span>
       </div>
     </div>
     <div id="perfCustomForm"></div>
     <div class="calc-result" id="perfResult">—</div>
     <div class="calc-actions" id="perfActions">
       <button class="btn-outline" onclick="perfReset()">↻ Limpiar</button>
+      <button class="btn-outline" onclick="perfTitTable()">📊 Titulación</button>
+      <button class="btn-outline" id="perfBoloBtn" onclick="perfBoloCalc()" style="display:none">💉 Bolo</button>
+      <button class="btn-outline" onclick="perfPrint()">🖨 Resumen</button>
       <button class="btn-primary" onclick="perfSave()">💾 Guardar</button>
     </div>
+    <div id="perfExtra"></div>
     <div class="calc-warn">⚠️ Verifica siempre con la ficha del fármaco y con farmacia. Diluciones habituales; pueden variar por servicio.</div>
+    <div class="perf-multi-bar">
+      <button class="btn-outline" onclick="perfMultiAdd()">➕ Añadir a perfusiones activas</button>
+      <button class="btn-outline" onclick="perfMultiToggle()">📋 Ver perfusiones activas (<span id="perfMultiCount">0</span>)</button>
+    </div>
+    <div id="perfMultiPanel" class="perf-multi" style="display:none"></div>
   </div>`;
 }
 
@@ -6486,6 +6464,16 @@ function onPerfFarm(fromCancel){
   dosisInput.min = f.dosis.min; dosisInput.max = f.dosis.max;
   dosisInput.step = f.dosis.step; dosisInput.value = f.dosis.def;
   document.getElementById("perf-dosis-label").textContent = `Dosis objetivo (${f.dosis.unidad})`;
+  const slider = document.getElementById("perf-slider");
+  if(slider){ slider.min = f.dosis.min; slider.max = f.dosis.max; slider.step = f.dosis.step; slider.value = f.dosis.def; }
+  const rangeEl = document.getElementById("perf-range");
+  if(rangeEl) rangeEl.innerHTML = `<span>${f.dosis.min}</span><span>${f.dosis.max} ${f.dosis.unidad}</span>`;
+  const invInput = document.getElementById("perf-mlh-inv");
+  if(invInput) invInput.value = "";
+  const boloBtn = document.getElementById("perfBoloBtn");
+  if(boloBtn) boloBtn.style.display = f.bolo ? "" : "none";
+  const extra = document.getElementById("perfExtra");
+  if(extra) extra.innerHTML = "";
   // Botón de borrar para fármacos personalizados
   if(actions){
     const oldDel = document.getElementById("perfDelBtn");
@@ -6557,11 +6545,251 @@ function runPerf(){
     calcDetail = `${dosis.toFixed(1)} UI/h`;
   }
 
+  const slider = document.getElementById("perf-slider");
+  if(slider) slider.value = dosis;
+
+  const gttMacro = (mlH / 60 * 20).toFixed(1);
+  const gttMicro = (mlH / 60 * 60).toFixed(1);
+  const doseWarn = (dosis < f.dosis.min || dosis > f.dosis.max)
+    ? `<div class="perf-dose-warn">⚠️ Fuera de rango habitual (${f.dosis.min}–${f.dosis.max} ${unidad})</div>` : "";
+
+  let agotamiento = "";
+  if(dil.volMl && mlH > 0){
+    const horas = dil.volMl / mlH;
+    const hh = Math.floor(horas); const mm = Math.round((horas - hh) * 60);
+    agotamiento = `<div class="perf-agot">⏱ Duración bolsa (${dil.volMl} mL): <b>${hh}h ${mm}min</b></div>`;
+  }
+
+  const infoHtml = f.info ? `<div class="perf-info">
+    <span class="perf-info-tag">⚡ ${escapeHtml(f.info.inicio)}</span>
+    <span class="perf-info-tag">⏳ t½ ${escapeHtml(f.info.vida)}</span>
+    <div class="perf-info-notas">${escapeHtml(f.info.notas)}</div></div>` : "";
+
   const box = document.getElementById("perfResult");
   if(!box) return;
   box.innerHTML = `<div class="calc-main">${mlH.toFixed(2)} mL/h en bomba</div>
     <div class="calc-detail"><b>${escapeHtml(f.n)}</b> · ${escapeHtml(dil.l)}<br>${calcDetail}</div>
-    <div class="calc-interp">Peso: ${peso} kg · Dosis: ${dosis} ${unidad}</div>`;
+    <div class="perf-gtt">Gravedad: ${gttMacro} gtt/min (macro) · ${gttMicro} µgtt/min (micro)</div>
+    ${agotamiento}${doseWarn}
+    <div class="calc-interp">Peso: ${peso} kg · Dosis: ${dosis} ${unidad}</div>
+    ${infoHtml}`;
+}
+
+function perfTitTable(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const u = f.dosis.unidad;
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  const steps = [];
+  const range = f.dosis.max - f.dosis.min;
+  const nSteps = Math.min(12, Math.max(6, Math.ceil(range / f.dosis.step)));
+  const stepSize = range / nSteps;
+  for(let i = 0; i <= nSteps; i++){
+    let d = f.dosis.min + stepSize * i;
+    d = Math.round(d / f.dosis.step) * f.dosis.step;
+    if(d > f.dosis.max) d = f.dosis.max;
+    if(steps.length && Math.abs(steps[steps.length-1].d - d) < f.dosis.step * 0.5) continue;
+    let mlH = 0;
+    if(u.includes("mcg/kg/min")) mlH = d * peso * 60 / (dil.cMcgMl||1);
+    else if(u === "mcg/min") mlH = d * 60 / (dil.cMcgMl||1);
+    else if(u.includes("mcg/kg/h")) mlH = d * peso / (dil.cMcgMl||1);
+    else if(u.includes("mg/kg/h")) mlH = d * peso / (dil.cMgMl||1);
+    else if(u === "mg/h") mlH = d / (dil.cMgMl||1);
+    else if(u === "UI/kg/h") mlH = d * peso / (dil.cUIMl||1);
+    else if(u === "UI/h") mlH = d / (dil.cUIMl||1);
+    steps.push({ d, mlH });
+  }
+  const rows = steps.map(s =>
+    `<tr><td>${s.d.toFixed(s.d<1?3:s.d<10?2:1)} ${u}</td><td><b>${s.mlH.toFixed(2)}</b> mL/h</td></tr>`).join("");
+  extra.innerHTML = `<div class="perf-tit">
+    <div class="perf-tit-title">📊 Tabla de titulación · ${escapeHtml(f.n)} · ${peso} kg</div>
+    <div class="perf-tit-sub">${escapeHtml(dil.l)}</div>
+    <table class="perf-tit-table"><thead><tr><th>Dosis</th><th>Bomba</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+  </div>`;
+}
+
+function perfBoloCalc(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f || !f.bolo) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const b = f.bolo;
+  const dTotal = b.dosisPorKg ? (b.dosisPorKg * peso) : b.dosis;
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  let volInfo = "";
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const conc = dil.cMcgMl || dil.cMgMl || dil.cUIMl || 0;
+  if(conc > 0){
+    let dosisEnConcUnit = dTotal;
+    if(b.unidad === "mg" && dil.cMcgMl) dosisEnConcUnit = dTotal * 1000;
+    else if(b.unidad === "mcg" && dil.cMgMl) dosisEnConcUnit = dTotal / 1000;
+    const vol = dosisEnConcUnit / conc;
+    volInfo = `<div class="perf-bolo-vol">Con la dilución actual: <b>${vol.toFixed(1)} mL</b></div>`;
+  }
+  extra.innerHTML = `<div class="perf-bolo">
+    <div class="perf-bolo-title">💉 Bolo de carga · ${escapeHtml(f.n)}</div>
+    <div class="perf-bolo-desc">${escapeHtml(b.desc)}</div>
+    <div class="perf-bolo-dose">Dosis: <b>${dTotal.toFixed(dTotal<1?2:dTotal<10?1:0)} ${b.unidad}</b>${b.dosisPorKg ? ` (${b.dosisPorKg} ${b.unidad}/kg × ${peso} kg)` : ""}</div>
+    ${volInfo}
+    <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+  </div>`;
+}
+
+function perfPrint(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const dosis = parseFloat(document.getElementById("perf-dosis").value) || 0;
+  const res = document.getElementById("perfResult");
+  const mlH = res?.querySelector(".calc-main")?.textContent || "—";
+  const detail = res?.querySelector(".calc-detail")?.textContent || "";
+  const gtt = res?.querySelector(".perf-gtt")?.textContent || "";
+  const agot = res?.querySelector(".perf-agot")?.textContent || "";
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  const now = new Date().toLocaleString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  const lines = [
+    `═══ PERFUSIÓN · ${f.n} ═══`,
+    `Fecha: ${now}`,
+    `Peso: ${peso} kg`,
+    `Dilución: ${dil.l}`,
+    `Dosis: ${dosis} ${f.dosis.unidad}`,
+    `▸ ${mlH}`,
+    detail, gtt, agot,
+    `═══════════════════════════`
+  ].filter(Boolean).join("\n");
+  extra.innerHTML = `<div class="perf-print">
+    <div class="perf-print-title">🖨 Resumen para copiar</div>
+    <textarea class="perf-print-text" readonly onclick="this.select()">${escapeHtml(lines)}</textarea>
+    <div class="calc-actions">
+      <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+      <button class="btn-primary" onclick="navigator.clipboard.writeText(this.closest('.perf-print').querySelector('textarea').value);toast('📋 Copiado')">📋 Copiar</button>
+    </div>
+  </div>`;
+}
+
+function perfFilterDrugs(q){
+  const sel = document.getElementById("perf-farm");
+  if(!sel) return;
+  q = (q||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const opts = sel.querySelectorAll("option, optgroup");
+  if(!q){ opts.forEach(o => o.style.display = ""); return; }
+  sel.querySelectorAll("optgroup").forEach(g => g.style.display = "none");
+  let firstMatch = null;
+  sel.querySelectorAll("option").forEach(o => {
+    if(o.value === "__new__"){ o.style.display = ""; return; }
+    const text = o.textContent.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+    const match = text.includes(q) || o.value.toLowerCase().includes(q);
+    o.style.display = match ? "" : "none";
+    if(match){
+      if(!firstMatch) firstMatch = o.value;
+      const g = o.closest("optgroup");
+      if(g) g.style.display = "";
+    }
+  });
+  if(firstMatch && sel.value !== firstMatch){ sel.value = firstMatch; onPerfFarm(); }
+}
+
+const perfMultiList = [];
+
+function perfMultiAdd(){
+  const k = document.getElementById("perf-farm").value;
+  if(k === "__new__") return;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const dosis = parseFloat(document.getElementById("perf-dosis").value) || 0;
+  const u = f.dosis.unidad;
+  let mlH = 0;
+  if(u.includes("mcg/kg/min")) mlH = dosis * peso * 60 / (dil.cMcgMl||1);
+  else if(u === "mcg/min") mlH = dosis * 60 / (dil.cMcgMl||1);
+  else if(u.includes("mcg/kg/h")) mlH = dosis * peso / (dil.cMcgMl||1);
+  else if(u.includes("mg/kg/h")) mlH = dosis * peso / (dil.cMgMl||1);
+  else if(u === "mg/h") mlH = dosis / (dil.cMgMl||1);
+  else if(u === "UI/kg/h") mlH = dosis * peso / (dil.cUIMl||1);
+  else if(u === "UI/h") mlH = dosis / (dil.cUIMl||1);
+  const existing = perfMultiList.findIndex(e => e.key === k);
+  if(existing >= 0) perfMultiList[existing] = { key: k, name: f.n, dosis, unidad: u, mlH, dil: dil.l };
+  else perfMultiList.push({ key: k, name: f.n, dosis, unidad: u, mlH, dil: dil.l });
+  document.getElementById("perfMultiCount").textContent = perfMultiList.length;
+  perfMultiRender();
+  const panel = document.getElementById("perfMultiPanel");
+  if(panel) panel.style.display = "";
+  toast("➕ " + f.n + " añadida");
+}
+
+function perfMultiRemove(idx){
+  perfMultiList.splice(idx, 1);
+  document.getElementById("perfMultiCount").textContent = perfMultiList.length;
+  perfMultiRender();
+  if(!perfMultiList.length){
+    const panel = document.getElementById("perfMultiPanel");
+    if(panel) panel.style.display = "none";
+  }
+}
+
+function perfMultiToggle(){
+  const panel = document.getElementById("perfMultiPanel");
+  if(!panel) return;
+  panel.style.display = panel.style.display === "none" ? "" : "none";
+  if(panel.style.display !== "none") perfMultiRender();
+}
+
+function perfMultiRender(){
+  const panel = document.getElementById("perfMultiPanel");
+  if(!panel) return;
+  if(!perfMultiList.length){
+    panel.innerHTML = '<div class="perf-multi-empty">No hay perfusiones activas. Pulsa "➕ Añadir" para registrar la perfusión actual.</div>';
+    return;
+  }
+  const totalMlH = perfMultiList.reduce((s,e) => s + e.mlH, 0);
+  const rows = perfMultiList.map((e,i) =>
+    `<tr>
+      <td><b>${escapeHtml(e.name)}</b></td>
+      <td>${e.dosis} ${e.unidad}</td>
+      <td><b>${e.mlH.toFixed(1)}</b></td>
+      <td><button class="perf-multi-del" onclick="perfMultiRemove(${i})">✕</button></td>
+    </tr>`).join("");
+  panel.innerHTML = `<div class="perf-multi-title">📋 Perfusiones activas</div>
+    <table class="perf-multi-table">
+      <thead><tr><th>Fármaco</th><th>Dosis</th><th>mL/h</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2"><b>Total volumen/h</b></td><td><b>${totalMlH.toFixed(1)}</b></td><td></td></tr>
+        <tr><td colspan="2">Volumen/24h</td><td><b>${(totalMlH*24).toFixed(0)} mL</b></td><td></td></tr></tfoot>
+    </table>`;
+}
+
+function runPerfInverse(){
+  const mlhIn = parseFloat(document.getElementById("perf-mlh-inv")?.value) || 0;
+  const out = document.getElementById("perf-inv-result");
+  if(!out) return;
+  if(mlhIn <= 0){ out.textContent = "—"; return; }
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const u = f.dosis.unidad;
+  let dosis = 0;
+  if(u.includes("mcg/kg/min")){ dosis = (mlhIn * (dil.cMcgMl||1)) / (60 * peso); }
+  else if(u === "mcg/min"){ dosis = (mlhIn * (dil.cMcgMl||1)) / 60; }
+  else if(u.includes("mcg/kg/h")){ dosis = (mlhIn * (dil.cMcgMl||1)) / peso; }
+  else if(u.includes("mg/kg/h")){ dosis = (mlhIn * (dil.cMgMl||1)) / peso; }
+  else if(u === "mg/h"){ dosis = mlhIn * (dil.cMgMl||1); }
+  else if(u === "UI/kg/h"){ dosis = (mlhIn * (dil.cUIMl||1)) / peso; }
+  else if(u === "UI/h"){ dosis = mlhIn * (dil.cUIMl||1); }
+  const warn = (dosis < f.dosis.min || dosis > f.dosis.max) ? " ⚠️" : "";
+  out.innerHTML = `<b>${dosis.toFixed(dosis<1?3:2)}</b> ${u}${warn}`;
 }
 
 function perfReset(){
@@ -6571,6 +6799,10 @@ function perfReset(){
   if(!f) return;
   document.getElementById("perf-dosis").value = f.dosis.def;
   document.getElementById("perf-dil").selectedIndex = 0;
+  const invInput = document.getElementById("perf-mlh-inv");
+  if(invInput) invInput.value = "";
+  const invOut = document.getElementById("perf-inv-result");
+  if(invOut) invOut.textContent = "—";
   runPerf();
 }
 
@@ -7770,65 +8002,7 @@ function dermPick(el){
     });
   }, { passive: true });
 
-  /* ---- 2. Menú desplegable de categorías (espejo de los chips) ---- */
-  const chipsRow = document.getElementById('chips');
-  if (chipsRow) {
-    const COLORS = {
-      all:'#A855F7', resp:'#22D3EE', cardio:'#F43F5E', ictus:'#A855F7',
-      emer:'#FB923C', extra:'#14B8A6', esp:'#FACC15', uci:'#6366F1',
-      imagen:'#8B5CF6', obst:'#EC4899', ped:'#F97316', trauma:'#DC2626',
-      farm:'#0891B2', recent:'#64748B', fav:'#F59E0B'
-    };
-    const bar2 = document.createElement('div');
-    bar2.className = 'cat-bar';
-    bar2.innerHTML =
-      '<button class="cat-toggle" id="catToggle" aria-haspopup="true" aria-expanded="false">' +
-        '<span class="dot"></span><span class="em" id="catEm">📋</span>' +
-        '<span class="lbl"><small>Categoría</small><span id="catLbl">Todos</span></span>' +
-        '<span class="chev">▼</span></button>' +
-      '<div class="cat-panel" id="catPanel" role="menu"><div class="cat-grid" id="catGrid"></div></div>';
-    chipsRow.parentNode.insertBefore(bar2, chipsRow);
-
-    const grid = document.getElementById('catGrid');
-    const toggle = document.getElementById('catToggle');
-    const chips = Array.from(chipsRow.querySelectorAll('.chip'));
-
-    chips.forEach(ch => {
-      const c = ch.dataset.c;
-      const em = (ch.querySelector('.em') || {}).textContent || '📄';
-      const label = ch.textContent.replace(em, '').trim();
-      const tile = document.createElement('button');
-      tile.className = 'cat-tile';
-      tile.dataset.c = c;
-      tile.style.setProperty('--tc', COLORS[c] || '#A855F7');
-      tile.innerHTML = '<span class="em">' + em + '</span><span>' + label + '</span>';
-      tile.addEventListener('click', () => { ch.click(); closePanel(); });
-      grid.appendChild(tile);
-    });
-
-    function syncActive(){
-      const act = chipsRow.querySelector('.chip.active');
-      const c = act ? act.dataset.c : 'all';
-      grid.querySelectorAll('.cat-tile').forEach(t => t.classList.toggle('active', t.dataset.c === c));
-      const em = act ? ((act.querySelector('.em') || {}).textContent || '📋') : '📋';
-      document.getElementById('catEm').textContent = em;
-      document.getElementById('catLbl').textContent = act ? act.textContent.replace(em,'').trim() : 'Todos';
-      toggle.style.setProperty('--cat-ac', COLORS[c] || '#A855F7');
-    }
-    new MutationObserver(syncActive).observe(chipsRow, { attributes:true, subtree:true, attributeFilter:['class'] });
-    syncActive();
-
-    function closePanel(){ bar2.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = bar2.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', e => { if (!bar2.contains(e.target)) closePanel(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-  }
-
-  /* ---- 3. Tilt 3D sutil en las tarjetas de grupo (solo con ratón) ---- */
+  /* ---- 2. Tilt 3D sutil en las tarjetas de grupo (solo con ratón) ---- */
   const content = document.getElementById('content');
   if (content && matchMedia('(hover:hover) and (pointer:fine)').matches && !reduced) {
     content.addEventListener('pointermove', e => {
@@ -7868,85 +8042,6 @@ function dermPick(el){
 })();
 </script>
 
-<script id="v15-enhance">
-/* ================================================================
-   CAPA v15 — Reorganización de botones (nodos originales, listeners
-   intactos): dock inferior + menú desplegable de cabecera.
-   ================================================================ */
-(function(){
-  'use strict';
-
-  /* ---- 1. DOCK INFERIOR: mover calcFab dentro y etiquetar todo ---- */
-  const stack = document.querySelector('.fab-stack');
-  const calc = document.getElementById('calcFab');
-  if (stack) {
-    if (calc) stack.insertBefore(calc, stack.firstChild); // el nodo conserva su onclick
-
-    const DOCK = [
-      ['calcFab','🧮','Cálculo'], ['atlasFab','🫀','Atlas'], ['ecgFab','📟','Reto ECG'],
-      ['rxFab','🩻','Imagen'], ['recFab','🎙️','Voz'], ['askFab','✨','IA']
-    ];
-    DOCK.forEach(([id, em, lbl]) => {
-      const b = document.getElementById(id);
-      if (!b) return;
-      b.innerHTML = '<span class="dk-em">' + em + '</span><span class="dk-lbl">' + lbl + '</span>';
-    });
-  }
-
-  /* ---- 2. MENÚ DE CABECERA: agrupar acciones en desplegable ---- */
-  const top = document.querySelector('header .top');
-  if (top) {
-    const wrap = document.createElement('div');
-    wrap.className = 'hj-menu-wrap';
-    wrap.innerHTML =
-      '<button id="hjMenuBtn" aria-haspopup="true" aria-expanded="false" title="Menú de herramientas">☰</button>' +
-      '<div id="hjMenuPanel" role="menu"></div>';
-    top.appendChild(wrap);
-    const panel = wrap.querySelector('#hjMenuPanel');
-    const btn = wrap.querySelector('#hjMenuBtn');
-
-    const ITEMS = [
-      ['sosBtn',   'SOS Emergencia', 'Protocolos críticos al instante', '#EF4444', true],
-      ['vadeBtn',  'Vademécum',      'Consulta de fármacos',            '#EC4899', false],
-      ['triageBtn','Triage IA',      'Clasificación asistida',          '#22D3EE', false],
-      ['trainBtn', 'Entrenamiento',  'Modo estudio y repaso',           '#FACC15', false],
-      ['shareAllBtn','Compartir',    'Enviar la aplicación',            '#14B8A6', false],
-      ['themeBtn', 'Tema',           'Oscuro · Noche · Claro',          '#A855F7', false]
-    ];
-    let sepDone = false;
-    ITEMS.forEach(([id, lbl, sub, color, isSos]) => {
-      const orig = document.getElementById(id);
-      if (!orig) return;
-      if (!isSos && !sepDone) {
-        const sep = document.createElement('div');
-        sep.className = 'hj-sep'; panel.appendChild(sep); sepDone = true;
-      }
-      const row = document.createElement('div');
-      row.className = 'hj-row' + (isSos ? ' hj-sos' : '');
-      row.style.setProperty('--hc', color);
-      row.appendChild(orig); // nodo original: listeners y badges intactos
-      const txt = document.createElement('div');
-      txt.innerHTML = '<span class="hj-lbl">' + lbl + '</span><span class="hj-sub">' + sub + '</span>';
-      row.appendChild(txt);
-      row.addEventListener('click', () => {
-        orig.click();
-        if (id !== 'themeBtn') closeMenu(); // el tema se puede alternar varias veces
-      });
-      panel.appendChild(row);
-    });
-
-    function closeMenu(){ wrap.classList.remove('open'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = wrap.classList.toggle('open');
-      btn.classList.toggle('open', open);
-      btn.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeMenu(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-  }
-})();
-</script>
 
 <script id="v16-handsfree">
 /* ================================================================
@@ -8070,7 +8165,7 @@ function dermPick(el){
     active = false; save();
     clearTimeout(restartTimer);
     if (rec){ try{ rec.onend = null; rec.stop(); }catch(e){} rec = null; }
-    showChip(false); syncMenu();
+    showChip(false);
   }
   function save(){ try{ localStorage.setItem('guiaHJ23_handsfree', active ? '1':'0'); }catch(e){} }
   function toggle(){
@@ -8078,48 +8173,12 @@ function dermPick(el){
     else {
       active = true; save();
       if (start()){
-        showChip(true); syncMenu();
+        showChip(true);
         toast && toast('👂 Di "Oye Vivi" seguido del comando');
         if (typeof speak === 'function') speak('Manos libres activo. Di Oye Vivi seguido del comando.');
       } else { active = false; save(); }
     }
   }
-
-  /* ---- Añadir opción al menú de cabecera (v15) ---- */
-  function injectMenuRow(){
-    const panel = document.getElementById('hjMenuPanel');
-    if (!panel || document.getElementById('hfMenuRow')) return;
-    const row = document.createElement('div');
-    row.id = 'hfMenuRow';
-    row.className = 'hj-row hj-hf';
-    row.style.setProperty('--hc', '#22D3EE');
-    row.innerHTML =
-      '<div class="icon-btn" style="pointer-events:none">👂</div>' +
-      '<div><span class="hj-lbl">Manos libres</span>' +
-      '<span class="hj-sub">Di "Oye Vivi" y el comando</span></div>';
-    row.addEventListener('click', toggle);
-    /* Lo insertamos como segundo elemento (justo tras el SOS) */
-    const sos = panel.querySelector('.hj-sos');
-    if (sos && sos.nextSibling) panel.insertBefore(row, sos.nextSibling);
-    else panel.appendChild(row);
-  }
-  function syncMenu(){
-    const row = document.getElementById('hfMenuRow');
-    if (row) row.classList.toggle('active', active);
-  }
-  /* Esperar a que v15 haya creado el menú */
-  const wait = setInterval(()=>{
-    if (document.getElementById('hjMenuPanel')){
-      clearInterval(wait);
-      injectMenuRow();
-      /* Restaurar estado guardado */
-      try {
-        if (localStorage.getItem('guiaHJ23_handsfree') === '1'){
-          localStorage.setItem('guiaHJ23_handsfree','0');
-        }
-      } catch(e){}
-    }
-  }, 200);
 
   /* Comando por voz "manos libres" para desactivar desde dentro */
   const origHVC = window.handleVoiceCommand;
@@ -8140,17 +8199,6 @@ function dermPick(el){
 })();
 </script>
 
-<script id="v17-personal">
-(function(){
-  function neutralBrand(){
-    var sub=document.getElementById('splashSub');
-    if(sub) sub.textContent='Cargando guías y herramientas clínicas…';
-    document.querySelectorAll('.cc-brand p').forEach(function(el){el.textContent='Asistente clínica · iNurse';});
-  }
-  if(document.readyState!=='loading') neutralBrand();
-  else document.addEventListener('DOMContentLoaded',neutralBrand);
-})();
-</script>
 <style id="v29-css">
 /* ===== v29 · Rediseño de navegación ===== */
 /* Ocultar navegación antigua (chips, dropdown de categoría, menú ☰ de cabecera) */
@@ -8592,30 +8640,6 @@ h1 small{color:rgba(226,232,240,.72) !important}
 .disclaimer{
   background:rgba(251,191,36,.08) !important;border-color:rgba(251,191,36,.22) !important;border-radius:18px !important;
 }
-/* Hero principal Vivi */
-.vivi-hero{
-  max-width:960px;margin:14px auto 4px;padding:0 16px;
-}
-.vivi-hero-card{
-  position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:18px;
-  background:linear-gradient(135deg,rgba(77,231,255,.16),rgba(139,92,246,.12) 45%,rgba(244,114,182,.14));
-  box-shadow:var(--vivi-shadow);backdrop-filter:var(--vivi-glass);
-}
-.vivi-hero-card::after{content:"";position:absolute;right:-80px;top:-90px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.13);filter:blur(8px)}
-.vivi-hero-top{display:flex;gap:14px;align-items:center;position:relative;z-index:1}
-.vivi-avatar{
-  width:76px;height:76px;border-radius:25px;flex:0 0 auto;display:grid;place-items:center;
-  background:linear-gradient(135deg,#4DE7FF,#8B5CF6 52%,#F472B6);
-  box-shadow:0 18px 45px rgba(139,92,246,.38),inset 0 1px 0 rgba(255,255,255,.35);
-}
-.vivi-avatar svg{width:66px;height:66px;filter:drop-shadow(0 8px 12px rgba(0,0,0,.22))}
-.vivi-hero h2{margin:0;font-size:24px;line-height:1.05;letter-spacing:-.8px}
-.vivi-hero p{margin:6px 0 0;color:rgba(248,250,252,.76);font-size:14px;line-height:1.45}
-.vivi-hero-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;position:relative;z-index:1}
-.vivi-action{border:1px solid rgba(255,255,255,.13);background:rgba(5,8,20,.35);color:#fff;border-radius:18px;padding:12px 10px;cursor:pointer;font:inherit;font-weight:800;font-size:12.5px;text-align:left;min-height:64px;transition:transform .15s,border-color .18s,background .18s}
-.vivi-action:hover{transform:translateY(-2px);border-color:rgba(77,231,255,.44);background:rgba(255,255,255,.095)}
-.vivi-action span{display:block;font-size:21px;margin-bottom:5px}
-@media(max-width:720px){.vivi-hero-actions{grid-template-columns:1fr 1fr}.vivi-hero h2{font-size:21px}.vivi-avatar{width:66px;height:66px;border-radius:22px}.vivi-avatar svg{width:58px;height:58px}}
 /* Chat Vivi */
 #ccWrap{
   border:1px solid rgba(255,255,255,.13) !important;border-radius:28px !important;
@@ -8639,52 +8663,8 @@ h1 small{color:rgba(226,232,240,.72) !important}
 .modal-head,.vade-head,.calc-head,.f3-head,.atlas-bar{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03)) !important;border-bottom:1px solid rgba(255,255,255,.11) !important}
 /* modo noche más cómodo */
 [data-theme="night"] body{background:#000 !important}
-[data-theme="night"] .vivi-hero-card,[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
+[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
 </style>
-<script id="vivi40-premium-script">
-(function(){
-  var faceSvg='<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Vivi"><defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFE4D6"/><stop offset="1" stop-color="#FFC7B3"/></linearGradient><linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#24324A"/><stop offset="1" stop-color="#101827"/></linearGradient></defs><circle cx="60" cy="60" r="54" fill="rgba(255,255,255,.22)"/><path d="M25 58c0-28 18-43 36-43 23 0 37 17 37 42v28H25V58z" fill="url(#hair)"/><circle cx="60" cy="60" r="31" fill="url(#skin)"/><path d="M31 56c9-2 19-11 23-22 8 14 24 20 40 20-3-22-17-34-35-34-18 0-31 13-28 36z" fill="url(#hair)"/><circle cx="48" cy="62" r="3.4" fill="#182235"/><circle cx="73" cy="62" r="3.4" fill="#182235"/><path d="M51 77c6 5 13 5 19 0" fill="none" stroke="#B45364" stroke-width="3.4" stroke-linecap="round"/><path d="M34 92c7-12 18-18 27-18s20 6 27 18" fill="#F8FAFC"/><path d="M51 87h18" stroke="#4DE7FF" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="64" r="6" fill="#FFC7B3" opacity=".8"/><circle cx="84" cy="64" r="6" fill="#FFC7B3" opacity=".8"/><path d="M39 96h42" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"/></svg>';
-  var encoded='url("data:image/svg+xml;utf8,'+encodeURIComponent(faceSvg)+'")';
-  document.documentElement.style.setProperty('--vivi-face-url', encoded);
-  function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
-  ready(function(){
-    document.title='Vivi · Guía Clínica Interactiva iNurse';
-    document.querySelectorAll('h1, h2, h3, p, small, button, textarea, input, title, .cc-brand *').forEach(function(el){
-      if(el.childNodes.length===1 && el.textContent){ el.textContent=el.textContent.replace(/Bibi/g,'Vivi'); }
-      if(el.placeholder){ el.placeholder=el.placeholder.replace(/Bibi/g,'Vivi').replace('Pregunta, describe un caso o adjunta un ECG…','Pregunta a Vivi, describe un caso o adjunta un ECG…'); }
-      if(el.title){ el.title=el.title.replace(/Bibi/g,'Vivi').replace('Abrir asistente','Abrir Vivi'); }
-    });
-    var logos=document.querySelectorAll('.cc-wl');
-    logos.forEach(function(l){ l.innerHTML=faceSvg; l.classList.add('vivi-face-mini'); });
-    var headerLogo=document.querySelector('header .logo');
-    if(headerLogo){ headerLogo.innerHTML=faceSvg; }
-    var main=document.querySelector('main');
-    if(main && !document.getElementById('viviHero')){
-      var hero=document.createElement('section'); hero.className='vivi-hero'; hero.id='viviHero';
-      hero.innerHTML='<div class="vivi-hero-card"><div class="vivi-hero-top"><div class="vivi-avatar">'+faceSvg+'</div><div><h2>Hola, soy Vivi</h2><p>Tu compañera clínica de guardia. Busca protocolos, fármacos, algoritmos y calculadoras con una interfaz más limpia y rápida.</p></div></div><div class="vivi-hero-actions"><button class="vivi-action" data-act="search"><span>🔎</span>Buscar protocolo</button><button class="vivi-action" data-act="drug"><span>💊</span>Vademécum</button><button class="vivi-action" data-act="calc"><span>🧮</span>Calculadoras</button><button class="vivi-action" data-act="chat"><span>✨</span>Hablar con Vivi</button></div></div>';
-      main.parentNode.insertBefore(hero,main);
-      hero.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; var a=b.getAttribute('data-act');
-        if(a==='search'){var s=document.querySelector('.search'); if(s){s.focus(); s.scrollIntoView({behavior:'smooth',block:'center'});} }
-        if(a==='drug'){var v=document.getElementById('vadeBtn'); if(v)v.click();}
-        if(a==='calc'){var c=document.getElementById('calcFab'); if(c)c.click();}
-        if(a==='chat'){var f=document.getElementById('ccFab'); if(f)f.click();}
-      });
-    }
-    var brand=document.querySelector('.cc-brand h1'); if(brand) brand.textContent='Vivi';
-    var sub=document.querySelector('.cc-brand p'); if(sub) sub.textContent='Asistente clínica · iNurse';
-    var fab=document.getElementById('ccFab'); if(fab){fab.innerHTML='';fab.title='Abrir Vivi';}
-    /* Reescribe bienvenida cuando el chat esté vacío */
-    setTimeout(function(){
-      var chat=document.getElementById('ccChat');
-      if(chat && /Hola, soy Vivi|Hola, soy Bibi/.test(chat.textContent) && chat.querySelector('.cc-wl')){
-        var wl=chat.querySelector('.cc-wl'); if(wl) wl.innerHTML=faceSvg;
-        chat.innerHTML=chat.innerHTML.replace(/Bibi/g,'Vivi');
-      }
-    },400);
-  });
-})();
-</script>
-
 
 <style id="inurse41-css">
 /* ================================================================
@@ -8702,23 +8682,11 @@ h1 small{color:rgba(226,232,240,.72) !important}
 body.inurse-home main .count, body.inurse-home main #content{display:none!important}
 body.inurse-home main{padding-top:0!important}
 body.inurse-home .disclaimer{margin-top:0!important}
-body:not(.inurse-home) #viviHero{display:none!important}
-body.inurse-home #viviHero{display:block!important}
-#viviHero .vivi-hero-card{border-radius:28px!important}
-.inurse-home-note{margin:14px auto 0;max-width:960px;padding:13px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:var(--text-dim);font-size:13px;line-height:1.45}
 /* Menú */
 .v29-head h2{font-size:17px!important}
 .v29-head h2 small{font-size:11px!important}
 .v29-sec.guides-title{color:#E2E8F0!important;margin-top:6px!important}
 .v29-tools .v29-row[data-hide="1"]{display:none!important}
-/* Dock inferior: cálculo, RX, ECG y Vivi alineados */
-.fab-stack{left:50%!important;right:auto!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:4px!important;padding:8px 10px!important;border-radius:26px!important;z-index:8900!important}
-.fab-stack>button,#calcFab{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;margin:0!important;transform:none!important;width:58px!important;height:56px!important;border-radius:16px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;box-shadow:none!important}
-.fab-stack>button:hover,#calcFab:hover{transform:translateY(-3px)!important}
-#calcFab .dk-em,#rxFab .dk-em,#ecgFab .dk-em,#viviFab .dk-em{font-size:23px!important;line-height:1!important}
-#calcFab .dk-lbl,#rxFab .dk-lbl,#ecgFab .dk-lbl,#viviFab .dk-lbl{font-size:9px!important;font-weight:800!important;letter-spacing:.3px!important;text-transform:uppercase!important;color:var(--text-dim)!important}
-#viviFab .dk-lbl{color:var(--text)!important}
-@media(max-width:420px){.fab-stack>button,#calcFab{width:52px!important}}
 </style>
 <script id="inurse41-script">
 (function(){
@@ -9455,27 +9423,6 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
 })();
 </script>
 
-<script id="inurse-gemini-model-migration-v10">
-(function(){
-  'use strict';
-  var CURRENT='gemini-3.5-flash';
-  function migrate(){
-    try{
-      var m=(localStorage.getItem('inurse_gemini_model_v1')||'').trim();
-      if(!m||/^gemini-2\./i.test(m))localStorage.setItem('inurse_gemini_model_v1',CURRENT);
-      var raw=localStorage.getItem('inurse52_vivi_config');
-      if(raw){
-        var c=JSON.parse(raw);
-        if(!c.model||/^gemini-2\./i.test(c.model)){c.model=CURRENT;localStorage.setItem('inurse52_vivi_config',JSON.stringify(c));}
-      }
-      ['in51GeminiModel','in52Model'].forEach(function(id){var el=document.getElementById(id);if(el&&(!el.value||/^gemini-2\./i.test(el.value)))el.value=CURRENT;});
-      document.querySelectorAll('input[placeholder*="gemini-2.5"],input[value^="gemini-2."]').forEach(function(el){el.placeholder='Modelo recomendado: '+CURRENT;if(/^gemini-2\./i.test(el.value||''))el.value=CURRENT;});
-    }catch(e){}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',migrate);else migrate();
-  setTimeout(migrate,500);setTimeout(migrate,1600);
-})();
-</script>
 
 <!-- =========================================================
      iNurse V5.4 · Rediseño visual limpio
@@ -9542,112 +9489,6 @@ main{
   width:100%;
   height:100%;
   display:block;
-}
-
-/* Hero original: lo convertimos en la tarjeta principal única */
-#viviHero{
-  display:block!important;
-  border:1px solid rgba(255,255,255,.16)!important;
-  border-radius:30px!important;
-  padding:22px!important;
-  margin:18px auto 16px!important;
-  background:
-    radial-gradient(360px 220px at 100% 4%,rgba(236,72,153,.22),transparent 65%),
-    linear-gradient(135deg,rgba(34,211,238,.14),rgba(139,92,246,.14) 48%,rgba(236,72,153,.14))!important;
-  box-shadow:0 26px 70px rgba(0,0,0,.40)!important;
-  overflow:hidden!important;
-}
-#viviHero .vivi-hero-top,
-#viviHero .in50-top{
-  align-items:center!important;
-}
-#viviHero .vivi-avatar,
-#viviHero .vivi-ico,
-#viviHero .in50-logo,
-#viviHero .logo{
-  width:68px!important;
-  height:68px!important;
-  border-radius:20px!important;
-  background:linear-gradient(135deg,var(--n54-cyan),var(--n54-violet),var(--n54-pink))!important;
-  box-shadow:0 16px 34px rgba(139,92,246,.35)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  overflow:hidden!important;
-  flex-shrink:0!important;
-}
-#viviHero h2,
-#viviHero h1{
-  font-size:28px!important;
-  letter-spacing:-.6px!important;
-  margin-bottom:4px!important;
-}
-#viviHero p{
-  color:var(--n54-muted)!important;
-  font-size:15px!important;
-  line-height:1.45!important;
-  max-width:780px!important;
-}
-#viviHero .vivi-hero-actions{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:12px!important;
-  margin-top:20px!important;
-}
-#viviHero .vivi-action{
-  min-height:112px!important;
-  border-radius:20px!important;
-  border:1px solid rgba(255,255,255,.17)!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.20)!important;
-  color:var(--n54-text)!important;
-  font-weight:800!important;
-  font-size:15px!important;
-  transition:transform .16s,border-color .16s,background .16s!important;
-}
-#viviHero .vivi-action span{
-  display:block!important;
-  font-size:34px!important;
-  margin-bottom:10px!important;
-  filter:drop-shadow(0 10px 18px rgba(34,211,238,.22));
-}
-#viviHero .vivi-action:hover{
-  transform:translateY(-3px)!important;
-  border-color:rgba(34,211,238,.55)!important;
-  background:linear-gradient(180deg,rgba(34,211,238,.13),rgba(139,92,246,.07))!important;
-}
-@media(max-width:720px){
-  #viviHero .vivi-hero-actions{grid-template-columns:1fr 1fr!important}
-  #viviHero{padding:18px!important;border-radius:24px!important}
-}
-
-/* Banda de definición: el texto subrayado en verde queda bajo la tarjeta */
-#in54SupportLine{
-  max-width:980px;
-  margin:0 auto 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 16px;
-  border-radius:18px;
-  border:1px solid rgba(34,211,238,.20);
-  background:linear-gradient(90deg,rgba(34,211,238,.12),rgba(139,92,246,.08),rgba(236,72,153,.06));
-  color:#D8F7FF;
-  box-shadow:0 18px 40px rgba(0,0,0,.22);
-}
-#in54SupportLine .ico{
-  width:36px;
-  height:36px;
-  border-radius:13px;
-  display:grid;
-  place-items:center;
-  background:rgba(34,211,238,.13);
-  border:1px solid rgba(34,211,238,.22);
-  color:var(--n54-cyan);
-  flex-shrink:0;
-}
-#in54SupportLine b{
-  color:#67E8F9;
 }
 
 /* Quitamos la tarjeta duplicada V5.0 y la fila de accesos rápidos duplicada */
@@ -9996,51 +9837,6 @@ body.in54-protocol-open{
     document.title = "iNurse V5.4 · Diseño limpio";
   }
 
-  function tuneHero(){
-    const hero = $("#viviHero");
-    if(!hero) return;
-
-    const avatar = hero.querySelector(".vivi-avatar,.vivi-ico,.in50-logo,.logo");
-    if(avatar) avatar.innerHTML = STETHO;
-
-    const title = hero.querySelector("h2,h1");
-    if(title) title.textContent = "iNurse";
-
-    const p = hero.querySelector("p");
-    if(p){
-      p.textContent = "Protocolos, fármacos, escalas y calculadoras clínicas en una interfaz rápida, clara y orientada a enfermería.";
-    }
-
-    const actions = hero.querySelector(".vivi-hero-actions");
-    if(actions){
-      actions.innerHTML = `
-        <button class="vivi-action" data-in54-act="guides"><span>📚</span>Guías clínicas</button>
-        <button class="vivi-action" data-in54-act="search"><span>🔎</span>Buscar</button>
-        <button class="vivi-action" data-in54-act="calc"><span>🧮</span>Calculadoras</button>
-        <button class="vivi-action" data-in54-act="vivi"><span>💬</span>Hablar con Vivi</button>
-      `;
-      actions.addEventListener("click", function(e){
-        const b = e.target.closest("[data-in54-act]");
-        if(!b) return;
-        const act = b.getAttribute("data-in54-act");
-        if(act === "guides") $("#v29MenuBtn")?.click();
-        if(act === "search") $("#search")?.focus();
-        if(act === "calc") $("#calcFab")?.click();
-        if(act === "vivi") ($("#ccFab") || $("#viviFab") || $("#in50ViviDock"))?.click();
-      }, {capture:true});
-    }
-
-    if(!$("#in54SupportLine")){
-      const line = document.createElement("section");
-      line.id = "in54SupportLine";
-      line.innerHTML = `
-        <div class="ico">🩺</div>
-        <div><b>Apoyo clínico rápido para enfermería:</b> protocolos, algoritmos, fármacos y escalas en menos de 5 segundos.</div>
-      `;
-      hero.insertAdjacentElement("afterend", line);
-    }
-  }
-
   function tuneVivi(){
     $all(".cc-logo,.vivi-tab-avatar,.in54-vivi-avatar").forEach(el => el.innerHTML = VIVI_FACE);
 
@@ -10245,7 +10041,7 @@ body.in54-protocol-open{
 
   ready(function(){
     replaceBranding();
-    tuneHero();
+
     tuneVivi();
     removeDuplicateHome();
     patchOpenDoc();
@@ -10255,7 +10051,7 @@ body.in54-protocol-open{
     // Reaplicar después de capas antiguas que se ejecutan con timeout.
     setTimeout(() => {
       replaceBranding();
-      tuneHero();
+  
       tuneVivi();
       removeDuplicateHome();
     }, 1000);
@@ -10598,183 +10394,13 @@ body.in57-visual .cc-compose, body.in57-visual .in52-inputbar, body.in57-visual 
 </style>
 <script id="inurse57-visual-js">
 (function(){
-  const ready = fn => document.readyState !== 'loading' ? fn() : document.addEventListener('DOMContentLoaded', fn);
-  const $ = (s,r=document)=>r.querySelector(s);
-  const CRITICAL = [
-    {key:'pcr',label:'PCR',sub:'Parada cardiorrespiratoria',em:'❤️'},
-    {key:'ictus',label:'Ictus',sub:'Código ictus',em:'🧠'},
-    {key:'iam',label:'IAM',sub:'Dolor torácico',em:'🫀'},
-    {key:'sepsis',label:'Sepsis',sub:'Shock séptico',em:'🦠'},
-    {key:'trauma',label:'Trauma',sub:'Politrauma',em:'🚑'}
-  ];
-  function getLogo(){
-    return document.querySelector('.in50-logo svg')?.outerHTML || document.querySelector('header .logo')?.innerHTML || '🩺';
-  }
-  function clickIf(sel){ const el=$(sel); if(el) el.click(); }
-  function wireHome(){
-    const home = document.getElementById('in50Home');
-    if(!home) return;
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${getLogo()}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-              <div class="in57-tags">
-                <span class="in57-tag">🌙 modo oscuro</span>
-                <span class="in57-tag">🔎 búsqueda global</span>
-                <span class="in57-tag">⭐ favoritos</span>
-                <span class="in57-tag">📡 guías actualizables</span>
-              </div>
-            </div>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="search"><span class="ico">🔎</span><b>Buscar</b><small>Encuentra protocolos, fármacos, escalas y algoritmos.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Calculadoras</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="vivi"><span class="ico">💬</span><b>Hablar con Vivi</b><small>Consulta clínica guiada con el asistente inteligente.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${CRITICAL.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join('')}
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section"></div>
-          <div class="in57-mini-grid">
-            <button class="in57-mini" data-in57="guides"><span class="em">☰</span><b>Abrir menú de guías</b><small>Acceso por especialidades y protocolos clínicos.</small></button>
-            <button class="in57-mini" data-in57="search"><span class="em">🧭</span><b>Buscador global</b><small>Explora guías, fármacos, escalas y contenido local.</small></button>
-            <button class="in57-mini" data-in57="settings"><span class="em">⚙️</span><b>Configuración</b><small>Tema, contenido offline y ajustes de iNurse.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">⭐ </div>
-          <div id="in50Favs"></div>
-        </section>
-
-        <section>
-          <div class="in57-section">🕘 Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest('button'); if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==='guides') return clickIf('#v29MenuBtn');
-      if(act==='search'){ const s=document.getElementById('search'); if(s){ s.focus(); s.scrollIntoView({behavior:'smooth',block:'center'});} return; }
-      if(act==='calc') return clickIf('#calcFab');
-      if(act==='vivi') return clickIf('#ccFab') || clickIf('#viviFab') || clickIf('#in50ViviDock');
-      if(act==='settings' && window.showSettings) return window.showSettings();
-    };
-
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-  function enhanceBrand(){
-    const h1 = document.querySelector('header h1');
-    if(h1) h1.innerHTML = 'iNurse <small>Asistente clínico rápido para enfermería</small>';
-    document.title = 'iNurse v7 · Visual Pro limpia';
-  }
-  function preserveHomeLists(){
-    if(window.renderHomeLists){ setTimeout(()=>window.renderHomeLists(), 200); setTimeout(()=>window.renderHomeLists(), 900); }
-  }
-  ready(()=>{
-    document.body.classList.add('in57-visual');
-    enhanceBrand();
-    setTimeout(wireHome, 300);
-    setTimeout(wireHome, 900);
-    preserveHomeLists();
-  });
+  if(document.readyState!=='loading') document.body.classList.add('in57-visual');
+  else document.addEventListener('DOMContentLoaded',function(){document.body.classList.add('in57-visual')});
 })();
 </script>
 
 
-<style id="inurse57-clean-duplicates-css">
-/* Limpieza v7: evita duplicación de homes antiguas */
-body.in57-visual #viviHero,
-body.in57-visual #in54SupportLine,
-body.in57-visual .vivi-hero,
-body.in57-visual .vivi-hero-actions,
-body.in57-visual .in54-support-line {
-  display: none !important;
-}
 
-/* Oculta avisos heredados que repetían explicación de guías en la home */
-body.in57-visual .in54-note,
-body.in57-visual .in56-note,
-body.in57-visual .guide-note,
-body.in57-visual .v29-help,
-body.in57-visual .v29-intro {
-  display: none !important;
-}
-
-/* Cuando está activa la nueva home, el contenedor antiguo de contenido queda limpio */
-body.in57-visual #content:empty {
-  display: none !important;
-}
-
-/* Ajuste de aire superior tras eliminar bloque duplicado */
-body.in57-visual #in50Home {
-  margin-top: 14px !important;
-}
-</style>
-
-<script id="inurse57-clean-duplicates-js">
-(function(){
-  function cleanDuplicateHome(){
-    const selectors = [
-      "#viviHero",
-      "#in54SupportLine",
-      ".vivi-hero",
-      ".vivi-hero-actions",
-      ".in54-support-line"
-    ];
-
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        el.style.display = "none";
-        el.setAttribute("aria-hidden", "true");
-      });
-    });
-
-    // Quita tarjetas/textos heredados que explicaban lo mismo que la home nueva.
-    document.querySelectorAll("main > section, main > div, main > article").forEach(el => {
-      if (el.id === "in50Home" || el.id === "in50GlobalResults" || el.id === "in50Settings") return;
-      const txt = (el.textContent || "").toLowerCase();
-      const isOldGuideHint =
-        txt.includes("guías clínicas: abre el menú") ||
-        txt.includes("apoyo clínico rápido para enfermería: protocolos, algoritmos") ||
-        txt.includes("protocolos, fármacos, escalas y calculadoras clínicas en una interfaz rápida") ||
-        txt.includes("protocolos, fármacos, escalas y calculadoras clínicas");
-
-      if (isOldGuideHint) {
-        el.style.display = "none";
-        el.setAttribute("aria-hidden", "true");
-      }
-    });
-
-    const content = document.getElementById("content");
-    if (content && !content.textContent.trim()) content.style.display = "none";
-  }
-
-  if (document.readyState !== "loading") cleanDuplicateHome();
-  else document.addEventListener("DOMContentLoaded", cleanDuplicateHome);
-
-  setTimeout(cleanDuplicateHome, 250);
-  setTimeout(cleanDuplicateHome, 700);
-  setTimeout(cleanDuplicateHome, 1400);
-  setTimeout(cleanDuplicateHome, 2400);
-})();
-</script>
 
 
 <style id="in57-home-refine-css">
@@ -10809,80 +10435,6 @@ body.in57-visual #viviFab, body.in57-visual #ccFab, body.in57-visual #in50ViviDo
   body.in57-visual .in57-actions{grid-template-columns:repeat(2,1fr)!important}
 }
 </style>
-<script id="in57-home-refine-js">
-(function(){
-  const $ = (s,r=document)=>r.querySelector(s);
-  const clickIf = (sel) => { const el=$(sel); if(el){ el.click(); return true; } return false; };
-  function renderRefinedHome(){
-    const home = document.getElementById('in50Home');
-    if(!home) return;
-    const logo = document.querySelector('.in50-logo svg')?.outerHTML || document.querySelector('header .logo')?.innerHTML || '🩺';
-    const critical = [
-      {key:'pcr',label:'PCR',sub:'Parada cardiorrespiratoria',em:'❤️'},
-      {key:'ictus',label:'Ictus',sub:'Código ictus',em:'🧠'},
-      {key:'iam',label:'IAM',sub:'Dolor torácico',em:'🫀'},
-      {key:'sepsis',label:'Sepsis',sub:'Shock séptico',em:'🦠'},
-      {key:'trauma',label:'Trauma',sub:'Politrauma',em:'🚑'}
-    ];
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${logo}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-            </div>
-            <button class="in57-vivi-top" data-in57="vivi-top" title="Abrir Vivi">
-              <span class="em">👩‍⚕️</span>
-              <span class="lb">Vivi</span>
-            </button>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Cálculo</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="rx"><span class="ico">🩻</span><b>Rayos X</b><small>Acceso directo a imagen radiológica y apoyo visual.</small></button>
-            <button class="in57-action" data-in57="ecg"><span class="ico">📈</span><b>Electro</b><small>Lectura rápida, atlas ECG y entrenamiento.</small></button>
-          </div>
-        </section>
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${critical.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join('')}
-          </div>
-        </section>
-        <section>
-          <div class="in57-section">Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest('button'); if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==='guides') return clickIf('#v29MenuBtn');
-      if(act==='calc') return clickIf('#calcFab');
-      if(act==='rx') return clickIf('#rxFab');
-      if(act==='ecg') return clickIf('#ecgFab');
-      if(act==='vivi-top') return clickIf('#ccFab') || clickIf('#viviFab') || clickIf('#in50ViviDock');
-    };
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-  function cleanExtraSections(){
-    const fav = document.querySelector('#in50Favs')?.closest('section');
-    if(fav) fav.style.display='none';
-    document.querySelectorAll('.in57-mini-grid').forEach(el=>el.closest('section')?.remove());
-  }
-  function moveViviOutOfDock(){
-    ['viviFab','ccFab','in50ViviDock'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-  }
-  function init(){ renderRefinedHome(); cleanExtraSections(); moveViviOutOfDock(); }
-  if(document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init);
-  setTimeout(init, 250); setTimeout(init, 900); setTimeout(init, 1800);
-})();
-</script>
 
 
 <style id="in57-farmacos-home-css">
@@ -10907,386 +10459,6 @@ body.in57-visual .in57-action[data-in57="farmacos"]{
 }
 </style>
 
-<script id="in57-farmacos-home-js">
-(function(){
-  const $ = (s,r=document)=>r.querySelector(s);
-  const clickIf = (sel) => { const el=$(sel); if(el){ el.click(); return true; } return false; };
-
-  function openFarmacos(){
-    // 1) Si existe un botón/módulo de vademécum/fármacos, lo abrimos.
-    const candidates = [
-      "#rxFab",
-      "#vademFab",
-      "#drugFab",
-      "#farmacosFab",
-      "#medsFab",
-      "[data-view='rx']",
-      "[data-tool='rx']",
-      "[data-action='farmacos']",
-      "[data-action='vademecum']"
-    ];
-
-    // En algunas versiones el módulo de RX es realmente el acceso a farmacología/vademécum.
-    for(const sel of candidates){
-      const el = $(sel);
-      if(el){
-        el.click();
-        return true;
-      }
-    }
-
-    // 2) Si no encontramos módulo directo, usamos el buscador global con una búsqueda farmacológica.
-    const search = document.getElementById("search");
-    if(search){
-      search.value = "fármacos vademécum medicación dosis";
-      search.dispatchEvent(new Event("input", {bubbles:true}));
-      search.focus();
-      search.scrollIntoView({behavior:"smooth", block:"center"});
-      return true;
-    }
-
-    return false;
-  }
-
-  function renderHomeWithFarmacos(){
-    const home = document.getElementById("in50Home");
-    if(!home) return;
-
-    const logo = document.querySelector(".in50-logo svg")?.outerHTML || document.querySelector("header .logo")?.innerHTML || "🩺";
-    const critical = [
-      {key:"pcr",label:"PCR",sub:"Parada cardiorrespiratoria",em:"❤️"},
-      {key:"ictus",label:"Ictus",sub:"Código ictus",em:"🧠"},
-      {key:"iam",label:"IAM",sub:"Dolor torácico",em:"🫀"},
-      {key:"sepsis",label:"Sepsis",sub:"Shock séptico",em:"🦠"},
-      {key:"trauma",label:"Trauma",sub:"Politrauma",em:"🚑"}
-    ];
-
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${logo}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-            </div>
-            <button class="in57-vivi-top" data-in57="vivi-top" title="Abrir Vivi">
-              <span class="em">👩‍⚕️</span>
-              <span class="lb">Vivi</span>
-            </button>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="farmacos"><span class="ico">💊</span><b>Fármacos</b><small>Vademécum, dosis, indicaciones y medicación urgente.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Cálculo</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="rx"><span class="ico">🩻</span><b>Rayos X</b><small>Acceso directo a imagen radiológica y apoyo visual.</small></button>
-            <button class="in57-action" data-in57="ecg"><span class="ico">📈</span><b>Electro</b><small>Lectura rápida, atlas ECG y entrenamiento.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${critical.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join("")}
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest("button"); 
-      if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==="guides") return clickIf("#v29MenuBtn");
-      if(act==="farmacos") return openFarmacos();
-      if(act==="calc") return clickIf("#calcFab");
-      if(act==="rx") return clickIf("#rxFab");
-      if(act==="ecg") return clickIf("#ecgFab");
-      if(act==="vivi-top") return clickIf("#ccFab") || clickIf("#viviFab") || clickIf("#in50ViviDock");
-    };
-
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-
-  if(document.readyState !== "loading") renderHomeWithFarmacos();
-  else document.addEventListener("DOMContentLoaded", renderHomeWithFarmacos);
-
-  setTimeout(renderHomeWithFarmacos, 300);
-  setTimeout(renderHomeWithFarmacos, 1000);
-  setTimeout(renderHomeWithFarmacos, 2200);
-})();
-</script>
-
-
-<style id="in57-pathology-detail-css">
-body.in57-visual .in56-pato-item{
-  cursor:pointer!important;
-  transition:transform .15s ease,border-color .15s ease,background .15s ease;
-}
-body.in57-visual .in56-pato-item:hover{
-  transform:translateY(-2px);
-  border-color:rgba(73,216,255,.35)!important;
-  background:rgba(73,216,255,.07)!important;
-}
-.in57-patho-overlay{
-  position:fixed; inset:0; z-index:9800; display:none;
-  background:rgba(0,0,0,.62); backdrop-filter:blur(12px);
-  align-items:flex-end; justify-content:center;
-}
-.in57-patho-overlay.on{display:flex}
-.in57-patho-modal{
-  width:100%; max-width:900px; max-height:92vh; overflow:hidden;
-  border-radius:28px 28px 0 0; border:1px solid rgba(255,255,255,.12);
-  background:linear-gradient(180deg,#071126,#08172f);
-  box-shadow:0 -24px 70px rgba(0,0,0,.55);
-  color:#f8fafc; display:flex; flex-direction:column;
-}
-@media(min-width:900px){.in57-patho-overlay{align-items:center}.in57-patho-modal{border-radius:28px}}
-.in57-patho-head{
-  padding:18px 20px; border-bottom:1px solid rgba(255,255,255,.10);
-  display:flex; gap:14px; align-items:flex-start;
-  background:linear-gradient(135deg,rgba(73,216,255,.12),rgba(125,107,255,.10),rgba(255,95,168,.09));
-}
-.in57-patho-ico{
-  width:56px;height:56px;border-radius:18px;display:grid;place-items:center;font-size:28px;
-  background:linear-gradient(145deg,rgba(73,216,255,.24),rgba(125,107,255,.22));
-  border:1px solid rgba(255,255,255,.12); flex:0 0 auto;
-}
-.in57-patho-title{flex:1}
-.in57-patho-title h2{margin:0 0 5px;font-size:24px;letter-spacing:-.03em}
-.in57-patho-title p{margin:0;color:#aab8ce;font-size:13px;line-height:1.45}
-.in57-patho-close{
-  width:40px;height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);color:#fff;font-size:22px;cursor:pointer;
-}
-.in57-patho-body{padding:18px 20px;overflow:auto}
-.in57-patho-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:760px){.in57-patho-grid{grid-template-columns:1fr}}
-.in57-patho-card{
-  border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:15px;
-  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-}
-.in57-patho-card h3{margin:0 0 10px;color:#67e8f9;font-size:15px}
-.in57-patho-card p,.in57-patho-card li{color:#dbe7ff;line-height:1.5;font-size:13px}
-.in57-patho-card ul,.in57-patho-card ol{margin:0;padding-left:19px}
-.in57-patho-card li{margin:5px 0}
-.in57-patho-related button{
-  width:100%;text-align:left;margin:6px 0;padding:10px 12px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);color:#fff;cursor:pointer;
-}
-.in57-patho-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.in57-patho-actions button{
-  border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;
-  background:linear-gradient(135deg,rgba(73,216,255,.16),rgba(125,107,255,.14));color:#fff;font-weight:800;cursor:pointer;
-}
-.in57-warn{color:#fbbf24!important;font-size:12px!important;margin-top:10px!important}
-</style>
-
-<script id="in57-pathology-detail-js">
-(function(){
-  const DETAILS = {"Sepsis": {"def": "Respuesta desregulada del organismo ante una infección, con disfunción orgánica potencialmente mortal. Puede evolucionar a shock séptico.", "alarm": ["Hipotensión o mala perfusión", "Confusión o somnolencia", "FR elevada", "Fiebre o hipotermia", "Oliguria", "Piel moteada", "Lactato elevado si disponible"], "tx": ["ABCDE y reconocimiento precoz.", "Oxígeno si hipoxemia o dificultad respiratoria.", "Canalización venosa, monitorización y fluidoterapia si hipotensión o hipoperfusión.", "Antibiótico precoz según protocolo local si sepsis probable y no retrasa traslado.", "Preaviso/código sepsis y traslado a centro útil."], "drugs": ["Oxígeno", "Cristaloides", "Antibióticos según foco/protocolo", "Noradrenalina si shock refractario por equipo entrenado", "Glucosa si hipoglucemia"]}, "Shock séptico": {"def": "Forma grave de sepsis con hipotensión persistente, hipoperfusión o necesidad de vasopresores, asociada a alto riesgo vital.", "alarm": ["Hipotensión persistente", "Piel fría o moteada", "Confusión", "Oliguria", "Lactato elevado", "Mala respuesta a fluidos"], "tx": ["ABCDE", "Oxígeno", "Vía venosa y fluidoterapia con reevaluación", "Antibiótico precoz según protocolo", "Vasopresor si shock refractario por equipo entrenado", "Traslado urgente con preaviso"], "drugs": ["Oxígeno", "Cristaloides", "Antibióticos", "Noradrenalina según protocolo"]}, "Parada cardiorrespiratoria": {"def": "Cese brusco de la circulación efectiva y/o respiración normal. Requiere reconocimiento inmediato, RCP y desfibrilación si el ritmo es desfibrilable.", "alarm": ["No responde", "No respira normalmente", "Ausencia de signos de circulación", "Ritmo desfibrilable o no desfibrilable"], "tx": ["Activar emergencias/equipo", "RCP de calidad", "DEA/desfibrilación precoz si FV/TV sin pulso", "Vía aérea y ventilación", "Adrenalina/antiarrítmicos según algoritmo", "Buscar causas reversibles 4H/4T"], "drugs": ["Adrenalina", "Amiodarona", "Oxígeno", "Cristaloides", "Magnesio si torsade según protocolo"]}, "Accidente cerebrovascular": {"def": "Déficit neurológico agudo de origen vascular, isquémico o hemorrágico. Es tiempo-dependiente y requiere activación de código ictus si cumple criterios.", "alarm": ["Inicio brusco", "Asimetría facial", "Pérdida de fuerza", "Alteración del habla", "Alteración visual", "Cefalea brusca intensa", "Bajo nivel de conciencia"], "tx": ["ABCDE", "Determinar hora de inicio/última vez visto bien", "Glucemia capilar", "SatO₂ y oxígeno si precisa", "No administrar antiagregación si no está indicado por protocolo", "Activar código ictus y traslado útil"], "drugs": ["Oxígeno si hipoxemia", "Glucosa si hipoglucemia", "Antihipertensivos solo según protocolo y situación"]}, "Código ictus": {"def": "Sistema de activación urgente ante sospecha de ictus candidato a tratamiento tiempo-dependiente.", "alarm": ["Déficit focal agudo", "Tiempo de inicio conocido", "Disartria/afasia", "Hemiparesia", "Alteración visual", "No demorar traslado"], "tx": ["ABCDE", "Glucemia", "Hora de inicio", "Escala neurológica si disponible", "Preaviso hospitalario", "Traslado a centro con capacidad de ictus"], "drugs": ["Oxígeno si hipoxemia", "Glucosa si hipoglucemia"]}, "Infarto agudo de miocardio": {"def": "Necrosis miocárdica por isquemia aguda, generalmente por obstrucción coronaria. Requiere ECG precoz y manejo como síndrome coronario agudo.", "alarm": ["Dolor torácico opresivo", "Disnea", "Sudoración", "Náuseas", "Síncope", "Elevación ST", "Inestabilidad hemodinámica"], "tx": ["ABCDE", "ECG 12 derivaciones precoz", "Monitorización", "AAS si no contraindicado", "Nitroglicerina si dolor/HTA y TA adecuada", "Analgesia si dolor persistente", "Activar código IAM si criterios"], "drugs": ["AAS", "Nitroglicerina", "Morfina/Fentanilo según protocolo", "Oxígeno si SatO₂ baja", "Anticoagulación/antiagregación según protocolo"]}, "Síndrome coronario agudo": {"def": "Conjunto de cuadros por isquemia miocárdica aguda: angina inestable, IAM sin elevación ST o IAM con elevación ST.", "alarm": ["Dolor torácico típico o equivalente", "ECG alterado", "Hipotensión", "Arritmias", "Disnea", "Síncope"], "tx": ["ABCDE", "ECG precoz y seriado", "AAS si no contraindicado", "Nitroglicerina si procede", "Analgesia", "Preaviso y traslado a centro útil"], "drugs": ["AAS", "Nitroglicerina", "Morfina/Fentanilo", "Oxígeno si hipoxemia"]}, "Crisis asmática": {"def": "Empeoramiento agudo del asma con broncoconstricción, inflamación y aumento del trabajo respiratorio.", "alarm": ["Disnea intensa", "Uso de musculatura accesoria", "SatO₂ baja", "Silencio auscultatorio", "Agotamiento", "Alteración de conciencia", "Cianosis"], "tx": ["ABCDE", "Oxígeno para objetivo de SatO₂", "Salbutamol inhalado/nebulizado", "Ipratropio en crisis moderada-grave", "Corticoide sistémico", "Valorar magnesio/VMNI/IOT si grave según protocolo"], "drugs": ["Oxígeno", "Salbutamol", "Ipratropio", "Corticoides", "Sulfato de magnesio en crisis grave según protocolo"]}, "EPOC": {"def": "Enfermedad respiratoria crónica con limitación persistente al flujo aéreo. En urgencias interesa detectar exacerbación e insuficiencia respiratoria.", "alarm": ["Disnea superior a la basal", "Somnolencia o confusión", "Cianosis", "SatO₂ baja", "FR muy alta o baja", "Silencio auscultatorio", "Sepsis/neumonía"], "tx": ["Oxígeno controlado", "Broncodilatadores inhalados", "Corticoide sistémico si exacerbación", "Antibiótico si esputo purulento/neumonía/protocolo", "VMNI si insuficiencia respiratoria hipercápnica o fracaso inicial"], "drugs": ["Oxígeno controlado", "Salbutamol", "Ipratropio", "Metilprednisolona/Prednisona", "Antibióticos según protocolo"]}, "Edema agudo de pulmón": {"def": "Acumulación aguda de líquido en el intersticio/alvéolos, habitualmente por insuficiencia cardiaca, con disnea intensa e hipoxemia.", "alarm": ["Disnea súbita", "Ortopnea", "Crepitantes", "SatO₂ baja", "Expectoración rosada", "Hipertensión o shock", "Agotamiento"], "tx": ["Posición incorporada", "Oxígeno", "VMNI/CPAP si indicado", "Nitroglicerina si TA adecuada y perfil hipertensivo", "Diurético según perfil/protocolo", "Monitorización y traslado"], "drugs": ["Oxígeno", "Nitroglicerina", "Furosemida según perfil", "Morfina solo si protocolo y situación"]}, "Hipoglucemia": {"def": "Descenso de glucosa en sangre capaz de producir síntomas neurovegetativos o neuroglucopénicos. Se confirma con glucemia capilar/venosa y respuesta al tratamiento.", "alarm": ["Alteración de conciencia", "Convulsiones", "Glucemia baja", "Imposibilidad de vía oral", "Paciente diabético tratado con insulina/sulfonilureas"], "tx": ["Glucemia capilar", "Si consciente y tolera: hidratos de carbono por vía oral", "Si bajo nivel de conciencia: glucosa IV o glucagón si no hay vía", "Reevaluar glucemia y causa", "Traslado/observación si sulfonilureas, recurrencia o causa no aclarada"], "drugs": ["Glucosa oral/IV", "Glucagón", "Suero glucosado según protocolo"]}, "Cetoacidosis diabética": {"def": "Complicación aguda de la diabetes por déficit de insulina, hiperglucemia, cetosis y acidosis metabólica.", "alarm": ["Hiperglucemia", "Cetonemia/cetonuria", "Respiración de Kussmaul", "Vómitos", "Dolor abdominal", "Deshidratación", "Alteración de conciencia"], "tx": ["ABCDE", "Vía venosa", "Fluidoterapia inicial", "Monitorización", "No iniciar insulina sin conocer potasio si protocolo lo exige", "Traslado hospitalario"], "drugs": ["Cristaloides", "Insulina rápida según protocolo y potasio", "Potasio hospitalario según analítica"]}, "Convulsiones": {"def": "Descarga neuronal anormal con manifestaciones motoras, sensitivas o alteración de conciencia. En urgencias importa detener crisis prolongadas y buscar causa.", "alarm": ["Crisis >5 minutos", "Crisis repetidas sin recuperación", "Embarazo", "Trauma", "Hipoglucemia", "Fiebre/sepsis", "Déficit neurológico posterior"], "tx": ["Proteger de lesiones", "ABCDE", "Glucemia capilar", "Benzodiacepina si crisis prolongada/estatus según protocolo", "Tratar causa", "Traslado si primera crisis, estatus, trauma, embarazo o mala recuperación"], "drugs": ["Midazolam", "Diazepam", "Glucosa si hipoglucemia", "Sulfato de magnesio si eclampsia"]}, "Anafilaxia": {"def": "Reacción alérgica sistémica grave, rápida y potencialmente mortal, con afectación respiratoria, cardiovascular o multiorgánica.", "alarm": ["Disnea", "Estridor", "Angioedema lingual", "Hipotensión", "Síncope", "Urticaria generalizada", "Vómitos/diarrea con afectación sistémica"], "tx": ["Adrenalina IM inmediata", "ABCDE", "Oxígeno", "Retirar desencadenante si posible", "Fluidoterapia si hipotensión", "Antihistamínicos/corticoides como coadyuvantes", "Traslado y observación"], "drugs": ["Adrenalina IM", "Oxígeno", "Cristaloides", "Antihistamínicos", "Corticoides", "Salbutamol si broncoespasmo"]}, "Traumatismo craneoencefálico": {"def": "Lesión cerebral o craneal causada por energía externa. La prioridad es evitar hipoxia, hipotensión y detectar lesiones intracraneales.", "alarm": ["Glasgow bajo o descenso", "Pupilas anormales", "Vómitos repetidos", "Convulsiones", "Focalidad", "Anticoagulación", "Signos de fractura base cráneo"], "tx": ["ABCDE con control cervical", "Oxígeno si precisa", "Evitar hipotensión", "Glasgow/pupilas seriadas", "Control de sangrado", "Traslado a centro útil si criterios"], "drugs": ["Oxígeno", "Cristaloides si shock", "Analgesia según protocolo", "Antiemético si vómitos"]}, "Politrauma": {"def": "Paciente con lesiones traumáticas múltiples o de alta energía con riesgo vital real o potencial.", "alarm": ["Vía aérea comprometida", "Shock", "Hemorragia externa", "Alteración neurológica", "Trauma torácico/abdominal", "Dolor pélvico", "Mecanismo de alta energía"], "tx": ["ABCDE", "Control de hemorragias", "Inmovilización/selectiva según lesión", "Oxígeno", "Vía venosa/IO si shock", "Traslado a centro de trauma"], "drugs": ["Oxígeno", "Cristaloides con estrategia según protocolo", "Ácido tranexámico si indicado", "Analgesia"]}, "Hemorragia digestiva": {"def": "Sangrado procedente del tubo digestivo, alto o bajo, manifestado como hematemesis, posos de café, melena, hematoquecia o rectorragia.", "alarm": ["Hipotensión", "Taquicardia", "Síncope", "Hematemesis activa", "Melenas con inestabilidad", "Cirrótico/varices", "Anticoagulación"], "tx": ["ABCDE", "Dieta absoluta", "Vía venosa, fluidoterapia si shock", "Oxígeno si hipoxemia/shock", "IBP IV si HDA no varicosa según protocolo", "Vasoactivo/antibiótico si varices según protocolo", "Traslado a centro con endoscopia"], "drugs": ["Cristaloides", "Omeprazol/Pantoprazol", "Octreótido/Terlipresina si varices", "Antibiótico si cirrosis/varices", "Antiemético"]}, "Retención urinaria": {"def": "Imposibilidad para orinar y vaciar la vejiga pese al deseo miccional, habitualmente con dolor suprapúbico y globo vesical.", "alarm": ["Dolor intenso", "Globo vesical", "Fiebre/prostatitis", "Hematuria con coágulos", "No sale orina tras sondaje", "Trauma pélvico/sangre en meato"], "tx": ["Valorar globo y constantes", "Sondaje vesical con asepsia si no contraindicado", "No forzar si resistencia", "Vaciado controlado y registro de volumen", "Derivación si sondaje imposible, trauma, fiebre o hematuria"], "drugs": ["Lubricante/anestésico urológico si disponible", "Analgesia", "Antibióticos solo si indicación/protocolo"]}, "Hematuria": {"def": "Presencia de hematíes en orina. Puede ser macroscópica o microscópica y proceder de cualquier nivel de la vía urinaria.", "alarm": ["Coágulos", "Inestabilidad", "Retención urinaria", "Anticoagulación", "Trauma", "Insuficiencia renal", "Fiebre/dolor lumbar"], "tx": ["ABCDE si sangrado importante", "Tira de orina y valoración de origen", "Analgesia si dolor", "Sonda triple vía y lavado si retención por coágulos según protocolo", "Derivación si criterios de gravedad"], "drugs": ["Cristaloides si shock", "Analgesia", "Antibiótico si infección según protocolo"]}};
-  const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9ñ\s]/g," ").replace(/\s+/g," ").trim();
-  const esc = s => String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const strip = s => String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
-  const docs = () => Array.isArray(window.DOCS) ? window.DOCS : (typeof DOCS !== "undefined" && Array.isArray(DOCS) ? DOCS : []);
-
-  function iconFor(name){
-    const t = norm(name);
-    if(/sepsis|infeccion|neumonia|mening/.test(t)) return "🦠";
-    if(/cardio|infarto|coronario|arrit|shock/.test(t)) return "🫀";
-    if(/ictus|cerebro|convul|coma|neurolog|craneo/.test(t)) return "🧠";
-    if(/asma|epoc|resp|pulmon|disnea/.test(t)) return "🫁";
-    if(/diabet|gluco|tiroid|endo/.test(t)) return "🧬";
-    if(/trauma|fract|quemadura|herida/.test(t)) return "🚑";
-    if(/hematur|orina|renal|uro/.test(t)) return "🚻";
-    return "🩺";
-  }
-
-  function findDetail(name){
-    if(DETAILS[name]) return DETAILS[name];
-    const n = norm(name);
-    const key = Object.keys(DETAILS).find(k => norm(k) === n || n.includes(norm(k)) || norm(k).includes(n));
-    if(key) return DETAILS[key];
-    return null;
-  }
-
-  function scoreDoc(d, term){
-    const q = norm(term);
-    const rel = d.relations ? JSON.stringify(d.relations) : "";
-    const text = norm([d.title,d.summary,d.tags,d.cat,d.especialidad,rel,(d.sec||[]).map(s=>(s.h||"")+" "+strip(s.b||"")).join(" ")].join(" "));
-    let score = 0;
-    if(norm(d.title||"").includes(q)) score += 12;
-    if(norm(d.tags||"").includes(q)) score += 8;
-    if(norm(rel).includes(q)) score += 7;
-    if(text.includes(q)) score += 4;
-    q.split(" ").filter(x=>x.length>3).forEach(w => { if(text.includes(w)) score += 1; });
-    return score;
-  }
-
-  function relatedDocs(name){
-    return docs().map(d => ({d, s:scoreDoc(d,name)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,6).map(x=>x.d);
-  }
-
-  function extractTreatmentFromDocs(ds){
-    const wanted = /tratamiento|actuaci[oó]n|manejo|terap|f[aá]rmac|cuidados|algoritmo/i;
-    const out = [];
-    ds.forEach(d => {
-      (d.sec||[]).forEach(sec => {
-        if(out.length>=8) return;
-        if(wanted.test(sec.h||"")) {
-          const txt = strip(sec.b||"");
-          if(txt) out.push({title:d.title, section:sec.h, text:txt.slice(0,520)});
-        }
-      });
-    });
-    return out;
-  }
-
-  function collectDrugNames(detail, ds){
-    const set = new Set();
-    (detail?.drugs||[]).forEach(x=>set.add(x));
-    ds.forEach(d => {
-      const meds = d.relations?.farmacos || [];
-      meds.forEach(m=>set.add(m));
-    });
-    return Array.from(set).slice(0,18);
-  }
-
-  function ensureModal(){
-    let ov = document.getElementById("in57PathoOverlay");
-    if(ov) return ov;
-    ov = document.createElement("div");
-    ov.id = "in57PathoOverlay";
-    ov.className = "in57-patho-overlay";
-    ov.innerHTML = `
-      <div class="in57-patho-modal">
-        <div class="in57-patho-head">
-          <div class="in57-patho-ico" id="in57PathoIco">🩺</div>
-          <div class="in57-patho-title"><h2 id="in57PathoTitle">Patología</h2><p id="in57PathoSub">Ficha clínica iNurse</p></div>
-          <button class="in57-patho-close" id="in57PathoClose">×</button>
-        </div>
-        <div class="in57-patho-body" id="in57PathoBody"></div>
-      </div>`;
-    document.body.appendChild(ov);
-    ov.addEventListener("click", e => { if(e.target===ov) ov.classList.remove("on"); });
-    ov.querySelector("#in57PathoClose").onclick = () => ov.classList.remove("on");
-    return ov;
-  }
-
-  function openDocById(id){
-    if(window.openDoc) return window.openDoc(id);
-    if(window.openDocId) return window.openDocId(id);
-    const btn = document.querySelector(`[data-in56-doc="${CSS.escape(id)}"]`);
-    if(btn) btn.click();
-  }
-
-  function askVivi(name){
-    const q = `Explícame ${name}: definición, signos de alarma, tratamiento recomendado y fármacos según el contenido cargado en iNurse.`;
-    const ta = document.getElementById("ccTa") || document.getElementById("in51AiInput");
-    const fab = document.getElementById("ccFab") || document.getElementById("viviFab") || document.getElementById("in50ViviDock");
-    if(fab) fab.click();
-    setTimeout(()=>{
-      const input = document.getElementById("ccTa") || document.getElementById("in51AiInput");
-      if(input) {
-        input.value = q;
-        input.dispatchEvent(new Event("input", {bubbles:true}));
-        input.focus();
-      }
-    }, 250);
-  }
-
-  function openPathology(name){
-    const detail = findDetail(name);
-    const relDocs = relatedDocs(name);
-    const txFromDocs = extractTreatmentFromDocs(relDocs);
-    const drugs = collectDrugNames(detail, relDocs);
-
-    const def = detail?.def || "Ficha pendiente de definición específica. iNurse la relaciona con los protocolos cargados para orientar la consulta clínica.";
-    const alarms = detail?.alarm || ["Valorar ABCDE", "Constantes alteradas", "Dolor intenso o progresivo", "Alteración del nivel de conciencia", "Signos de shock, sepsis o insuficiencia respiratoria"];
-    const tx = detail?.tx || [];
-    const ov = ensureModal();
-
-    ov.querySelector("#in57PathoIco").textContent = iconFor(name);
-    ov.querySelector("#in57PathoTitle").textContent = name;
-    ov.querySelector("#in57PathoSub").textContent = "Definición · tratamiento · fármacos · guías relacionadas";
-
-    const txHtml = tx.length
-      ? `<ol>${tx.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`
-      : (txFromDocs.length
-          ? `<ul>${txFromDocs.slice(0,4).map(x=>`<li><b>${esc(x.title)} · ${esc(x.section)}:</b> ${esc(x.text)}</li>`).join("")}</ul>`
-          : `<p>No hay tratamiento específico precargado para esta patología. Usa los protocolos relacionados y consulta a Vivi para cruzarlo con fármacos y guías.</p>`);
-
-    ov.querySelector("#in57PathoBody").innerHTML = `
-      <div class="in57-patho-grid">
-        <section class="in57-patho-card">
-          <h3>Qué es</h3>
-          <p>${esc(def)}</p>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Signos de alarma</h3>
-          <ul>${alarms.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Tratamiento recomendado</h3>
-          ${txHtml}
-          <p class="in57-warn">Orientativo y educativo: validar siempre con protocolo local vigente y situación clínica real.</p>
-        </section>
-        <section class="in57-patho-card">
-          <h3>Fármacos relacionados</h3>
-          ${drugs.length ? `<ul>${drugs.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "<p>Sin fármacos vinculados todavía.</p>"}
-        </section>
-        <section class="in57-patho-card in57-patho-related">
-          <h3>Protocolos iNurse relacionados</h3>
-          ${relDocs.length ? relDocs.map(d=>`<button data-doc="${esc(d.id)}"><b>${esc(d.title)}</b><br><small>${esc(d.especialidad||d.cat||"iNurse")}</small></button>`).join("") : "<p>No se han encontrado protocolos relacionados directos.</p>"}
-        </section>
-        <section class="in57-patho-card">
-          <h3>Acciones</h3>
-          <div class="in57-patho-actions">
-            <button id="in57AskVivi">Preguntar a Vivi</button>
-            <button id="in57SearchPatho">Buscar en iNurse</button>
-          </div>
-        </section>
-      </div>`;
-
-    ov.querySelectorAll("[data-doc]").forEach(b => b.onclick = () => { ov.classList.remove("on"); openDocById(b.dataset.doc); });
-    ov.querySelector("#in57AskVivi").onclick = () => askVivi(name);
-    ov.querySelector("#in57SearchPatho").onclick = () => {
-      ov.classList.remove("on");
-      const s = document.getElementById("search");
-      if(s) {
-        s.value = name;
-        s.dispatchEvent(new Event("input", {bubbles:true}));
-        s.focus();
-        s.scrollIntoView({behavior:"smooth", block:"center"});
-      }
-    };
-    ov.classList.add("on");
-  }
-
-  function installPathologyClicks(){
-    document.addEventListener("click", function(e){
-      const item = e.target.closest(".in56-pato-item");
-      if(!item) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const name = item.textContent.trim();
-      if(name) openPathology(name);
-    }, true);
-  }
-
-  if(document.readyState !== "loading") installPathologyClicks();
-  else document.addEventListener("DOMContentLoaded", installPathologyClicks);
-
-  window.iNurseOpenPathology = openPathology;
-})();
-</script>
 
 
 <style id="in57-pathology-inline-css">
@@ -12199,18 +11371,13 @@ body.in57-visual .in57-action[data-in57="farmacos"] {
 </script>
 
 
-<script>
-function forceStopSpeech(){
-  try{speechSynthesis.cancel();}catch(e){}
-}
-</script>
 
 <!-- ===== iNurse · Primera mejora consolidada ===== -->
 <style id="inurse-clean-v1-css">
 /* Pantalla principal limpia: cuatro accesos y Vivi, sin duplicados */
 #splash.inurse-force-hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 .top > .icon-btn{display:none!important}
-#viviHero,#in52Critical,.in57-quick-grid,.in57-mini-grid,.in50-quick-grid,.in50-shortcuts,
+#in52Critical,.in57-quick-grid,.in57-mini-grid,.in50-quick-grid,.in50-shortcuts,
 .fab-stack,#calcFab,#in52SettingsFab,#viviFab,#ccFab{display:none!important}
 
 #in50Home{display:block!important;max-width:1060px;margin:0 auto;padding:18px 16px 8px}
@@ -13814,45 +12981,6 @@ renderTabs();renderOrganizer();renderList();
     var shortcut=document.getElementById('library21Btn');
     if(shortcut) shortcut.click();
   }
-  function installVirtualLibrarySection(){
-    return true; /* v19.2: la Biblioteca es un módulo principal independiente */
-    var home=document.getElementById('in50Home');
-    if(!home || document.getElementById('in17VirtualLibrarySection')) return false;
-    var guidesTitle=Array.from(home.querySelectorAll('.in50-section-title'))
-      .find(function(el){return /gu[ií]as cl[ií]nicas/i.test(el.textContent||'')});
-    var title=document.createElement('div');
-    title.id='in17VirtualLibrarySection';
-    title.className='in50-section-title in17-library-title';
-    title.textContent='📚 Biblioteca virtual';
-    var grid=document.createElement('div');
-    grid.className='in50-grid';
-    grid.id='in17VirtualLibraryGrid';
-    var card=document.createElement('button');
-    card.type='button';
-    card.className='in50-card in17-library-card';
-    card.id='in17OpenVirtualLibrary';
-    card.setAttribute('aria-label','Abrir Biblioteca virtual iNurse');
-    card.innerHTML=
-      '<span class="em">📚</span>'+
-      '<span class="in17-library-copy">'+
-        '<b>Biblioteca virtual iNurse</b>'+
-        '<small>Un espacio propio y separado de Guías clínicas. Explora los 21 bloques por patologías, sistemas clínicos, especialidades y áreas de conocimiento.</small>'+
-        '<span class="in17-library-stats">'+
-          '<span>21 bloques</span><span>1.676 recursos</span><span>Buscador propio</span>'+
-          '<span>Favoritos</span><span>Fuentes para Vivi</span>'+
-        '</span>'+
-      '</span>';
-    card.addEventListener('click',openVirtualLibrary);
-    grid.appendChild(card);
-    if(guidesTitle){
-      home.insertBefore(title,guidesTitle);
-      home.insertBefore(grid,guidesTitle);
-    }else{
-      home.appendChild(title);
-      home.appendChild(grid);
-    }
-    return true;
-  }
   function renameShortcut(){
     var btn=document.getElementById('library21Btn');
     if(btn){
@@ -13860,19 +12988,9 @@ renderTabs();renderOrganizer();renderList();
       btn.setAttribute('aria-label','Abrir Biblioteca virtual iNurse');
     }
   }
-  function start(){
-    renameShortcut();
-    if(installVirtualLibrarySection()) return;
-    var tries=0;
-    var timer=setInterval(function(){
-      tries++;
-      renameShortcut();
-      if(installVirtualLibrarySection() || tries>30) clearInterval(timer);
-    },250);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
-  else start();
-  window.iNurseVirtualLibrary={open:openVirtualLibrary,install:installVirtualLibrarySection};
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renameShortcut);
+  else renameShortcut();
+  window.iNurseVirtualLibrary={open:openVirtualLibrary};
 })();
 </script>
 
@@ -16746,7 +15864,6 @@ async function fetchJSON(url,options={}){
   }finally{clearTimeout(timer)}
 }
 async function checkBackend(){
-  await activationCheck();
   try{
     const data=await fetchJSON(backendBase()+'/api/cima/health');
     setState('ok','CIMA conectada','Servicio CIMA-AEMPS disponible.');
@@ -17210,7 +16327,6 @@ window.iNurseCima={
 
 renderPathologyChips();
 setMode('name');
-activationCheck();
 })();
 </script>
 
@@ -17222,7 +16338,7 @@ activationCheck();
 #in50Home .in60-shell{ display:none !important; }
 /* En el inicio ocultamos la interfaz antigua (barras y botones flotantes) para dejar solo el nuevo diseño */
 body:not(.in60-content-mode) header:has(#search),
-/* nav siempre visible — ya no se oculta */
+body:not(.in60-content-mode) #in192PrimaryNav,
 body:not(.in60-content-mode) .fab-stack,
 body:not(.in60-content-mode) #icFab,
 body:not(.in60-content-mode) #calcFab,
@@ -17248,10 +16364,10 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   background:linear-gradient(135deg,#22d3ee,#8b5cf6); box-shadow:0 8px 24px rgba(56,189,248,.35); font-size:24px; }
 .nx-brand h1{ font-size:26px; font-weight:800; letter-spacing:.2px; background:linear-gradient(90deg,#38bdf8,#a78bfa); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1; }
 .nx-brand small{ display:block; color:#8aa0c8; font-size:12px; margin-top:3px; }
-.nx-nav{ display:flex; gap:10px; margin-left:6px; flex-wrap:wrap; }
-.nx-nav button{ display:flex; flex-direction:column; align-items:center; gap:4px; min-width:78px; padding:10px 12px; border-radius:16px;
-  border:1px solid rgba(120,150,220,.18); background:rgba(20,30,60,.5); color:#c7d4f2; font-weight:700; font-size:13px; cursor:pointer; transition:.18s; }
-.nx-nav button .ic{ font-size:20px; }
+.nx-nav{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+.nx-nav button{ display:flex; flex-direction:column; align-items:center; gap:3px; min-width:62px; padding:8px 10px; border-radius:14px;
+  border:1px solid rgba(120,150,220,.18); background:rgba(20,30,60,.5); color:#c7d4f2; font-weight:700; font-size:11.5px; cursor:pointer; transition:.18s; }
+.nx-nav button .ic{ font-size:18px; }
 .nx-nav button:hover{ transform:translateY(-2px); border-color:rgba(120,170,255,.5); box-shadow:0 10px 26px rgba(30,80,200,.25); }
 .nx-nav button.on{ background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(139,92,246,.28)); border-color:rgba(120,190,255,.7); color:#fff; box-shadow:0 0 0 1px rgba(120,190,255,.35),0 12px 30px rgba(40,120,255,.3); }
 .nx-vivi-mini{ margin-left:auto; display:flex; align-items:center; gap:12px; padding:8px 14px 8px 8px; border-radius:20px;
@@ -17284,7 +16400,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   background:linear-gradient(180deg,rgba(24,32,66,.55),rgba(14,18,42,.55)); box-shadow:0 20px 60px rgba(0,0,0,.35); }
 .nx-grid{ display:grid; gap:12px; }
 .nx-main{ grid-template-columns:repeat(5,1fr); }
-.nx-quick{ grid-template-columns:repeat(6,1fr); }
+.nx-quick{ grid-template-columns:repeat(3,1fr); }
 .nx-card{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:16px 12px; border-radius:18px; cursor:pointer;
   border:1px solid rgba(120,150,220,.14); background:rgba(20,28,58,.4); color:#e7ecff; transition:.18s; }
 .nx-card:hover{ transform:translateY(-3px); border-color:rgba(120,180,255,.55); background:rgba(30,44,90,.55); box-shadow:0 14px 34px rgba(30,90,220,.3); }
@@ -17305,7 +16421,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-empty{ color:#6f83ad; font-size:13px; }
 
 @media(max-width:900px){ .nx-main{ grid-template-columns:repeat(3,1fr); } .nx-quick{ grid-template-columns:repeat(3,1fr); } }
-@media(max-width:620px){ .nx-main,.nx-quick{ grid-template-columns:repeat(2,1fr); } .nx-bottom{ grid-template-columns:1fr; } .nx-vivi-mini{ margin-left:0; } .nx-nav{ order:3; width:100%; } }
+@media(max-width:620px){ .nx-main,.nx-quick{ grid-template-columns:repeat(2,1fr); } .nx-bottom{ grid-template-columns:1fr; } .nx-vivi-mini{ margin-left:0; } .nx-nav{ order:3; width:100%; justify-content:center; } .nx-nav button{ min-width:54px; padding:7px 6px; font-size:10.5px; } }
 </style>
 
 <style id="v34-liquid-glass">
@@ -17464,6 +16580,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "algoritmos": openIC("alg"); return;
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
+      case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
+      case "ajustes":  if(window.iNurseAjustes&&window.iNurseAjustes.open){ window.iNurseAjustes.open(); return; } return;
     }
   }
   /* Menú desplegable del botón Inicio con todos los apartados */
@@ -17511,14 +16629,18 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     { k:"farmaco",    ic:"💊", t:"Farmacología",       s:"Fármacos, vademécum, posologías e interacciones." }
   ];
   var QUICK = [
-    { k:"calc",           ic:"🧮", t:"Cálculos",        s:"Calculadoras, algoritmos y procedimientos." },
-    { k:"rx",             ic:"🩻", t:"Rayos X",         s:"Apoyo visual para imágenes radiológicas." },
-    { k:"ecg",            ic:"📈", t:"Electros",        s:"Lectura de ECG, análisis y entrenamiento." },
     { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
     { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
     { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
   ];
-  var NAV = [ {k:"inicio",ic:"🏠",t:"Inicio"} ];
+  var NAV = [
+    {k:"inicio",   ic:"🏠", t:"Inicio"},
+    {k:"miturno",  ic:"🌙", t:"Mi turno"},
+    {k:"calc",     ic:"🧮", t:"Cálculo"},
+    {k:"ecg",      ic:"📈", t:"Electros"},
+    {k:"rx",       ic:"🩻", t:"Rayos X"},
+    {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
+  ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function card(x){ return '<button class="nx-card" data-fire="'+x.k+'"><span class="ic">'+x.ic+'</span><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></button>'; }
   function recentHTML(){
