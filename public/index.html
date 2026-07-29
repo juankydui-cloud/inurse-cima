@@ -16364,10 +16364,10 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   background:linear-gradient(135deg,#22d3ee,#8b5cf6); box-shadow:0 8px 24px rgba(56,189,248,.35); font-size:24px; }
 .nx-brand h1{ font-size:26px; font-weight:800; letter-spacing:.2px; background:linear-gradient(90deg,#38bdf8,#a78bfa); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1; }
 .nx-brand small{ display:block; color:#8aa0c8; font-size:12px; margin-top:3px; }
-.nx-nav{ display:flex; gap:10px; margin-left:6px; flex-wrap:wrap; }
-.nx-nav button{ display:flex; flex-direction:column; align-items:center; gap:4px; min-width:78px; padding:10px 12px; border-radius:16px;
-  border:1px solid rgba(120,150,220,.18); background:rgba(20,30,60,.5); color:#c7d4f2; font-weight:700; font-size:13px; cursor:pointer; transition:.18s; }
-.nx-nav button .ic{ font-size:20px; }
+.nx-nav{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+.nx-nav button{ display:flex; flex-direction:column; align-items:center; gap:3px; min-width:62px; padding:8px 10px; border-radius:14px;
+  border:1px solid rgba(120,150,220,.18); background:rgba(20,30,60,.5); color:#c7d4f2; font-weight:700; font-size:11.5px; cursor:pointer; transition:.18s; }
+.nx-nav button .ic{ font-size:18px; }
 .nx-nav button:hover{ transform:translateY(-2px); border-color:rgba(120,170,255,.5); box-shadow:0 10px 26px rgba(30,80,200,.25); }
 .nx-nav button.on{ background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(139,92,246,.28)); border-color:rgba(120,190,255,.7); color:#fff; box-shadow:0 0 0 1px rgba(120,190,255,.35),0 12px 30px rgba(40,120,255,.3); }
 .nx-vivi-mini{ margin-left:auto; display:flex; align-items:center; gap:12px; padding:8px 14px 8px 8px; border-radius:20px;
@@ -16400,7 +16400,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   background:linear-gradient(180deg,rgba(24,32,66,.55),rgba(14,18,42,.55)); box-shadow:0 20px 60px rgba(0,0,0,.35); }
 .nx-grid{ display:grid; gap:12px; }
 .nx-main{ grid-template-columns:repeat(5,1fr); }
-.nx-quick{ grid-template-columns:repeat(6,1fr); }
+.nx-quick{ grid-template-columns:repeat(3,1fr); }
 .nx-card{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:16px 12px; border-radius:18px; cursor:pointer;
   border:1px solid rgba(120,150,220,.14); background:rgba(20,28,58,.4); color:#e7ecff; transition:.18s; }
 .nx-card:hover{ transform:translateY(-3px); border-color:rgba(120,180,255,.55); background:rgba(30,44,90,.55); box-shadow:0 14px 34px rgba(30,90,220,.3); }
@@ -16421,7 +16421,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-empty{ color:#6f83ad; font-size:13px; }
 
 @media(max-width:900px){ .nx-main{ grid-template-columns:repeat(3,1fr); } .nx-quick{ grid-template-columns:repeat(3,1fr); } }
-@media(max-width:620px){ .nx-main,.nx-quick{ grid-template-columns:repeat(2,1fr); } .nx-bottom{ grid-template-columns:1fr; } .nx-vivi-mini{ margin-left:0; } .nx-nav{ order:3; width:100%; } }
+@media(max-width:620px){ .nx-main,.nx-quick{ grid-template-columns:repeat(2,1fr); } .nx-bottom{ grid-template-columns:1fr; } .nx-vivi-mini{ margin-left:0; } .nx-nav{ order:3; width:100%; justify-content:center; } .nx-nav button{ min-width:54px; padding:7px 6px; font-size:10.5px; } }
 </style>
 
 <style id="v34-liquid-glass">
@@ -16580,6 +16580,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "algoritmos": openIC("alg"); return;
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
+      case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
+      case "ajustes":  if(window.iNurseAjustes&&window.iNurseAjustes.open){ window.iNurseAjustes.open(); return; } return;
     }
   }
   /* Menú desplegable del botón Inicio con todos los apartados */
@@ -16627,14 +16629,18 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     { k:"farmaco",    ic:"💊", t:"Farmacología",       s:"Fármacos, vademécum, posologías e interacciones." }
   ];
   var QUICK = [
-    { k:"calc",           ic:"🧮", t:"Cálculos",        s:"Calculadoras, algoritmos y procedimientos." },
-    { k:"rx",             ic:"🩻", t:"Rayos X",         s:"Apoyo visual para imágenes radiológicas." },
-    { k:"ecg",            ic:"📈", t:"Electros",        s:"Lectura de ECG, análisis y entrenamiento." },
     { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
     { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
     { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
   ];
-  var NAV = [ {k:"inicio",ic:"🏠",t:"Inicio"} ];
+  var NAV = [
+    {k:"inicio",   ic:"🏠", t:"Inicio"},
+    {k:"miturno",  ic:"🌙", t:"Mi turno"},
+    {k:"calc",     ic:"🧮", t:"Cálculo"},
+    {k:"ecg",      ic:"📈", t:"Electros"},
+    {k:"rx",       ic:"🩻", t:"Rayos X"},
+    {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
+  ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function card(x){ return '<button class="nx-card" data-fire="'+x.k+'"><span class="ic">'+x.ic+'</span><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></button>'; }
   function recentHTML(){
