@@ -7,7 +7,7 @@ import { searchClinicalTrials } from "./clinicaltrials.mjs";
 import { searchSemanticScholar } from "./semanticscholar.mjs";
 import { searchWHO } from "./who.mjs";
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNurse. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
@@ -616,6 +616,35 @@ export async function orchestrateStream({ question, context: clientContext, hist
   }, (fullText) => onEvent({ type: "delta", text: fullText }));
 
   onEvent({ type: "done", answer, sources, fetchedAt: new Date().toISOString() });
+}
+
+// Sonda de diagnóstico para /api/vivi/health: hace la llamada más pequeña posible a
+// Gemini y devuelve el motivo exacto si falla, en vez de propagar la excepción. Sirve
+// para separar de un vistazo los tres fallos que se confunden entre sí desde la app
+// (clave ausente o inválida, modelo no disponible, y cuota agotada), sin tener que
+// abrir los registros del servidor.
+export async function probeGemini(apiKeyArg) {
+  const apiKey = apiKeyArg || process.env.GEMINI_API_KEY || "";
+  const startedAt = Date.now();
+  try {
+    // maxOutputTokens holgado a propósito: con un tope muy bajo, un modelo que use
+    // tokens de razonamiento puede terminar en MAX_TOKENS sin texto y hacer fallar
+    // la sonda por un motivo que no es el que estamos buscando.
+    const text = await callGemini("Responde con una sola palabra.", "Responde únicamente: OK", {
+      apiKey,
+      model: GEMINI_MODEL,
+      maxOutputTokens: 1024,
+      temperature: 0
+    });
+    return { ok: true, model: GEMINI_MODEL, ms: Date.now() - startedAt, sample: text.slice(0, 80) };
+  } catch (err) {
+    return {
+      ok: false,
+      model: GEMINI_MODEL,
+      ms: Date.now() - startedAt,
+      error: err instanceof Error ? err.message : String(err)
+    };
+  }
 }
 
 // Transcribe audio (base64) a texto usando Gemini. Devuelve "" si no hay voz clara.

@@ -5806,7 +5806,9 @@ render();
     }catch(e){ /* fragmento SSE incompleto: se completa en el siguiente chunk */ }
    }
   }
-  return full.trim()||'(sin respuesta)';
+  var out=full.trim();
+  if(!out)throw new Error('Gemini devolvió una respuesta vacía. Revisa la clave y el modelo en Ajustes.');
+  return out;
  }
  function withTimeout(promise,ms){
   return new Promise(function(resolve){
@@ -5927,7 +5929,9 @@ render();
     return fetch(backend+'/api/vivi/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(backendPayload)}).then(function(res){return res.json().catch(function(){return {}}).then(function(data){
      if(!res.ok)throw new Error(data.error||data.message||('HTTP '+res.status));
      applyBackendSources(data.sources);
-     return data.answer||data.text||'(sin respuesta)';
+     var ans=(data.answer||data.text||'').trim();
+     if(!ans)throw new Error('El servidor devolvió una respuesta vacía. Revisa los registros de Render y la variable GEMINI_API_KEY.');
+     return ans;
     })});
    }
    function callBackendStreaming(){
@@ -5939,14 +5943,15 @@ render();
       var evt;try{evt=JSON.parse(line);}catch(e){return;}
       if(evt.type==='sources'){applyBackendSources(evt.sources);gotSources=true;}
       else if(evt.type==='delta'){if(onDelta)onDelta(evt.text||'');}
-      else if(evt.type==='done'){if(!gotSources)applyBackendSources(evt.sources);finalAnswer=evt.answer||'(sin respuesta)';}
-      else if(evt.type==='error'){throw new Error(evt.error||'Error del servidor');}
+      else if(evt.type==='done'){if(!gotSources)applyBackendSources(evt.sources);finalAnswer=(evt.answer||'').trim();}
+      else if(evt.type==='error'){var se=new Error(evt.error||'Error del servidor');se.viviServerError=true;throw se;}
      }
      function pump(){
       return reader.read().then(function(chunk){
        if(chunk.done){
         var rest=buf.trim();if(rest)processLine(rest);
         if(finalAnswer===null)throw new Error('Streaming interrumpido sin respuesta');
+        if(!finalAnswer){var ve=new Error('El servidor terminó la respuesta sin texto. Revisa los registros de Render y la variable GEMINI_API_KEY.');ve.viviServerError=true;throw ve;}
         return finalAnswer;
        }
        buf+=decoder.decode(chunk.value,{stream:true});
@@ -5959,7 +5964,16 @@ render();
     });
    }
    if(!att&&typeof onDelta==='function'){
-    return callBackendStreaming().catch(function(){ return callBackendNonStreaming(); });
+    return callBackendStreaming().catch(function(err){
+     // Si el servidor ya nos dijo POR QUÉ falló, propagamos ese motivo tal cual.
+     // Reintentar sin streaming repetiría toda la orquestación (7 búsquedas de
+     // evidencia + Gemini) para acabar en el mismo error: duplica la espera y
+     // deja al usuario mirando un chat en blanco en vez del motivo real.
+     // El reintento se reserva para fallos de transporte (proxy que corta el
+     // streaming, 502, etc.), donde la vía no-streaming sí puede funcionar.
+     if(err&&err.viviServerError)throw err;
+     return callBackendNonStreaming();
+    });
    }
    return callBackendNonStreaming();
   }
@@ -5977,8 +5991,11 @@ render();
     return res.json().catch(function(){return {}}).then(function(data){
      if(!res.ok)throw new Error(data&&data.error&&data.error.message?data.error.message:('Error '+res.status));
      var c=data.candidates&&data.candidates[0];
+     if(data&&data.promptFeedback&&data.promptFeedback.blockReason)throw new Error('Gemini bloqueó la respuesta por seguridad de contenido ('+data.promptFeedback.blockReason+'). Reformula la pregunta.');
      if(!c||!c.content||!c.content.parts)throw new Error('Respuesta vacía del modelo');
-     return c.content.parts.map(function(p){return p.text||''}).join('').trim()||'(sin respuesta)';
+     var dt=c.content.parts.map(function(p){return p.text||''}).join('').trim();
+     if(!dt)throw new Error('Gemini devolvió una respuesta vacía'+(c.finishReason?' (motivo: '+c.finishReason+')':'')+'. Revisa la clave y el modelo en Ajustes.');
+     return dt;
     });
    });
   }
