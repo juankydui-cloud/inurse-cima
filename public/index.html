@@ -575,6 +575,21 @@
   .perf-inv-out{font-size:14px;color:var(--text);display:flex;align-items:center;padding-left:8px}
   .perf-gtt{font-size:12px;color:var(--text-dim);margin:4px 0 6px;font-weight:500}
   .perf-dose-warn{font-size:12px;color:#F59E0B;font-weight:700;margin:4px 0}
+  .perf-agot{font-size:12px;color:var(--text-dim);margin:4px 0;font-weight:500}
+  .perf-tit,.perf-bolo,.perf-print{margin-top:12px;padding:14px;border-radius:12px;
+    border:1px solid var(--border);background:var(--card-solid)}
+  .perf-tit-title,.perf-bolo-title,.perf-print-title{font-size:13px;font-weight:800;margin-bottom:8px}
+  .perf-tit-sub{font-size:11px;color:var(--text-dim);margin-bottom:8px}
+  .perf-tit-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+  .perf-tit-table th{text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);
+    font-size:11px;color:var(--text-dim);font-weight:700}
+  .perf-tit-table td{padding:5px 8px;border-bottom:1px solid var(--border)}
+  .perf-bolo-desc{font-size:13px;color:var(--text);margin-bottom:6px}
+  .perf-bolo-dose{font-size:15px;margin-bottom:6px}
+  .perf-bolo-vol{font-size:13px;color:var(--text-dim);margin-bottom:10px}
+  .perf-print-text{width:100%;min-height:120px;padding:10px;border-radius:8px;
+    border:1px solid var(--border);background:var(--bg);color:var(--text);
+    font-family:monospace;font-size:12px;resize:vertical;margin-bottom:8px}
 
   /* FAB Calculadora */
   #calcFab{position:fixed;left:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;
@@ -6362,8 +6377,12 @@ function renderPerf(){
     <div class="calc-result" id="perfResult">—</div>
     <div class="calc-actions" id="perfActions">
       <button class="btn-outline" onclick="perfReset()">↻ Limpiar</button>
+      <button class="btn-outline" onclick="perfTitTable()">📊 Titulación</button>
+      <button class="btn-outline" id="perfBoloBtn" onclick="perfBoloCalc()" style="display:none">💉 Bolo</button>
+      <button class="btn-outline" onclick="perfPrint()">🖨 Resumen</button>
       <button class="btn-primary" onclick="perfSave()">💾 Guardar</button>
     </div>
+    <div id="perfExtra"></div>
     <div class="calc-warn">⚠️ Verifica siempre con la ficha del fármaco y con farmacia. Diluciones habituales; pueden variar por servicio.</div>
   </div>`;
 }
@@ -6523,6 +6542,10 @@ function onPerfFarm(fromCancel){
   if(rangeEl) rangeEl.innerHTML = `<span>${f.dosis.min}</span><span>${f.dosis.max} ${f.dosis.unidad}</span>`;
   const invInput = document.getElementById("perf-mlh-inv");
   if(invInput) invInput.value = "";
+  const boloBtn = document.getElementById("perfBoloBtn");
+  if(boloBtn) boloBtn.style.display = f.bolo ? "" : "none";
+  const extra = document.getElementById("perfExtra");
+  if(extra) extra.innerHTML = "";
   // Botón de borrar para fármacos personalizados
   if(actions){
     const oldDel = document.getElementById("perfDelBtn");
@@ -6602,13 +6625,122 @@ function runPerf(){
   const doseWarn = (dosis < f.dosis.min || dosis > f.dosis.max)
     ? `<div class="perf-dose-warn">⚠️ Fuera de rango habitual (${f.dosis.min}–${f.dosis.max} ${unidad})</div>` : "";
 
+  let agotamiento = "";
+  if(dil.volMl && mlH > 0){
+    const horas = dil.volMl / mlH;
+    const hh = Math.floor(horas); const mm = Math.round((horas - hh) * 60);
+    agotamiento = `<div class="perf-agot">⏱ Duración bolsa (${dil.volMl} mL): <b>${hh}h ${mm}min</b></div>`;
+  }
+
   const box = document.getElementById("perfResult");
   if(!box) return;
   box.innerHTML = `<div class="calc-main">${mlH.toFixed(2)} mL/h en bomba</div>
     <div class="calc-detail"><b>${escapeHtml(f.n)}</b> · ${escapeHtml(dil.l)}<br>${calcDetail}</div>
     <div class="perf-gtt">Gravedad: ${gttMacro} gtt/min (macro) · ${gttMicro} µgtt/min (micro)</div>
-    ${doseWarn}
+    ${agotamiento}${doseWarn}
     <div class="calc-interp">Peso: ${peso} kg · Dosis: ${dosis} ${unidad}</div>`;
+}
+
+function perfTitTable(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const u = f.dosis.unidad;
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  const steps = [];
+  const range = f.dosis.max - f.dosis.min;
+  const nSteps = Math.min(12, Math.max(6, Math.ceil(range / f.dosis.step)));
+  const stepSize = range / nSteps;
+  for(let i = 0; i <= nSteps; i++){
+    let d = f.dosis.min + stepSize * i;
+    d = Math.round(d / f.dosis.step) * f.dosis.step;
+    if(d > f.dosis.max) d = f.dosis.max;
+    if(steps.length && Math.abs(steps[steps.length-1].d - d) < f.dosis.step * 0.5) continue;
+    let mlH = 0;
+    if(u.includes("mcg/kg/min")) mlH = d * peso * 60 / (dil.cMcgMl||1);
+    else if(u === "mcg/min") mlH = d * 60 / (dil.cMcgMl||1);
+    else if(u.includes("mcg/kg/h")) mlH = d * peso / (dil.cMcgMl||1);
+    else if(u.includes("mg/kg/h")) mlH = d * peso / (dil.cMgMl||1);
+    else if(u === "mg/h") mlH = d / (dil.cMgMl||1);
+    else if(u === "UI/kg/h") mlH = d * peso / (dil.cUIMl||1);
+    else if(u === "UI/h") mlH = d / (dil.cUIMl||1);
+    steps.push({ d, mlH });
+  }
+  const rows = steps.map(s =>
+    `<tr><td>${s.d.toFixed(s.d<1?3:s.d<10?2:1)} ${u}</td><td><b>${s.mlH.toFixed(2)}</b> mL/h</td></tr>`).join("");
+  extra.innerHTML = `<div class="perf-tit">
+    <div class="perf-tit-title">📊 Tabla de titulación · ${escapeHtml(f.n)} · ${peso} kg</div>
+    <div class="perf-tit-sub">${escapeHtml(dil.l)}</div>
+    <table class="perf-tit-table"><thead><tr><th>Dosis</th><th>Bomba</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+  </div>`;
+}
+
+function perfBoloCalc(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f || !f.bolo) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const b = f.bolo;
+  const dTotal = b.dosisPorKg ? (b.dosisPorKg * peso) : b.dosis;
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  let volInfo = "";
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const conc = dil.cMcgMl || dil.cMgMl || dil.cUIMl || 0;
+  if(conc > 0){
+    let dosisEnConcUnit = dTotal;
+    if(b.unidad === "mg" && dil.cMcgMl) dosisEnConcUnit = dTotal * 1000;
+    else if(b.unidad === "mcg" && dil.cMgMl) dosisEnConcUnit = dTotal / 1000;
+    const vol = dosisEnConcUnit / conc;
+    volInfo = `<div class="perf-bolo-vol">Con la dilución actual: <b>${vol.toFixed(1)} mL</b></div>`;
+  }
+  extra.innerHTML = `<div class="perf-bolo">
+    <div class="perf-bolo-title">💉 Bolo de carga · ${escapeHtml(f.n)}</div>
+    <div class="perf-bolo-desc">${escapeHtml(b.desc)}</div>
+    <div class="perf-bolo-dose">Dosis: <b>${dTotal.toFixed(dTotal<1?2:dTotal<10?1:0)} ${b.unidad}</b>${b.dosisPorKg ? ` (${b.dosisPorKg} ${b.unidad}/kg × ${peso} kg)` : ""}</div>
+    ${volInfo}
+    <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+  </div>`;
+}
+
+function perfPrint(){
+  const k = document.getElementById("perf-farm").value;
+  const f = allPerfDrugs()[k]; if(!f) return;
+  const peso = parseFloat(document.getElementById("perf-peso").value) || 70;
+  const dilIdx = parseInt(document.getElementById("perf-dil").value) || 0;
+  const dil = f.diluciones[dilIdx];
+  const dosis = parseFloat(document.getElementById("perf-dosis").value) || 0;
+  const res = document.getElementById("perfResult");
+  const mlH = res?.querySelector(".calc-main")?.textContent || "—";
+  const detail = res?.querySelector(".calc-detail")?.textContent || "";
+  const gtt = res?.querySelector(".perf-gtt")?.textContent || "";
+  const agot = res?.querySelector(".perf-agot")?.textContent || "";
+  const extra = document.getElementById("perfExtra");
+  if(!extra) return;
+  const now = new Date().toLocaleString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  const lines = [
+    `═══ PERFUSIÓN · ${f.n} ═══`,
+    `Fecha: ${now}`,
+    `Peso: ${peso} kg`,
+    `Dilución: ${dil.l}`,
+    `Dosis: ${dosis} ${f.dosis.unidad}`,
+    `▸ ${mlH}`,
+    detail, gtt, agot,
+    `═══════════════════════════`
+  ].filter(Boolean).join("\n");
+  extra.innerHTML = `<div class="perf-print">
+    <div class="perf-print-title">🖨 Resumen para copiar</div>
+    <textarea class="perf-print-text" readonly onclick="this.select()">${escapeHtml(lines)}</textarea>
+    <div class="calc-actions">
+      <button class="btn-outline" onclick="document.getElementById('perfExtra').innerHTML=''">✕ Cerrar</button>
+      <button class="btn-primary" onclick="navigator.clipboard.writeText(this.closest('.perf-print').querySelector('textarea').value);toast('📋 Copiado')">📋 Copiar</button>
+    </div>
+  </div>`;
 }
 
 function runPerfInverse(){
