@@ -7868,85 +7868,6 @@ function dermPick(el){
 })();
 </script>
 
-<script id="v15-enhance">
-/* ================================================================
-   CAPA v15 — Reorganización de botones (nodos originales, listeners
-   intactos): dock inferior + menú desplegable de cabecera.
-   ================================================================ */
-(function(){
-  'use strict';
-
-  /* ---- 1. DOCK INFERIOR: mover calcFab dentro y etiquetar todo ---- */
-  const stack = document.querySelector('.fab-stack');
-  const calc = document.getElementById('calcFab');
-  if (stack) {
-    if (calc) stack.insertBefore(calc, stack.firstChild); // el nodo conserva su onclick
-
-    const DOCK = [
-      ['calcFab','🧮','Cálculo'], ['atlasFab','🫀','Atlas'], ['ecgFab','📟','Reto ECG'],
-      ['rxFab','🩻','Imagen'], ['recFab','🎙️','Voz'], ['askFab','✨','IA']
-    ];
-    DOCK.forEach(([id, em, lbl]) => {
-      const b = document.getElementById(id);
-      if (!b) return;
-      b.innerHTML = '<span class="dk-em">' + em + '</span><span class="dk-lbl">' + lbl + '</span>';
-    });
-  }
-
-  /* ---- 2. MENÚ DE CABECERA: agrupar acciones en desplegable ---- */
-  const top = document.querySelector('header .top');
-  if (top) {
-    const wrap = document.createElement('div');
-    wrap.className = 'hj-menu-wrap';
-    wrap.innerHTML =
-      '<button id="hjMenuBtn" aria-haspopup="true" aria-expanded="false" title="Menú de herramientas">☰</button>' +
-      '<div id="hjMenuPanel" role="menu"></div>';
-    top.appendChild(wrap);
-    const panel = wrap.querySelector('#hjMenuPanel');
-    const btn = wrap.querySelector('#hjMenuBtn');
-
-    const ITEMS = [
-      ['sosBtn',   'SOS Emergencia', 'Protocolos críticos al instante', '#EF4444', true],
-      ['vadeBtn',  'Vademécum',      'Consulta de fármacos',            '#EC4899', false],
-      ['triageBtn','Triage IA',      'Clasificación asistida',          '#22D3EE', false],
-      ['trainBtn', 'Entrenamiento',  'Modo estudio y repaso',           '#FACC15', false],
-      ['shareAllBtn','Compartir',    'Enviar la aplicación',            '#14B8A6', false],
-      ['themeBtn', 'Tema',           'Oscuro · Noche · Claro',          '#A855F7', false]
-    ];
-    let sepDone = false;
-    ITEMS.forEach(([id, lbl, sub, color, isSos]) => {
-      const orig = document.getElementById(id);
-      if (!orig) return;
-      if (!isSos && !sepDone) {
-        const sep = document.createElement('div');
-        sep.className = 'hj-sep'; panel.appendChild(sep); sepDone = true;
-      }
-      const row = document.createElement('div');
-      row.className = 'hj-row' + (isSos ? ' hj-sos' : '');
-      row.style.setProperty('--hc', color);
-      row.appendChild(orig); // nodo original: listeners y badges intactos
-      const txt = document.createElement('div');
-      txt.innerHTML = '<span class="hj-lbl">' + lbl + '</span><span class="hj-sub">' + sub + '</span>';
-      row.appendChild(txt);
-      row.addEventListener('click', () => {
-        orig.click();
-        if (id !== 'themeBtn') closeMenu(); // el tema se puede alternar varias veces
-      });
-      panel.appendChild(row);
-    });
-
-    function closeMenu(){ wrap.classList.remove('open'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = wrap.classList.toggle('open');
-      btn.classList.toggle('open', open);
-      btn.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeMenu(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-  }
-})();
-</script>
 
 <script id="v16-handsfree">
 /* ================================================================
@@ -8140,17 +8061,6 @@ function dermPick(el){
 })();
 </script>
 
-<script id="v17-personal">
-(function(){
-  function neutralBrand(){
-    var sub=document.getElementById('splashSub');
-    if(sub) sub.textContent='Cargando guías y herramientas clínicas…';
-    document.querySelectorAll('.cc-brand p').forEach(function(el){el.textContent='Asistente clínica · iNurse';});
-  }
-  if(document.readyState!=='loading') neutralBrand();
-  else document.addEventListener('DOMContentLoaded',neutralBrand);
-})();
-</script>
 <style id="v29-css">
 /* ===== v29 · Rediseño de navegación ===== */
 /* Ocultar navegación antigua (chips, dropdown de categoría, menú ☰ de cabecera) */
@@ -8641,50 +8551,6 @@ h1 small{color:rgba(226,232,240,.72) !important}
 [data-theme="night"] body{background:#000 !important}
 [data-theme="night"] .vivi-hero-card,[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
 </style>
-<script id="vivi40-premium-script">
-(function(){
-  var faceSvg='<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="Vivi"><defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFE4D6"/><stop offset="1" stop-color="#FFC7B3"/></linearGradient><linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#24324A"/><stop offset="1" stop-color="#101827"/></linearGradient></defs><circle cx="60" cy="60" r="54" fill="rgba(255,255,255,.22)"/><path d="M25 58c0-28 18-43 36-43 23 0 37 17 37 42v28H25V58z" fill="url(#hair)"/><circle cx="60" cy="60" r="31" fill="url(#skin)"/><path d="M31 56c9-2 19-11 23-22 8 14 24 20 40 20-3-22-17-34-35-34-18 0-31 13-28 36z" fill="url(#hair)"/><circle cx="48" cy="62" r="3.4" fill="#182235"/><circle cx="73" cy="62" r="3.4" fill="#182235"/><path d="M51 77c6 5 13 5 19 0" fill="none" stroke="#B45364" stroke-width="3.4" stroke-linecap="round"/><path d="M34 92c7-12 18-18 27-18s20 6 27 18" fill="#F8FAFC"/><path d="M51 87h18" stroke="#4DE7FF" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="64" r="6" fill="#FFC7B3" opacity=".8"/><circle cx="84" cy="64" r="6" fill="#FFC7B3" opacity=".8"/><path d="M39 96h42" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"/></svg>';
-  var encoded='url("data:image/svg+xml;utf8,'+encodeURIComponent(faceSvg)+'")';
-  document.documentElement.style.setProperty('--vivi-face-url', encoded);
-  function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
-  ready(function(){
-    document.title='Vivi · Guía Clínica Interactiva iNurse';
-    document.querySelectorAll('h1, h2, h3, p, small, button, textarea, input, title, .cc-brand *').forEach(function(el){
-      if(el.childNodes.length===1 && el.textContent){ el.textContent=el.textContent.replace(/Bibi/g,'Vivi'); }
-      if(el.placeholder){ el.placeholder=el.placeholder.replace(/Bibi/g,'Vivi').replace('Pregunta, describe un caso o adjunta un ECG…','Pregunta a Vivi, describe un caso o adjunta un ECG…'); }
-      if(el.title){ el.title=el.title.replace(/Bibi/g,'Vivi').replace('Abrir asistente','Abrir Vivi'); }
-    });
-    var logos=document.querySelectorAll('.cc-wl');
-    logos.forEach(function(l){ l.innerHTML=faceSvg; l.classList.add('vivi-face-mini'); });
-    var headerLogo=document.querySelector('header .logo');
-    if(headerLogo){ headerLogo.innerHTML=faceSvg; }
-    var main=document.querySelector('main');
-    if(main && !document.getElementById('viviHero')){
-      var hero=document.createElement('section'); hero.className='vivi-hero'; hero.id='viviHero';
-      hero.innerHTML='<div class="vivi-hero-card"><div class="vivi-hero-top"><div class="vivi-avatar">'+faceSvg+'</div><div><h2>Hola, soy Vivi</h2><p>Tu compañera clínica de guardia. Busca protocolos, fármacos, algoritmos y calculadoras con una interfaz más limpia y rápida.</p></div></div><div class="vivi-hero-actions"><button class="vivi-action" data-act="search"><span>🔎</span>Buscar protocolo</button><button class="vivi-action" data-act="drug"><span>💊</span>Vademécum</button><button class="vivi-action" data-act="calc"><span>🧮</span>Calculadoras</button><button class="vivi-action" data-act="chat"><span>✨</span>Hablar con Vivi</button></div></div>';
-      main.parentNode.insertBefore(hero,main);
-      hero.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; var a=b.getAttribute('data-act');
-        if(a==='search'){var s=document.querySelector('.search'); if(s){s.focus(); s.scrollIntoView({behavior:'smooth',block:'center'});} }
-        if(a==='drug'){var v=document.getElementById('vadeBtn'); if(v)v.click();}
-        if(a==='calc'){var c=document.getElementById('calcFab'); if(c)c.click();}
-        if(a==='chat'){var f=document.getElementById('ccFab'); if(f)f.click();}
-      });
-    }
-    var brand=document.querySelector('.cc-brand h1'); if(brand) brand.textContent='Vivi';
-    var sub=document.querySelector('.cc-brand p'); if(sub) sub.textContent='Asistente clínica · iNurse';
-    var fab=document.getElementById('ccFab'); if(fab){fab.innerHTML='';fab.title='Abrir Vivi';}
-    /* Reescribe bienvenida cuando el chat esté vacío */
-    setTimeout(function(){
-      var chat=document.getElementById('ccChat');
-      if(chat && /Hola, soy Vivi|Hola, soy Bibi/.test(chat.textContent) && chat.querySelector('.cc-wl')){
-        var wl=chat.querySelector('.cc-wl'); if(wl) wl.innerHTML=faceSvg;
-        chat.innerHTML=chat.innerHTML.replace(/Bibi/g,'Vivi');
-      }
-    },400);
-  });
-})();
-</script>
-
 
 <style id="inurse41-css">
 /* ================================================================
@@ -9455,27 +9321,6 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
 })();
 </script>
 
-<script id="inurse-gemini-model-migration-v10">
-(function(){
-  'use strict';
-  var CURRENT='gemini-3.5-flash';
-  function migrate(){
-    try{
-      var m=(localStorage.getItem('inurse_gemini_model_v1')||'').trim();
-      if(!m||/^gemini-2\./i.test(m))localStorage.setItem('inurse_gemini_model_v1',CURRENT);
-      var raw=localStorage.getItem('inurse52_vivi_config');
-      if(raw){
-        var c=JSON.parse(raw);
-        if(!c.model||/^gemini-2\./i.test(c.model)){c.model=CURRENT;localStorage.setItem('inurse52_vivi_config',JSON.stringify(c));}
-      }
-      ['in51GeminiModel','in52Model'].forEach(function(id){var el=document.getElementById(id);if(el&&(!el.value||/^gemini-2\./i.test(el.value)))el.value=CURRENT;});
-      document.querySelectorAll('input[placeholder*="gemini-2.5"],input[value^="gemini-2."]').forEach(function(el){el.placeholder='Modelo recomendado: '+CURRENT;if(/^gemini-2\./i.test(el.value||''))el.value=CURRENT;});
-    }catch(e){}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',migrate);else migrate();
-  setTimeout(migrate,500);setTimeout(migrate,1600);
-})();
-</script>
 
 <!-- =========================================================
      iNurse V5.4 · Rediseño visual limpio
@@ -10598,183 +10443,13 @@ body.in57-visual .cc-compose, body.in57-visual .in52-inputbar, body.in57-visual 
 </style>
 <script id="inurse57-visual-js">
 (function(){
-  const ready = fn => document.readyState !== 'loading' ? fn() : document.addEventListener('DOMContentLoaded', fn);
-  const $ = (s,r=document)=>r.querySelector(s);
-  const CRITICAL = [
-    {key:'pcr',label:'PCR',sub:'Parada cardiorrespiratoria',em:'❤️'},
-    {key:'ictus',label:'Ictus',sub:'Código ictus',em:'🧠'},
-    {key:'iam',label:'IAM',sub:'Dolor torácico',em:'🫀'},
-    {key:'sepsis',label:'Sepsis',sub:'Shock séptico',em:'🦠'},
-    {key:'trauma',label:'Trauma',sub:'Politrauma',em:'🚑'}
-  ];
-  function getLogo(){
-    return document.querySelector('.in50-logo svg')?.outerHTML || document.querySelector('header .logo')?.innerHTML || '🩺';
-  }
-  function clickIf(sel){ const el=$(sel); if(el) el.click(); }
-  function wireHome(){
-    const home = document.getElementById('in50Home');
-    if(!home) return;
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${getLogo()}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-              <div class="in57-tags">
-                <span class="in57-tag">🌙 modo oscuro</span>
-                <span class="in57-tag">🔎 búsqueda global</span>
-                <span class="in57-tag">⭐ favoritos</span>
-                <span class="in57-tag">📡 guías actualizables</span>
-              </div>
-            </div>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="search"><span class="ico">🔎</span><b>Buscar</b><small>Encuentra protocolos, fármacos, escalas y algoritmos.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Calculadoras</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="vivi"><span class="ico">💬</span><b>Hablar con Vivi</b><small>Consulta clínica guiada con el asistente inteligente.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${CRITICAL.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join('')}
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section"></div>
-          <div class="in57-mini-grid">
-            <button class="in57-mini" data-in57="guides"><span class="em">☰</span><b>Abrir menú de guías</b><small>Acceso por especialidades y protocolos clínicos.</small></button>
-            <button class="in57-mini" data-in57="search"><span class="em">🧭</span><b>Buscador global</b><small>Explora guías, fármacos, escalas y contenido local.</small></button>
-            <button class="in57-mini" data-in57="settings"><span class="em">⚙️</span><b>Configuración</b><small>Tema, contenido offline y ajustes de iNurse.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">⭐ </div>
-          <div id="in50Favs"></div>
-        </section>
-
-        <section>
-          <div class="in57-section">🕘 Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest('button'); if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==='guides') return clickIf('#v29MenuBtn');
-      if(act==='search'){ const s=document.getElementById('search'); if(s){ s.focus(); s.scrollIntoView({behavior:'smooth',block:'center'});} return; }
-      if(act==='calc') return clickIf('#calcFab');
-      if(act==='vivi') return clickIf('#ccFab') || clickIf('#viviFab') || clickIf('#in50ViviDock');
-      if(act==='settings' && window.showSettings) return window.showSettings();
-    };
-
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-  function enhanceBrand(){
-    const h1 = document.querySelector('header h1');
-    if(h1) h1.innerHTML = 'iNurse <small>Asistente clínico rápido para enfermería</small>';
-    document.title = 'iNurse v7 · Visual Pro limpia';
-  }
-  function preserveHomeLists(){
-    if(window.renderHomeLists){ setTimeout(()=>window.renderHomeLists(), 200); setTimeout(()=>window.renderHomeLists(), 900); }
-  }
-  ready(()=>{
-    document.body.classList.add('in57-visual');
-    enhanceBrand();
-    setTimeout(wireHome, 300);
-    setTimeout(wireHome, 900);
-    preserveHomeLists();
-  });
+  if(document.readyState!=='loading') document.body.classList.add('in57-visual');
+  else document.addEventListener('DOMContentLoaded',function(){document.body.classList.add('in57-visual')});
 })();
 </script>
 
 
-<style id="inurse57-clean-duplicates-css">
-/* Limpieza v7: evita duplicación de homes antiguas */
-body.in57-visual #viviHero,
-body.in57-visual #in54SupportLine,
-body.in57-visual .vivi-hero,
-body.in57-visual .vivi-hero-actions,
-body.in57-visual .in54-support-line {
-  display: none !important;
-}
 
-/* Oculta avisos heredados que repetían explicación de guías en la home */
-body.in57-visual .in54-note,
-body.in57-visual .in56-note,
-body.in57-visual .guide-note,
-body.in57-visual .v29-help,
-body.in57-visual .v29-intro {
-  display: none !important;
-}
-
-/* Cuando está activa la nueva home, el contenedor antiguo de contenido queda limpio */
-body.in57-visual #content:empty {
-  display: none !important;
-}
-
-/* Ajuste de aire superior tras eliminar bloque duplicado */
-body.in57-visual #in50Home {
-  margin-top: 14px !important;
-}
-</style>
-
-<script id="inurse57-clean-duplicates-js">
-(function(){
-  function cleanDuplicateHome(){
-    const selectors = [
-      "#viviHero",
-      "#in54SupportLine",
-      ".vivi-hero",
-      ".vivi-hero-actions",
-      ".in54-support-line"
-    ];
-
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        el.style.display = "none";
-        el.setAttribute("aria-hidden", "true");
-      });
-    });
-
-    // Quita tarjetas/textos heredados que explicaban lo mismo que la home nueva.
-    document.querySelectorAll("main > section, main > div, main > article").forEach(el => {
-      if (el.id === "in50Home" || el.id === "in50GlobalResults" || el.id === "in50Settings") return;
-      const txt = (el.textContent || "").toLowerCase();
-      const isOldGuideHint =
-        txt.includes("guías clínicas: abre el menú") ||
-        txt.includes("apoyo clínico rápido para enfermería: protocolos, algoritmos") ||
-        txt.includes("protocolos, fármacos, escalas y calculadoras clínicas en una interfaz rápida") ||
-        txt.includes("protocolos, fármacos, escalas y calculadoras clínicas");
-
-      if (isOldGuideHint) {
-        el.style.display = "none";
-        el.setAttribute("aria-hidden", "true");
-      }
-    });
-
-    const content = document.getElementById("content");
-    if (content && !content.textContent.trim()) content.style.display = "none";
-  }
-
-  if (document.readyState !== "loading") cleanDuplicateHome();
-  else document.addEventListener("DOMContentLoaded", cleanDuplicateHome);
-
-  setTimeout(cleanDuplicateHome, 250);
-  setTimeout(cleanDuplicateHome, 700);
-  setTimeout(cleanDuplicateHome, 1400);
-  setTimeout(cleanDuplicateHome, 2400);
-})();
-</script>
 
 
 <style id="in57-home-refine-css">
@@ -10809,80 +10484,6 @@ body.in57-visual #viviFab, body.in57-visual #ccFab, body.in57-visual #in50ViviDo
   body.in57-visual .in57-actions{grid-template-columns:repeat(2,1fr)!important}
 }
 </style>
-<script id="in57-home-refine-js">
-(function(){
-  const $ = (s,r=document)=>r.querySelector(s);
-  const clickIf = (sel) => { const el=$(sel); if(el){ el.click(); return true; } return false; };
-  function renderRefinedHome(){
-    const home = document.getElementById('in50Home');
-    if(!home) return;
-    const logo = document.querySelector('.in50-logo svg')?.outerHTML || document.querySelector('header .logo')?.innerHTML || '🩺';
-    const critical = [
-      {key:'pcr',label:'PCR',sub:'Parada cardiorrespiratoria',em:'❤️'},
-      {key:'ictus',label:'Ictus',sub:'Código ictus',em:'🧠'},
-      {key:'iam',label:'IAM',sub:'Dolor torácico',em:'🫀'},
-      {key:'sepsis',label:'Sepsis',sub:'Shock séptico',em:'🦠'},
-      {key:'trauma',label:'Trauma',sub:'Politrauma',em:'🚑'}
-    ];
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${logo}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-            </div>
-            <button class="in57-vivi-top" data-in57="vivi-top" title="Abrir Vivi">
-              <span class="em">👩‍⚕️</span>
-              <span class="lb">Vivi</span>
-            </button>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Cálculo</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="rx"><span class="ico">🩻</span><b>Rayos X</b><small>Acceso directo a imagen radiológica y apoyo visual.</small></button>
-            <button class="in57-action" data-in57="ecg"><span class="ico">📈</span><b>Electro</b><small>Lectura rápida, atlas ECG y entrenamiento.</small></button>
-          </div>
-        </section>
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${critical.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join('')}
-          </div>
-        </section>
-        <section>
-          <div class="in57-section">Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest('button'); if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==='guides') return clickIf('#v29MenuBtn');
-      if(act==='calc') return clickIf('#calcFab');
-      if(act==='rx') return clickIf('#rxFab');
-      if(act==='ecg') return clickIf('#ecgFab');
-      if(act==='vivi-top') return clickIf('#ccFab') || clickIf('#viviFab') || clickIf('#in50ViviDock');
-    };
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-  function cleanExtraSections(){
-    const fav = document.querySelector('#in50Favs')?.closest('section');
-    if(fav) fav.style.display='none';
-    document.querySelectorAll('.in57-mini-grid').forEach(el=>el.closest('section')?.remove());
-  }
-  function moveViviOutOfDock(){
-    ['viviFab','ccFab','in50ViviDock'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-  }
-  function init(){ renderRefinedHome(); cleanExtraSections(); moveViviOutOfDock(); }
-  if(document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init);
-  setTimeout(init, 250); setTimeout(init, 900); setTimeout(init, 1800);
-})();
-</script>
 
 
 <style id="in57-farmacos-home-css">
@@ -10907,122 +10508,6 @@ body.in57-visual .in57-action[data-in57="farmacos"]{
 }
 </style>
 
-<script id="in57-farmacos-home-js">
-(function(){
-  const $ = (s,r=document)=>r.querySelector(s);
-  const clickIf = (sel) => { const el=$(sel); if(el){ el.click(); return true; } return false; };
-
-  function openFarmacos(){
-    // 1) Si existe un botón/módulo de vademécum/fármacos, lo abrimos.
-    const candidates = [
-      "#rxFab",
-      "#vademFab",
-      "#drugFab",
-      "#farmacosFab",
-      "#medsFab",
-      "[data-view='rx']",
-      "[data-tool='rx']",
-      "[data-action='farmacos']",
-      "[data-action='vademecum']"
-    ];
-
-    // En algunas versiones el módulo de RX es realmente el acceso a farmacología/vademécum.
-    for(const sel of candidates){
-      const el = $(sel);
-      if(el){
-        el.click();
-        return true;
-      }
-    }
-
-    // 2) Si no encontramos módulo directo, usamos el buscador global con una búsqueda farmacológica.
-    const search = document.getElementById("search");
-    if(search){
-      search.value = "fármacos vademécum medicación dosis";
-      search.dispatchEvent(new Event("input", {bubbles:true}));
-      search.focus();
-      search.scrollIntoView({behavior:"smooth", block:"center"});
-      return true;
-    }
-
-    return false;
-  }
-
-  function renderHomeWithFarmacos(){
-    const home = document.getElementById("in50Home");
-    if(!home) return;
-
-    const logo = document.querySelector(".in50-logo svg")?.outerHTML || document.querySelector("header .logo")?.innerHTML || "🩺";
-    const critical = [
-      {key:"pcr",label:"PCR",sub:"Parada cardiorrespiratoria",em:"❤️"},
-      {key:"ictus",label:"Ictus",sub:"Código ictus",em:"🧠"},
-      {key:"iam",label:"IAM",sub:"Dolor torácico",em:"🫀"},
-      {key:"sepsis",label:"Sepsis",sub:"Shock séptico",em:"🦠"},
-      {key:"trauma",label:"Trauma",sub:"Politrauma",em:"🚑"}
-    ];
-
-    home.innerHTML = `
-      <div class="in57-shell">
-        <section class="in57-panel">
-          <div class="in57-head">
-            <div class="in57-logo">${logo}</div>
-            <div class="in57-title">
-              <h2>iNurse</h2>
-              <p>Asistente clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos.</p>
-            </div>
-            <button class="in57-vivi-top" data-in57="vivi-top" title="Abrir Vivi">
-              <span class="em">👩‍⚕️</span>
-              <span class="lb">Vivi</span>
-            </button>
-          </div>
-          <div class="in57-actions">
-            <button class="in57-action" data-in57="guides"><span class="ico">📚</span><b>Guías clínicas</b><small>Especialidades y protocolos organizados por sistema.</small></button>
-            <button class="in57-action" data-in57="farmacos"><span class="ico">💊</span><b>Fármacos</b><small>Vademécum, dosis, indicaciones y medicación urgente.</small></button>
-            <button class="in57-action" data-in57="calc"><span class="ico">🧮</span><b>Cálculo</b><small>Dosis, perfusión, escalas y soporte rápido.</small></button>
-            <button class="in57-action" data-in57="rx"><span class="ico">🩻</span><b>Rayos X</b><small>Acceso directo a imagen radiológica y apoyo visual.</small></button>
-            <button class="in57-action" data-in57="ecg"><span class="ico">📈</span><b>Electro</b><small>Lectura rápida, atlas ECG y entrenamiento.</small></button>
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Accesos rápidos</div>
-          <div class="in57-quick-grid">
-            ${critical.map(c=>`<button class="in57-quick" data-crit="${c.key}"><span class="em">${c.em}</span><b>${c.label}</b><small>${c.sub}</small></button>`).join("")}
-          </div>
-        </section>
-
-        <section>
-          <div class="in57-section">Últimos consultados</div>
-          <div id="in50Recent"></div>
-        </section>
-      </div>`;
-
-    home.onclick = function(e){
-      const btn = e.target.closest("button"); 
-      if(!btn) return;
-      const act = btn.dataset.in57;
-      const crit = btn.dataset.crit;
-
-      if(crit && window.openCritical) return window.openCritical(crit);
-      if(act==="guides") return clickIf("#v29MenuBtn");
-      if(act==="farmacos") return openFarmacos();
-      if(act==="calc") return clickIf("#calcFab");
-      if(act==="rx") return clickIf("#rxFab");
-      if(act==="ecg") return clickIf("#ecgFab");
-      if(act==="vivi-top") return clickIf("#ccFab") || clickIf("#viviFab") || clickIf("#in50ViviDock");
-    };
-
-    if(window.renderHomeLists) window.renderHomeLists();
-  }
-
-  if(document.readyState !== "loading") renderHomeWithFarmacos();
-  else document.addEventListener("DOMContentLoaded", renderHomeWithFarmacos);
-
-  setTimeout(renderHomeWithFarmacos, 300);
-  setTimeout(renderHomeWithFarmacos, 1000);
-  setTimeout(renderHomeWithFarmacos, 2200);
-})();
-</script>
 
 
 <style id="in57-pathology-detail-css">
@@ -12199,11 +11684,6 @@ body.in57-visual .in57-action[data-in57="farmacos"] {
 </script>
 
 
-<script>
-function forceStopSpeech(){
-  try{speechSynthesis.cancel();}catch(e){}
-}
-</script>
 
 <!-- ===== iNurse · Primera mejora consolidada ===== -->
 <style id="inurse-clean-v1-css">
