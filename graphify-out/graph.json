@@ -11,8 +11,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "cache.mjs",
-      "id": "cache",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache"
     },
     {
       "label": "cache",
@@ -22,8 +22,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "cache",
-      "id": "cache_cache",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_cache"
     },
     {
       "label": "cacheGet()",
@@ -33,8 +33,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "cacheget()",
-      "id": "cache_cacheget",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_cacheget"
     },
     {
       "label": "cacheSet()",
@@ -44,8 +44,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "cacheset()",
-      "id": "cache_cacheset",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_cacheset"
     },
     {
       "label": "httpRequest()",
@@ -55,8 +55,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "httprequest()",
-      "id": "cache_httprequest",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_httprequest"
     },
     {
       "label": "requestJSON()",
@@ -66,8 +66,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "requestjson()",
-      "id": "cache_requestjson",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_requestjson"
     },
     {
       "label": "requestText()",
@@ -77,8 +77,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "requesttext()",
-      "id": "cache_requesttext",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "cache_requesttext"
     },
     {
       "label": "package.json",
@@ -88,8 +88,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "package.json",
-      "id": "package",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package"
     },
     {
       "label": "name",
@@ -99,8 +99,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "name",
-      "id": "package_name",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_name"
     },
     {
       "label": "version",
@@ -110,8 +110,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "version",
-      "id": "package_version",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_version"
     },
     {
       "label": "description",
@@ -121,8 +121,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "description",
-      "id": "package_description",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_description"
     },
     {
       "label": "type",
@@ -132,8 +132,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "type",
-      "id": "package_type",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_type"
     },
     {
       "label": "main",
@@ -143,8 +143,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "main",
-      "id": "package_main",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_main"
     },
     {
       "label": "scripts",
@@ -154,8 +154,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "scripts",
-      "id": "package_scripts",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_scripts"
     },
     {
       "label": "start",
@@ -165,8 +165,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "start",
-      "id": "package_scripts_start",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_scripts_start"
     },
     {
       "label": "engines",
@@ -176,8 +176,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "engines",
-      "id": "package_engines",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_engines"
     },
     {
       "label": "node",
@@ -187,8 +187,8 @@
       "_origin": "ast",
       "community": 4,
       "norm_label": "node",
-      "id": "package_engines_node",
-      "community_name": "package.json"
+      "community_name": "Project Metadata",
+      "id": "package_engines_node"
     },
     {
       "label": "diluciones.js",
@@ -198,8 +198,8 @@
       "_origin": "ast",
       "community": 9,
       "norm_label": "diluciones.js",
-      "id": "public_data_diluciones",
-      "community_name": "diluciones.js"
+      "community_name": "Drug Dilution Logic",
+      "id": "public_data_diluciones"
     },
     {
       "label": "DILUCIONES",
@@ -209,8 +209,8 @@
       "_origin": "ast",
       "community": 9,
       "norm_label": "diluciones",
-      "id": "public_data_diluciones_diluciones",
-      "community_name": "diluciones.js"
+      "community_name": "Drug Dilution Logic",
+      "id": "public_data_diluciones_diluciones"
     },
     {
       "label": "escalas.js",
@@ -220,8 +220,8 @@
       "_origin": "ast",
       "community": 10,
       "norm_label": "escalas.js",
-      "id": "public_data_escalas",
-      "community_name": "escalas.js"
+      "community_name": "Clinical Calculators",
+      "id": "public_data_escalas"
     },
     {
       "label": "CALCS",
@@ -231,8 +231,8 @@
       "_origin": "ast",
       "community": 10,
       "norm_label": "calcs",
-      "id": "public_data_escalas_calcs",
-      "community_name": "escalas.js"
+      "community_name": "Clinical Calculators",
+      "id": "public_data_escalas_calcs"
     },
     {
       "label": "guias.js",
@@ -242,8 +242,8 @@
       "_origin": "ast",
       "community": 7,
       "norm_label": "guias.js",
-      "id": "public_data_guias",
-      "community_name": "guias.js"
+      "community_name": "Clinical Evidence Guidelines",
+      "id": "public_data_guias"
     },
     {
       "label": "SOURCE_EVIDENCE",
@@ -253,8 +253,8 @@
       "_origin": "ast",
       "community": 7,
       "norm_label": "source_evidence",
-      "id": "public_data_guias_source_evidence",
-      "community_name": "guias.js"
+      "community_name": "Clinical Evidence Guidelines",
+      "id": "public_data_guias_source_evidence"
     },
     {
       "label": "getEvidenceFromSource()",
@@ -264,8 +264,8 @@
       "_origin": "ast",
       "community": 7,
       "norm_label": "getevidencefromsource()",
-      "id": "public_data_guias_getevidencefromsource",
-      "community_name": "guias.js"
+      "community_name": "Clinical Evidence Guidelines",
+      "id": "public_data_guias_getevidencefromsource"
     },
     {
       "label": "DOCS",
@@ -275,8 +275,8 @@
       "_origin": "ast",
       "community": 7,
       "norm_label": "docs",
-      "id": "public_data_guias_docs",
-      "community_name": "guias.js"
+      "community_name": "Clinical Evidence Guidelines",
+      "id": "public_data_guias_docs"
     },
     {
       "label": "vademecum.js",
@@ -286,8 +286,8 @@
       "_origin": "ast",
       "community": 11,
       "norm_label": "vademecum.js",
-      "id": "public_data_vademecum",
-      "community_name": "vademecum.js"
+      "community_name": "Drug Reference Guide",
+      "id": "public_data_vademecum"
     },
     {
       "label": "VADEM",
@@ -297,8 +297,8 @@
       "_origin": "ast",
       "community": 11,
       "norm_label": "vadem",
-      "id": "public_data_vademecum_vadem",
-      "community_name": "vademecum.js"
+      "community_name": "Drug Reference Guide",
+      "id": "public_data_vademecum_vadem"
     },
     {
       "label": "manifest.json",
@@ -308,8 +308,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "manifest.json",
-      "id": "public_manifest",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest"
     },
     {
       "label": "name",
@@ -319,8 +319,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "name",
-      "id": "public_manifest_name",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_name"
     },
     {
       "label": "short_name",
@@ -330,8 +330,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "short_name",
-      "id": "public_manifest_short_name",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_short_name"
     },
     {
       "label": "description",
@@ -341,8 +341,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "description",
-      "id": "public_manifest_description",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_description"
     },
     {
       "label": "start_url",
@@ -352,8 +352,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "start_url",
-      "id": "public_manifest_start_url",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_start_url"
     },
     {
       "label": "scope",
@@ -363,8 +363,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "scope",
-      "id": "public_manifest_scope",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_scope"
     },
     {
       "label": "display",
@@ -374,8 +374,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "display",
-      "id": "public_manifest_display",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_display"
     },
     {
       "label": "orientation",
@@ -385,8 +385,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "orientation",
-      "id": "public_manifest_orientation",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_orientation"
     },
     {
       "label": "background_color",
@@ -396,8 +396,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "background_color",
-      "id": "public_manifest_background_color",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_background_color"
     },
     {
       "label": "theme_color",
@@ -407,8 +407,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "theme_color",
-      "id": "public_manifest_theme_color",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_theme_color"
     },
     {
       "label": "lang",
@@ -418,8 +418,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "lang",
-      "id": "public_manifest_lang",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_lang"
     },
     {
       "label": "categories",
@@ -429,8 +429,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "categories",
-      "id": "public_manifest_categories",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_categories"
     },
     {
       "label": "medical",
@@ -440,8 +440,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "medical",
-      "id": "ref_medical",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "ref_medical"
     },
     {
       "label": "education",
@@ -451,8 +451,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "education",
-      "id": "ref_education",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "ref_education"
     },
     {
       "label": "productivity",
@@ -462,8 +462,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "productivity",
-      "id": "ref_productivity",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "ref_productivity"
     },
     {
       "label": "icons",
@@ -473,8 +473,8 @@
       "_origin": "ast",
       "community": 3,
       "norm_label": "icons",
-      "id": "public_manifest_icons",
-      "community_name": "manifest.json"
+      "community_name": "Web App Manifest",
+      "id": "public_manifest_icons"
     },
     {
       "label": "sw.js",
@@ -484,8 +484,8 @@
       "_origin": "ast",
       "community": 12,
       "norm_label": "sw.js",
-      "id": "public_sw",
-      "community_name": "sw.js"
+      "community_name": "Service Worker Assets",
+      "id": "public_sw"
     },
     {
       "label": "SHELL_ASSETS",
@@ -495,8 +495,8 @@
       "_origin": "ast",
       "community": 12,
       "norm_label": "shell_assets",
-      "id": "public_sw_shell_assets",
-      "community_name": "sw.js"
+      "community_name": "Service Worker Assets",
+      "id": "public_sw_shell_assets"
     },
     {
       "label": "server.mjs",
@@ -506,8 +506,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "server.mjs",
-      "id": "server",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server"
     },
     {
       "label": "__dirname",
@@ -517,8 +517,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "__dirname",
-      "id": "server_dirname",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_dirname"
     },
     {
       "label": "PUBLIC",
@@ -528,8 +528,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "public",
-      "id": "server_public",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_public"
     },
     {
       "label": "PORT",
@@ -539,8 +539,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "port",
-      "id": "server_port",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_port"
     },
     {
       "label": "CIMA_BASE",
@@ -550,8 +550,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "cima_base",
-      "id": "server_cima_base",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_cima_base"
     },
     {
       "label": "EPMC_BASE",
@@ -561,8 +561,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "epmc_base",
-      "id": "server_epmc_base",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_epmc_base"
     },
     {
       "label": "json()",
@@ -572,8 +572,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "json()",
-      "id": "server_json",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_json"
     },
     {
       "label": "normalizeList()",
@@ -583,8 +583,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "normalizelist()",
-      "id": "server_normalizelist",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_normalizelist"
     },
     {
       "label": "clean()",
@@ -594,8 +594,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "clean()",
-      "id": "server_clean",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_clean"
     },
     {
       "label": "stripTags()",
@@ -605,8 +605,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "striptags()",
-      "id": "server_striptags",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_striptags"
     },
     {
       "label": "readBody()",
@@ -616,8 +616,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "readbody()",
-      "id": "server_readbody",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_readbody"
     },
     {
       "label": "readBodyLarge()",
@@ -627,8 +627,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "readbodylarge()",
-      "id": "server_readbodylarge",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_readbodylarge"
     },
     {
       "label": "cima()",
@@ -638,8 +638,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "cima()",
-      "id": "server_cima",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_cima"
     },
     {
       "label": "epmc()",
@@ -647,10 +647,10 @@
       "source_file": "server.mjs",
       "source_location": "L78",
       "_origin": "ast",
-      "community": 2,
+      "community": 0,
       "norm_label": "epmc()",
-      "id": "server_epmc",
-      "community_name": "requestJSON"
+      "community_name": "Server and Data Normalization",
+      "id": "server_epmc"
     },
     {
       "label": "safeStaticPath()",
@@ -660,8 +660,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "safestaticpath()",
-      "id": "server_safestaticpath",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_safestaticpath"
     },
     {
       "label": "serveStatic()",
@@ -671,8 +671,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "servestatic()",
-      "id": "server_servestatic",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_servestatic"
     },
     {
       "label": "sendFile()",
@@ -682,8 +682,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "sendfile()",
-      "id": "server_sendfile",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_sendfile"
     },
     {
       "label": "medicineDetail()",
@@ -693,8 +693,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "medicinedetail()",
-      "id": "server_medicinedetail",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_medicinedetail"
     },
     {
       "label": "LITERATURE_SOURCES",
@@ -704,8 +704,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "literature_sources",
-      "id": "server_literature_sources",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_literature_sources"
     },
     {
       "label": "server",
@@ -715,8 +715,8 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "server",
-      "id": "server_server",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "server_server"
     },
     {
       "label": "clinicaltrials.mjs",
@@ -724,10 +724,10 @@
       "source_file": "sources/clinicaltrials.mjs",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 1,
+      "community": 2,
       "norm_label": "clinicaltrials.mjs",
-      "id": "sources_clinicaltrials",
-      "community_name": "orchestrator.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_clinicaltrials"
     },
     {
       "label": "searchClinicalTrials()",
@@ -735,10 +735,10 @@
       "source_file": "sources/clinicaltrials.mjs",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 1,
+      "community": 2,
       "norm_label": "searchclinicaltrials()",
-      "id": "sources_clinicaltrials_searchclinicaltrials",
-      "community_name": "orchestrator.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_clinicaltrials_searchclinicaltrials"
     },
     {
       "label": "fetchClinicalTrial()",
@@ -748,8 +748,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "fetchclinicaltrial()",
-      "id": "sources_clinicaltrials_fetchclinicaltrial",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_clinicaltrials_fetchclinicaltrial"
     },
     {
       "label": "crossref.mjs",
@@ -759,8 +759,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "crossref.mjs",
-      "id": "sources_crossref",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref"
     },
     {
       "label": "CROSSREF_BASE",
@@ -770,8 +770,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "crossref_base",
-      "id": "sources_crossref_crossref_base",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_crossref_base"
     },
     {
       "label": "formatYear()",
@@ -781,8 +781,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "formatyear()",
-      "id": "sources_crossref_formatyear",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_formatyear"
     },
     {
       "label": "formatDate()",
@@ -792,8 +792,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "formatdate()",
-      "id": "sources_crossref_formatdate",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_formatdate"
     },
     {
       "label": "formatAuthors()",
@@ -803,8 +803,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "formatauthors()",
-      "id": "sources_crossref_formatauthors",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_formatauthors"
     },
     {
       "label": "stripAbstract()",
@@ -814,8 +814,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "stripabstract()",
-      "id": "sources_crossref_stripabstract",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_stripabstract"
     },
     {
       "label": "mapWork()",
@@ -825,8 +825,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "mapwork()",
-      "id": "sources_crossref_mapwork",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_mapwork"
     },
     {
       "label": "searchCrossref()",
@@ -836,8 +836,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "searchcrossref()",
-      "id": "sources_crossref_searchcrossref",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_searchcrossref"
     },
     {
       "label": "fetchCrossrefWork()",
@@ -847,8 +847,8 @@
       "_origin": "ast",
       "community": 5,
       "norm_label": "fetchcrossrefwork()",
-      "id": "sources_crossref_fetchcrossrefwork",
-      "community_name": "crossref.mjs"
+      "community_name": "Crossref API Integration",
+      "id": "sources_crossref_fetchcrossrefwork"
     },
     {
       "label": "nice.mjs",
@@ -856,10 +856,10 @@
       "source_file": "sources/nice.mjs",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 2,
+      "community": 1,
       "norm_label": "nice.mjs",
-      "id": "sources_nice",
-      "community_name": "requestJSON"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_nice"
     },
     {
       "label": "searchNICE()",
@@ -867,10 +867,10 @@
       "source_file": "sources/nice.mjs",
       "source_location": "L6",
       "_origin": "ast",
-      "community": 2,
+      "community": 1,
       "norm_label": "searchnice()",
-      "id": "sources_nice_searchnice",
-      "community_name": "requestJSON"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_nice_searchnice"
     },
     {
       "label": "openfda.mjs",
@@ -878,10 +878,10 @@
       "source_file": "sources/openfda.mjs",
       "source_location": "L1",
       "_origin": "ast",
-      "community": 8,
+      "community": 2,
       "norm_label": "openfda.mjs",
-      "id": "sources_openfda",
-      "community_name": "openfda.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_openfda"
     },
     {
       "label": "truncate()",
@@ -889,10 +889,10 @@
       "source_file": "sources/openfda.mjs",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 8,
+      "community": 2,
       "norm_label": "truncate()",
-      "id": "sources_openfda_truncate",
-      "community_name": "openfda.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_openfda_truncate"
     },
     {
       "label": "searchOpenFDA()",
@@ -900,10 +900,10 @@
       "source_file": "sources/openfda.mjs",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 8,
+      "community": 2,
       "norm_label": "searchopenfda()",
-      "id": "sources_openfda_searchopenfda",
-      "community_name": "openfda.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_openfda_searchopenfda"
     },
     {
       "label": "searchOpenFDAByIndication()",
@@ -911,10 +911,10 @@
       "source_file": "sources/openfda.mjs",
       "source_location": "L50",
       "_origin": "ast",
-      "community": 8,
+      "community": 2,
       "norm_label": "searchopenfdabyindication()",
-      "id": "sources_openfda_searchopenfdabyindication",
-      "community_name": "openfda.mjs"
+      "community_name": "API Client and Caching",
+      "id": "sources_openfda_searchopenfdabyindication"
     },
     {
       "label": "orchestrator.mjs",
@@ -924,8 +924,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "orchestrator.mjs",
-      "id": "sources_orchestrator",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator"
     },
     {
       "label": "MEDICAL_TERMS",
@@ -935,8 +935,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "medical_terms",
-      "id": "sources_orchestrator_medical_terms",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_medical_terms"
     },
     {
       "label": "normalize()",
@@ -946,8 +946,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "normalize()",
-      "id": "sources_orchestrator_normalize",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_normalize"
     },
     {
       "label": "generateQueries()",
@@ -957,8 +957,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "generatequeries()",
-      "id": "sources_orchestrator_generatequeries",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_generatequeries"
     },
     {
       "label": "DRUG_KEYWORDS",
@@ -968,8 +968,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "drug_keywords",
-      "id": "sources_orchestrator_drug_keywords",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_drug_keywords"
     },
     {
       "label": "DRUG_NAMES",
@@ -979,8 +979,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "drug_names",
-      "id": "sources_orchestrator_drug_names",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_drug_names"
     },
     {
       "label": "detectDrugName()",
@@ -990,8 +990,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "detectdrugname()",
-      "id": "sources_orchestrator_detectdrugname",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_detectdrugname"
     },
     {
       "label": "isDrugRelated()",
@@ -1001,8 +1001,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "isdrugrelated()",
-      "id": "sources_orchestrator_isdrugrelated",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_isdrugrelated"
     },
     {
       "label": "GUIDELINE_ORGS",
@@ -1012,8 +1012,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "guideline_orgs",
-      "id": "sources_orchestrator_guideline_orgs",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_guideline_orgs"
     },
     {
       "label": "searchAllSources()",
@@ -1023,8 +1023,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "searchallsources()",
-      "id": "sources_orchestrator_searchallsources",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_searchallsources"
     },
     {
       "label": "assembleContext()",
@@ -1034,8 +1034,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "assemblecontext()",
-      "id": "sources_orchestrator_assemblecontext",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_assemblecontext"
     },
     {
       "label": "callGemini()",
@@ -1045,8 +1045,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "callgemini()",
-      "id": "sources_orchestrator_callgemini",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_callgemini"
     },
     {
       "label": "streamGeminiCall()",
@@ -1056,8 +1056,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "streamgeminicall()",
-      "id": "sources_orchestrator_streamgeminicall",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_streamgeminicall"
     },
     {
       "label": "buildSourcesPayload()",
@@ -1067,8 +1067,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "buildsourcespayload()",
-      "id": "sources_orchestrator_buildsourcespayload",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_buildsourcespayload"
     },
     {
       "label": "prepareOrchestration()",
@@ -1078,8 +1078,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "prepareorchestration()",
-      "id": "sources_orchestrator_prepareorchestration",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_prepareorchestration"
     },
     {
       "label": "buildSystemPrompt()",
@@ -1089,8 +1089,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "buildsystemprompt()",
-      "id": "sources_orchestrator_buildsystemprompt",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_buildsystemprompt"
     },
     {
       "label": "orchestrate()",
@@ -1100,8 +1100,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "orchestrate()",
-      "id": "sources_orchestrator_orchestrate",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_orchestrate"
     },
     {
       "label": "orchestrateStream()",
@@ -1111,8 +1111,8 @@
       "_origin": "ast",
       "community": 1,
       "norm_label": "orchestratestream()",
-      "id": "sources_orchestrator_orchestratestream",
-      "community_name": "orchestrator.mjs"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_orchestrator_orchestratestream"
     },
     {
       "label": "transcribeAudio()",
@@ -1122,8 +1122,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "transcribeaudio()",
-      "id": "sources_orchestrator_transcribeaudio",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_orchestrator_transcribeaudio"
     },
     {
       "label": "pubmed.mjs",
@@ -1133,8 +1133,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "pubmed.mjs",
-      "id": "sources_pubmed",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed"
     },
     {
       "label": "PUBMED_BASE",
@@ -1144,8 +1144,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "pubmed_base",
-      "id": "sources_pubmed_pubmed_base",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_pubmed_base"
     },
     {
       "label": "baseParams()",
@@ -1155,8 +1155,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "baseparams()",
-      "id": "sources_pubmed_baseparams",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_baseparams"
     },
     {
       "label": "extractAll()",
@@ -1166,8 +1166,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "extractall()",
-      "id": "sources_pubmed_extractall",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_extractall"
     },
     {
       "label": "extractFirst()",
@@ -1177,8 +1177,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "extractfirst()",
-      "id": "sources_pubmed_extractfirst",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_extractfirst"
     },
     {
       "label": "parseArticleBlock()",
@@ -1188,8 +1188,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "parsearticleblock()",
-      "id": "sources_pubmed_parsearticleblock",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_parsearticleblock"
     },
     {
       "label": "searchPubMed()",
@@ -1199,8 +1199,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "searchpubmed()",
-      "id": "sources_pubmed_searchpubmed",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_searchpubmed"
     },
     {
       "label": "fetchPubMedArticle()",
@@ -1210,8 +1210,8 @@
       "_origin": "ast",
       "community": 6,
       "norm_label": "fetchpubmedarticle()",
-      "id": "sources_pubmed_fetchpubmedarticle",
-      "community_name": "pubmed.mjs"
+      "community_name": "PubMed API Integration",
+      "id": "sources_pubmed_fetchpubmedarticle"
     },
     {
       "label": "semanticscholar.mjs",
@@ -1221,8 +1221,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "semanticscholar.mjs",
-      "id": "sources_semanticscholar",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_semanticscholar"
     },
     {
       "label": "searchSemanticScholar()",
@@ -1230,10 +1230,10 @@
       "source_file": "sources/semanticscholar.mjs",
       "source_location": "L5",
       "_origin": "ast",
-      "community": 2,
+      "community": 1,
       "norm_label": "searchsemanticscholar()",
-      "id": "sources_semanticscholar_searchsemanticscholar",
-      "community_name": "requestJSON"
+      "community_name": "Search Orchestration and AI",
+      "id": "sources_semanticscholar_searchsemanticscholar"
     },
     {
       "label": "fetchSemanticScholarPaper()",
@@ -1243,8 +1243,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "fetchsemanticscholarpaper()",
-      "id": "sources_semanticscholar_fetchsemanticscholarpaper",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_semanticscholar_fetchsemanticscholarpaper"
     },
     {
       "label": "who.mjs",
@@ -1254,8 +1254,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "who.mjs",
-      "id": "sources_who",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_who"
     },
     {
       "label": "searchWHO()",
@@ -1265,8 +1265,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "searchwho()",
-      "id": "sources_who_searchwho",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_who_searchwho"
     },
     {
       "label": "fetchWHODocument()",
@@ -1276,8 +1276,8 @@
       "_origin": "ast",
       "community": 2,
       "norm_label": "fetchwhodocument()",
-      "id": "sources_who_fetchwhodocument",
-      "community_name": "requestJSON"
+      "community_name": "API Client and Caching",
+      "id": "sources_who_fetchwhodocument"
     },
     {
       "label": "cache_obj",
@@ -1287,8 +1287,72 @@
       "_origin": "ast",
       "community": 0,
       "norm_label": "cache_obj",
-      "id": "cache_cache_obj",
-      "community_name": "server.mjs"
+      "community_name": "Server and Data Normalization",
+      "id": "cache_cache_obj"
+    },
+    {
+      "label": "iNurse v28.1 \u00b7 CIMA AEMPS + Procedimientos integrados",
+      "file_type": "code",
+      "source_file": "iNurse_v28_1_CIMA_Procedimientos_Integrados.html",
+      "community": 8,
+      "norm_label": "inurse v28.1 \u00b7 cima aemps + procedimientos integrados",
+      "community_name": "App Branding and Info",
+      "id": "inurse_v28_1_cima_procedimientos_integrados_html"
+    },
+    {
+      "label": "Render Configuration",
+      "file_type": "code",
+      "source_file": "render.yaml",
+      "verification": "unverified",
+      "community": 16,
+      "norm_label": "render configuration",
+      "community_name": "Render Configuration",
+      "id": "render_yaml"
+    },
+    {
+      "label": "Biblioteca de Evidencia",
+      "file_type": "code",
+      "source_file": "public/evidencia.html",
+      "community": 8,
+      "norm_label": "biblioteca de evidencia",
+      "community_name": "App Branding and Info",
+      "id": "public_evidencia_html"
+    },
+    {
+      "label": "Literatura Cient\u00edfica",
+      "file_type": "code",
+      "source_file": "public/literatura.html",
+      "community": 8,
+      "norm_label": "literatura cientifica",
+      "community_name": "App Branding and Info",
+      "id": "public_literatura_html"
+    },
+    {
+      "label": "Europe PMC (EMBL-EBI)",
+      "file_type": "document",
+      "source_file": "public/evidencia.html",
+      "community": 14,
+      "norm_label": "europe pmc (embl-ebi)",
+      "community_name": "Europe PMC Source",
+      "id": "europe_pmc"
+    },
+    {
+      "label": "PubMed (NCBI/NLM)",
+      "file_type": "document",
+      "source_file": "public/literatura.html",
+      "community": 15,
+      "norm_label": "pubmed (ncbi/nlm)",
+      "community_name": "PubMed (NCBI/NLM)",
+      "id": "pubmed_ncbi"
+    },
+    {
+      "label": "Crossref",
+      "file_type": "document",
+      "source_file": "public/literatura.html",
+      "community": 13,
+      "norm_label": "crossref",
+      "community_name": "Crossref Source",
+      "id": "crossref"
     }
   ],
   "links": [
@@ -3847,8 +3911,24 @@
       "confidence_score": 1.0,
       "source": "sources_who",
       "target": "sources_who_searchwho"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/evidencia.html",
+      "source": "public_evidencia_html",
+      "target": "inurse_v28_1_cima_procedimientos_integrados_html"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "public/literatura.html",
+      "source": "public_literatura_html",
+      "target": "inurse_v28_1_cima_procedimientos_integrados_html"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "50e6851d4514dea85976ff5cae2c0e16ed79cbcd"
+  "built_at_commit": "819dd76b1d9f9ca5489be177b15232f2fd2c5318"
 }
