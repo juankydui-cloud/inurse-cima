@@ -16753,13 +16753,17 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
   /* ═══════════ AJUSTES ═══════════ */
   function openAjustes(){
-    if(document.getElementById('nxAjustesOverlay')){ document.getElementById('nxAjustesOverlay').style.display='flex'; return; }
-    var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
+    var old=document.getElementById('nxAjustesOverlay');
+    if(old) old.remove();
 
     var saved={}; try{ saved=JSON.parse(localStorage.getItem('inurse_profile_v1')||'{}'); }catch(e){}
     var viviSaved={}; try{ viviSaved=JSON.parse(localStorage.getItem('inurse_vivi_config_v1')||'{}'); }catch(e){}
-    var isDark=document.body.classList.contains('dark')||document.documentElement.getAttribute('data-theme')==='dark'||true;
+    var curTheme=localStorage.getItem('guiaHJ23_theme')||'dark';
 
+    var themeLabels={'light':'☀️ Modo claro','dark':'🌙 Modo oscuro','night':'🌚 Turno noche'};
+    var themeNext={'light':'dark','dark':'night','night':'light'};
+
+    var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
     ov.innerHTML=''
       +'<div class="nx-aj-panel">'
       +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose">✕</button></div>'
@@ -16768,7 +16772,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">🌗</span>Apariencia</div>'
       +'<div class="nx-aj-card">'
-      +'<div class="nx-aj-row"><span>Modo oscuro</span><label class="nx-aj-toggle"><input type="checkbox" id="nxThemeToggle" '+(isDark?'checked':'')+'><span class="nx-aj-slider"></span></label></div>'
+      +'<div class="nx-aj-row"><span id="nxThemeLabel">'+(themeLabels[curTheme]||themeLabels.dark)+'</span><button class="nx-aj-theme-btn" id="nxThemeCycle">Cambiar</button></div>'
       +'</div>'
       +'</div>'
 
@@ -16786,7 +16790,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
       +'<div class="nx-aj-card nx-aj-profile">'
-      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><label class="nx-aj-avatar-edit" for="nxPhotoInput">📷 Cambiar foto</label><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
+      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
       +'<div class="nx-aj-profile-fields">'
       +'<div class="nx-aj-field"><label>Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
       +'<div class="nx-aj-field"><label>Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
@@ -16803,18 +16807,28 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     document.body.appendChild(ov);
 
-    document.getElementById('nxAjClose').onclick=function(){ ov.style.display='none'; };
-    ov.addEventListener('click',function(e){ if(e.target===ov) ov.style.display='none'; });
+    function closeAjustes(){ ov.remove(); }
+    document.getElementById('nxAjClose').onclick=closeAjustes;
+    ov.addEventListener('click',function(e){ if(e.target===ov) closeAjustes(); });
 
-    document.getElementById('nxThemeToggle').onchange=function(){
-      var tb=document.getElementById('themeBtn'); if(tb) tb.click();
+    document.getElementById('nxThemeCycle').onclick=function(){
+      curTheme=themeNext[curTheme]||'dark';
+      localStorage.setItem('guiaHJ23_theme',curTheme);
+      document.documentElement.setAttribute('data-theme',curTheme);
+      document.getElementById('nxThemeLabel').textContent=themeLabels[curTheme];
+      var tb=document.getElementById('themeBtn');
+      if(tb){ tb.textContent=curTheme==='light'?'☀️':curTheme==='night'?'🌚':'🌙'; }
     };
 
     document.getElementById('nxViviSave').onclick=function(){
       var cfg={ name:document.getElementById('nxViviName').value.trim()||'Vivi', detail:document.getElementById('nxViviDetail').value, lang:document.getElementById('nxViviLang').value, apiKey:document.getElementById('nxViviKey').value.trim() };
       try{ localStorage.setItem('inurse_vivi_config_v1',JSON.stringify(cfg)); }catch(e){}
       if(cfg.apiKey) try{ localStorage.setItem('gemini_api_key',cfg.apiKey); }catch(e){}
-      var btn=document.getElementById('nxViviSave'); btn.textContent='✓ Guardado'; setTimeout(function(){ btn.textContent='Guardar configuración de Vivi'; },1500);
+      this.textContent='✓ Guardado'; var self=this; setTimeout(function(){ self.textContent='Guardar configuración de Vivi'; },1500);
+    };
+
+    document.getElementById('nxPhotoBtn').onclick=function(){
+      document.getElementById('nxPhotoInput').click();
     };
 
     document.getElementById('nxPhotoInput').onchange=function(e){
@@ -16831,10 +16845,11 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     document.getElementById('nxProfileSave').onclick=function(){
       var av=document.getElementById('nxProfileAvatar');
-      var profile={ name:document.getElementById('nxProfileName').value.trim(), surname:document.getElementById('nxProfileSurname').value.trim(), email:document.getElementById('nxProfileEmail').value.trim(), hospital:document.getElementById('nxProfileHospital').value.trim(), spec:document.getElementById('nxProfileSpec').value.trim(), photo:av.dataset.photo||'' };
-      if(!profile.photo){ var img=av.querySelector('img'); if(img) profile.photo=img.src; }
+      var photo='';
+      if(av){ photo=av.dataset.photo||''; if(!photo){ var img=av.querySelector('img'); if(img) photo=img.src; } }
+      var profile={ name:document.getElementById('nxProfileName').value.trim(), surname:document.getElementById('nxProfileSurname').value.trim(), email:document.getElementById('nxProfileEmail').value.trim(), hospital:document.getElementById('nxProfileHospital').value.trim(), spec:document.getElementById('nxProfileSpec').value.trim(), photo:photo };
       try{ localStorage.setItem('inurse_profile_v1',JSON.stringify(profile)); }catch(e){}
-      var btn=document.getElementById('nxProfileSave'); btn.textContent='✓ Perfil guardado'; setTimeout(function(){ btn.textContent='Guardar perfil'; },1500);
+      this.textContent='✓ Perfil guardado'; var self=this; setTimeout(function(){ self.textContent='Guardar perfil'; },1500);
     };
   }
 
@@ -16854,12 +16869,9 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-aj-section-title .ic{font-size:18px}
 .nx-aj-card{border:1px solid rgba(120,150,220,.12);border-radius:18px;background:rgba(16,22,48,.6);padding:18px 20px;display:flex;flex-direction:column;gap:14px}
 .nx-aj-row{display:flex;align-items:center;justify-content:space-between;color:#c7d4f2;font-size:14px;font-weight:600}
-.nx-aj-toggle{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
-.nx-aj-toggle input{opacity:0;width:0;height:0}
-.nx-aj-slider{position:absolute;cursor:pointer;inset:0;background:rgba(80,100,140,.4);border-radius:26px;transition:.25s}
-.nx-aj-slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-.nx-aj-toggle input:checked+.nx-aj-slider{background:linear-gradient(135deg,#22d3ee,#8b5cf6)}
-.nx-aj-toggle input:checked+.nx-aj-slider:before{transform:translateX(22px)}
+.nx-aj-theme-btn{background:linear-gradient(135deg,#22d3ee,#8b5cf6);border:none;color:#fff;font-size:13px;font-weight:700;padding:8px 18px;border-radius:12px;cursor:pointer;transition:.2s;font-family:inherit}
+.nx-aj-theme-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(56,189,248,.3)}
+.nx-aj-theme-btn:active{transform:scale(.96)}
 .nx-aj-field{display:flex;flex-direction:column;gap:4px}
 .nx-aj-field label{font-size:11px;font-weight:700;color:#8aa0c8;letter-spacing:.5px;text-transform:uppercase}
 .nx-aj-field input,.nx-aj-field select{background:rgba(10,14,34,.7);border:1px solid rgba(120,150,220,.18);border-radius:12px;padding:10px 14px;color:#e7ecff;font-size:14px;font-family:inherit;outline:none;transition:.2s}
