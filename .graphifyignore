@@ -1,0 +1,13 @@
+# Andamiaje del propio graphify: es su manual, no documentación de este proyecto.
+# Sin esto, la extracción semántica mete la doc de graphify en el grafo de iNurse.
+.claude/skills/graphify/
+.claude/CLAUDE.md
+CLAUDE.md
+graphify-out/
+
+# Iconos de la PWA: es el logo repetido a tres tamaños, cero información semántica.
+public/icon-*.png
+
+# Build funcional: es una variante del HTML raíz, mismo contenido clínico.
+# Indexar los dos duplica el coste sin añadir nodos nuevos.
+public/index.html
