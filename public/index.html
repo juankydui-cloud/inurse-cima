@@ -4,9 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iNurse v28.1 · CIMA Funcional</title>
+<!-- Tipografía Outfit cargada sin bloquear el renderizado: si Google Fonts va
+     lenta, está caída, o la bloquea un cortafuegos (redes hospitalarias
+     restrictivas), la app renderiza igual al instante con la pila de
+     sistema (--font-family) y adopta Outfit en cuanto/si termina de cargar. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"></noscript>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-  
+
   :root{
     --bg:#070A12; --bg2:#0D1320; --card:#111827cc; --card-solid:#111827;
     --text:#F1F5F9; --text-dim:#94A3B8; --border:#1E293B;
