@@ -3878,56 +3878,56 @@ function renderCalc(id){
   $("#count").textContent=c.name;
   let form='';
   if(id==='glasgow'){
-    form='<div class="calc-row"><label>Apertura ocular</label><select id="gE"><option value="4">4 - Espontánea</option><option value="3">3 - A la voz</option><option value="2">2 - Al dolor</option><option value="1">1 - Ninguna</option></select></div>'+
-    '<div class="calc-row"><label>Respuesta verbal</label><select id="gV"><option value="5">5 - Orientada</option><option value="4">4 - Confusa</option><option value="3">3 - Palabras inadecuadas</option><option value="2">2 - Sonidos</option><option value="1">1 - Ninguna</option></select></div>'+
-    '<div class="calc-row"><label>Respuesta motora</label><select id="gM"><option value="6">6 - Obedece</option><option value="5">5 - Localiza</option><option value="4">4 - Retirada</option><option value="3">3 - Flexión</option><option value="2">2 - Extensión</option><option value="1">1 - Ninguna</option></select></div>'+
+    form='<div class="calc-row"><label for="gE">Apertura ocular</label> <select id="gE"><option value="4">4 - Espontánea</option><option value="3">3 - A la voz</option><option value="2">2 - Al dolor</option><option value="1">1 - Ninguna</option></select></div>'+
+    '<div class="calc-row"><label for="gV">Respuesta verbal</label> <select id="gV"><option value="5">5 - Orientada</option><option value="4">4 - Confusa</option><option value="3">3 - Palabras inadecuadas</option><option value="2">2 - Sonidos</option><option value="1">1 - Ninguna</option></select></div>'+
+    '<div class="calc-row"><label for="gM">Respuesta motora</label> <select id="gM"><option value="6">6 - Obedece</option><option value="5">5 - Localiza</option><option value="4">4 - Retirada</option><option value="3">3 - Flexión</option><option value="2">2 - Extensión</option><option value="1">1 - Ninguna</option></select></div>'+
     '<button class="calc-btn" data-calcrun="glasgow">Calcular</button>';
   } else if(id==='dilucion'){
-    form='<div class="calc-row"><label>Fármaco (mg)</label><input id="dMg" type="number" placeholder="mg totales"></div>'+
-    '<div class="calc-row"><label>Volumen (mL)</label><input id="dVol" type="number" placeholder="mL de dilución"></div>'+
-    '<div class="calc-row"><label>Ritmo (mL/h)</label><input id="dRate" type="number" placeholder="mL/h"></div>'+
+    form='<div class="calc-row"><label for="dMg">Fármaco (mg)</label> <input id="dMg" type="number" placeholder="mg totales"></div>'+
+    '<div class="calc-row"><label for="dVol">Volumen (mL)</label> <input id="dVol" type="number" placeholder="mL de dilución"></div>'+
+    '<div class="calc-row"><label for="dRate">Ritmo (mL/h)</label> <input id="dRate" type="number" placeholder="mL/h"></div>'+
     '<button class="calc-btn" data-calcrun="dilucion">Calcular concentración y dosis/h</button>';
   } else if(id==='dosispeso'){
-    form='<div class="calc-row"><label>Peso (kg)</label><input id="dpW" type="number" placeholder="kg"></div>'+
-    '<div class="calc-row"><label>Dosis (mg/kg)</label><input id="dpD" type="number" step="0.01" placeholder="mg/kg"></div>'+
+    form='<div class="calc-row"><label for="dpW">Peso (kg)</label> <input id="dpW" type="number" placeholder="kg"></div>'+
+    '<div class="calc-row"><label for="dpD">Dosis (mg/kg)</label> <input id="dpD" type="number" step="0.01" placeholder="mg/kg"></div>'+
     '<button class="calc-btn" data-calcrun="dosispeso">Calcular dosis total</button>';
   } else if(id==='goteo'){
-    form='<div class="calc-row"><label>Volumen total (mL)</label><input id="goV" type="number" placeholder="mL"></div>'+
-    '<div class="calc-row"><label>Tiempo (horas)</label><input id="goH" type="number" step="0.5" placeholder="horas"></div>'+
-    '<div class="calc-row"><label>Factor de goteo</label><select id="goF"><option value="20">Macrogoteo (20 gts/mL)</option><option value="60">Microgoteo (60 gts/mL)</option></select></div>'+
+    form='<div class="calc-row"><label for="goV">Volumen total (mL)</label> <input id="goV" type="number" placeholder="mL"></div>'+
+    '<div class="calc-row"><label for="goH">Tiempo (horas)</label> <input id="goH" type="number" step="0.5" placeholder="horas"></div>'+
+    '<div class="calc-row"><label for="goF">Factor de goteo</label> <select id="goF"><option value="20">Macrogoteo (20 gts/mL)</option><option value="60">Microgoteo (60 gts/mL)</option></select></div>'+
     '<button class="calc-btn" data-calcrun="goteo">Calcular</button>';
   } else if(id==='imc'){
-    form='<div class="calc-row"><label>Peso (kg)</label><input id="imcW" type="number" placeholder="kg"></div>'+
-    '<div class="calc-row"><label>Talla (cm)</label><input id="imcH" type="number" placeholder="cm"></div>'+
+    form='<div class="calc-row"><label for="imcW">Peso (kg)</label> <input id="imcW" type="number" placeholder="kg"></div>'+
+    '<div class="calc-row"><label for="imcH">Talla (cm)</label> <input id="imcH" type="number" placeholder="cm"></div>'+
     '<button class="calc-btn" data-calcrun="imc">Calcular IMC</button>';
   } else if(id==='chadvasc'){
-    form='<div class="calc-row"><label>ICC / FE ≤40%</label><select id="cv1"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
-    '<div class="calc-row"><label>Hipertensión</label><select id="cv2"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
-    '<div class="calc-row"><label>Edad ≥75</label><select id="cv3"><option value="0">No</option><option value="2">Sí (+2)</option></select></div>'+
-    '<div class="calc-row"><label>Diabetes</label><select id="cv4"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
-    '<div class="calc-row"><label>Ictus/AIT/TEP previo</label><select id="cv5"><option value="0">No</option><option value="2">Sí (+2)</option></select></div>'+
-    '<div class="calc-row"><label>Enf. vascular</label><select id="cv6"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
-    '<div class="calc-row"><label>Edad 65-74</label><select id="cv7"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
-    '<div class="calc-row"><label>Sexo femenino</label><select id="cv8"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    form='<div class="calc-row"><label for="cv1">ICC / FE ≤40%</label> <select id="cv1"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    '<div class="calc-row"><label for="cv2">Hipertensión</label> <select id="cv2"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    '<div class="calc-row"><label for="cv3">Edad ≥75</label> <select id="cv3"><option value="0">No</option><option value="2">Sí (+2)</option></select></div>'+
+    '<div class="calc-row"><label for="cv4">Diabetes</label> <select id="cv4"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    '<div class="calc-row"><label for="cv5">Ictus/AIT/TEP previo</label> <select id="cv5"><option value="0">No</option><option value="2">Sí (+2)</option></select></div>'+
+    '<div class="calc-row"><label for="cv6">Enf. vascular</label> <select id="cv6"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    '<div class="calc-row"><label for="cv7">Edad 65-74</label> <select id="cv7"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
+    '<div class="calc-row"><label for="cv8">Sexo femenino</label> <select id="cv8"><option value="0">No</option><option value="1">Sí (+1)</option></select></div>'+
     '<button class="calc-btn" data-calcrun="chadvasc">Calcular</button>';
   } else if(id==='creatinina'){
-    form='<div class="calc-row"><label>Edad (años)</label><input id="ccAge" type="number" placeholder="años"></div>'+
-    '<div class="calc-row"><label>Peso (kg)</label><input id="ccW" type="number" placeholder="kg"></div>'+
-    '<div class="calc-row"><label>Creatinina (mg/dL)</label><input id="ccCr" type="number" step="0.1" placeholder="mg/dL"></div>'+
-    '<div class="calc-row"><label>Sexo</label><select id="ccS"><option value="1">Hombre</option><option value="0.85">Mujer</option></select></div>'+
+    form='<div class="calc-row"><label for="ccAge">Edad (años)</label> <input id="ccAge" type="number" placeholder="años"></div>'+
+    '<div class="calc-row"><label for="ccW">Peso (kg)</label> <input id="ccW" type="number" placeholder="kg"></div>'+
+    '<div class="calc-row"><label for="ccCr">Creatinina (mg/dL)</label> <input id="ccCr" type="number" step="0.1" placeholder="mg/dL"></div>'+
+    '<div class="calc-row"><label for="ccS">Sexo</label> <select id="ccS"><option value="1">Hombre</option><option value="0.85">Mujer</option></select></div>'+
     '<button class="calc-btn" data-calcrun="creatinina">Calcular Cockcroft-Gault</button>';
   } else if(id==='correccion_na'){
-    form='<div class="calc-row"><label>Na medido (mEq/L)</label><input id="cnNa" type="number" step="0.1" placeholder="mEq/L"></div>'+
-    '<div class="calc-row"><label>Glucosa (mg/dL)</label><input id="cnGlu" type="number" placeholder="mg/dL"></div>'+
+    form='<div class="calc-row"><label for="cnNa">Na medido (mEq/L)</label> <input id="cnNa" type="number" step="0.1" placeholder="mEq/L"></div>'+
+    '<div class="calc-row"><label for="cnGlu">Glucosa (mg/dL)</label> <input id="cnGlu" type="number" placeholder="mg/dL"></div>'+
     '<button class="calc-btn" data-calcrun="correccion_na">Calcular Na corregido</button>';
   } else if(id==='anion_gap'){
-    form='<div class="calc-row"><label>Na (mEq/L)</label><input id="agNa" type="number" step="0.1"></div>'+
-    '<div class="calc-row"><label>Cl (mEq/L)</label><input id="agCl" type="number" step="0.1"></div>'+
-    '<div class="calc-row"><label>HCO₃ (mEq/L)</label><input id="agHco" type="number" step="0.1"></div>'+
+    form='<div class="calc-row"><label for="agNa">Na (mEq/L)</label> <input id="agNa" type="number" step="0.1"></div>'+
+    '<div class="calc-row"><label for="agCl">Cl (mEq/L)</label> <input id="agCl" type="number" step="0.1"></div>'+
+    '<div class="calc-row"><label for="agHco">HCO₃ (mEq/L)</label> <input id="agHco" type="number" step="0.1"></div>'+
     '<button class="calc-btn" data-calcrun="anion_gap">Calcular Anion Gap</button>';
   } else if(id==='superficie'){
-    form='<div class="calc-row"><label>Peso (kg)</label><input id="scW" type="number"></div>'+
-    '<div class="calc-row"><label>Talla (cm)</label><input id="scH" type="number"></div>'+
+    form='<div class="calc-row"><label for="scW">Peso (kg)</label> <input id="scW" type="number"></div>'+
+    '<div class="calc-row"><label for="scH">Talla (cm)</label> <input id="scH" type="number"></div>'+
     '<button class="calc-btn" data-calcrun="superficie">Calcular SC (Mosteller)</button>';
   }
   cont.innerHTML='<div class="tools-wrap"><button class="pato-back" data-toolsback="1">‹ Herramientas</button>'+
@@ -4808,8 +4808,7 @@ render();
  <div class="cc-mcard">
   <h2>Ajustes del asistente</h2>
   <p>Tu clave de Google Gemini activa el asistente y se comparte con las herramientas de la guía. Se guarda solo en este dispositivo.</p>
-  <label>Clave API de Gemini</label>
-  <input type="password" id="ccKey" placeholder="AIza…" autocomplete="off">
+  <label for="ccKey">Clave API de Gemini</label> <input type="password" id="ccKey" placeholder="AIza…" autocomplete="off">
   <label>Backend seguro de Vivi <span style="font-weight:500;color:#8aa0c8">(opcional)</span></label>
   <input type="url" id="v20Backend" placeholder="http://localhost:8787">
   <div class="cc-togg"><span>Leer respuestas en voz alta</span><div class="cc-sw" id="ccVoiceSw"><i></i></div></div>
@@ -6282,16 +6281,14 @@ function renderCalc(id){
   const inputs = c.fields.map(f=>{
     if(f.type==="number"){
       return `<div class="calc-field">
-        <label>${escapeHtml(f.label)}</label>
-        <input type="number" inputmode="decimal" id="calc-${f.id}"
+        <label for="calc-${f.id}">${escapeHtml(f.label)}</label> <input type="number" inputmode="decimal" id="calc-${f.id}"
           min="${f.min}" max="${f.max}" step="${f.step}" value="${f.def}"
           oninput="runCalc()">
       </div>`;
     } else {
       // select
       return `<div class="calc-field">
-        <label>${escapeHtml(f.label)}</label>
-        <select id="calc-${f.id}" onchange="runCalc()">
+        <label for="calc-${f.id}">${escapeHtml(f.label)}</label> <select id="calc-${f.id}" onchange="runCalc()">
           ${f.options.map(o=>`<option value="${o.v}">${escapeHtml(o.l)}</option>`).join("")}
         </select>
       </div>`;
@@ -6374,24 +6371,20 @@ function renderPerf(){
       <span class="calc-tag">Bomba mL/h</span></div>
     <div class="calc-fields">
       <div class="calc-field">
-        <label>Fármaco</label>
-        <input type="text" id="perf-search" placeholder="Buscar fármaco…" autocomplete="off"
+        <label for="perf-search">Fármaco</label> <input type="text" id="perf-search" placeholder="Buscar fármaco…" autocomplete="off"
           oninput="perfFilterDrugs(this.value)" onfocus="this.select()">
-        <select id="perf-farm" onchange="onPerfFarm()">${customOpts}${baseOpts}${addOpt}</select>
+        <select id="perf-farm" aria-label="Seleccionar fármaco" onchange="onPerfFarm()">${customOpts}${baseOpts}${addOpt}</select>
       </div>
       <div class="calc-field">
-        <label>Peso paciente (kg)</label>
-        <input type="number" inputmode="decimal" id="perf-peso"
+        <label for="perf-peso">Peso paciente (kg)</label> <input type="number" inputmode="decimal" id="perf-peso"
           min="1" max="200" step="0.5" value="${perfPeso}" oninput="runPerf()">
       </div>
       <div class="calc-field">
-        <label>Dilución</label>
-        <select id="perf-dil" onchange="runPerf()"></select>
+        <label for="perf-dil">Dilución</label> <select id="perf-dil" onchange="runPerf()"></select>
       </div>
       <div class="calc-field">
-        <label id="perf-dosis-label">Dosis objetivo</label>
-        <input type="number" inputmode="decimal" id="perf-dosis" oninput="runPerf()">
-        <input type="range" id="perf-slider" oninput="document.getElementById('perf-dosis').value=this.value;runPerf()">
+        <label for="perf-dosis" id="perf-dosis-label">Dosis objetivo</label> <input type="number" inputmode="decimal" id="perf-dosis" oninput="runPerf()">
+        <input type="range" id="perf-slider" aria-label="Dosis objetivo (deslizador)" oninput="document.getElementById('perf-dosis').value=this.value;runPerf()">
         <div class="perf-range" id="perf-range"></div>
       </div>
     </div>
@@ -6427,8 +6420,7 @@ function renderPerfCustomForm(){
     <div class="perf-custom-title">➕ Nuevo fármaco personalizado</div>
     <div class="calc-fields">
       <div class="calc-field">
-        <label>Nombre del fármaco</label>
-        <input type="text" id="pc-name" placeholder="Ej. Milrinona" oninput="pcPreview()">
+        <label for="pc-name">Nombre del fármaco</label> <input type="text" id="pc-name" placeholder="Ej. Milrinona" oninput="pcPreview()">
       </div>
       <div class="calc-field">
         <label>Cantidad de fármaco en el suero</label>
@@ -6442,12 +6434,10 @@ function renderPerfCustomForm(){
         </div>
       </div>
       <div class="calc-field">
-        <label>Volumen total del suero (mL)</label>
-        <input type="number" inputmode="decimal" id="pc-vol" min="1" step="any" placeholder="Ej. 100" oninput="pcPreview()">
+        <label for="pc-vol">Volumen total del suero (mL)</label> <input type="number" inputmode="decimal" id="pc-vol" min="1" step="any" placeholder="Ej. 100" oninput="pcPreview()">
       </div>
       <div class="calc-field">
-        <label>Tipo de dosificación</label>
-        <select id="pc-unit" onchange="pcPreview()">
+        <label for="pc-unit">Tipo de dosificación</label> <select id="pc-unit" onchange="pcPreview()">
           <option value="mcg/kg/min">mcg/kg/min</option>
           <option value="mcg/kg/h">mcg/kg/h</option>
           <option value="mcg/min">mcg/min</option>
@@ -6458,8 +6448,7 @@ function renderPerfCustomForm(){
         </select>
       </div>
       <div class="calc-field">
-        <label>Dosis objetivo habitual</label>
-        <input type="number" inputmode="decimal" id="pc-dose" min="0" step="any" placeholder="Ej. 0.5" oninput="pcPreview()">
+        <label for="pc-dose">Dosis objetivo habitual</label> <input type="number" inputmode="decimal" id="pc-dose" min="0" step="any" placeholder="Ej. 0.5" oninput="pcPreview()">
       </div>
     </div>
     <div class="perf-custom-preview" id="pcPreview">Rellena los datos para ver la concentración.</div>
@@ -7175,13 +7164,11 @@ function renderTrainStart(){
         <p>Practica con preguntas tipo test generadas por IA a partir de tus 189 fichas. Ideal para residentes o enfermería de nueva incorporación.</p>
       </div>
       <div class="train-cfg">
-        <label>Área temática</label>
-        <select id="trainCatSel">
+        <label for="trainCatSel">Área temática</label> <select id="trainCatSel">
           <option value="all">📚 Cualquier categoría</option>
           ${cats}
         </select>
-        <label style="margin-top:10px">Número de preguntas</label>
-        <select id="trainNumSel">
+        <label for="trainNumSel" style="margin-top:10px">Número de preguntas</label> <select id="trainNumSel">
           <option value="3">3 preguntas (rápido)</option>
           <option value="5" selected>5 preguntas</option>
           <option value="8">8 preguntas</option>
@@ -7416,29 +7403,22 @@ function renderSos(){
     <details class="sos-details" open>
       <summary>🩺 Mi ficha médica personal</summary>
       <div class="sos-form">
-        <label>Nombre completo</label>
-        <input type="text" id="sos-nombre" value="${escapeHtml(nombre)}" placeholder="Ej. Juan Val">
+        <label for="sos-nombre">Nombre completo</label> <input type="text" id="sos-nombre" value="${escapeHtml(nombre)}" placeholder="Ej. Juan Val">
         <div class="sos-row">
           <div>
-            <label>DNI</label>
-            <input type="text" id="sos-dni" value="${escapeHtml(dni)}">
+            <label for="sos-dni">DNI</label> <input type="text" id="sos-dni" value="${escapeHtml(dni)}">
           </div>
           <div>
-            <label>Nacimiento</label>
-            <input type="date" id="sos-nac" value="${escapeHtml(nac)}">
+            <label for="sos-nac">Nacimiento</label> <input type="date" id="sos-nac" value="${escapeHtml(nac)}">
           </div>
         </div>
-        <label>Grupo sanguíneo</label>
-        <select id="sos-grupo">
+        <label for="sos-grupo">Grupo sanguíneo</label> <select id="sos-grupo">
           ${["","A+","A-","B+","B-","AB+","AB-","O+","O-","Desconocido"].map(g=>
             `<option value="${g}" ${g===grupo?"selected":""}>${g||"— Selecciona —"}</option>`).join("")}
         </select>
-        <label>Alergias (incluye a fármacos)</label>
-        <textarea id="sos-alergias" rows="2" placeholder="Penicilina, AINE, látex…">${escapeHtml(alergias)}</textarea>
-        <label>Medicación actual</label>
-        <textarea id="sos-medicacion" rows="3" placeholder="Sintrom 4 mg L-M-V, Enalapril 20…">${escapeHtml(medicacion)}</textarea>
-        <label>Antecedentes relevantes</label>
-        <textarea id="sos-antecedentes" rows="2" placeholder="HTA, DM2, FA en tratamiento…">${escapeHtml(antecedentes)}</textarea>
+        <label for="sos-alergias">Alergias (incluye a fármacos)</label> <textarea id="sos-alergias" rows="2" placeholder="Penicilina, AINE, látex…">${escapeHtml(alergias)}</textarea>
+        <label for="sos-medicacion">Medicación actual</label> <textarea id="sos-medicacion" rows="3" placeholder="Sintrom 4 mg L-M-V, Enalapril 20…">${escapeHtml(medicacion)}</textarea>
+        <label for="sos-antecedentes">Antecedentes relevantes</label> <textarea id="sos-antecedentes" rows="2" placeholder="HTA, DM2, FA en tratamiento…">${escapeHtml(antecedentes)}</textarea>
         <button class="btn-primary" onclick="saveSosFicha()" style="margin-top:12px">💾 Guardar mi ficha</button>
       </div>
     </details>
@@ -7448,8 +7428,8 @@ function renderSos(){
       <div class="sos-contactos-list">${contactosHtml || '<div class="triage-empty">Sin contactos</div>'}</div>
       <div class="sos-form">
         <div class="sos-row">
-          <div><label>Nombre</label><input type="text" id="sos-newc-name" placeholder="Ej. Marta"></div>
-          <div><label>Teléfono</label><input type="tel" id="sos-newc-tel" placeholder="+34 6..."></div>
+          <div><label for="sos-newc-name">Nombre</label> <input type="text" id="sos-newc-name" placeholder="Ej. Marta"></div>
+          <div><label for="sos-newc-tel">Teléfono</label> <input type="tel" id="sos-newc-tel" placeholder="+34 6..."></div>
         </div>
         <button class="btn-primary" onclick="addSosContacto()" style="margin-top:8px">➕ Añadir contacto</button>
       </div>
@@ -7681,8 +7661,7 @@ const DIAGRAMS = {
     render() {
       return `<div class="diag" id="diag-ictus">
         <div class="diag-input-row">
-          <label>Hora de inicio de los síntomas</label>
-          <input type="time" id="ictusHora" onchange="ictusUpdate()">
+          <label for="ictusHora">Hora de inicio de los síntomas</label> <input type="time" id="ictusHora" onchange="ictusUpdate()">
           <button class="diag-btn small" onclick="ictusAhora()">Ahora</button>
         </div>
         <div class="ictus-svg">
@@ -7727,8 +7706,7 @@ const DIAGRAMS = {
           </div>
         </div>
         <div class="diag-input-row" style="margin-top:14px">
-          <label>Peso (kg)</label>
-          <input type="range" min="3" max="120" step="1" value="70" id="anafPeso" oninput="anafUpdate()">
+          <label for="anafPeso">Peso (kg)</label> <input type="range" min="3" max="120" step="1" value="70" id="anafPeso" oninput="anafUpdate()">
           <span id="anafPesoVal" class="anaf-peso-val">70</span>
         </div>
         <div class="anaf-flow">
@@ -8770,6 +8748,11 @@ h1 small{color:rgba(226,232,240,.72) !important}
 /* modo noche más cómodo */
 [data-theme="night"] body{background:#000 !important}
 [data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
+/* Modo claro: el fondo/color de body de arriba ("Vivi 4.0 Premium") ignora el
+   tema y siempre pinta oscuro. Se corrige aquí para el fondo base de la
+   página; el resto de componentes (chat, tarjetas) mantiene su estética
+   actual a propósito. */
+[data-theme="light"] body{background:var(--bg) !important;color:var(--text) !important}
 </style>
 
 <style id="inurse41-css">
@@ -9092,7 +9075,7 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
   function updateAiButton(){var b=$('in51HeaderAiBtn'); if(!b)return; var ok=isOn()&&!!getKey(); b.classList.toggle('off',!ok); b.title=ok?'iNurse IA activada':'iNurse IA desactivada o sin API key';}
   function addHeaderButton(){ if($('in51HeaderAiBtn'))return; var top=document.querySelector('header .top')||document.querySelector('.top'); if(!top)return; var b=document.createElement('button'); b.id='in51HeaderAiBtn'; b.className='in51-ai-btn off'; b.type='button'; b.innerHTML='✦'; b.onclick=openAi; var ref=document.getElementById('themeBtn'); if(!ref||ref.parentNode!==top)ref=top.lastElementChild; if(ref&&ref.parentNode===top)top.insertBefore(b,ref); else top.appendChild(b); updateAiButton(); }
   function showGeminiSettingsHint(){ var set=$('in50Settings'); if(set){set.style.display='block';} }
-  function addSettingsCard(){ var grid=document.querySelector('#in50Settings .in50-settings-grid'); if(!grid||$('in51GeminiCard'))return; var card=document.createElement('div'); card.id='in51GeminiCard'; card.className='in50-setting in51-gemini'; card.innerHTML='<h4>✦ Gemini IA opcional</h4><p>Activa un asistente con tu API key de Gemini. La clave se guarda solo en este dispositivo. Para publicar la app a otros usuarios, lo más seguro es usar un backend y no incluir la clave dentro del HTML.</p><label style="font-size:12px;color:var(--text-dim);font-weight:700">Estado</label><select id="in51GeminiEnabled"><option value="0">Desactivado</option><option value="1">Activado</option></select><div class="in51-key-row"><input id="in51GeminiKey" type="password" placeholder="Pega aquí tu API key de Gemini"><input id="in51GeminiModel" placeholder="Modelo, por ejemplo: gemini-3.5-flash"><div class="in51-key-actions"><button class="in51-primary" id="in51SaveGemini">Guardar</button><button class="in51-secondary" id="in51TestGemini">Probar conexión</button><button class="in51-danger" id="in51ClearGemini">Borrar clave</button><button class="in51-secondary" id="in51OpenGemini">Abrir IA</button></div><div id="in51GeminiStatus" class="in51-status">Sin configurar.</div></div>'; grid.insertBefore(card,grid.firstChild); $('in51GeminiEnabled').value=isOn()?'1':'0'; $('in51GeminiKey').value=getKey(); $('in51GeminiModel').value=getModel(); function status(s,ok){var el=$('in51GeminiStatus'); if(el){el.textContent=s; el.className='in51-status '+(ok?'ok':'ko');}} $('in51SaveGemini').onclick=function(){setOn($('in51GeminiEnabled').value==='1'); setKey($('in51GeminiKey').value); setModel($('in51GeminiModel').value); status('Configuración guardada en este dispositivo.',true);}; $('in51ClearGemini').onclick=function(){setKey(''); $('in51GeminiKey').value=''; status('API key borrada.',true);}; $('in51OpenGemini').onclick=openAi; $('in51TestGemini').onclick=async function(){setOn($('in51GeminiEnabled').value==='1'); setKey($('in51GeminiKey').value); setModel($('in51GeminiModel').value); status('Probando conexión con Gemini…',true); try{var ans=await askGemini('Responde únicamente: Conexión correcta.',{test:true}); status('Conexión correcta. Respuesta: '+ans.slice(0,120),true);}catch(e){status('Error: '+e.message,false);} }; }
+  function addSettingsCard(){ var grid=document.querySelector('#in50Settings .in50-settings-grid'); if(!grid||$('in51GeminiCard'))return; var card=document.createElement('div'); card.id='in51GeminiCard'; card.className='in50-setting in51-gemini'; card.innerHTML='<h4>✦ Gemini IA opcional</h4><p>Activa un asistente con tu API key de Gemini. La clave se guarda solo en este dispositivo. Para publicar la app a otros usuarios, lo más seguro es usar un backend y no incluir la clave dentro del HTML.</p><label for="in51GeminiEnabled" style="font-size:12px;color:var(--text-dim);font-weight:700">Estado</label> <select id="in51GeminiEnabled"><option value="0">Desactivado</option><option value="1">Activado</option></select><div class="in51-key-row"><input id="in51GeminiKey" type="password" placeholder="Pega aquí tu API key de Gemini"><input id="in51GeminiModel" placeholder="Modelo, por ejemplo: gemini-3.5-flash"><div class="in51-key-actions"><button class="in51-primary" id="in51SaveGemini">Guardar</button><button class="in51-secondary" id="in51TestGemini">Probar conexión</button><button class="in51-danger" id="in51ClearGemini">Borrar clave</button><button class="in51-secondary" id="in51OpenGemini">Abrir IA</button></div><div id="in51GeminiStatus" class="in51-status">Sin configurar.</div></div>'; grid.insertBefore(card,grid.firstChild); $('in51GeminiEnabled').value=isOn()?'1':'0'; $('in51GeminiKey').value=getKey(); $('in51GeminiModel').value=getModel(); function status(s,ok){var el=$('in51GeminiStatus'); if(el){el.textContent=s; el.className='in51-status '+(ok?'ok':'ko');}} $('in51SaveGemini').onclick=function(){setOn($('in51GeminiEnabled').value==='1'); setKey($('in51GeminiKey').value); setModel($('in51GeminiModel').value); status('Configuración guardada en este dispositivo.',true);}; $('in51ClearGemini').onclick=function(){setKey(''); $('in51GeminiKey').value=''; status('API key borrada.',true);}; $('in51OpenGemini').onclick=openAi; $('in51TestGemini').onclick=async function(){setOn($('in51GeminiEnabled').value==='1'); setKey($('in51GeminiKey').value); setModel($('in51GeminiModel').value); status('Probando conexión con Gemini…',true); try{var ans=await askGemini('Responde únicamente: Conexión correcta.',{test:true}); status('Conexión correcta. Respuesta: '+ans.slice(0,120),true);}catch(e){status('Error: '+e.message,false);} }; }
   function addHomeCard(){ var grid=document.querySelector('#in50Home .in50-grid'); if(!grid||$('in51HomeAiCard'))return; var b=document.createElement('button'); b.id='in51HomeAiCard'; b.className='in50-card'; b.innerHTML='<span class="em">✦</span><span><b>Preguntar a iNurse IA</b><small>Conecta Gemini para consultar protocolos, fármacos y escalas con contexto local.</small></span>'; b.onclick=openAi; grid.appendChild(b); }
   ready(function(){ buildAiModal(); addHeaderButton(); addSettingsCard(); addHomeCard(); setTimeout(function(){addSettingsCard(); addHomeCard(); addHeaderButton();},800); });
 })();
@@ -9264,7 +9247,7 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
     document.querySelectorAll('[data-in52-doc]').forEach(function(a){a.onclick=function(e){e.preventDefault();var id=a.getAttribute('data-in52-doc');var card=document.querySelector('[data-id="'+CSS.escape(id)+'"]');if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.click&&card.click();}else toast('Referencia local: '+id);}});
   }
 
-  function settingsHTML(){ var c=cfg(); return '<div class="in52-grid"><div class="in52-card"><h4>🔑 Gemini</h4><p>Usa la misma clave que ya tenía iNurse V5. Para una app publicada, lo ideal es protegerla con backend.</p><label class="in52-label">API Key</label><input id="in52ApiKey" class="in52-input" type="password" placeholder="AIzaSy..." value="'+esc(apiKey())+'"><label class="in52-label">Modelo</label><input id="in52Model" class="in52-input" value="'+esc(c.model)+'"><label class="in52-label">Backend opcional de búsqueda/grounding</label><input id="in52Backend" class="in52-input" placeholder="https://tu-servidor/search" value="'+esc(c.backendUrl||'')+'"><p>Sin backend, Vivi no scrapea internet directamente por CORS/seguridad; deja repositorios como lista blanca y referencias. Con backend puedes devolver resultados reales en JSON.</p><div class="in52-row" style="margin-top:10px"><button class="in52-btn" id="in52Save">Guardar</button><button class="in52-btn secondary" id="in52Test">Probar Gemini</button><button class="in52-btn danger" id="in52Clear">Borrar clave</button></div><div id="in52Status" class="in52-answer" style="display:none"></div></div><div class="in52-card"><h4>🧠 Vivi 2.0</h4>'+toggle('enabled','Activar Gemini',c.enabled)+toggle('smart','Modo inteligente híbrido',c.smart)+toggle('showRefs','Mostrar referencias',c.showRefs)+toggle('repos','Repositorios clínicos permitidos',c.repos)+toggle('cache','Caché de búsquedas externas',c.cache)+toggle('safety','Aviso de seguridad clínica',c.safety)+'<div class="in52-warn">Modo híbrido: primero consulta iNurse local, después repositorios permitidos/backend y finalmente Gemini sintetiza.</div></div></div><div class="in52-card" style="margin-top:12px"><h4>🌐 Repositorios fiables</h4><p>Lista blanca para evitar búsquedas genéricas poco fiables.</p><div class="in52-repos">'+c.reposList.map(function(r){return '<label class="in52-repo"><input type="checkbox" data-in52-repo="'+esc(r.id)+'" '+(r.enabled?'checked':'')+'><b>'+esc(r.name)+'</b><small>'+esc(r.url.replace(/^https?:\/\//,''))+'</small></label>';}).join('')+'</div></div><div class="in52-card" style="margin-top:12px"><h4>🧪 Prueba rápida</h4><textarea id="in52Prompt" class="in52-textarea" placeholder="Ejemplo: paciente febril, TA 85/50 y lactato elevado. ¿Actuación inicial?"></textarea><div class="in52-row" style="margin-top:10px"><button class="in52-btn" id="in52Ask">Preguntar a Vivi</button></div><div id="in52Answer" class="in52-answer" style="display:none"></div></div>'; }
+  function settingsHTML(){ var c=cfg(); return '<div class="in52-grid"><div class="in52-card"><h4>🔑 Gemini</h4><p>Usa la misma clave que ya tenía iNurse V5. Para una app publicada, lo ideal es protegerla con backend.</p><label for="in52ApiKey" class="in52-label">API Key</label> <input id="in52ApiKey" class="in52-input" type="password" placeholder="AIzaSy..." value="'+esc(apiKey())+'"><label for="in52Model" class="in52-label">Modelo</label> <input id="in52Model" class="in52-input" value="'+esc(c.model)+'"><label for="in52Backend" class="in52-label">Backend opcional de búsqueda/grounding</label> <input id="in52Backend" class="in52-input" placeholder="https://tu-servidor/search" value="'+esc(c.backendUrl||'')+'"><p>Sin backend, Vivi no scrapea internet directamente por CORS/seguridad; deja repositorios como lista blanca y referencias. Con backend puedes devolver resultados reales en JSON.</p><div class="in52-row" style="margin-top:10px"><button class="in52-btn" id="in52Save">Guardar</button><button class="in52-btn secondary" id="in52Test">Probar Gemini</button><button class="in52-btn danger" id="in52Clear">Borrar clave</button></div><div id="in52Status" class="in52-answer" style="display:none"></div></div><div class="in52-card"><h4>🧠 Vivi 2.0</h4>'+toggle('enabled','Activar Gemini',c.enabled)+toggle('smart','Modo inteligente híbrido',c.smart)+toggle('showRefs','Mostrar referencias',c.showRefs)+toggle('repos','Repositorios clínicos permitidos',c.repos)+toggle('cache','Caché de búsquedas externas',c.cache)+toggle('safety','Aviso de seguridad clínica',c.safety)+'<div class="in52-warn">Modo híbrido: primero consulta iNurse local, después repositorios permitidos/backend y finalmente Gemini sintetiza.</div></div></div><div class="in52-card" style="margin-top:12px"><h4>🌐 Repositorios fiables</h4><p>Lista blanca para evitar búsquedas genéricas poco fiables.</p><div class="in52-repos">'+c.reposList.map(function(r){return '<label class="in52-repo"><input type="checkbox" data-in52-repo="'+esc(r.id)+'" '+(r.enabled?'checked':'')+'><b>'+esc(r.name)+'</b><small>'+esc(r.url.replace(/^https?:\/\//,''))+'</small></label>';}).join('')+'</div></div><div class="in52-card" style="margin-top:12px"><h4>🧪 Prueba rápida</h4><textarea id="in52Prompt" class="in52-textarea" placeholder="Ejemplo: paciente febril, TA 85/50 y lactato elevado. ¿Actuación inicial?"></textarea><div class="in52-row" style="margin-top:10px"><button class="in52-btn" id="in52Ask">Preguntar a Vivi</button></div><div id="in52Answer" class="in52-answer" style="display:none"></div></div>'; }
   function toggle(k,label,on){return '<label class="in52-toggle"><span>'+esc(label)+'</span><input id="in52_'+k+'" type="checkbox" '+(on?'checked':'')+'></label>'}
   function openSettings(){ var ov=$('in52Overlay'); if(!ov){ov=document.createElement('div'); ov.id='in52Overlay'; ov.className='in52-overlay'; ov.innerHTML='<div class="in52-panel"><div class="in52-head"><div class="ico">✨</div><h3>iNurse V5.2 · Vivi híbrida<small>Gemini, repositorios, referencias y modo local/inteligente</small></h3><button class="in52-close" id="in52Close">✕</button></div><div class="in52-body" id="in52Body"></div></div>'; document.body.appendChild(ov); ov.onclick=function(e){if(e.target===ov)ov.classList.remove('on')}; }
     $('in52Body').innerHTML=settingsHTML(); ov.classList.add('on'); $('in52Close').onclick=function(){ov.classList.remove('on')}; bindSettings(); }
@@ -12307,7 +12290,7 @@ body.in60-content-mode main{display:block!important}
   function close(){const ov=$('#in63Overlay');if(ov)ov.classList.remove('on');document.body.style.overflow='';try{speechSynthesis.cancel()}catch(e){}}
   function setHeader(text){const e=$('#in63HeadSub');if(e)e.textContent=text||'Crea, organiza, redacta y exporta tus documentos'}
   function setStatus(text,busy=false){const e=$('#in63Status');if(!e)return;e.classList.toggle('busy',busy);e.innerHTML=busy?`<span class="in63-spinner"></span>${esc(text)}`:esc(text);}
-  function showStart(focusNew){currentId=null;currentSectionId=null;setHeader('Crea, organiza, redacta y exporta tus documentos');$('#in63Export').style.display='none';$('#in63Save').style.display='none';const pv=$('#in63Preview');if(pv)pv.style.display='none';const body=$('#in63Body');body.innerHTML=`<div class="in63-start"><div class="in63-start-grid"><section class="in63-card"><h3>Crear un proyecto</h3><p>Elige una plantilla y Vivi te ayudará a desarrollar cada apartado. Todo se guarda en este dispositivo.</p><div class="in63-form-grid"><div class="in63-field full"><label>Título o tema del proyecto</label><div style="display:flex;gap:7px"><input id="in63FTitle" placeholder="Ej.: Plan de mejora de la seguridad en los traslados" style="flex:1"><button class="in63-btn" id="in63DictTitle" title="Dictar">🎙</button></div></div><div class="in63-field"><label>Tipo de documento</label><select id="in63FType"><option value="mejora">Proyecto de mejora</option><option value="protocolo">Protocolo / procedimiento</option><option value="formacion">Sesión formativa</option><option value="investigacion">Proyecto de investigación</option><option value="informe">Informe profesional</option><option value="cuidados">Plan de cuidados</option><option value="presentacion">Presentación y guion</option><option value="libre">Documento libre</option></select></div><div class="in63-field"><label>Idioma</label><select id="in63FLang"><option>Español</option><option>Català</option><option>English</option></select></div><div class="in63-field"><label>Destinatarios</label><input id="in63FAudience" placeholder="Tribunal, equipo, alumnado…"></div><div class="in63-field"><label>Tono</label><select id="in63FTone"><option>Profesional</option><option>Académico</option><option>Divulgativo</option><option>Ejecutivo</option><option>Cercano</option></select></div><div class="in63-field"><label>Extensión</label><select id="in63FLength"><option>Corta</option><option selected>Media</option><option>Amplia</option><option>Muy detallada</option></select></div><div class="in63-field full"><label>Objetivo o idea principal</label><textarea id="in63FObjective" placeholder="Explica qué quieres conseguir, qué problema aborda y cualquier requisito importante."></textarea></div></div><div class="in63-create-actions"><button class="in63-btn primary" id="in63Create">Crear estructura</button><button class="in63-btn cyan" id="in63CreateAI">✨ Crear índice con Vivi</button></div></section><section class="in63-card"><h3>Mis proyectos</h3><p>Abre un trabajo anterior y continúa exactamente donde lo dejaste.</p><div class="in63-project-list" id="in63ProjectList"></div></section></div></div>`;
+  function showStart(focusNew){currentId=null;currentSectionId=null;setHeader('Crea, organiza, redacta y exporta tus documentos');$('#in63Export').style.display='none';$('#in63Save').style.display='none';const pv=$('#in63Preview');if(pv)pv.style.display='none';const body=$('#in63Body');body.innerHTML=`<div class="in63-start"><div class="in63-start-grid"><section class="in63-card"><h3>Crear un proyecto</h3><p>Elige una plantilla y Vivi te ayudará a desarrollar cada apartado. Todo se guarda en este dispositivo.</p><div class="in63-form-grid"><div class="in63-field full"><label>Título o tema del proyecto</label><div style="display:flex;gap:7px"><input id="in63FTitle" placeholder="Ej.: Plan de mejora de la seguridad en los traslados" style="flex:1"><button class="in63-btn" id="in63DictTitle" title="Dictar">🎙</button></div></div><div class="in63-field"><label for="in63FType">Tipo de documento</label> <select id="in63FType"><option value="mejora">Proyecto de mejora</option><option value="protocolo">Protocolo / procedimiento</option><option value="formacion">Sesión formativa</option><option value="investigacion">Proyecto de investigación</option><option value="informe">Informe profesional</option><option value="cuidados">Plan de cuidados</option><option value="presentacion">Presentación y guion</option><option value="libre">Documento libre</option></select></div><div class="in63-field"><label for="in63FLang">Idioma</label> <select id="in63FLang"><option>Español</option><option>Català</option><option>English</option></select></div><div class="in63-field"><label for="in63FAudience">Destinatarios</label> <input id="in63FAudience" placeholder="Tribunal, equipo, alumnado…"></div><div class="in63-field"><label for="in63FTone">Tono</label> <select id="in63FTone"><option>Profesional</option><option>Académico</option><option>Divulgativo</option><option>Ejecutivo</option><option>Cercano</option></select></div><div class="in63-field"><label for="in63FLength">Extensión</label> <select id="in63FLength"><option>Corta</option><option selected>Media</option><option>Amplia</option><option>Muy detallada</option></select></div><div class="in63-field full"><label for="in63FObjective">Objetivo o idea principal</label> <textarea id="in63FObjective" placeholder="Explica qué quieres conseguir, qué problema aborda y cualquier requisito importante."></textarea></div></div><div class="in63-create-actions"><button class="in63-btn primary" id="in63Create">Crear estructura</button><button class="in63-btn cyan" id="in63CreateAI">✨ Crear índice con Vivi</button></div></section><section class="in63-card"><h3>Mis proyectos</h3><p>Abre un trabajo anterior y continúa exactamente donde lo dejaste.</p><div class="in63-project-list" id="in63ProjectList"></div></section></div></div>`;
     renderProjectList();$('#in63Create').onclick=()=>createFromForm(false);$('#in63CreateAI').onclick=()=>createFromForm(true);$('#in63DictTitle').onclick=()=>startDictation($('#in63FTitle'));if(focusNew)setTimeout(()=>$('#in63FTitle')?.focus(),60)
   }
   function renderProjectList(){const box=$('#in63ProjectList');if(!box)return;const list=loadAll().sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));if(!list.length){box.innerHTML='<div class="in63-empty">Todavía no hay proyectos guardados.<br>Crea el primero desde el formulario.</div>';return}box.innerHTML=list.map(p=>`<div class="in63-project-item" data-open="${esc(p.id)}"><div class="in63-project-ico">${iconType(p.type)}</div><div class="in63-project-meta"><b>${esc(p.title)}</b><small>${esc(p.language||'Español')} · ${p.sections?.length||0} apartados · ${fmt(p.updatedAt)}</small></div><button class="in63-project-delete" data-delete="${esc(p.id)}" title="Eliminar">🗑</button></div>`).join('');box.onclick=e=>{const del=e.target.closest('[data-delete]');if(del){e.stopPropagation();deleteProject(del.dataset.delete);return}const row=e.target.closest('[data-open]');if(row)openProject(row.dataset.open)}}
@@ -13727,12 +13710,10 @@ window.iNurseMainNavigation={
     <div class="turno-body">
       <div class="turno-view active" id="turnoViewNotas">
         <div class="turno-field">
-          <label>Notas del turno (sin datos identificativos)</label>
-          <textarea id="turnoNotes" placeholder="Ej: Habitación 4 pendiente de analítica de control a las 16h..."></textarea>
+          <label for="turnoNotes">Notas del turno (sin datos identificativos)</label> <textarea id="turnoNotes" placeholder="Ej: Habitación 4 pendiente de analítica de control a las 16h..."></textarea>
         </div>
         <div class="turno-field">
-          <label>Pendientes y aprendizajes</label>
-          <textarea id="turnoPending" placeholder="Tareas para el resto del turno o para dejar anotadas..."></textarea>
+          <label for="turnoPending">Pendientes y aprendizajes</label> <textarea id="turnoPending" placeholder="Tareas para el resto del turno o para dejar anotadas..."></textarea>
         </div>
         <div class="turno-actions">
           <button class="turno-btn primary" id="turnoSave">💾 Guardar</button>
@@ -14143,8 +14124,7 @@ window.iNurseMainNavigation={
 
     <div class="in32-body">
       <div class="in32-section">
-        <label>📋 Estado del paciente (escribe o dicta):</label>
-        <textarea id="in32Input" class="in32-input" placeholder="Ej: Paciente 62 años, sepsis, lactato 4.2, presión 85/50, taquicardia, confusión..."></textarea>
+        <label for="in32Input">📋 Estado del paciente (escribe o dicta):</label> <textarea id="in32Input" class="in32-input" placeholder="Ej: Paciente 62 años, sepsis, lactato 4.2, presión 85/50, taquicardia, confusión..."></textarea>
         <div class="in32-actions">
           <button id="in32Generate" class="in32-btn primary">✨ Generar SBAR</button>
           <button id="in32Voice" class="in32-btn secondary">🎤 Dictar</button>
@@ -16968,10 +16948,10 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">✨</span>Configurar Vivi</div>'
       +'<div class="nx-aj-card">'
-      +'<div class="nx-aj-field"><label>Nombre del asistente</label><input type="text" id="nxViviName" value="'+esc(viviSaved.name||'Vivi')+'" placeholder="Vivi"></div>'
-      +'<div class="nx-aj-field"><label>Nivel de detalle</label><select id="nxViviDetail"><option value="breve"'+(viviSaved.detail==='breve'?' selected':'')+'>Breve</option><option value="normal"'+(viviSaved.detail==='normal'||!viviSaved.detail?' selected':'')+'>Normal</option><option value="detallado"'+(viviSaved.detail==='detallado'?' selected':'')+'>Detallado</option></select></div>'
-      +'<div class="nx-aj-field"><label>Idioma de respuesta</label><select id="nxViviLang"><option value="es"'+((viviSaved.lang||'es')==='es'?' selected':'')+'>Español</option><option value="en"'+(viviSaved.lang==='en'?' selected':'')+'>English</option><option value="pt"'+(viviSaved.lang==='pt'?' selected':'')+'>Português</option></select></div>'
-      +'<div class="nx-aj-field"><label>Clave API Gemini</label><input type="password" id="nxViviKey" value="'+esc(viviSaved.apiKey||'')+'" placeholder="AIza..."></div>'
+      +'<div class="nx-aj-field"><label for="nxViviName">Nombre del asistente</label><input type="text" id="nxViviName" value="'+esc(viviSaved.name||'Vivi')+'" placeholder="Vivi"></div>'
+      +'<div class="nx-aj-field"><label for="nxViviDetail">Nivel de detalle</label><select id="nxViviDetail"><option value="breve"'+(viviSaved.detail==='breve'?' selected':'')+'>Breve</option><option value="normal"'+(viviSaved.detail==='normal'||!viviSaved.detail?' selected':'')+'>Normal</option><option value="detallado"'+(viviSaved.detail==='detallado'?' selected':'')+'>Detallado</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxViviLang">Idioma de respuesta</label><select id="nxViviLang"><option value="es"'+((viviSaved.lang||'es')==='es'?' selected':'')+'>Español</option><option value="en"'+(viviSaved.lang==='en'?' selected':'')+'>English</option><option value="pt"'+(viviSaved.lang==='pt'?' selected':'')+'>Português</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxViviKey">Clave API Gemini</label><input type="password" id="nxViviKey" value="'+esc(viviSaved.apiKey||'')+'" placeholder="AIza..."></div>'
       +'<button class="nx-aj-btn" id="nxViviSave">Guardar configuración de Vivi</button>'
       +'</div>'
       +'</div>'
@@ -16981,11 +16961,11 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'<div class="nx-aj-card nx-aj-profile">'
       +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
       +'<div class="nx-aj-profile-fields">'
-      +'<div class="nx-aj-field"><label>Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
-      +'<div class="nx-aj-field"><label>Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
-      +'<div class="nx-aj-field"><label>Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
-      +'<div class="nx-aj-field"><label>Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
-      +'<div class="nx-aj-field"><label>Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileName">Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSurname">Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileEmail">Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileHospital">Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSpec">Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
       +'</div>'
       +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
       +'</div>'
@@ -17013,9 +16993,9 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
           };
         } else {
           box.innerHTML=''
-            +'<div class="nx-aj-field"><label>Email</label><input type="email" id="nxAuthEmail" placeholder="tu@email.com"></div>'
-            +'<div class="nx-aj-field"><label>Contraseña</label><input type="password" id="nxAuthPassword" placeholder="Mínimo 8 caracteres"></div>'
-            +'<div class="nx-aj-field"><label>Nombre (solo para crear cuenta)</label><input type="text" id="nxAuthName" placeholder="Tu nombre"></div>'
+            +'<div class="nx-aj-field"><label for="nxAuthEmail">Email</label><input type="email" id="nxAuthEmail" placeholder="tu@email.com"></div>'
+            +'<div class="nx-aj-field"><label for="nxAuthPassword">Contraseña</label><input type="password" id="nxAuthPassword" placeholder="Mínimo 8 caracteres"></div>'
+            +'<div class="nx-aj-field"><label for="nxAuthName">Nombre (solo para crear cuenta)</label><input type="text" id="nxAuthName" placeholder="Tu nombre"></div>'
             +'<div class="nx-aj-row" style="gap:10px"><button class="nx-aj-btn" id="nxLoginBtn" style="flex:1;margin:0">Iniciar sesión</button><button class="nx-aj-btn" id="nxRegisterBtn" style="flex:1;margin:0;background:rgba(120,150,220,.15)">Crear cuenta</button></div>'
             +'<div id="nxAuthMsg" style="font-size:12px;color:#8aa0c8"></div>';
           var msg=document.getElementById('nxAuthMsg');
