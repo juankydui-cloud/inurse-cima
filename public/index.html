@@ -11294,6 +11294,17 @@ body.in57-visual .in52-welcome {
   justify-content: center !important;
   padding: 24px !important;
 }
+/* La regla anterior deja .cc-welcome como fila flex sin flex-direction: su
+   contenido (avatar, título, párrafo y los botones rápidos de .v21-quick)
+   queda apretado en horizontal y las tarjetas de .v21-quick se colapsan a
+   ~18px de ancho, ilegibles e imposibles de pulsar. Se corrige solo para
+   .cc-welcome pasando a columna, manteniendo el mismo resultado visual
+   (contenido centrado y pegado abajo del fondo) intercambiando los ejes. */
+body.in57-visual .cc-welcome {
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
 
 /* Icono central de bienvenida */
 body.in57-visual .cc-empty .cc-logo,
