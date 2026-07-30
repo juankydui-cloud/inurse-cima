@@ -3103,6 +3103,111 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 <script src="/data/guias.js"></script>
 <script src="/data/vademecum.js"></script>
 <script>
+window.iNurseCloud = (function(){
+  var origSet = localStorage.setItem.bind(localStorage);
+  var origRemove = localStorage.removeItem.bind(localStorage);
+  var pending = {};
+  var timer = null;
+  var user = null;
+
+  function isSecretKey(k){ return /key|token|password|apikey/i.test(k); }
+
+  function scheduleFlush(){ clearTimeout(timer); timer = setTimeout(flush, 1500); }
+  function flush(){
+    if(!user) { pending = {}; return; }
+    var batch = pending; pending = {};
+    if(!Object.keys(batch).length) return;
+    fetch('/api/sync/bulk', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({data: batch})
+    }).catch(function(){});
+  }
+
+  localStorage.setItem = function(k,v){
+    origSet(k,v);
+    if(isSecretKey(k)) return;
+    pending[k]=v;
+    scheduleFlush();
+  };
+  localStorage.removeItem = function(k){
+    origRemove(k);
+    if(isSecretKey(k)) return;
+    pending[k]=null;
+    scheduleFlush();
+  };
+  window.addEventListener('beforeunload', flush);
+
+  function pushAll(){
+    var batch = {};
+    for(var i=0;i<localStorage.length;i++){
+      var k = localStorage.key(i);
+      if(isSecretKey(k)) continue;
+      batch[k] = localStorage.getItem(k);
+    }
+    if(!Object.keys(batch).length) return Promise.resolve();
+    return fetch('/api/sync/bulk', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({data: batch})
+    }).catch(function(){});
+  }
+
+  function pullAll(){
+    return fetch('/api/sync', {credentials:'include'})
+      .then(function(r){ return r.ok ? r.json() : {data:{}}; })
+      .then(function(res){
+        var data = res.data || {};
+        Object.keys(data).forEach(function(k){
+          if(isSecretKey(k)) return;
+          if(data[k]===null) origRemove(k); else origSet(k, data[k]);
+        });
+      });
+  }
+
+  function whoami(){
+    return fetch('/api/auth/me', {credentials:'include'})
+      .then(function(r){ return r.ok? r.json(): {user:null}; })
+      .then(function(res){ user = res.user || null; return user; });
+  }
+
+  function register(email,password,name){
+    return fetch('/api/auth/register', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email:email,password:password,name:name})
+    }).then(function(r){
+      return r.json().then(function(d){
+        if(!r.ok) throw new Error(d.error||'Error al registrar');
+        user = d.user;
+        return pushAll();
+      });
+    });
+  }
+
+  function login(email,password){
+    return fetch('/api/auth/login', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email:email,password:password})
+    }).then(function(r){
+      return r.json().then(function(d){
+        if(!r.ok) throw new Error(d.error||'Error al iniciar sesión');
+        user = d.user;
+        return pullAll();
+      });
+    });
+  }
+
+  function logout(){
+    return fetch('/api/auth/logout', {method:'POST', credentials:'include'}).then(function(){ user=null; });
+  }
+
+  return {
+    whoami: whoami, register: register, login: login, logout: logout,
+    getUser: function(){ return user; }, pushAll: pushAll, pullAll: pullAll
+  };
+})();
 const CATS={
   all:{name:"Todos",icon:"📋",color:"#0EA5E9"},
   resp:{name:"Respiratorio",icon:"🫁",color:"#22D3EE"},
@@ -16848,6 +16953,11 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'<div class="nx-aj-body">'
 
       +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">☁️</span>Cuenta y sincronización</div>'
+      +'<div class="nx-aj-card" id="nxAccountBox"><div class="nx-aj-row"><span>Comprobando sesión…</span></div></div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">🌗</span>Apariencia</div>'
       +'<div class="nx-aj-card">'
       +'<div class="nx-aj-row"><span id="nxThemeLabel">'+(themeLabels[curTheme]||themeLabels.dark)+'</span><button class="nx-aj-theme-btn" id="nxThemeCycle">Cambiar</button></div>'
@@ -16888,6 +16998,49 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     function closeAjustes(){ ov.remove(); }
     document.getElementById('nxAjClose').onclick=closeAjustes;
     ov.addEventListener('click',function(e){ if(e.target===ov) closeAjustes(); });
+
+    function renderAccountBox(){
+      var box=document.getElementById('nxAccountBox');
+      if(!box) return;
+      window.iNurseCloud.whoami().then(function(user){
+        if(user){
+          box.innerHTML=''
+            +'<div class="nx-aj-row"><span>✅ '+esc(user.email)+'</span><button class="nx-aj-theme-btn" id="nxLogoutBtn">Cerrar sesión</button></div>'
+            +'<div class="nx-aj-field"><label style="text-transform:none;font-weight:400;color:#8aa0c8">Tu perfil, turnos, favoritos y ajustes se sincronizan automáticamente con la nube.</label></div>';
+          document.getElementById('nxLogoutBtn').onclick=function(){
+            window.iNurseCloud.logout().then(renderAccountBox);
+          };
+        } else {
+          box.innerHTML=''
+            +'<div class="nx-aj-field"><label>Email</label><input type="email" id="nxAuthEmail" placeholder="tu@email.com"></div>'
+            +'<div class="nx-aj-field"><label>Contraseña</label><input type="password" id="nxAuthPassword" placeholder="Mínimo 8 caracteres"></div>'
+            +'<div class="nx-aj-field"><label>Nombre (solo para crear cuenta)</label><input type="text" id="nxAuthName" placeholder="Tu nombre"></div>'
+            +'<div class="nx-aj-row" style="gap:10px"><button class="nx-aj-btn" id="nxLoginBtn" style="flex:1;margin:0">Iniciar sesión</button><button class="nx-aj-btn" id="nxRegisterBtn" style="flex:1;margin:0;background:rgba(120,150,220,.15)">Crear cuenta</button></div>'
+            +'<div id="nxAuthMsg" style="font-size:12px;color:#8aa0c8"></div>';
+          var msg=document.getElementById('nxAuthMsg');
+          document.getElementById('nxLoginBtn').onclick=function(){
+            var email=document.getElementById('nxAuthEmail').value.trim();
+            var pass=document.getElementById('nxAuthPassword').value;
+            msg.textContent='Conectando…'; msg.style.color='#8aa0c8';
+            window.iNurseCloud.login(email,pass).then(function(){
+              msg.textContent='✓ Sesión iniciada. Sincronizando datos…'; msg.style.color='#4ade80';
+              setTimeout(function(){ location.reload(); },700);
+            }).catch(function(err){ msg.textContent=err.message; msg.style.color='#f87171'; });
+          };
+          document.getElementById('nxRegisterBtn').onclick=function(){
+            var email=document.getElementById('nxAuthEmail').value.trim();
+            var pass=document.getElementById('nxAuthPassword').value;
+            var name=document.getElementById('nxAuthName').value.trim();
+            msg.textContent='Creando cuenta…'; msg.style.color='#8aa0c8';
+            window.iNurseCloud.register(email,pass,name).then(function(){
+              msg.textContent='✓ Cuenta creada. Tus datos de este dispositivo ya están en la nube.'; msg.style.color='#4ade80';
+              renderAccountBox();
+            }).catch(function(err){ msg.textContent=err.message; msg.style.color='#f87171'; });
+          };
+        }
+      });
+    }
+    renderAccountBox();
 
     document.getElementById('nxThemeCycle').onclick=function(){
       curTheme=themeNext[curTheme]||'dark';
