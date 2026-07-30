@@ -4771,7 +4771,7 @@ render();
   <span class="v23-voice-copy"><b id="v23VoiceTitle">Conversación por voz desactivada</b><small id="v23VoiceStatus">Pulsa 🎙️ para iniciar una sesión manos libres.</small></span>
   <button type="button" id="v23VoiceStop">Detener</button>
  </div>
- <div id="ccChat"></div>
+ <div id="ccChat" aria-live="polite" aria-atomic="false" aria-relevant="additions" aria-busy="false"></div>
  <div class="cc-attprev" id="ccAttPrev"></div>
  <div id="v23MediaPanel" class="v23-media-panel"></div>
  <div class="cc-inputbar">
@@ -6106,6 +6106,7 @@ render();
    streamNode.textContent=fullText;chat.scrollTop=chat.scrollHeight;
   }
   var canStream=(_mode==='direct'||_mode==='backend')&&!att;
+  chat.setAttribute('aria-busy','true'); // evita que el lector de pantalla anuncie cada fragmento mientras llega en streaming
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null).then(function(reply){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    var refsNow=window.__v20Refs||refs;
@@ -6121,6 +6122,7 @@ render();
    if(caseMemory.length)node.insertAdjacentHTML('beforeend','<div class="v20-case-strip">🧠 Memoria temporal del caso activa: '+caseMemory.length+' aportaciones. Pulsa 🧠 para revisarla o 🧹 para borrarla.</div>');
    if(connectionMode()==='local')node.insertAdjacentHTML('beforeend','<div class="v20-mode-note">Vivi está en modo local: recupera y abre información, pero no genera una síntesis clínica nueva.</div>');
    attachActionEvents(node,route);attachSourceEvents(node);chat.scrollTop=chat.scrollHeight;jset(CHATK,messages);updateConn();
+   chat.setAttribute('aria-busy','false');
    v31Save(text,reply,allSources);
    if(spokenAlg){
     /* La lectura del algoritmo ya gestiona la voz y el reinicio de la escucha */
@@ -6134,7 +6136,7 @@ render();
    if(verifyEnabled&&connectionMode()!=='local')remoteVerify(reply,text,route,allSources,localCheck).then(function(v){var host=document.getElementById(verifyId);if(host)host.innerHTML=verificationHTML(v,false)});
   }).catch(function(err){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
-   typ.remove();updateConn('error');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
+   typ.remove();updateConn('error');chat.setAttribute('aria-busy','false');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
   });
  }
 
