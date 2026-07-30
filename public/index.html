@@ -12419,6 +12419,11 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
   border-bottom:1px solid rgba(255,255,255,.1)}
 .alg-group-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--text-dim,#94a3b8);
   background:rgba(255,255,255,.08);border-radius:999px;padding:2px 9px;text-transform:none}
+.alg-tabs{display:flex;gap:6px;margin-bottom:14px}
+.alg-tab{flex:1;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text-dim,#94a3b8);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.alg-tab.on{background:rgba(45,212,191,.15);border-color:rgba(45,212,191,.3);color:#2DD4BF}
+.alg-tab:hover:not(.on){background:rgba(255,255,255,.08)}
+.alg-tab .alg-group-count{margin-left:4px}
 </style>
 <div id="icOverlay" aria-hidden="true">
   <section id="icPanel">
@@ -12553,6 +12558,25 @@ const ALG_CAT={
 };
 const ALG_CAT_ORDER=['Urgencias','Cardiovascular','Neurología','Endocrino y Diabetes','Neumología','Alergología','Pediatría','Obstetricia','Ginecología','Gastroenterología','Hematología','Vascular','Nefro-Urología','Tiroides','Oftalmología','Otorrinolaringología','Psiquiatría','Reumatología','Dermatología','Dolor','Salud bucodental','Deshabituación tabáquica'];
 const ALG_CAT_ICON={'Urgencias':'🚨','Cardiovascular':'❤️','Neurología':'🧠','Endocrino y Diabetes':'🩸','Neumología':'🫁','Alergología':'🤧','Pediatría':'👶','Obstetricia':'🤰','Ginecología':'🌸','Gastroenterología':'🩻','Hematología':'💉','Vascular':'🦵','Nefro-Urología':'🫘','Tiroides':'🦋','Oftalmología':'👁️','Otorrinolaringología':'👂','Psiquiatría':'🧩','Reumatología':'🦴','Dermatología':'🩹','Dolor':'💊','Salud bucodental':'🦷','Deshabituación tabáquica':'🚭'};
+function getBibAlgs(){
+  if(window._bibAlgsCache) return window._bibAlgsCache;
+  var groups={};
+  try{
+    var jsonEl=document.getElementById('inurse-master-21');
+    if(!jsonEl) return groups;
+    var raw=JSON.parse(jsonEl.textContent);
+    raw.forEach(function(b){
+      (b.fichas||[]).forEach(function(x){
+        if(!x||!x.algoritmo_documental) return;
+        var cat=x.subcategoria||x.categoria||'Otros';
+        if(!groups[cat]) groups[cat]=[];
+        groups[cat].push({id:x.id,titulo:x.titulo,pasos:x.algoritmo_documental,cat:cat});
+      });
+    });
+  }catch(e){}
+  window._bibAlgsCache=groups;
+  return groups;
+}
 function renderAlgList(){
   const groups={};
   Object.keys(ALG).forEach(function(name){
@@ -12561,7 +12585,17 @@ function renderAlgList(){
   });
   const order=ALG_CAT_ORDER.slice();
   Object.keys(groups).forEach(function(c){ if(order.indexOf(c)===-1) order.push(c); });
+
+  var bibGroups=getBibAlgs();
+  var bibCats=Object.keys(bibGroups).sort(function(a,b){return a.localeCompare(b,'es')});
+
+  var totalAlg=Object.keys(ALG).length;
+  var totalBib=0; bibCats.forEach(function(c){totalBib+=bibGroups[c].length});
+
   let html='<input class="icInput" id="algFilter" placeholder="🔎 Buscar algoritmo o especialidad…" style="margin-bottom:12px">';
+  html+='<div class="alg-tabs" id="algTabs"><button class="alg-tab on" data-alg-tab="core">Algoritmos clave <span class="alg-group-count">'+totalAlg+'</span></button><button class="alg-tab" data-alg-tab="bib">Biblioteca completa <span class="alg-group-count">'+totalBib+'</span></button></div>';
+
+  html+='<div id="algCorePane">';
   order.forEach(function(cat){
     const names=groups[cat]; if(!names||!names.length) return;
     const ico=ALG_CAT_ICON[cat]||'📋';
@@ -12573,6 +12607,21 @@ function renderAlgList(){
       }).join('')
       +'</div></div>';
   });
+  html+='</div>';
+
+  html+='<div id="algBibPane" style="display:none">';
+  bibCats.forEach(function(cat){
+    var items=bibGroups[cat];
+    html+='<div class="alg-group" data-alg-group="'+esc(cat)+'">'
+      +'<div class="alg-group-head">📋 '+esc(cat)+' <span class="alg-group-count">'+items.length+'</span></div>'
+      +'<div class="icGrid">'
+      +items.map(function(x){
+        return '<button class="icCard" data-bib-alg="'+esc(x.id)+'" data-alg-name="'+esc(x.titulo.toLowerCase())+'" data-alg-cat="'+esc(cat.toLowerCase())+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(x.titulo)+'</h3><p>'+esc(cat)+'</p></button>';
+      }).join('')
+      +'</div></div>';
+  });
+  html+='</div>';
+
   return html;
 }
 function filterAlg(){
@@ -12580,7 +12629,7 @@ function filterAlg(){
   const n=q.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
   document.querySelectorAll('[data-alg-group]').forEach(function(g){
     let any=false;
-    g.querySelectorAll('[data-alg]').forEach(function(c){
+    g.querySelectorAll('[data-alg],[data-bib-alg]').forEach(function(c){
       const hay=((c.dataset.algName||'')+' '+(c.dataset.algCat||'')).normalize('NFD').replace(/[̀-ͯ]/g,'');
       const show=!n||hay.indexOf(n)!==-1;
       c.style.display=show?'':'none';
@@ -12590,6 +12639,35 @@ function filterAlg(){
   });
 }
 function showAlg(name){const a=ALG[name];$('#icBody').innerHTML=`<button class="icBtn alt" id="backAlg">← Algoritmos</button><div class="icCard"><h3>${name}</h3><p><b>Fuente de referencia:</b> ${a.src}. Adaptar siempre al protocolo y competencias del centro.</p><div id="algSteps">${a.steps.map((x,i)=>`<div class="icResult"><b>${i+1}.</b> ${x}</div>`).join('')}</div><button class="icBtn" id="algVivi">Continuar con Vivi</button></div>`;$('#backAlg').onclick=()=>renderTab('alg');$('#algVivi').onclick=()=>askVivi(`Amplía y guía paso a paso el algoritmo de ${name}, usando recomendaciones oficiales actuales. Contexto interno: ${a.steps.join(' | ')}`)}
+function showBibAlg(id){
+  var bibGroups=getBibAlgs();var item=null;
+  Object.values(bibGroups).forEach(function(arr){arr.forEach(function(x){if(x.id===id)item=x})});
+  if(!item) return;
+  var stepsHtml='';
+  if(Array.isArray(item.pasos)){
+    stepsHtml=item.pasos.map(function(p,i){
+      var num=p.paso||(i+1);
+      return '<div class="icResult"><b>'+num+'.</b> '+esc(p.accion||p.descripcion||'')+(p.objetivo?'<br><small style="color:#2DD4BF">→ '+esc(p.objetivo)+'</small>':'')+'</div>';
+    }).join('');
+  }else if(typeof item.pasos==='string'){
+    stepsHtml='<div class="icResult">'+esc(item.pasos)+'</div>';
+  }
+  $('#icBody').innerHTML='<button class="icBtn alt" id="backAlg">← Algoritmos</button>'
+    +'<div class="icCard"><h3>'+esc(item.titulo)+'</h3>'
+    +'<p><b>Categoría:</b> '+esc(item.cat)+'</p>'
+    +'<div id="algSteps">'+stepsHtml+'</div>'
+    +'<button class="icBtn" id="algVivi">Ampliar con Vivi</button>'
+    +'<button class="icBtn alt" id="algOpenLib">📚 Ver ficha completa</button>'
+    +'</div>';
+  $('#backAlg').onclick=function(){renderTab('alg')};
+  $('#algVivi').onclick=function(){
+    var ctx=Array.isArray(item.pasos)?item.pasos.map(function(p){return p.accion||''}).join(' | '):String(item.pasos||'');
+    askVivi('Amplía y guía paso a paso: '+item.titulo+'. Contexto interno: '+ctx);
+  };
+  $('#algOpenLib').onclick=function(){
+    if(window.iNurse21&&window.iNurse21.openItem) window.iNurse21.openItem(item.id);
+  };
+}
 function renderProcList(){return `<div class="icGrid">${Object.keys(PROC).map(x=>`<button class="icCard" data-proc="${x}" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>${x}</h3><p>Ficha práctica interna, checklist y cuidados.</p></button>`).join('')}</div>`}
 function showProc(name){const p=PROC[name];$('#icBody').innerHTML=`<button class="icBtn alt" id="backProc">← Procedimientos</button><div class="icGrid"><div class="icCard"><h3>${name}</h3><p><b>Indicaciones orientativas:</b> ${p.ind}</p><h3>Material</h3><ul>${p.material.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="icCard"><h3>Checklist previo</h3><ul>${p.check.map(x=>`<li><label><input type="checkbox"> ${x}</label></li>`).join('')}</ul><h3>Cuidados y vigilancia</h3><ul>${p.after.map(x=>`<li>${x}</li>`).join('')}</ul><button class="icBtn" id="procVivi">Ampliar con Vivi</button><button class="icBtn alt" id="procVideo">🎬 Vídeo</button></div></div><p class="icResult">Contenido educativo. Realizar solo por personal capacitado, con prescripción, supervisión y protocolo local cuando corresponda.</p>`;$('#backProc').onclick=()=>renderTab('procedures');$('#procVivi').onclick=()=>askVivi(`Desarrolla el procedimiento ${name} de forma completa y actualizada, con indicaciones, contraindicaciones, material, preparación, técnica, seguridad, complicaciones y cuidados de enfermería.`);$('#procVideo').onclick=()=>window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(name+' procedimiento sanitario formación'),'_blank','noopener')}
 function renderTab(id){document.querySelectorAll('.icTab').forEach(b=>b.classList.toggle('on',b.dataset.id===id));const b=$('#icBody');
@@ -12614,7 +12692,7 @@ if(k==='met'){const na=n('#cNa'),cl=n('#cCl'),h=n('#cHco'),g=n('#cGlu');if(!na||
 if(k==='osm'){const na=n('#cONa'),g=n('#cOGlu'),bun=n('#cBun');if(!na)throw 0;$('#outOsm').textContent=`Osmolaridad: ${(2*na+g/18+bun/2.8).toFixed(1)} mOsm/kg`}
 if(k==='ped'){const kg=n('#cPKg');if(!kg)throw 0;let r=kg<=10?4*kg:kg<=20?40+2*(kg-10):60+(kg-20);$('#outPed').textContent=`Mantenimiento: ${r.toFixed(1)} ml/h`}
 if(k==='gcs'){const x=n('#gEye')+n('#gVerb')+n('#gMot');$('#outGcs').textContent=`Glasgow: ${x}/15${x<=8?' · gravedad alta; valorar vía aérea según contexto':''}`}}catch(e){const out=btn.parentElement.querySelector('.icResult');if(out)out.textContent='Completa los datos requeridos y revisa las unidades.'}});
-if(id==='alg'){document.querySelectorAll('[data-alg]').forEach(x=>x.onclick=()=>showAlg(x.dataset.alg));const af=$('#algFilter');if(af)af.oninput=filterAlg;}
+if(id==='alg'){document.querySelectorAll('[data-alg]').forEach(x=>x.onclick=()=>showAlg(x.dataset.alg));document.querySelectorAll('[data-bib-alg]').forEach(x=>x.onclick=()=>showBibAlg(x.dataset.bibAlg));const af=$('#algFilter');if(af)af.oninput=filterAlg;document.querySelectorAll('.alg-tab').forEach(t=>t.onclick=function(){document.querySelectorAll('.alg-tab').forEach(b=>b.classList.remove('on'));t.classList.add('on');var core=$('#algCorePane'),bib=$('#algBibPane');if(t.dataset.algTab==='bib'){if(core)core.style.display='none';if(bib)bib.style.display=''}else{if(core)core.style.display='';if(bib)bib.style.display='none'}})}
 if(id==='integrate')$('#iciSend').onclick=()=>askVivi(`Integra clínica y pruebas, separando hallazgos, contradicciones, gravedad, diferenciales y actuación. Clínica: ${$('#iciClinical').value}\nPruebas: ${$('#iciTests').value}`);
 if(id==='media'){$('#icmAdd').onclick=()=>{const a=load('media',[]);a.unshift({title:$('#icmTitle').value||'Recurso',url:$('#icmUrl').value,tags:$('#icmTags').value});save('media',a);renderTab('media')};document.querySelectorAll('[data-del-media]').forEach(x=>x.onclick=()=>{const a=load('media',[]);a.splice(+x.dataset.delMedia,1);save('media',a);renderTab('media')})}
 if(id==='diary'){$('#icdAdd').onclick=()=>{const a=load('diary',[]);a.unshift({title:$('#icdTitle').value||'Entrada',text:$('#icdText').value,date:new Date().toLocaleString()});save('diary',a);renderTab('diary')};document.querySelectorAll('[data-del-diary]').forEach(x=>x.onclick=()=>{const a=load('diary',[]);a.splice(+x.dataset.delDiary,1);save('diary',a);renderTab('diary')})}
