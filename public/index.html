@@ -5952,25 +5952,19 @@ render();
   if(backend){
    updateConn('backend');
    // El servidor (searchAllSources) ya busca en paralelo PubMed/Crossref/NICE/FDA/etc.
-   // Reconstruimos aquí las referencias numeradas [n] a partir de SUS resultados
-   // (no de una búsqueda redundante del navegador) para que el panel de evidencia
-   // y las citas [n] sigan funcionando también en modo backend, sin duplicar peticiones.
+   // sources.references ya llega del backend numerada [1..n] en el MISMO orden que se
+   // usó en el prompt de Gemini (assembleContext), así que aquí solo se indexa tal
+   // cual: no se reconstruye ni se filtra por relevancia, para que los números [n]
+   // que cite el modelo coincidan siempre con esta lista.
    function applyBackendSources(sources){
-    var orchSources=[];
-    window.__v20LiteratureSources=(sources&&sources.articles||[]).map(function(a){
-     return{type:'literature',title:a.title||'',id:a.url||(a.doi?'https://doi.org/'+a.doi:''),meta:(a.journal||a.source||'')+(a.year?' · '+a.year:''),journal:a.journal||a.source||'',year:a.year||''};
+    var refs=(sources&&sources.references)||[];
+    var numbered=[];
+    refs.forEach(function(r){
+     numbered[r.n-1]={n:r.n,title:r.title||'',url:r.url||'',meta:(r.journal||r.source||'')+(r.year?' · '+r.year:''),type:r.type||'',journal:r.journal||r.source||'',year:r.year||''};
     });
-    window.__v20GuidelineSources=(sources&&sources.niceGuidelines||[]).map(function(g){
-     return{type:'guideline',title:g.title||'',id:g.url||'',meta:'NICE'+(g.date?' · '+g.date:''),journal:'NICE',year:(String(g.date||'').match(/(20\d{2})/)||[])[1]||''};
-    });
-    window.__v20PmcSources=[];window.__v20NiceSources=[];
-    window.__v20Refs=buildNumberedRefs(userText);
-    orchSources=orchSources.concat(window.__v20LiteratureSources).concat(window.__v20GuidelineSources);
-    if(sources&&sources.fdaDrug){
-     var f=sources.fdaDrug;
-     orchSources.push({type:'drug',title:(f.brandName||f.genericName||'Ficha FDA'),id:'',meta:'OpenFDA'+(f.manufacturer?' · '+f.manufacturer:'')});
-    }
-    window.__v20OrchestratorSources=orchSources;
+    window.__v20Refs=numbered;
+    window.__v20OrchestratorSources=numbered.filter(Boolean).map(function(r){return{type:r.type,title:r.title,id:r.url,meta:r.meta};});
+    window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20PmcSources=[];window.__v20NiceSources=[];
    }
    var backendPayload={
     question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},

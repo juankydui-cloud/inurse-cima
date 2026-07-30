@@ -55,17 +55,15 @@ Organiza SIEMPRE tu respuesta siguiendo esta estructura narrativa (sin usar esto
 - Educación al paciente si aplica.
 
 ### Bloque 5 — Referencias
-- Lista numerada de todas las fuentes citadas en la respuesta.
+- Lista numerada de todas las fuentes citadas en la respuesta, usando los mismos números [n] del contexto.
 - Formato: Autores. Título. Revista. Año;volumen(número):páginas. DOI o PMID.
 - Diferencia las fuentes internas de iNurse (marcadas como [iNurse · Ficha validada]) de la literatura externa.
 - Incluye siempre al menos 3-5 referencias de literatura publicada cuando estén disponibles.
 
 ## Citación en el texto
 
-- Cita cada afirmación clínica relevante con un número entre corchetes que remita a la lista de referencias: [REF-1], [REF-2], etc.
-- Si una afirmación proviene de una ficha validada de iNurse, márcala como [iNurse-código].
-- Si proviene de una guía NICE, cítala como [NICE-N].
-- Si proviene de una ficha técnica de la FDA, cítala como [FDA].
+- Cita cada afirmación clínica relevante con el número entre corchetes que se indica junto a cada fuente en el contexto: [1], [2], [3]... Usa EXACTAMENTE esos números, nunca inventes uno ni reutilices el mismo número para fuentes distintas.
+- Si una afirmación proviene de una ficha validada de iNurse, márcala como [iNurse-código] (no un número).
 - No hagas afirmaciones clínicas sin respaldo de fuente.
 
 ## Tono y estilo
@@ -304,8 +302,15 @@ async function searchAllSources(question) {
   };
 }
 
+// Construye el contexto en texto plano para el prompt de Gemini Y, en paralelo, una
+// lista de referencias plana con numeración GLOBAL y secuencial ([1], [2], [3]...)
+// que abarca todos los tipos de fuente. Es deliberadamente la misma lista y la misma
+// numeración que se envía al frontend (buildSourcesPayload) para que los números que
+// Gemini use al citar ([n]) coincidan exactamente con los que el cliente enlaza.
 function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments }, clientContext) {
   let ctx = "";
+  const refs = [];
+  let n = 0;
 
   if (clientContext?.guides) {
     ctx += "--- FICHAS VALIDADAS DE iNURSE (GUÍAS CLÍNICAS Y VADEMÉCUM) ---\n";
@@ -317,10 +322,30 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
     ctx += clientContext.library + "\n\n";
   }
 
+  if (articles.length > 0) {
+    ctx += "--- LITERATURA RECUPERADA (PubMed + Crossref + Guías internacionales) ---\n";
+    articles.forEach(art => {
+      const num = ++n;
+      const authors = Array.isArray(art.authors) ? art.authors.join(", ") : (art.authors || "");
+      const url = art.url || (art.doi ? `https://doi.org/${art.doi}` : "");
+      refs.push({ n: num, type: "literature", title: art.title || "", authors, journal: art.journal || art.retrievedFrom || art.source || "", year: art.year || "", doi: art.doi || "", pmid: art.pmid || "", url, source: art.retrievedFrom || art.source || "" });
+      ctx += `\n[${num}] ${authors}. ${art.title}. ${art.journal || ""}. ${art.year || ""}.`;
+      if (art.doi) ctx += ` DOI: ${art.doi}`;
+      if (art.pmid) ctx += ` PMID: ${art.pmid}`;
+      ctx += `\nFuente: ${art.retrievedFrom || art.source || ""}`;
+      if (art.abstract) ctx += `\nAbstract: ${String(art.abstract).slice(0, 500)}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
   if (niceGuidelines.length > 0) {
     ctx += "--- GUÍAS NICE (National Institute for Health and Care Excellence) ---\n";
-    niceGuidelines.forEach((g, i) => {
-      ctx += `\n[NICE-${i + 1}] ${g.title}`;
+    niceGuidelines.forEach(g => {
+      const num = ++n;
+      const year = (String(g.date || "").match(/(20\d{2})/) || [])[1] || "";
+      refs.push({ n: num, type: "guideline", title: g.title || "", journal: "NICE", year, url: g.url || "", source: "NICE" });
+      ctx += `\n[${num}] ${g.title}`;
       if (g.type) ctx += ` (${g.type})`;
       if (g.date) ctx += ` — ${g.date}`;
       if (g.url) ctx += `\nURL: ${g.url}`;
@@ -331,8 +356,10 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
   }
 
   if (fdaDrug) {
+    const num = ++n;
+    refs.push({ n: num, type: "drug", title: fdaDrug.brandName || fdaDrug.genericName || "Ficha FDA", journal: "OpenFDA", year: "", url: "", source: "OpenFDA" });
     ctx += "--- FICHA TÉCNICA FDA (OpenFDA Drug Label) ---\n";
-    ctx += `Fármaco: ${fdaDrug.genericName}`;
+    ctx += `[${num}] Fármaco: ${fdaDrug.genericName}`;
     if (fdaDrug.brandName) ctx += ` (${fdaDrug.brandName})`;
     ctx += "\n";
     if (fdaDrug.manufacturer) ctx += `Fabricante: ${fdaDrug.manufacturer} | Vía: ${fdaDrug.route || "N/D"}\n`;
@@ -346,24 +373,12 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
     ctx += "\n";
   }
 
-  if (articles.length > 0) {
-    ctx += "--- LITERATURA RECUPERADA (PubMed + Crossref + Guías internacionales) ---\n";
-    articles.forEach((art, i) => {
-      const authors = Array.isArray(art.authors) ? art.authors.join(", ") : (art.authors || "");
-      ctx += `\n[REF-${i + 1}] ${authors}. ${art.title}. ${art.journal || ""}. ${art.year || ""}.`;
-      if (art.doi) ctx += ` DOI: ${art.doi}`;
-      if (art.pmid) ctx += ` PMID: ${art.pmid}`;
-      ctx += `\nFuente: ${art.retrievedFrom || art.source || ""}`;
-      if (art.abstract) ctx += `\nAbstract: ${String(art.abstract).slice(0, 500)}`;
-      ctx += "\n";
-    });
-    ctx += "\n";
-  }
-
   if (clinicalTrials.length > 0) {
     ctx += "--- ENSAYOS CLÍNICOS EN CURSO (ClinicalTrials.gov) ---\n";
-    clinicalTrials.forEach((ct, i) => {
-      ctx += `\n[CT-${i + 1}] ${ct.title} (${ct.nctId})`;
+    clinicalTrials.forEach(ct => {
+      const num = ++n;
+      refs.push({ n: num, type: "trial", title: `${ct.title} (${ct.nctId})`, journal: "ClinicalTrials.gov", year: ct.startDate || "", url: ct.url || "", source: "ClinicalTrials.gov" });
+      ctx += `\n[${num}] ${ct.title} (${ct.nctId})`;
       if (ct.status) ctx += `\nEstado: ${ct.status}`;
       if (ct.phase) ctx += ` | Fase: ${ct.phase}`;
       if (ct.organization) ctx += `\nOrganización: ${ct.organization}`;
@@ -376,8 +391,11 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
 
   if (semanticScholar.length > 0) {
     ctx += "--- PAPERS ACADÉMICOS (Semantic Scholar) ---\n";
-    semanticScholar.forEach((paper, i) => {
-      ctx += `\n[SCHOLAR-${i + 1}] ${paper.authors}. ${paper.title}. ${paper.year || ""}.`;
+    semanticScholar.forEach(paper => {
+      const num = ++n;
+      const url = paper.url || (paper.doi ? `https://doi.org/${paper.doi}` : "");
+      refs.push({ n: num, type: "literature", title: paper.title || "", authors: paper.authors || "", journal: "Semantic Scholar", year: paper.year || "", doi: paper.doi || "", url, source: "Semantic Scholar" });
+      ctx += `\n[${num}] ${paper.authors}. ${paper.title}. ${paper.year || ""}.`;
       if (paper.doi) ctx += ` DOI: ${paper.doi}`;
       if (paper.isOpenAccess) ctx += " [OPEN ACCESS]";
       if (paper.abstract) ctx += `\nAbstract: ${String(paper.abstract).slice(0, 400)}`;
@@ -389,8 +407,11 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
 
   if (whoDocuments.length > 0) {
     ctx += "--- DOCUMENTOS DE LA OMS (WHO IRIS) ---\n";
-    whoDocuments.forEach((doc, i) => {
-      ctx += `\n[WHO-${i + 1}] ${doc.title}`;
+    whoDocuments.forEach(doc => {
+      const num = ++n;
+      const year = (String(doc.date || "").match(/(20\d{2})/) || [])[1] || "";
+      refs.push({ n: num, type: "guideline", title: doc.title || "", journal: "OMS", year, url: doc.url || "", source: "WHO" });
+      ctx += `\n[${num}] ${doc.title}`;
       if (doc.type) ctx += ` (${doc.type})`;
       if (doc.date) ctx += ` — ${doc.date}`;
       ctx += `\nURL: ${doc.url}`;
@@ -401,21 +422,16 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
 
   ctx += `--- INSTRUCCIÓN ---
 Utiliza TODAS las fuentes anteriores para responder la siguiente pregunta clínica.
-Cita cada afirmación así:
-- [iNurse-código] para fichas internas validadas
-- [NICE-N] para guías NICE
-- [FDA] para información de la ficha técnica FDA
-- [REF-N] para artículos de PubMed/Crossref/Guías internacionales
-- [CT-N] para ensayos clínicos en curso
-- [SCHOLAR-N] para papers académicos
-- [WHO-N] para documentos de la OMS
-Incluye un bloque de REFERENCIAS al final con formato bibliográfico completo.
+Cita cada afirmación con el número entre corchetes indicado junto a cada fuente arriba: [1], [2], [3]...
+Usa EXACTAMENTE esos números; no inventes ninguno ni cites uno que no exista en el contexto.
+Si una afirmación proviene de una ficha validada de iNurse, márcala como [iNurse-código] en vez de un número.
+Incluye un bloque de REFERENCIAS al final con formato bibliográfico completo, usando los mismos números.
 Si una fuente se contradice con otra, señálalo y prioriza la de mayor nivel de evidencia.
 Si las fuentes no cubren algún aspecto, indícalo explícitamente.
 
 PREGUNTA DEL USUARIO: ${question}`;
 
-  return ctx;
+  return { ctx, refs };
 }
 
 async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, maxOutputTokens = 8192, temperature = 0.3 } = {}) {
@@ -531,22 +547,9 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
   return full.trim();
 }
 
-function buildSourcesPayload({ articles, niceGuidelines, fdaDrug, queries, errors }) {
+function buildSourcesPayload(refs, { queries, errors }) {
   return {
-    articles: articles.map(a => ({
-      title: a.title, authors: Array.isArray(a.authors) ? a.authors.join(", ") : a.authors,
-      journal: a.journal, year: a.year, doi: a.doi, pmid: a.pmid,
-      source: a.retrievedFrom || a.source, url: a.url
-    })),
-    niceGuidelines: niceGuidelines.map(g => ({
-      title: g.title, id: g.id, url: g.url, date: g.date,
-      type: g.type, summary: g.summary, source: "NICE"
-    })),
-    fdaDrug: fdaDrug ? {
-      genericName: fdaDrug.genericName, brandName: fdaDrug.brandName,
-      manufacturer: fdaDrug.manufacturer, route: fdaDrug.route,
-      boxedWarning: !!fdaDrug.boxedWarning, source: "OpenFDA"
-    } : null,
+    references: refs,
     queries,
     errors: errors.length ? errors : undefined
   };
@@ -559,10 +562,11 @@ async function prepareOrchestration(question, clientContext) {
     (drugDetected ? ` | Fármaco: ${drugDetected}` : "") +
     (errors.length ? ` | Errores: ${errors.join("; ")}` : ""));
 
+  const { ctx, refs } = assembleContext(question, searchResults, clientContext);
   return {
     searchResults,
-    userPrompt: assembleContext(question, searchResults, clientContext),
-    sources: buildSourcesPayload(searchResults)
+    userPrompt: ctx,
+    sources: buildSourcesPayload(refs, searchResults)
   };
 }
 
