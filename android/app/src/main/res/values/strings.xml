@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">iNurse</string>
+    <string name="title_activity_main">iNurse</string>
+    <string name="package_name">com.inurse.cima</string>
+    <string name="custom_url_scheme">com.inurse.cima</string>
+</resources>

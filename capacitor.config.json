@@ -1,0 +1,13 @@
+{
+  "appId": "com.inurse.cima",
+  "appName": "iNurse",
+  "webDir": "public",
+  "server": {
+    "url": "https://inurse-cima.onrender.com",
+    "cleartext": false
+  },
+  "backgroundColor": "#0D1320",
+  "android": {
+    "backgroundColor": "#0D1320"
+  }
+}
