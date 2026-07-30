@@ -3093,7 +3093,7 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <!-- Atlas ECG integrado -->
 <div class="atlas-overlay" id="atlasOverlay">
@@ -8178,6 +8178,7 @@ function dermPick(el){
   const bar = Object.assign(document.createElement('div'), { id:'hfBar' });
   const chip = document.createElement('div');
   chip.id = 'hfChip';
+  chip.setAttribute('role','status');
   chip.innerHTML = '<span class="dot"></span><span id="hfLabel">Escuchando…</span>';
   const flash = Object.assign(document.createElement('div'), { id:'hfFlash' });
   document.body.append(bar, chip, flash);
@@ -8508,7 +8509,7 @@ function dermPick(el){
   var ov, panel;
   function buildDrawer(){
     ov = document.createElement('div'); ov.id='v29Ov';
-    panel = document.createElement('div'); panel.id='v29Panel';
+    panel = document.createElement('div'); panel.id='v29Panel'; panel.setAttribute('role','navigation'); panel.setAttribute('aria-label','Menú de guías clínicas por especialidad');
 
     var head = '<div class="v29-head"><span class="mk">'+LOGO_SVG+'</span>'+
       '<h2>iNurse<small>Guías clínicas por especialidad</small></h2>'+
@@ -13216,7 +13217,7 @@ let toastTimer=null;
 function vtoast(text){
   let el=$('#in18VoiceToast');
   if(!el){
-    el=document.createElement('div');el.id='in18VoiceToast';document.body.appendChild(el);
+    el=document.createElement('div');el.id='in18VoiceToast';el.setAttribute('role','status');document.body.appendChild(el);
   }
   el.textContent=text;el.classList.add('on');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),2600);
@@ -13660,7 +13661,7 @@ window.iNurseMainNavigation={
 @media(min-width:760px){.turno-overlay{align-items:center}.turno-modal{border-radius:22px}}
 .turno-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
 .turno-head-ico{font-size:22px}
-.turno-head h3{font-size:16px;font-weight:800;color:var(--text);margin:0}
+.turno-head h2{font-size:16px;font-weight:800;color:var(--text);margin:0}
 .turno-head small{display:block;font-size:12px;color:var(--text-dim);font-weight:500}
 .turno-close{margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px}
 .turno-close:hover{background:rgba(255,255,255,.08);color:var(--text)}
@@ -13720,7 +13721,7 @@ window.iNurseMainNavigation={
   <div class="turno-modal">
     <div class="turno-head">
       <div class="turno-head-ico">🕒</div>
-      <div><h3>Mi turno</h3><small>Notas, pacientes, recordatorios y relevo</small></div>
+      <div><h2>Mi turno</h2><small>Notas, pacientes, recordatorios y relevo</small></div>
       <button class="turno-close" id="turnoClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="turno-counter">
@@ -17175,7 +17176,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 <div id="v29ViviLifeOverlay">
  <div class="v29vl-box">
   <div class="v29vl-orb idle" id="v29Orb"></div>
-  <span class="v29vl-label" id="v29Label">Vivi Life lista. Habla cuando quieras.</span>
+  <span class="v29vl-label" id="v29Label" role="status">Vivi Life lista. Habla cuando quieras.</span>
   <div class="v29vl-transcript" id="v29Transcript"></div>
   <div class="v29vl-response" id="v29Response"></div>
   <button class="v29vl-close" id="v29Close">Salir de Vivi Life</button>
