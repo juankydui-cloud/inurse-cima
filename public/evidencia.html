@@ -107,7 +107,7 @@
   .more{display:block; width:100%; margin:6px 0 8px; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:14px; border-radius:var(--radius); font-size:14px; cursor:pointer; font-family:var(--sans)}
   .more:hover{border-color:var(--teal)}
 
-  footer{margin:30px 0 10px; padding-top:16px; border-top:1px solid var(--border); color:var(--faint); font-size:12px; line-height:1.6}
+  footer{margin:30px 0 10px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; line-height:1.6}
   footer strong{color:var(--muted); font-weight:600}
 
   @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
@@ -142,8 +142,10 @@
   </header>
 
   <div class="count" id="count" hidden></div>
-  <main id="results"></main>
-  <div id="stateHost"></div>
+  <main>
+    <div id="results"></div>
+    <div id="stateHost"></div>
+  </main>
 
   <footer>
     <strong>Fuente:</strong> Europe PMC (EMBL-EBI). La mayoría de la literatura está en inglés; cada referencia enlaza a su publicación original.<br>

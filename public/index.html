@@ -301,8 +301,8 @@
   
   .modal-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
   .modal-head .mh-ico{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--ictus),var(--cardio));display:flex;align-items:center;justify-content:center;font-size:19px}
-  .modal-head h3{font-size:16px;font-weight:800;flex:1}
-  .modal-head h3 small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;margin-top:1px}
+  .modal-head h2{font-size:16px;font-weight:800;flex:1}
+  .modal-head h2 small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;margin-top:1px}
   .modal-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer}
   .modal-body{flex:1;overflow-y:auto;padding:16px 18px}
   
@@ -515,8 +515,8 @@
   .calc-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
   .calc-head-ico{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0EA5E9,#8B5CF6);
     display:flex;align-items:center;justify-content:center;font-size:19px}
-  .calc-head h3{font-size:16px;font-weight:800;flex:1;margin:0}
-  .calc-head h3 small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;margin-top:1px}
+  .calc-head h2{font-size:16px;font-weight:800;flex:1;margin:0}
+  .calc-head h2 small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;margin-top:1px}
   .calc-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:transparent;
     color:var(--text);font-size:18px;cursor:pointer}
   .calc-tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--border);
@@ -553,7 +553,7 @@
   .calc-warn{margin-top:12px;font-size:11px;color:var(--text-dim);padding:8px 12px;background:rgba(250,204,21,.06);
     border-left:3px solid #FACC15;border-radius:6px;line-height:1.5}
   .calc-hist{background:var(--card-solid);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:14px}
-  .calc-hist h4{font-size:13px;font-weight:700;margin:0 0 10px;color:var(--text);display:flex;align-items:center;gap:6px}
+  .calc-hist h3{font-size:13px;font-weight:700;margin:0 0 10px;color:var(--text);display:flex;align-items:center;gap:6px}
   .calc-hist-item{padding:10px;border-bottom:1px solid var(--border);font-size:12px}
   .calc-hist-item:last-child{border-bottom:none}
   .chi-top{display:flex;justify-content:space-between;font-weight:700;margin-bottom:4px}
@@ -2939,12 +2939,12 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 
 <!-- Modal Asistente IA -->
 <div class="overlay" id="overlay">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Vivi, asistente clínica de iNurse">
     <div class="modal-head">
       <div class="mh-ico">✨</div>
-      <h3>Vivi <small>Asistente clínica de iNurse</small></h3>
+      <h2>Vivi <small>Asistente clínica de iNurse</small></h2>
       <button class="icon-btn" id="voiceToggle" title="Activar/Desactivar lectura automática" style="margin-right:6px">🔇</button>
-      <button class="modal-close" id="modalClose">✕</button>
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body" id="modalBody">
       <div class="placeholder-ans">
@@ -2976,11 +2976,11 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 
 <!-- Modal Reto del Electro -->
 <div class="overlay" id="ecgOverlay">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Reto del Electro">
     <div class="modal-head">
       <div class="mh-ico" style="background:linear-gradient(135deg,#10B981,#06B6D4)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l2-6 3.5 12L15 9l1.5 3H22"/></svg></div>
-      <h3>Reto del Electro <small>Análisis sistemático de trazados ECG</small></h3>
-      <button class="modal-close" id="ecgClose">✕</button>
+      <h2>Reto del Electro <small>Análisis sistemático de trazados ECG</small></h2>
+      <button class="modal-close" id="ecgClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body">
       <input type="file" id="ecgFile" accept="image/*" style="display:none">
@@ -3003,11 +3003,11 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 
 <!-- Modal Diagnóstico por Imagen (Rayos X · Gemini Vision) -->
 <div class="overlay" id="rxOverlay">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Diagnóstico por Imagen">
     <div class="modal-head">
       <div class="mh-ico" style="background:linear-gradient(135deg,#8B5CF6,#6366F1)">🩻</div>
-      <h3>Diagnóstico por Imagen <small>Análisis de radiografías con Gemini Vision</small></h3>
-      <button class="modal-close" id="rxClose">✕</button>
+      <h2>Diagnóstico por Imagen <small>Análisis de radiografías con Gemini Vision</small></h2>
+      <button class="modal-close" id="rxClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body">
       <input type="file" id="rxFile" accept="image/*" capture="environment" style="display:none">
@@ -3031,11 +3031,11 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 
 <!-- Modal Búsqueda por Voz -->
 <div class="overlay" id="recOverlay">
-  <div class="modal" style="max-width:480px">
+  <div class="modal" style="max-width:480px" role="dialog" aria-modal="true" aria-label="Dictado Clínico de Voz">
     <div class="modal-head">
       <div class="mh-ico" style="background:linear-gradient(135deg,var(--cardio),var(--emer))">🎙️</div>
-      <h3>Dictado Clínico de Voz</h3>
-      <button class="modal-close" id="recClose">✕</button>
+      <h2>Dictado Clínico de Voz</h2>
+      <button class="modal-close" id="recClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body rec-center">
       <div class="rec-hint" id="recHint">Toca el micrófono y di un comando o describe el caso</div>
@@ -3093,7 +3093,7 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <!-- Atlas ECG integrado -->
 <div class="atlas-overlay" id="atlasOverlay">
@@ -3110,6 +3110,40 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 <script src="/data/guias.js"></script>
 <script src="/data/vademecum.js"></script>
 <script>
+// Trampa de foco reutilizable para diálogos modales: mientras el diálogo está
+// abierto, Tab/Shift+Tab circulan solo entre sus elementos interactivos (sin
+// escapar al contenido de detrás) y, al cerrarlo, el foco vuelve a quien lo
+// abrió. Se expone en window porque los distintos overlays de la app viven en
+// closures/<script> independientes que no comparten variables entre sí.
+window.iNurseFocusTrap = function(container, opts){
+  opts = opts || {};
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  var previouslyFocused = document.activeElement;
+  function focusable(){
+    return Array.prototype.filter.call(container.querySelectorAll(FOCUSABLE), function(el){
+      return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    });
+  }
+  function onKeydown(e){
+    if(e.key !== 'Tab') return;
+    var items = focusable();
+    if(!items.length) return;
+    var first = items[0], last = items[items.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+  container.addEventListener('keydown', onKeydown);
+  setTimeout(function(){
+    var target = opts.initialFocus || focusable()[0];
+    if(target) target.focus();
+  }, 30);
+  return function release(){
+    container.removeEventListener('keydown', onKeydown);
+    if(!opts.skipRestoreFocus && previouslyFocused && typeof previouslyFocused.focus === 'function'){
+      try{ previouslyFocused.focus(); }catch(e){}
+    }
+  };
+};
 window.iNurseCloud = (function(){
   var origSet = localStorage.setItem.bind(localStorage);
   var origRemove = localStorage.removeItem.bind(localStorage);
@@ -4771,7 +4805,7 @@ render();
   <span class="v23-voice-copy"><b id="v23VoiceTitle">Conversación por voz desactivada</b><small id="v23VoiceStatus">Pulsa 🎙️ para iniciar una sesión manos libres.</small></span>
   <button type="button" id="v23VoiceStop">Detener</button>
  </div>
- <div id="ccChat"></div>
+ <div id="ccChat" aria-live="polite" aria-atomic="false" aria-relevant="additions" aria-busy="false"></div>
  <div class="cc-attprev" id="ccAttPrev"></div>
  <div id="v23MediaPanel" class="v23-media-panel"></div>
  <div class="cc-inputbar">
@@ -6106,6 +6140,7 @@ render();
    streamNode.textContent=fullText;chat.scrollTop=chat.scrollHeight;
   }
   var canStream=(_mode==='direct'||_mode==='backend')&&!att;
+  chat.setAttribute('aria-busy','true'); // evita que el lector de pantalla anuncie cada fragmento mientras llega en streaming
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null).then(function(reply){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    var refsNow=window.__v20Refs||refs;
@@ -6121,6 +6156,7 @@ render();
    if(caseMemory.length)node.insertAdjacentHTML('beforeend','<div class="v20-case-strip">🧠 Memoria temporal del caso activa: '+caseMemory.length+' aportaciones. Pulsa 🧠 para revisarla o 🧹 para borrarla.</div>');
    if(connectionMode()==='local')node.insertAdjacentHTML('beforeend','<div class="v20-mode-note">Vivi está en modo local: recupera y abre información, pero no genera una síntesis clínica nueva.</div>');
    attachActionEvents(node,route);attachSourceEvents(node);chat.scrollTop=chat.scrollHeight;jset(CHATK,messages);updateConn();
+   chat.setAttribute('aria-busy','false');
    v31Save(text,reply,allSources);
    if(spokenAlg){
     /* La lectura del algoritmo ya gestiona la voz y el reinicio de la escucha */
@@ -6134,13 +6170,14 @@ render();
    if(verifyEnabled&&connectionMode()!=='local')remoteVerify(reply,text,route,allSources,localCheck).then(function(v){var host=document.getElementById(verifyId);if(host)host.innerHTML=verificationHTML(v,false)});
   }).catch(function(err){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
-   typ.remove();updateConn('error');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
+   typ.remove();updateConn('error');chat.setAttribute('aria-busy','false');var bm={role:'bot',content:'⚠️ No he podido completar la consulta: '+err.message+'\n\nPuedes seguir utilizando la recuperación local de Guías clínicas, Biblioteca virtual y herramientas.'};messages.push(bm);var node=rmsg(bm);node.insertAdjacentHTML('beforeend',casePanel(snapshot));node.insertAdjacentHTML('beforeend',actionPanel(route));node.insertAdjacentHTML('beforeend',verificationHTML(localVerify(bm.content,text,route,allSources,snapshot),false));attachActionEvents(node,route);attachSourceEvents(node);jset(CHATK,messages);voiceBusy=false;if(voiceSession)scheduleVoiceRestart(700);
   });
  }
 
  /* ---- abrir/cerrar chat ---- */
- function showChat(){q('#ccWrap').classList.remove('hide');q('#ccFab').classList.remove('on');lset(OPENK,'1')}
- function hideChat(){if(voiceSession)stopVoiceSession();q('#ccWrap').classList.add('hide');q('#ccFab').classList.add('on');lset(OPENK,'0')}
+ var releaseChatFocusTrap=null;
+ function showChat(){q('#ccWrap').classList.remove('hide');q('#ccFab').classList.remove('on');lset(OPENK,'1');if(releaseChatFocusTrap)releaseChatFocusTrap();releaseChatFocusTrap=window.iNurseFocusTrap(q('#ccWrap'),{initialFocus:q('#ccTa')});}
+ function hideChat(){if(voiceSession)stopVoiceSession();q('#ccWrap').classList.add('hide');q('#ccFab').classList.add('on');lset(OPENK,'0');if(releaseChatFocusTrap){releaseChatFocusTrap();releaseChatFocusTrap=null;}}
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!q('#ccWrap').classList.contains('hide'))hideChat()});
  q('#ccGuide').onclick=hideChat;
  q('#ccFab').onclick=showChat;
@@ -7972,11 +8009,11 @@ function dermPick(el){
 
 
 <div class="calc-overlay" id="calcOverlay">
-  <div class="calc-modal">
+  <div class="calc-modal" role="dialog" aria-modal="true" aria-label="Calculadoras clínicas">
     <div class="calc-head">
       <div class="calc-head-ico">🧮</div>
-      <h3>Calculadoras clínicas<small>Cálculos rápidos con historial local</small></h3>
-      <button class="calc-close" onclick="closeCalcs()">✕</button>
+      <h2>Calculadoras clínicas<small>Cálculos rápidos con historial local</small></h2>
+      <button class="calc-close" onclick="closeCalcs()" aria-label="Cerrar">✕</button>
     </div>
     <div class="calc-tabs">
       <button class="calc-tab active" data-c="perf" onclick="showCalc('perf')">💉 Perfusiones</button>
@@ -8005,7 +8042,7 @@ function dermPick(el){
     <div class="calc-body">
       <div id="calcBody"></div>
       <div class="calc-hist">
-        <h4>🕐 Cálculos recientes</h4>
+        <h3>🕐 Cálculos recientes</h3>
         <div id="calcHistList"><div class="calc-empty">Sin cálculos recientes.</div></div>
       </div>
     </div>
@@ -8141,6 +8178,7 @@ function dermPick(el){
   const bar = Object.assign(document.createElement('div'), { id:'hfBar' });
   const chip = document.createElement('div');
   chip.id = 'hfChip';
+  chip.setAttribute('role','status');
   chip.innerHTML = '<span class="dot"></span><span id="hfLabel">Escuchando…</span>';
   const flash = Object.assign(document.createElement('div'), { id:'hfFlash' });
   document.body.append(bar, chip, flash);
@@ -8471,7 +8509,7 @@ function dermPick(el){
   var ov, panel;
   function buildDrawer(){
     ov = document.createElement('div'); ov.id='v29Ov';
-    panel = document.createElement('div'); panel.id='v29Panel';
+    panel = document.createElement('div'); panel.id='v29Panel'; panel.setAttribute('role','navigation'); panel.setAttribute('aria-label','Menú de guías clínicas por especialidad');
 
     var head = '<div class="v29-head"><span class="mk">'+LOGO_SVG+'</span>'+
       '<h2>iNurse<small>Guías clínicas por especialidad</small></h2>'+
@@ -11256,6 +11294,17 @@ body.in57-visual .in52-welcome {
   justify-content: center !important;
   padding: 24px !important;
 }
+/* La regla anterior deja .cc-welcome como fila flex sin flex-direction: su
+   contenido (avatar, título, párrafo y los botones rápidos de .v21-quick)
+   queda apretado en horizontal y las tarjetas de .v21-quick se colapsan a
+   ~18px de ancho, ilegibles e imposibles de pulsar. Se corrige solo para
+   .cc-welcome pasando a columna, manteniendo el mismo resultado visual
+   (contenido centrado y pegado abajo del fondo) intercambiando los ejes. */
+body.in57-visual .cc-welcome {
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
 
 /* Icono central de bienvenida */
 body.in57-visual .cc-empty .cc-logo,
@@ -11723,7 +11772,7 @@ body.in60-content-mode main{display:block!important}
   function labelSpeechSource(target){
     var title='Lectura en voz alta';
     var card=target&&target.closest('.card,.vcard,.pato-drug,#ccWrap,.modal');
-    if(card){var t=card.querySelector('.ctitle,.vc-name,.pd-name,.cc-brand h1,.modal-head h3');if(t)title=(t.textContent||'').trim()||title}
+    if(card){var t=card.querySelector('.ctitle,.vc-name,.pd-name,.cc-brand h1,.modal-head h2');if(t)title=(t.textContent||'').trim()||title}
     var lab=ensureSpeechDock().querySelector('.in61-label');if(lab)lab.textContent=title;
   }
   document.addEventListener('click',function(e){
@@ -12283,7 +12332,7 @@ body.in60-content-mode main{display:block!important}
   }
   function ensureOverlay(){
     let ov=$('#in63Overlay');if(ov)return ov;
-    ov=document.createElement('div');ov.id='in63Overlay';ov.className='in63-overlay';ov.innerHTML=`<div class="in63-panel"><div class="in63-head"><div class="in63-head-icon">✨</div><div class="in63-head-title"><h2>Proyectos con Vivi</h2><p id="in63HeadSub">Crea, organiza, redacta y exporta tus documentos</p></div><div class="in63-head-actions"><button class="in63-btn in63-hide-mobile" id="in63New">＋ Nuevo</button><button class="in63-btn in63-hide-mobile" id="in63Save">💾 Guardar</button><button class="in63-btn" id="in63Preview">👁 Vista previa</button><button class="in63-btn primary" id="in63Export">Exportar ▾</button><button class="in63-btn in63-close" id="in63Close">×</button></div></div><div class="in63-body" id="in63Body"></div><div class="in63-dialog" id="in63Dialog"></div></div>`;document.body.appendChild(ov);
+    ov=document.createElement('div');ov.id='in63Overlay';ov.className='in63-overlay';ov.innerHTML=`<div class="in63-panel" role="dialog" aria-modal="true" aria-label="Proyectos con Vivi"><div class="in63-head"><div class="in63-head-icon">✨</div><div class="in63-head-title"><h2>Proyectos con Vivi</h2><p id="in63HeadSub">Crea, organiza, redacta y exporta tus documentos</p></div><div class="in63-head-actions"><button class="in63-btn in63-hide-mobile" id="in63New">＋ Nuevo</button><button class="in63-btn in63-hide-mobile" id="in63Save">💾 Guardar</button><button class="in63-btn" id="in63Preview">👁 Vista previa</button><button class="in63-btn primary" id="in63Export">Exportar ▾</button><button class="in63-btn in63-close" id="in63Close" aria-label="Cerrar">×</button></div></div><div class="in63-body" id="in63Body"></div><div class="in63-dialog" id="in63Dialog"></div></div>`;document.body.appendChild(ov);
     $('#in63Close',ov).onclick=close;$('#in63New',ov).onclick=()=>showStart(true);$('#in63Save',ov).onclick=manualSave;$('#in63Export',ov).onclick=showExportDialog;$('#in63Preview',ov).onclick=showPreview;ov.addEventListener('click',e=>{if(e.target===ov)close()});
     return ov;
   }
@@ -12607,8 +12656,9 @@ const PROC={
 'Punción lumbar':{ind:'Estudio de infección, inflamación, hemorragia o presión de LCR cuando esté indicada.',material:['Kit lumbar y tubos numerados','Antiséptico y campo estéril','Anestésico local','Manómetro si procede'],check:['Revisar contraindicaciones y coagulación','Valorar necesidad de neuroimagen previa','Posicionar y explicar'],after:['Etiquetar tubos y enviar de inmediato','Vigilar cefalea, sangrado, dolor, déficit neurológico e infección']},
 'Cardioversión':{ind:'Taquiarritmia con inestabilidad o cardioversión programada según indicación.',material:['Desfibrilador con sincronización','Parches','Monitorización y oxígeno','Material de vía aérea','Sedoanalgesia prescrita'],check:['Confirmar ritmo e indicación','Activar modo sincronizado y verificar marcas','Retirar fuentes de oxígeno del campo de descarga','Checklist y seguridad del equipo'],after:['Reevaluar ritmo, perfusión y conciencia','ECG de 12 derivaciones','Vigilar recurrencia, embolia, quemadura e hipotensión']}
 };
-function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); }
-function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); }
+var releaseIcFocusTrap=null;
+function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); if(releaseIcFocusTrap)releaseIcFocusTrap(); releaseIcFocusTrap=window.iNurseFocusTrap($('#icPanel')); }
+function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); if(releaseIcFocusTrap){releaseIcFocusTrap();releaseIcFocusTrap=null;} }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#icOverlay').classList.contains('on'))close()});
 function save(k,v){localStorage.setItem('inurse_ic_'+k,JSON.stringify(v))} function load(k,d){try{return JSON.parse(localStorage.getItem('inurse_ic_'+k))??d}catch(e){return d}}
 function askVivi(text){try{if(typeof window.openViviWithContext==='function'){window.openViviWithContext(text);close();return}}catch(e){} try{if(typeof window.openIn72==='function'){window.openIn72(text);close();return}}catch(e){} const fab=document.querySelector('.fab,[data-vivi],#viviBtn,#v29Vivi');if(fab)fab.click();setTimeout(()=>{const q=document.querySelector('.qinput,#viviInput,textarea[placeholder*="Vivi"],textarea[placeholder*="Pregunta"]');if(q){q.value=text;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus()}},250);close()}
@@ -13178,7 +13228,7 @@ let toastTimer=null;
 function vtoast(text){
   let el=$('#in18VoiceToast');
   if(!el){
-    el=document.createElement('div');el.id='in18VoiceToast';document.body.appendChild(el);
+    el=document.createElement('div');el.id='in18VoiceToast';el.setAttribute('role','status');document.body.appendChild(el);
   }
   el.textContent=text;el.classList.add('on');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),2600);
@@ -13622,7 +13672,7 @@ window.iNurseMainNavigation={
 @media(min-width:760px){.turno-overlay{align-items:center}.turno-modal{border-radius:22px}}
 .turno-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
 .turno-head-ico{font-size:22px}
-.turno-head h3{font-size:16px;font-weight:800;color:var(--text);margin:0}
+.turno-head h2{font-size:16px;font-weight:800;color:var(--text);margin:0}
 .turno-head small{display:block;font-size:12px;color:var(--text-dim);font-weight:500}
 .turno-close{margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px}
 .turno-close:hover{background:rgba(255,255,255,.08);color:var(--text)}
@@ -13682,7 +13732,7 @@ window.iNurseMainNavigation={
   <div class="turno-modal">
     <div class="turno-head">
       <div class="turno-head-ico">🕒</div>
-      <div><h3>Mi turno</h3><small>Notas, pacientes, recordatorios y relevo</small></div>
+      <div><h2>Mi turno</h2><small>Notas, pacientes, recordatorios y relevo</small></div>
       <button class="turno-close" id="turnoClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="turno-counter">
@@ -16978,7 +17028,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     document.body.appendChild(ov);
 
-    function closeAjustes(){ ov.remove(); document.removeEventListener('keydown',onAjustesEscape); }
+    var releaseAjustesFocusTrap=window.iNurseFocusTrap(ov.querySelector('.nx-aj-panel'));
+    function closeAjustes(){ ov.remove(); document.removeEventListener('keydown',onAjustesEscape); if(releaseAjustesFocusTrap){releaseAjustesFocusTrap();releaseAjustesFocusTrap=null;} }
     function onAjustesEscape(e){ if(e.key==='Escape') closeAjustes(); }
     document.addEventListener('keydown',onAjustesEscape);
     document.getElementById('nxAjClose').onclick=closeAjustes;
@@ -17136,7 +17187,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 <div id="v29ViviLifeOverlay">
  <div class="v29vl-box">
   <div class="v29vl-orb idle" id="v29Orb"></div>
-  <span class="v29vl-label" id="v29Label">Vivi Life lista. Habla cuando quieras.</span>
+  <span class="v29vl-label" id="v29Label" role="status">Vivi Life lista. Habla cuando quieras.</span>
   <div class="v29vl-transcript" id="v29Transcript"></div>
   <div class="v29vl-response" id="v29Response"></div>
   <button class="v29vl-close" id="v29Close">Salir de Vivi Life</button>
@@ -17970,6 +18021,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   var o=document.getElementById('patoFullOv');
   if(o)return o;
   o=document.createElement('div');o.id='patoFullOv';
+  o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Patologías por sistemas');
   o.innerHTML='<div class="pfx-head"><div class="pfx-logo">🧭</div>'+
    '<div class="pfx-title"><b>Patologías por sistemas</b><small>Índice clínico por aparatos y sistemas</small></div>'+
    '<button class="pfx-close" aria-label="Cerrar">✕</button></div><div class="pfx-body"></div>';
