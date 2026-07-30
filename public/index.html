@@ -4194,7 +4194,7 @@ ecgFile.onchange=()=>{
   const r=new FileReader();
   r.onload=()=>{
     ecgImage={data:r.result.split(",")[1],media:f.type||"image/jpeg"};
-    ecgDrop.innerHTML=`<img src="${r.result}" style="width:100%;border-radius:10px;display:block"><div style="margin-top:8px;font-size:12px">Toca para cambiar la imagen</div>`;
+    ecgDrop.innerHTML=`<img src="${r.result}" alt="Electrocardiograma cargado para análisis" style="width:100%;border-radius:10px;display:block"><div style="margin-top:8px;font-size:12px">Toca para cambiar la imagen</div>`;
   };
   r.readAsDataURL(f);
 };
@@ -4274,7 +4274,7 @@ rxFile.onchange=()=>{
   const r=new FileReader();
   r.onload=()=>{
     rxImage={data:r.result.split(",")[1],media:f.type||"image/jpeg"};
-    rxDrop.innerHTML=`<img src="${r.result}" style="width:100%;border-radius:10px;display:block"><div style="margin-top:8px;font-size:12px">Toca para cambiar la imagen</div>`;
+    rxDrop.innerHTML=`<img src="${r.result}" alt="Radiografía cargada para análisis" style="width:100%;border-radius:10px;display:block"><div style="margin-top:8px;font-size:12px">Toca para cambiar la imagen</div>`;
   };
   r.readAsDataURL(f);
 };
@@ -4753,7 +4753,7 @@ render();
 
 
 <!-- ===== BODY (capa de chat sobre la guía) ===== -->
-<div id="ccWrap">
+<div id="ccWrap" role="dialog" aria-modal="true" aria-label="Vivi, asistente clínico">
  <div class="cc-head">
   <div class="cc-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lgHJ" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset=".55" stop-color="#d946a0"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#lgHJ)"/><g fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M30 26 V46 a20 20 0 0 0 40 0 V26"/><path d="M50 66 V74 a12 12 0 0 0 12 12"/></g><circle cx="30" cy="24" r="4.6" fill="#fff"/><circle cx="70" cy="24" r="4.6" fill="#fff"/><circle cx="62" cy="86" r="9.5" fill="#fff"/><circle cx="62" cy="86" r="4.6" fill="#7b46c9"/></svg></div>
   <div class="cc-brand"><h1>Vivi</h1><p>Vivi Voz + Imagen <span id="v20Conn" class="v20-conn local">Modo local</span></p></div>
@@ -5421,7 +5421,7 @@ render();
  }
  function rmsg(m,isLast){
   var d=document.createElement('div');d.className='cc-msg '+(m.role==='user'?'u':'b');var inner='';
-  if(m.att){ if(m.att.kind==='image')inner+='<img class="att" src="data:'+m.att.mime+';base64,'+m.att.data+'">'; else inner+='<span class="doc">📄 '+esc(m.att.name||'documento')+'</span>'; }
+  if(m.att){ if(m.att.kind==='image')inner+='<img class="att" src="data:'+m.att.mime+';base64,'+m.att.data+'" alt="Imagen adjunta a la consulta">'; else inner+='<span class="doc">📄 '+esc(m.att.name||'documento')+'</span>'; }
   inner+= m.role==='user'? esc(m.content).replace(/\n/g,'<br>') : (function(){ var h=md(m.content); if(m.role==='bot'&&m.refs&&m.refs.length) h=linkifyCitations(h,m.refs); return h; })();
   if(m.role==='bot'){
    inner+='<div class="v30-actions"><button class="cc-spk">🔊 Leer</button><button class="v30-copy">📋 Copiar</button><button class="v30-share">📤 Compartir</button><button class="v30-pdf">📄 PDF</button></div>';
@@ -5627,7 +5627,7 @@ render();
  }
  function showAtt(){var p=q('#ccAttPrev');if(!attachment){p.className='cc-attprev';p.innerHTML='';renderMediaPanel();upd();return}
   attachment.mediaType=mediaType;
-  p.className='cc-attprev on';var th=attachment.kind==='image'?'<img src="'+attachment.preview+'">':'<span style="font-size:20px">📄</span>';
+  p.className='cc-attprev on';var th=attachment.kind==='image'?'<img src="'+attachment.preview+'" alt="Vista previa de la imagen a enviar">':'<span style="font-size:20px">📄</span>';
   p.innerHTML='<div class="cc-attchip">'+th+'<span>'+esc(attachment.name||attachment.kind)+' · '+esc(mediaLabel(mediaType))+'</span><button class="x" id="ccAttX">✕</button></div>';
   q('#ccAttX').onclick=function(){attachment=null;mediaType='auto';showAtt()};renderMediaPanel();upd();
  }
@@ -6141,6 +6141,7 @@ render();
  /* ---- abrir/cerrar chat ---- */
  function showChat(){q('#ccWrap').classList.remove('hide');q('#ccFab').classList.remove('on');lset(OPENK,'1')}
  function hideChat(){if(voiceSession)stopVoiceSession();q('#ccWrap').classList.add('hide');q('#ccFab').classList.add('on');lset(OPENK,'0')}
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!q('#ccWrap').classList.contains('hide'))hideChat()});
  q('#ccGuide').onclick=hideChat;
  q('#ccFab').onclick=showChat;
  q('#ccNew').onclick=function(){ if(messages.length&&!confirm('¿Empezar una conversación nueva? Se borrará la actual.'))return; messages=[];jset(CHATK,messages);paint(); };
@@ -12515,8 +12516,8 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .alg-tab .alg-group-count{margin-left:4px}
 </style>
 <div id="icOverlay" aria-hidden="true">
-  <section id="icPanel">
-    <div class="icHead"><span style="font-size:27px">🧠</span><div><h2>Espacio clínico inteligente</h2><small style="color:var(--text-dim,#94a3b8)">Asistencia, aprendizaje y organización clínica</small></div><button class="icClose" id="icClose">×</button></div>
+  <section id="icPanel" role="dialog" aria-modal="true" aria-label="Espacio clínico inteligente">
+    <div class="icHead"><span style="font-size:27px">🧠</span><div><h2>Espacio clínico inteligente</h2><small style="color:var(--text-dim,#94a3b8)">Asistencia, aprendizaje y organización clínica</small></div><button class="icClose" id="icClose" aria-label="Cerrar espacio clínico inteligente">×</button></div>
     <div class="icTabs" id="icTabs"></div>
     <div class="icBody" id="icBody"></div>
   </section>
@@ -12608,6 +12609,7 @@ const PROC={
 };
 function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); }
 function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); }
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#icOverlay').classList.contains('on'))close()});
 function save(k,v){localStorage.setItem('inurse_ic_'+k,JSON.stringify(v))} function load(k,d){try{return JSON.parse(localStorage.getItem('inurse_ic_'+k))??d}catch(e){return d}}
 function askVivi(text){try{if(typeof window.openViviWithContext==='function'){window.openViviWithContext(text);close();return}}catch(e){} try{if(typeof window.openIn72==='function'){window.openIn72(text);close();return}}catch(e){} const fab=document.querySelector('.fab,[data-vivi],#viviBtn,#v29Vivi');if(fab)fab.click();setTimeout(()=>{const q=document.querySelector('.qinput,#viviInput,textarea[placeholder*="Vivi"],textarea[placeholder*="Pregunta"]');if(q){q.value=text;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus()}},250);close()}
 function card(title,body){return `<div class="icCard"><h3>${title}</h3>${body}</div>`}
@@ -16929,8 +16931,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
     ov.innerHTML=''
-      +'<div class="nx-aj-panel">'
-      +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose">✕</button></div>'
+      +'<div class="nx-aj-panel" role="dialog" aria-modal="true" aria-label="Ajustes">'
+      +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose" aria-label="Cerrar ajustes">✕</button></div>'
       +'<div class="nx-aj-body">'
 
       +'<div class="nx-aj-section">'
@@ -16976,7 +16978,9 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     document.body.appendChild(ov);
 
-    function closeAjustes(){ ov.remove(); }
+    function closeAjustes(){ ov.remove(); document.removeEventListener('keydown',onAjustesEscape); }
+    function onAjustesEscape(e){ if(e.key==='Escape') closeAjustes(); }
+    document.addEventListener('keydown',onAjustesEscape);
     document.getElementById('nxAjClose').onclick=closeAjustes;
     ov.addEventListener('click',function(e){ if(e.target===ov) closeAjustes(); });
 
