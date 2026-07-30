@@ -13782,22 +13782,22 @@ window.iNurseMainNavigation={
       </div>
       <div class="turno-view" id="turnoViewRec">
         <div class="turno-rem-add">
-          <input type="time" id="turnoRemTime">
+          <input type="time" id="turnoRemTime" aria-label="Hora del recordatorio">
           <input type="text" id="turnoRemLabel" placeholder="Ej: Constantes, medicación...">
-          <select id="turnoRemRoom"><option value="">Sin habitación</option></select>
+          <select id="turnoRemRoom" aria-label="Habitación"><option value="">Sin habitación</option></select>
           <label class="turno-rem-repeat"><input type="checkbox" id="turnoRemRepeat"> Repetir cada turno</label>
           <button class="turno-btn primary" id="turnoRemAdd">+ Añadir</button>
         </div>
         <div class="turno-rem-list" id="turnoRemList"></div>
       </div>
       <div class="turno-view" id="turnoViewCheck">
-        <h4>Inicio de turno</h4>
+        <h3>Inicio de turno</h3>
         <div class="turno-checklist" id="turnoCheckStart"></div>
         <div class="turno-checklist-add">
           <input type="text" id="turnoCheckStartNew" placeholder="Añadir ítem de inicio...">
           <button class="turno-btn" data-check-add="start">+ Añadir</button>
         </div>
-        <h4>Fin de turno</h4>
+        <h3>Fin de turno</h3>
         <div class="turno-checklist" id="turnoCheckEnd"></div>
         <div class="turno-checklist-add">
           <input type="text" id="turnoCheckEndNew" placeholder="Añadir ítem de fin...">
