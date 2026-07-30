@@ -3110,6 +3110,40 @@ a.cc-ref-item:hover{border-color:rgba(56,189,248,.45);background:rgba(56,189,248
 <script src="/data/guias.js"></script>
 <script src="/data/vademecum.js"></script>
 <script>
+// Trampa de foco reutilizable para diálogos modales: mientras el diálogo está
+// abierto, Tab/Shift+Tab circulan solo entre sus elementos interactivos (sin
+// escapar al contenido de detrás) y, al cerrarlo, el foco vuelve a quien lo
+// abrió. Se expone en window porque los distintos overlays de la app viven en
+// closures/<script> independientes que no comparten variables entre sí.
+window.iNurseFocusTrap = function(container, opts){
+  opts = opts || {};
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  var previouslyFocused = document.activeElement;
+  function focusable(){
+    return Array.prototype.filter.call(container.querySelectorAll(FOCUSABLE), function(el){
+      return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    });
+  }
+  function onKeydown(e){
+    if(e.key !== 'Tab') return;
+    var items = focusable();
+    if(!items.length) return;
+    var first = items[0], last = items[items.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+  container.addEventListener('keydown', onKeydown);
+  setTimeout(function(){
+    var target = opts.initialFocus || focusable()[0];
+    if(target) target.focus();
+  }, 30);
+  return function release(){
+    container.removeEventListener('keydown', onKeydown);
+    if(!opts.skipRestoreFocus && previouslyFocused && typeof previouslyFocused.focus === 'function'){
+      try{ previouslyFocused.focus(); }catch(e){}
+    }
+  };
+};
 window.iNurseCloud = (function(){
   var origSet = localStorage.setItem.bind(localStorage);
   var origRemove = localStorage.removeItem.bind(localStorage);
@@ -6141,8 +6175,9 @@ render();
  }
 
  /* ---- abrir/cerrar chat ---- */
- function showChat(){q('#ccWrap').classList.remove('hide');q('#ccFab').classList.remove('on');lset(OPENK,'1')}
- function hideChat(){if(voiceSession)stopVoiceSession();q('#ccWrap').classList.add('hide');q('#ccFab').classList.add('on');lset(OPENK,'0')}
+ var releaseChatFocusTrap=null;
+ function showChat(){q('#ccWrap').classList.remove('hide');q('#ccFab').classList.remove('on');lset(OPENK,'1');if(releaseChatFocusTrap)releaseChatFocusTrap();releaseChatFocusTrap=window.iNurseFocusTrap(q('#ccWrap'),{initialFocus:q('#ccTa')});}
+ function hideChat(){if(voiceSession)stopVoiceSession();q('#ccWrap').classList.add('hide');q('#ccFab').classList.add('on');lset(OPENK,'0');if(releaseChatFocusTrap){releaseChatFocusTrap();releaseChatFocusTrap=null;}}
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!q('#ccWrap').classList.contains('hide'))hideChat()});
  q('#ccGuide').onclick=hideChat;
  q('#ccFab').onclick=showChat;
@@ -12609,8 +12644,9 @@ const PROC={
 'Punción lumbar':{ind:'Estudio de infección, inflamación, hemorragia o presión de LCR cuando esté indicada.',material:['Kit lumbar y tubos numerados','Antiséptico y campo estéril','Anestésico local','Manómetro si procede'],check:['Revisar contraindicaciones y coagulación','Valorar necesidad de neuroimagen previa','Posicionar y explicar'],after:['Etiquetar tubos y enviar de inmediato','Vigilar cefalea, sangrado, dolor, déficit neurológico e infección']},
 'Cardioversión':{ind:'Taquiarritmia con inestabilidad o cardioversión programada según indicación.',material:['Desfibrilador con sincronización','Parches','Monitorización y oxígeno','Material de vía aérea','Sedoanalgesia prescrita'],check:['Confirmar ritmo e indicación','Activar modo sincronizado y verificar marcas','Retirar fuentes de oxígeno del campo de descarga','Checklist y seguridad del equipo'],after:['Reevaluar ritmo, perfusión y conciencia','ECG de 12 derivaciones','Vigilar recurrencia, embolia, quemadura e hipotensión']}
 };
-function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); }
-function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); }
+var releaseIcFocusTrap=null;
+function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); if(releaseIcFocusTrap)releaseIcFocusTrap(); releaseIcFocusTrap=window.iNurseFocusTrap($('#icPanel')); }
+function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); if(releaseIcFocusTrap){releaseIcFocusTrap();releaseIcFocusTrap=null;} }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#icOverlay').classList.contains('on'))close()});
 function save(k,v){localStorage.setItem('inurse_ic_'+k,JSON.stringify(v))} function load(k,d){try{return JSON.parse(localStorage.getItem('inurse_ic_'+k))??d}catch(e){return d}}
 function askVivi(text){try{if(typeof window.openViviWithContext==='function'){window.openViviWithContext(text);close();return}}catch(e){} try{if(typeof window.openIn72==='function'){window.openIn72(text);close();return}}catch(e){} const fab=document.querySelector('.fab,[data-vivi],#viviBtn,#v29Vivi');if(fab)fab.click();setTimeout(()=>{const q=document.querySelector('.qinput,#viviInput,textarea[placeholder*="Vivi"],textarea[placeholder*="Pregunta"]');if(q){q.value=text;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus()}},250);close()}
@@ -16980,7 +17016,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 
     document.body.appendChild(ov);
 
-    function closeAjustes(){ ov.remove(); document.removeEventListener('keydown',onAjustesEscape); }
+    var releaseAjustesFocusTrap=window.iNurseFocusTrap(ov.querySelector('.nx-aj-panel'));
+    function closeAjustes(){ ov.remove(); document.removeEventListener('keydown',onAjustesEscape); if(releaseAjustesFocusTrap){releaseAjustesFocusTrap();releaseAjustesFocusTrap=null;} }
     function onAjustesEscape(e){ if(e.key==='Escape') closeAjustes(); }
     document.addEventListener('keydown',onAjustesEscape);
     document.getElementById('nxAjClose').onclick=closeAjustes;
