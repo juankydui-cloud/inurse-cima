@@ -12580,7 +12580,18 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .alg-tab.on{background:rgba(45,212,191,.15);border-color:rgba(45,212,191,.3);color:#2DD4BF}
 .alg-tab:hover:not(.on){background:rgba(255,255,255,.08)}
 .alg-tab .alg-group-count{margin-left:4px}
+.proc-detail-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
+.proc-detail-code{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(14,165,233,.14);color:#38bdf8}
+.proc-detail-type{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text-dim,#94a3b8)}
+.icCard .checklist{list-style:none;padding-left:0;margin:0}
+.icCard .checklist li{padding-left:22px;position:relative}
+.icCard .checklist li::before{content:"☐";position:absolute;left:0;color:#2DD4BF}
+.icCard .biblio-list{list-style:none;padding-left:0;margin:0}
+.icCard .biblio-list li{margin-bottom:6px}
+.icCard .biblio-list a{color:#38bdf8;text-decoration:none}
+.icCard .biblio-list a:hover{text-decoration:underline}
 </style>
+<script src="/data/procedimientos.js"></script>
 <div id="icOverlay" aria-hidden="true">
   <section id="icPanel" role="dialog" aria-modal="true" aria-label="Espacio clínico inteligente">
     <div class="icHead"><span style="font-size:27px">🧠</span><div><h2>Espacio clínico inteligente</h2><small style="color:var(--text-dim,#94a3b8)">Asistencia, aprendizaje y organización clínica</small></div><button class="icClose" id="icClose" aria-label="Cerrar espacio clínico inteligente">×</button></div>
@@ -12662,16 +12673,6 @@ const ALG={
 'Intervención breve 5A':{src:'OMS 2024 / NICE 2025',steps:['Averiguar y registrar el consumo de tabaco en cada oportunidad de contacto.','Aconsejar de forma clara, personalizada y sin juicios el abandono del tabaco.','Apreciar la disposición al cambio y la motivación de la persona.','Ayudar a quien quiere dejarlo con un plan, apoyo conductual y opciones de tratamiento.','Acordar el seguimiento y fijar los siguientes contactos.','Ofrecer materiales y recursos de apoyo, incluidas las líneas de ayuda.','Reforzar los logros y readaptar el plan en cada revisión.']},
 'Tratamiento para dejar de fumar':{src:'OMS 2024',steps:['Valorar el grado de dependencia y las preferencias de la persona.','Ofrecer apoyo conductual estructurado como base de la intervención.','Proponer tratamiento farmacológico de primera línea salvo contraindicación.','Explicar el uso correcto, la duración y los efectos esperados del tratamiento.','Fijar una fecha de abandono y anticipar las situaciones de riesgo.','Programar el seguimiento para reforzar y ajustar el tratamiento.','Registrar la evolución y tratar las recaídas sin culpabilizar.']},
 'Prevención de recaídas del tabaquismo':{src:'NICE 2025',steps:['Identificar las situaciones, las emociones y los entornos que desencadenan el deseo de fumar.','Entrenar estrategias de afrontamiento y alternativas conductuales.','Mantener el apoyo y, si procede, prolongar el tratamiento farmacológico.','Reforzar los beneficios logrados y la motivación de la persona.','Diferenciar una caída puntual de una recaída y actuar de forma precoz.','Reajustar el plan tras una recaída sin culpabilizar y reintentar.','Asegurar un seguimiento a largo plazo y el acceso a los recursos de apoyo.']}
-};
-const PROC={
-'Intubación':{ind:'Fracaso de oxigenación/ventilación, protección de vía aérea o deterioro previsible.',material:['Monitor y capnografía','Fuente de O₂ y aspiración','Bolsa-válvula-mascarilla','Laringoscopio/videolaringoscopio','Tubos, guía y jeringa','Fármacos según prescripción','Plan alternativo de vía aérea'],check:['Confirmar identidad, indicación y equipo','Preoxigenar y optimizar hemodinámica','Asignar roles y verbalizar planes A/B/C','Comprobar aspiración y material de rescate'],after:['Confirmar con capnografía','Fijar y registrar profundidad','Ventilación protectora','Sedoanalgesia y cuidados de boca','Vigilar hipotensión, hipoxia y desplazamiento']},
-'Vía arterial':{ind:'Monitorización invasiva continua o extracción frecuente de gasometrías.',material:['Kit arterial y transductor','Antiséptico y campo estéril','Anestésico local','Sistema presurizado y suero','Apósito y fijación'],check:['Valorar circulación distal','Elegir sitio y comprobar material','Técnica estéril y ecografía si disponible'],after:['Nivelar y poner a cero','Comprobar curva y perfusión distal','Vigilar sangrado, infección, isquemia y desconexión']},
-'Catéter venoso central':{ind:'Vasoactivos, acceso difícil, terapias irritantes o monitorización seleccionada.',material:['Ecógrafo y funda estéril','Kit CVC','Barrera estéril máxima','Antiséptico alcohólico','Anestesia local','Apósito estéril'],check:['Consentimiento cuando proceda','Verificar coagulación y anatomía','Trendelenburg si es apropiado','Checklist de seguridad'],after:['Confirmar posición según sitio y protocolo','Curar y registrar lúmenes','Vigilar neumotórax, sangrado, arritmia, infección y trombosis']},
-'Ventilación no invasiva':{ind:'Insuficiencia respiratoria seleccionada con paciente colaborador y vía aérea protegida.',material:['Ventilador y circuito','Interfaz adecuada','Humidificación si procede','Monitorización y carro de vía aérea'],check:['Descartar contraindicaciones','Explicar y ajustar mascarilla','Seleccionar modo y parámetros iniciales prescritos'],after:['Reevaluar a los 30–60 min','Vigilar fugas, piel, confort y sincronía','Definir criterios de fracaso e intubación']},
-'Drenaje torácico':{ind:'Neumotórax, hemotórax o derrame seleccionado según valoración médica.',material:['Kit de drenaje','Sistema de sello de agua','Antiséptico y campo','Anestésico local','Suturas y apósito'],check:['Confirmar lado y sitio','Analgesia y monitorización','Preparar sistema antes de conectar'],after:['Fijar y mantener por debajo del tórax','Controlar débito, burbujeo y oscilación','No pinzar salvo indicación','Vigilar enfisema, infección y deterioro respiratorio']},
-'Hemorragia masiva':{ind:'Sangrado activo con inestabilidad o previsión de transfusión rápida y elevada.',material:['Calentador de fluidos','Accesos gruesos/introductor','Analítica urgente y viscoelasticidad','Hemoderivados','Calcio y antifibrinolítico según protocolo'],check:['Activar protocolo y roles','Control de fuente','Prevenir hipotermia','Registrar unidades y tiempos'],after:['Balance de hemoderivados','Control de calcio, fibrinógeno y coagulación','Vigilar reacción transfusional, sobrecarga y sangrado persistente']},
-'Punción lumbar':{ind:'Estudio de infección, inflamación, hemorragia o presión de LCR cuando esté indicada.',material:['Kit lumbar y tubos numerados','Antiséptico y campo estéril','Anestésico local','Manómetro si procede'],check:['Revisar contraindicaciones y coagulación','Valorar necesidad de neuroimagen previa','Posicionar y explicar'],after:['Etiquetar tubos y enviar de inmediato','Vigilar cefalea, sangrado, dolor, déficit neurológico e infección']},
-'Cardioversión':{ind:'Taquiarritmia con inestabilidad o cardioversión programada según indicación.',material:['Desfibrilador con sincronización','Parches','Monitorización y oxígeno','Material de vía aérea','Sedoanalgesia prescrita'],check:['Confirmar ritmo e indicación','Activar modo sincronizado y verificar marcas','Retirar fuentes de oxígeno del campo de descarga','Checklist y seguridad del equipo'],after:['Reevaluar ritmo, perfusión y conciencia','ECG de 12 derivaciones','Vigilar recurrencia, embolia, quemadura e hipotensión']}
 };
 var releaseIcFocusTrap=null;
 function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); if(releaseIcFocusTrap)releaseIcFocusTrap(); releaseIcFocusTrap=window.iNurseFocusTrap($('#icPanel')); }
@@ -12826,8 +12827,74 @@ function showBibAlg(id){
     if(window.iNurse21&&window.iNurse21.openItem) window.iNurse21.openItem(item.id);
   };
 }
-function renderProcList(){return `<div class="icGrid">${Object.keys(PROC).map(x=>`<button class="icCard" data-proc="${x}" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>${x}</h3><p>Ficha práctica interna, checklist y cuidados.</p></button>`).join('')}</div>`}
-function showProc(name){const p=PROC[name];$('#icBody').innerHTML=`<button class="icBtn alt" id="backProc">← Procedimientos</button><div class="icGrid"><div class="icCard"><h3>${name}</h3><p><b>Indicaciones orientativas:</b> ${p.ind}</p><h3>Material</h3><ul>${p.material.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="icCard"><h3>Checklist previo</h3><ul>${p.check.map(x=>`<li><label><input type="checkbox"> ${x}</label></li>`).join('')}</ul><h3>Cuidados y vigilancia</h3><ul>${p.after.map(x=>`<li>${x}</li>`).join('')}</ul><button class="icBtn" id="procVivi">Ampliar con Vivi</button><button class="icBtn alt" id="procVideo">🎬 Vídeo</button></div></div><p class="icResult">Contenido educativo. Realizar solo por personal capacitado, con prescripción, supervisión y protocolo local cuando corresponda.</p>`;$('#backProc').onclick=()=>renderTab('procedures');$('#procVivi').onclick=()=>askVivi(`Desarrolla el procedimiento ${name} de forma completa y actualizada, con indicaciones, contraindicaciones, material, preparación, técnica, seguridad, complicaciones y cuidados de enfermería.`);$('#procVideo').onclick=()=>window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(name+' procedimiento sanitario formación'),'_blank','noopener')}
+function getProcData(){return (typeof PROCEDIMIENTOS_DATA!=='undefined'?PROCEDIMIENTOS_DATA:null)||{meta:[],items:[]}}
+function renderProcList(){
+  const data=getProcData();
+  const byCat={};
+  data.items.forEach(function(p){(byCat[p.cat]=byCat[p.cat]||[]).push(p)});
+  let html='<input class="icInput" id="procFilter" placeholder="🔎 Buscar procedimiento, material o complicación…" style="margin-bottom:12px">';
+  data.meta.forEach(function(cat){
+    const list=byCat[cat.id]||[];
+    if(!list.length) return;
+    html+='<div class="alg-group" data-proc-group="'+esc(cat.id)+'">'
+      +'<div class="alg-group-head">'+(cat.icon||'📝')+' '+esc(cat.label)+' <span class="alg-group-count">'+list.length+'</span></div>'
+      +'<div class="icGrid">'
+      +list.map(function(p){
+        const hay=esc((p.title+' '+p.subtype+' '+p.summary+' '+(p.material||[]).join(' ')+' '+(p.complicaciones||[]).join(' ')).toLowerCase());
+        return '<button class="icCard" data-proc="'+esc(p.code)+'" data-proc-hay="'+hay+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(p.title)+'</h3><p><b>'+esc(p.subtype)+'</b></p><p>'+esc(p.summary)+'</p></button>';
+      }).join('')
+      +'</div></div>';
+  });
+  return html;
+}
+function filterProc(){
+  const q=(document.getElementById('procFilter')||{}).value||'';
+  const n=q.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  document.querySelectorAll('[data-proc-group]').forEach(function(g){
+    let any=false;
+    g.querySelectorAll('[data-proc]').forEach(function(c){
+      const hay=(c.dataset.procHay||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+      const show=!n||hay.indexOf(n)!==-1;
+      c.style.display=show?'':'none';
+      if(show) any=true;
+    });
+    g.style.display=any?'':'none';
+  });
+}
+function procSection(title,items,ordered){
+  if(!items||!items.length) return '';
+  const tag=ordered?'ol':'ul';
+  return '<div class="icCard"><h3>'+esc(title)+'</h3><'+tag+'>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</'+tag+'></div>';
+}
+function showProc(code){
+  const data=getProcData();
+  const p=data.items.find(function(x){return x.code===code});
+  if(!p){renderTab('procedures');return}
+  let html='<button class="icBtn alt" id="backProc">← Procedimientos</button>';
+  html+='<div class="icCard"><div class="proc-detail-head"><span class="proc-detail-code">'+esc(p.code)+'</span><span class="proc-detail-type">'+esc(p.subtype)+'</span></div><h3>'+esc(p.title)+'</h3><p>'+esc(p.summary)+'</p><button class="icBtn" id="procVivi">Ampliar con Vivi</button> <button class="icBtn alt" id="procVideo">🎬 Vídeo</button></div>';
+  html+='<div class="icGrid">'
+    +procSection('Objetivos',p.objetivos)
+    +procSection('Indicaciones',p.indicaciones)
+    +procSection('Contraindicaciones y precauciones',p.contraindicaciones)
+    +procSection('Material necesario',p.material)
+    +procSection('Preparación',p.preparacion)
+    +'</div>';
+  if(p.pasos&&p.pasos.length) html+='<div class="icCard"><h3>Procedimiento paso a paso</h3><ol>'+p.pasos.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></div>';
+  html+='<div class="icGrid">'
+    +procSection('Cuidados posteriores',p.cuidados)
+    +procSection('Complicaciones',p.complicaciones)
+    +procSection('Signos de alarma',p.alarma)
+    +procSection('Registro de enfermería',p.registro)
+    +'</div>';
+  if(p.checklist&&p.checklist.length) html+='<div class="icCard"><h3>Checklist de seguridad</h3><ul class="checklist">'+p.checklist.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
+  if(p.evidencia&&p.evidencia.length) html+='<p class="icResult">'+p.evidencia.map(function(x){return esc(x)}).join('<br>')+'</p>';
+  if(p.bibliografia&&p.bibliografia.length) html+='<div class="icCard"><h3>Bibliografía</h3><ul class="biblio-list">'+p.bibliografia.map(function(b){return '<li>'+(b.url?'<a href="'+esc(b.url)+'" target="_blank" rel="noopener">'+esc(b.label)+'</a>':esc(b.label))+'</li>'}).join('')+'</ul></div>';
+  html+='<p class="icResult">Contenido educativo. Realizar solo por personal capacitado, con prescripción, supervisión y protocolo local cuando corresponda.</p>';
+  $('#icBody').innerHTML=html;
+  $('#backProc').onclick=()=>renderTab('procedures');
+  $('#procVivi').onclick=()=>askVivi(`Desarrolla el procedimiento ${p.title} (${p.subtype}) de forma completa y actualizada, con indicaciones, contraindicaciones, material, preparación, técnica, seguridad, complicaciones y cuidados de enfermería.`);
+  $('#procVideo').onclick=()=>window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(p.title+' procedimiento sanitario formación'),'_blank','noopener');
+}
 function renderTab(id){document.querySelectorAll('.icTab').forEach(b=>b.classList.toggle('on',b.dataset.id===id));const b=$('#icBody');
 if(id==='assistant')b.innerHTML=`<div class="icGrid"><div class="icCard"><h3>Asistente clínico guiado</h3><input class="icInput" id="icaAge" placeholder="Edad y contexto"><textarea class="icArea" id="icaReason" placeholder="Motivo de consulta y evolución"></textarea><textarea class="icArea" id="icaData" placeholder="Constantes, exploración, analítica, ECG, RX..."></textarea><button class="icBtn" id="icaSend">Analizar con Vivi</button></div><div class="icCard"><h3>Resultado esperado</h3><p>Datos observados, prioridades, diferenciales, alarmas, pruebas pendientes, actuación, cuidados y límites.</p></div></div>`;
 if(id==='shift'){const d=load('shift',{notes:'',pending:''});b.innerHTML=`<div class="icCard"><h3>Mi turno</h3><textarea class="icArea" id="icsNotes" placeholder="Notas sin datos identificativos">${esc(d.notes)}</textarea><textarea class="icArea" id="icsPending" placeholder="Pendientes y aprendizajes">${esc(d.pending)}</textarea><button class="icBtn" id="icsSave">Guardar</button><button class="icBtn alt" id="icsSummary">Resumir con Vivi</button></div>`}
@@ -12854,8 +12921,8 @@ if(id==='alg'){document.querySelectorAll('[data-alg]').forEach(x=>x.onclick=()=>
 if(id==='integrate')$('#iciSend').onclick=()=>askVivi(`Integra clínica y pruebas, separando hallazgos, contradicciones, gravedad, diferenciales y actuación. Clínica: ${$('#iciClinical').value}\nPruebas: ${$('#iciTests').value}`);
 if(id==='media'){$('#icmAdd').onclick=()=>{const a=load('media',[]);a.unshift({title:$('#icmTitle').value||'Recurso',url:$('#icmUrl').value,tags:$('#icmTags').value});save('media',a);renderTab('media')};document.querySelectorAll('[data-del-media]').forEach(x=>x.onclick=()=>{const a=load('media',[]);a.splice(+x.dataset.delMedia,1);save('media',a);renderTab('media')})}
 if(id==='diary'){$('#icdAdd').onclick=()=>{const a=load('diary',[]);a.unshift({title:$('#icdTitle').value||'Entrada',text:$('#icdText').value,date:new Date().toLocaleString()});save('diary',a);renderTab('diary')};document.querySelectorAll('[data-del-diary]').forEach(x=>x.onclick=()=>{const a=load('diary',[]);a.splice(+x.dataset.delDiary,1);save('diary',a);renderTab('diary')})}
-if(id==='procedures')document.querySelectorAll('[data-proc]').forEach(x=>x.onclick=()=>showProc(x.dataset.proc))}
-function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-screen','main'];let host;for(const q of qs){host=document.querySelector(q);if(host)break}if(!host||document.getElementById('icHomeCard'))return;const c=document.createElement('div');c.id='icHomeCard';c.className='icHomeCard';c.innerHTML='<b>🧠 Espacio clínico inteligente</b><small>10 calculadoras, 8 algoritmos y 8 procedimientos con contenido interno.</small>';c.onclick=open;host.appendChild(c)}
+if(id==='procedures'){document.querySelectorAll('[data-proc]').forEach(x=>x.onclick=()=>showProc(x.dataset.proc));const pf=$('#procFilter');if(pf)pf.oninput=filterProc}}
+function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-screen','main'];let host;for(const q of qs){host=document.querySelector(q);if(host)break}if(!host||document.getElementById('icHomeCard'))return;const c=document.createElement('div');c.id='icHomeCard';c.className='icHomeCard';c.innerHTML='<b>🧠 Espacio clínico inteligente</b><small>10 calculadoras, 8 algoritmos y 98 procedimientos con contenido interno.</small>';c.onclick=open;host.appendChild(c)}
 function init(){$('#icTabs').innerHTML=tabs.map((t,i)=>`<button class="icTab${i===0?' on':''}" data-id="${t[0]}">${t[2]?`<span class="icTab-ic">${t[2]}</span>`:''}${t[1]}</button>`).join('');$('#icTabs').onclick=e=>{const x=e.target.closest('.icTab');if(x)renderTab(x.dataset.id)};$('#icFab').onclick=open;$('#icClose').onclick=close;$('#icOverlay').onclick=e=>{if(e.target.id==='icOverlay')close()};renderTab('assistant');addHomeCard();setTimeout(addHomeCard,1200);setTimeout(addHomeCard,3000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 
