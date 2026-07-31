@@ -4302,6 +4302,12 @@ function openRx(){rxOverlay.classList.add("show");checkApiKeyUI()}
 function closeRx(){rxOverlay.classList.remove("show");stopSpeak();if(rxMic._rec)rxMic._rec.stop()}
 $("#rxFab").onclick=openRx;$("#rxClose").onclick=closeRx;
 rxOverlay.onclick=e=>{if(e.target===rxOverlay)closeRx()};
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  if(recOverlay.classList.contains('show'))closeRec();
+  else if(ecgOverlay.classList.contains('show'))closeEcg();
+  else if(rxOverlay.classList.contains('show'))closeRx();
+});
 rxDrop.onclick=()=>rxFile.click();
 rxFile.onchange=()=>{
   const f=rxFile.files[0];if(!f)return;
@@ -6990,6 +6996,8 @@ function closeCalcs(){
   const overlay = document.getElementById("calcOverlay");
   overlay.classList.remove("on");
 }
+document.addEventListener('click',function(e){ if(e.target && e.target.id==='calcOverlay') closeCalcs(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var ov=document.getElementById('calcOverlay'); if(ov && ov.classList.contains('on')) closeCalcs(); } });
 function showCalc(id){
   const body = document.getElementById("calcBody");
   if(!body) return;
@@ -8792,6 +8800,14 @@ h1 small{color:rgba(226,232,240,.72) !important}
    página; el resto de componentes (chat, tarjetas) mantiene su estética
    actual a propósito. */
 [data-theme="light"] body{background:var(--bg) !important;color:var(--text) !important}
+/* Modo claro: la cabecera de Inicio (marca, nav superior, etiquetas de
+   sección) usa colores fijos pensados para fondo oscuro y quedan casi
+   invisibles sobre el fondo claro (contraste <2.5:1). Se corrige con las
+   variables del tema claro sin tocar el resto del bloque. */
+[data-theme="light"] .nx-brand small,
+[data-theme="light"] .nx-section{color:var(--text-dim) !important}
+[data-theme="light"] .nx-nav button{background:var(--card-solid) !important;color:var(--text) !important;border-color:var(--border) !important}
+[data-theme="light"] .nx-nav button.on{color:#fff !important}
 </style>
 
 <style id="inurse41-css">
@@ -18088,7 +18104,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   var el=document.querySelector('.nx-card[data-fire="'+h+'"], .nx-nav button[data-fire="'+h+'"], [data-fire="'+h+'"]');
   if(el)el.click();
  }
- window.addEventListener('load',function(){setTimeout(open,1400)});
+ function schedule(){setTimeout(open,1400)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule);else schedule();
  window.addEventListener('hashchange',open);
 })();
 </script>
