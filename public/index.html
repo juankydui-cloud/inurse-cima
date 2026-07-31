@@ -11404,6 +11404,7 @@ body.in57-visual .vivi-welcome .em {
 
   function isLikelyAvatar(el){
     if(!el) return false;
+    if(el.closest("#nxAjustesOverlay")) return false;
     const cls = String(el.className || "").toLowerCase();
     const txt = (el.textContent || "").trim();
     return cls.includes("avatar") || cls.includes("logo") || cls.includes("vivi") || ["👩‍⚕️","👩🏻‍⚕️","🤖","🧑‍⚕️"].includes(txt);
