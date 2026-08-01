@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-08-01T21:24:06.060225+00:00",
+  "generatedBy": "scripts/build_nnn_json.py",
+  "source": "codigos_NNN_curados_iNurse.xlsx (pestaña Códigos NNN, filas con NANDA+NIC+NOC completos)",
+  "terms": [
+    {
+      "termino": "Dolor torácico agudo",
+      "nanda": "00132",
+      "nic": "1400",
+      "noc": "2102",
+      "verifiedBy": "Juanky (NNNConsult)",
+      "verifiedAt": "2026-07-30"
+    }
+  ]
+}

@@ -24,6 +24,9 @@ dist/
 # Excepción: los iconos de la PWA sí deben publicarse (si no, la app no es instalable).
 !public/icon-*.png
 
+# Excepción: fuente editorial curada de códigos NNN, la usa build_nnn_json.py.
+!data/codigos_NNN_curados_iNurse.xlsx
+
 # Capacitor (apps nativas Android/iOS)
 # El contenido web (public/) se copia automáticamente en cada `npx cap sync` —
 # no se versiona la copia para no duplicar 8+ MB en el repo.
