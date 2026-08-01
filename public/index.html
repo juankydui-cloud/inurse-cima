@@ -11952,6 +11952,9 @@ body.in60-content-mode main{display:block!important}
     },120);
   }
   window.iNurseOpenViviContext=openViviWithContext;
+  window.iNurseReadText=function(title,text,btn){readText(title,text,btn)};
+  window.iNurseShareContent=function(title,text){return shareContent(title,text)};
+  window.iNurseOpenVideo=function(title){openVideo(title)};
 
   function readText(title,text,btn){
     if(!('speechSynthesis' in window)){toast58('La lectura por voz no está disponible en este navegador');return}
@@ -12539,7 +12542,7 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .icHead h2{font-size:18px;flex:1}.icClose{width:38px;height:38px;border:1px solid var(--border,#1e293b);border-radius:11px;background:transparent;color:var(--text,#fff);font-size:20px;cursor:pointer}
 .icTabs{display:flex;gap:7px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--border,#1e293b)}
 .icTab{white-space:nowrap;padding:8px 12px;border-radius:999px;border:1px solid var(--border,#1e293b);background:var(--card-solid,#111827);color:var(--text-dim,#94a3b8);font-weight:700;cursor:pointer}.icTab.on{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff;border-color:transparent}
-.icBody{overflow:auto;padding:16px}.icView{display:none}.icView.on{display:block}.icGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.icCard{background:var(--card-solid,#111827);border:1px solid var(--border,#1e293b);border-radius:15px;padding:14px}.icCard h3{font-size:15px;margin-bottom:8px}.icCard p,.icCard li{font-size:13px;line-height:1.5;color:var(--text-dim,#94a3b8)}
+.icBody{overflow:auto;padding:16px}.icView{display:none}.icView.on{display:block}.icView p,.icView li{font-size:13.5px;line-height:1.6;color:var(--text-dim,#94a3b8)}.icView ul,.icView ol{padding-left:20px;margin:0}.icGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.icCard{background:var(--card-solid,#111827);border:1px solid var(--border,#1e293b);border-radius:15px;padding:14px}.icCard h3{font-size:15px;margin-bottom:8px}.icCard p,.icCard li{font-size:13px;line-height:1.5;color:var(--text-dim,#94a3b8)}
 .icInput,.icArea,.icSelect{width:100%;padding:10px 12px;margin:6px 0 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}.icArea{min-height:100px;resize:vertical}.icBtn{padding:9px 13px;border:0;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff;font-weight:800;cursor:pointer;margin:4px 5px 4px 0}.icBtn.alt{background:transparent;border:1px solid var(--border,#1e293b);color:var(--text,#fff)}
 .icResult{margin-top:10px;padding:12px;border-radius:11px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.25);white-space:pre-wrap;font-size:13px;line-height:1.5}.icHomeCard{margin:14px 0;padding:16px;border-radius:16px;border:1px solid rgba(14,165,233,.35);background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(139,92,246,.12));cursor:pointer}.icHomeCard b{font-size:15px}.icHomeCard small{display:block;color:var(--text-dim,#94a3b8);margin-top:4px}
 @media(max-width:650px){#icOverlay,#procOverlay,#algOverlay{padding:0}#icPanel,#procPanel,#algPanel{height:100vh;border-radius:0}.icBody{padding:12px}}
@@ -12573,6 +12576,13 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .icSearchRow{display:flex;gap:8px;margin-bottom:12px}
 .icSearchRow .icInput{margin:0;flex:1}
 .icMicBtn{position:static!important;flex:0 0 auto;width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--text,#fff);font-size:18px;cursor:pointer}
+.proc-hero{display:flex;align-items:center;gap:14px;margin-bottom:2px}
+.proc-hero-ico{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:rgba(255,255,255,.08);flex:0 0 auto}
+.proc-hero h3{margin:0;font-size:17px;line-height:1.3}
+.proc-hero small{display:block;color:var(--text-dim,#94a3b8);margin-top:3px}
+.proc-sec-tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin:14px 0 12px}
+.proc-sec-tab{white-space:nowrap;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text-dim,#94a3b8);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit}
+.proc-sec-tab.on{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff;border-color:transparent}
 .alg-group{margin-bottom:18px}
 .alg-group-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.02em;
   text-transform:uppercase;color:var(--text,#e2e8f0);margin:4px 0 10px;padding-bottom:6px;
@@ -12593,16 +12603,13 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .proc-cat-ico{font-size:28px;line-height:1}
 .proc-cat-card b{font-size:14px;line-height:1.3}
 .proc-cat-card small{color:var(--text-dim,#94a3b8);font-size:12px}
-.proc-detail-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
-.proc-detail-code{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(14,165,233,.14);color:#38bdf8}
-.proc-detail-type{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text-dim,#94a3b8)}
-.icCard .checklist{list-style:none;padding-left:0;margin:0}
-.icCard .checklist li{padding-left:22px;position:relative}
-.icCard .checklist li::before{content:"☐";position:absolute;left:0;color:#2DD4BF}
-.icCard .biblio-list{list-style:none;padding-left:0;margin:0}
-.icCard .biblio-list li{margin-bottom:6px}
-.icCard .biblio-list a{color:#38bdf8;text-decoration:none}
-.icCard .biblio-list a:hover{text-decoration:underline}
+.checklist{list-style:none;padding-left:0;margin:0}
+.checklist li{padding-left:22px;position:relative}
+.checklist li::before{content:"☐";position:absolute;left:0;color:#2DD4BF}
+.biblio-list{list-style:none;padding-left:0;margin:0}
+.biblio-list li{margin-bottom:6px}
+.biblio-list a{color:#38bdf8;text-decoration:none}
+.biblio-list a:hover{text-decoration:underline}
 </style>
 <script src="/data/procedimientos.js"></script>
 <div id="icOverlay" aria-hidden="true">
@@ -12913,10 +12920,16 @@ function algExportText(title,src,cat,steps){
 function showAlg(name){
   const a=ALG[name];
   if(!a){renderAlgRoot();return}
-  $('#algBody').innerHTML=`<button class="icBtn alt" id="backAlg">← ${esc(algCurrentCat||'Especialidades')}</button><div class="icCard"><h3>${esc(name)}</h3><p><b>Fuente de referencia:</b> ${esc(a.src)}. Adaptar siempre al protocolo y competencias del centro.</p><div id="algSteps">${a.steps.map((x,i)=>`<div class="icResult"><b>${i+1}.</b> ${esc(x)}</div>`).join('')}</div><button class="icBtn" id="algVivi">Continuar con Vivi</button> <button class="icBtn alt" id="algExport">📤 Exportar</button></div>`;
+  const icon=ALG_CAT_ICON[algCurrentCat]||'🔀';
+  const fullText=algExportText(name,a.src,algCurrentCat,a.steps);
+  let html='<button class="icBtn alt" id="backAlg">← '+esc(algCurrentCat||'Especialidades')+'</button>';
+  html+='<div class="proc-hero"><span class="proc-hero-ico">'+icon+'</span><div><h3>'+esc(name)+'</h3><small>'+esc(a.src)+'</small></div></div>';
+  html+=ficheActionsHtml('alg');
+  html+='<div class="icCard"><h3>Pasos</h3><ol>'+a.steps.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></div>';
+  html+='<p class="icResult">Adaptar siempre al protocolo y competencias del centro.</p>';
+  $('#algBody').innerHTML=html;
   $('#backAlg').onclick=function(){algCurrentCat?showAlgCategory(algCurrentCat):renderAlgRoot()};
-  $('#algVivi').onclick=()=>askVivi(`Amplía y guía paso a paso el algoritmo de ${name}, usando recomendaciones oficiales actuales. Contexto interno: ${a.steps.join(' | ')}`);
-  $('#algExport').onclick=()=>exportShare(name,algExportText(name,a.src,algCurrentCat,a.steps));
+  wireFicheActions('alg',name,fullText,closeAlg);
 }
 function showBibAlg(id){
   var bibGroups=getBibAlgs();var item=null;
@@ -12935,23 +12948,18 @@ function showBibAlg(id){
     stepsHtml='<div class="icResult">'+esc(item.pasos)+'</div>';
     stepTexts=[item.pasos];
   }
+  const fullText=algExportText(item.titulo,'',item.cat,stepTexts);
   $('#algBody').innerHTML='<button class="icBtn alt" id="backAlg">← '+esc(item.cat||'Biblioteca completa')+'</button>'
-    +'<div class="icCard"><h3>'+esc(item.titulo)+'</h3>'
-    +'<p><b>Categoría:</b> '+esc(item.cat)+'</p>'
-    +'<div id="algSteps">'+stepsHtml+'</div>'
-    +'<button class="icBtn" id="algVivi">Ampliar con Vivi</button>'
+    +'<div class="proc-hero"><span class="proc-hero-ico">📋</span><div><h3>'+esc(item.titulo)+'</h3><small>'+esc(item.cat)+'</small></div></div>'
+    +ficheActionsHtml('alg')
+    +'<div class="icCard"><h3>Pasos</h3><div id="algSteps">'+stepsHtml+'</div>'
     +'<button class="icBtn alt" id="algOpenLib">📚 Ver ficha completa</button>'
-    +'<button class="icBtn alt" id="algExport">📤 Exportar</button>'
     +'</div>';
   $('#backAlg').onclick=function(){algCurrentBibCat?showAlgBibCategory(algCurrentBibCat):renderAlgBibRoot()};
-  $('#algVivi').onclick=function(){
-    var ctx=Array.isArray(item.pasos)?item.pasos.map(function(p){return p.accion||''}).join(' | '):String(item.pasos||'');
-    askVivi('Amplía y guía paso a paso: '+item.titulo+'. Contexto interno: '+ctx);
-  };
+  wireFicheActions('alg',item.titulo,fullText,closeAlg);
   $('#algOpenLib').onclick=function(){
     if(window.iNurse21&&window.iNurse21.openItem) window.iNurse21.openItem(item.id);
   };
-  $('#algExport').onclick=function(){exportShare(item.titulo,algExportText(item.titulo,'',item.cat,stepTexts))};
 }
 function getProcData(){return (typeof PROCEDIMIENTOS_DATA!=='undefined'?PROCEDIMIENTOS_DATA:null)||{meta:[],items:[]}}
 function procNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim()}
@@ -13019,41 +13027,81 @@ function filterProcCategory(){
     c.style.display=(!n||hay.indexOf(n)!==-1)?'':'none';
   });
 }
-function procSection(title,items,ordered){
-  if(!items||!items.length) return '';
-  const tag=ordered?'ol':'ul';
-  return '<div class="icCard"><h3>'+esc(title)+'</h3><'+tag+'>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</'+tag+'></div>';
+function procBuildSections(p){
+  const secs=[{key:'resumen',label:'Resumen',body:p.summary}];
+  function addList(key,label,items,ordered){if(items&&items.length)secs.push({key:key,label:label,items:items,ordered:!!ordered})}
+  addList('objetivos','Objetivos',p.objetivos);
+  addList('indicaciones','Indicaciones',p.indicaciones);
+  addList('contra','Contraindicaciones',p.contraindicaciones);
+  addList('material','Material',p.material);
+  addList('prep','Preparación',p.preparacion);
+  addList('pasos','Paso a paso',p.pasos,true);
+  addList('algoritmo','Algoritmo rápido',p.algoritmo,true);
+  addList('cuidados','Cuidados posteriores',p.cuidados);
+  addList('complicaciones','Complicaciones',p.complicaciones);
+  addList('alarma','Signos de alarma',p.alarma);
+  addList('registro','Registro',p.registro);
+  if(p.checklist&&p.checklist.length) secs.push({key:'checklist',label:'Checklist',checklist:p.checklist});
+  if(p.bibliografia&&p.bibliografia.length) secs.push({key:'bibliografia',label:'Bibliografía',biblio:p.bibliografia});
+  return secs;
+}
+function renderSecTabs(secs){
+  return '<div class="proc-sec-tabs" id="procSecTabs">'+secs.map(function(s,i){return '<button class="proc-sec-tab'+(i===0?' on':'')+'" data-sec="'+s.key+'">'+esc(s.label)+'</button>';}).join('')+'</div>'
+    +secs.map(function(s,i){
+      var body='';
+      if(s.body) body='<p>'+esc(s.body)+'</p>';
+      if(s.items) body=(s.ordered?'<ol>':'<ul>')+s.items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+(s.ordered?'</ol>':'</ul>');
+      if(s.checklist) body='<ul class="checklist">'+s.checklist.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+      if(s.biblio) body='<ul class="biblio-list">'+s.biblio.map(function(b){return '<li>'+(b.url?'<a href="'+esc(b.url)+'" target="_blank" rel="noopener">'+esc(b.label)+'</a>':esc(b.label))+'</li>'}).join('')+'</ul>';
+      return '<div class="icView'+(i===0?' on':'')+'" data-sec-pane="'+s.key+'">'+body+'</div>';
+    }).join('');
+}
+function wireSecTabs(tabsId){
+  document.querySelectorAll('#'+tabsId+' .proc-sec-tab').forEach(function(t){
+    t.onclick=function(){
+      document.querySelectorAll('#'+tabsId+' .proc-sec-tab').forEach(function(x){x.classList.remove('on')});
+      t.classList.add('on');
+      document.querySelectorAll('[data-sec-pane]').forEach(function(pane){pane.classList.toggle('on',pane.dataset.secPane===t.dataset.sec)});
+    };
+  });
+}
+function ficheActionsHtml(prefix){
+  return '<div class="in58-actions">'
+    +'<button class="in58-action" data-kind="read" id="'+prefix+'Read">🔊 Leer</button>'
+    +'<button class="in58-action" data-kind="vivi" id="'+prefix+'Vivi">✨ Verificar con Vivi</button>'
+    +'<button class="in58-action" data-kind="video" id="'+prefix+'Video">🎬 Vídeo</button>'
+    +'<button class="in58-action" data-kind="share" id="'+prefix+'Export">📤 Compartir</button>'
+    +'</div>'
+    +'<div class="in58-context-note">Vivi recibirá el contenido de esta ficha. El botón Vídeo abre una búsqueda educativa en una pestaña nueva.</div>';
+}
+function wireFicheActions(prefix,title,fullText,onBeforeVivi){
+  var readBtn=$('#'+prefix+'Read');
+  if(readBtn) readBtn.onclick=function(){if(window.iNurseReadText)window.iNurseReadText(title,fullText,readBtn)};
+  var viviBtn=$('#'+prefix+'Vivi');
+  if(viviBtn) viviBtn.onclick=function(){if(onBeforeVivi)onBeforeVivi();if(window.iNurseOpenViviContext)window.iNurseOpenViviContext(title,fullText)};
+  var videoBtn=$('#'+prefix+'Video');
+  if(videoBtn) videoBtn.onclick=function(){if(window.iNurseOpenVideo)window.iNurseOpenVideo(title);else window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(title+' procedimiento sanitario formación'),'_blank','noopener')};
+  var exportBtn=$('#'+prefix+'Export');
+  if(exportBtn) exportBtn.onclick=function(){if(window.iNurseShareContent)window.iNurseShareContent(title,fullText);else exportShare(title,fullText)};
 }
 function showProc(code){
   const data=getProcData();
   const p=data.items.find(function(x){return x.code===code});
   if(!p){renderProcRoot();return}
+  const cat=data.meta.find(function(c){return c.id===p.cat});
+  const icon=(cat&&cat.icon)||'📝';
+  const fullText=procExportText(p);
+  const secs=procBuildSections(p);
   let html=procCurrentCat?'<button class="icBtn alt" id="backProc">← '+esc((data.meta.find(function(c){return c.id===procCurrentCat})||{}).label||'Especialidades')+'</button>':'<button class="icBtn alt" id="backProc">← Especialidades</button>';
-  html+='<div class="icCard"><div class="proc-detail-head"><span class="proc-detail-code">'+esc(p.code)+'</span><span class="proc-detail-type">'+esc(p.subtype)+'</span></div><h3>'+esc(p.title)+'</h3><p>'+esc(p.summary)+'</p><button class="icBtn" id="procVivi">Ampliar con Vivi</button> <button class="icBtn alt" id="procVideo">🎬 Vídeo</button> <button class="icBtn alt" id="procExport">📤 Exportar</button></div>';
-  html+='<div class="icGrid">'
-    +procSection('Objetivos',p.objetivos)
-    +procSection('Indicaciones',p.indicaciones)
-    +procSection('Contraindicaciones y precauciones',p.contraindicaciones)
-    +procSection('Material necesario',p.material)
-    +procSection('Preparación',p.preparacion)
-    +'</div>';
-  if(p.pasos&&p.pasos.length) html+='<div class="icCard"><h3>Procedimiento paso a paso</h3><ol>'+p.pasos.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></div>';
-  if(p.algoritmo&&p.algoritmo.length) html+='<div class="icCard"><h3>⚡ Algoritmo rápido de actuación</h3><ol>'+p.algoritmo.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></div>';
-  html+='<div class="icGrid">'
-    +procSection('Cuidados posteriores',p.cuidados)
-    +procSection('Complicaciones',p.complicaciones)
-    +procSection('Signos de alarma',p.alarma)
-    +procSection('Registro de enfermería',p.registro)
-    +'</div>';
-  if(p.checklist&&p.checklist.length) html+='<div class="icCard"><h3>Checklist de seguridad</h3><ul class="checklist">'+p.checklist.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
-  if(p.evidencia&&p.evidencia.length) html+='<p class="icResult">'+p.evidencia.map(function(x){return esc(x)}).join('<br>')+'</p>';
-  if(p.bibliografia&&p.bibliografia.length) html+='<div class="icCard"><h3>Bibliografía</h3><ul class="biblio-list">'+p.bibliografia.map(function(b){return '<li>'+(b.url?'<a href="'+esc(b.url)+'" target="_blank" rel="noopener">'+esc(b.label)+'</a>':esc(b.label))+'</li>'}).join('')+'</ul></div>';
+  html+='<div class="proc-hero"><span class="proc-hero-ico">'+icon+'</span><div><h3>'+esc(p.title)+'</h3><small>'+esc(p.subtype)+'</small></div></div>';
+  html+=ficheActionsHtml('proc');
+  html+=renderSecTabs(secs);
+  if(p.evidencia&&p.evidencia.length) html+='<p class="icResult" style="margin-top:14px">'+p.evidencia.map(function(x){return esc(x)}).join('<br>')+'</p>';
   html+='<p class="icResult">Contenido educativo. Realizar solo por personal capacitado, con prescripción, supervisión y protocolo local cuando corresponda.</p>';
   $('#procBody').innerHTML=html;
   $('#backProc').onclick=function(){procCurrentCat?showProcCategory(procCurrentCat):renderProcRoot()};
-  $('#procVivi').onclick=()=>askVivi(`Desarrolla el procedimiento ${p.title} (${p.subtype}) de forma completa y actualizada, con indicaciones, contraindicaciones, material, preparación, técnica, seguridad, complicaciones y cuidados de enfermería.`);
-  $('#procVideo').onclick=()=>window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(p.title+' procedimiento sanitario formación'),'_blank','noopener');
-  $('#procExport').onclick=()=>exportShare(p.title,procExportText(p));
+  wireSecTabs('procSecTabs');
+  wireFicheActions('proc',p.title,fullText,closeProc);
 }
 function exportShare(title,text){
   if(navigator.share){navigator.share({title:title,text:text}).catch(function(){})}
