@@ -14,7 +14,9 @@ el motivo.
   verifica cada término en NNNConsult (Elsevier) y lo marca `Verificado`
   cuando NANDA + NIC + NOC están rellenados.
 - `scripts/build_nnn_json.py` — regenera `nnn_codes.json` a partir del
-  Excel, descartando cualquier fila `Pendiente`.
+  Excel, descartando cualquier fila sin NANDA+NIC+NOC completos (el mismo
+  criterio que la fórmula de la columna Estado, evaluado en Python para
+  no depender de que el Excel se haya recalculado).
 - Endpoint `POST /api/terminology/validate` — `{ valor, via }` →
   `{ code_status: "validated" | "unvalidated", ... }`.
 

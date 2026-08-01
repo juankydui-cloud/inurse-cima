@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Regenera data/nnn_codes.json a partir de codigos_NNN_curados_iNurse.xlsx.
 
-Solo se incluyen filas con Estado == "Verificado" (NANDA + NIC + NOC
-rellenados). Las filas pendientes se ignoran: nunca se fabrica un código.
+Solo se incluyen filas con NANDA + NIC + NOC rellenados (lo mismo que
+evalúa la fórmula de la columna Estado en el Excel). El estado se deriva
+en Python, no leyendo la celda Estado: así el resultado no depende de que
+el Excel se haya abierto/recalculado antes de exportar. Las filas
+incompletas se ignoran: nunca se fabrica un código.
 
 Uso:
     pip install openpyxl
@@ -30,14 +33,15 @@ def build(xlsx_path: Path) -> dict:
         raise ValueError(f"La pestaña '{SHEET_NAME}' está vacía.")
 
     header = [str(h).strip() if h else "" for h in rows[0]]
-    idx = {name: header.index(name) for name in ("Término", "NANDA", "NIC", "NOC", "Estado", "Verificado por", "Fecha verificación") if name in header}
+    required = ("Término", "NANDA", "NIC", "NOC")
+    missing = [name for name in required if name not in header]
+    if missing:
+        raise ValueError(f"Faltan columnas obligatorias en '{SHEET_NAME}': {', '.join(missing)}")
+    idx = {name: header.index(name) for name in required + ("Verificado por", "Fecha verificación") if name in header}
 
     terms = []
     for row in rows[1:]:
         if not row or all(cell is None for cell in row):
-            continue
-        estado = row[idx["Estado"]] if "Estado" in idx else None
-        if str(estado).strip() != "Verificado":
             continue
 
         termino = row[idx["Término"]]
@@ -63,7 +67,7 @@ def build(xlsx_path: Path) -> dict:
     return {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "generatedBy": "scripts/build_nnn_json.py",
-        "source": f"{xlsx_path.name} (pestaña {SHEET_NAME}, filas con Estado=Verificado)",
+        "source": f"{xlsx_path.name} (pestaña {SHEET_NAME}, filas con NANDA+NIC+NOC completos)",
         "terms": terms,
     }
 

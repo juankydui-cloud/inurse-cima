@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-31T00:00:00.000Z",
+  "generatedAt": "2026-08-01T21:24:06.060225+00:00",
   "generatedBy": "scripts/build_nnn_json.py",
-  "source": "codigos_NNN_curados_iNurse.xlsx (pestaña Códigos NNN, filas con Estado=Verificado)",
+  "source": "codigos_NNN_curados_iNurse.xlsx (pestaña Códigos NNN, filas con NANDA+NIC+NOC completos)",
   "terms": [
     {
       "termino": "Dolor torácico agudo",
