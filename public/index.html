@@ -12531,9 +12531,10 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 
 <style id="inurseClinicalFixStyle">
 #icFab{position:fixed;left:18px;bottom:24px;z-index:12000;width:58px;height:58px;border:0;border-radius:50%;cursor:pointer;font-size:26px;color:#fff;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);box-shadow:0 12px 34px rgba(14,165,233,.42)}
-#icOverlay{position:fixed;inset:0;z-index:11990;display:none;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);padding:18px}
-#icOverlay.on{display:flex;align-items:center;justify-content:center}
+#icOverlay,#procOverlay,#algOverlay{position:fixed;inset:0;z-index:11990;display:none;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);padding:18px}
+#icOverlay.on,#procOverlay.on,#algOverlay.on{display:flex;align-items:center;justify-content:center}
 #icPanel{width:min(1080px,100%);height:min(88vh,900px);background:var(--bg2,#0d1320);border:1px solid var(--border,#1e293b);border-radius:22px;overflow:hidden;display:grid;grid-template-rows:auto auto 1fr;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+#procPanel,#algPanel{width:min(1080px,100%);height:min(88vh,900px);background:var(--bg2,#0d1320);border:1px solid var(--border,#1e293b);border-radius:22px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .icHead{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border,#1e293b)}
 .icHead h2{font-size:18px;flex:1}.icClose{width:38px;height:38px;border:1px solid var(--border,#1e293b);border-radius:11px;background:transparent;color:var(--text,#fff);font-size:20px;cursor:pointer}
 .icTabs{display:flex;gap:7px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--border,#1e293b)}
@@ -12541,16 +12542,16 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .icBody{overflow:auto;padding:16px}.icView{display:none}.icView.on{display:block}.icGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.icCard{background:var(--card-solid,#111827);border:1px solid var(--border,#1e293b);border-radius:15px;padding:14px}.icCard h3{font-size:15px;margin-bottom:8px}.icCard p,.icCard li{font-size:13px;line-height:1.5;color:var(--text-dim,#94a3b8)}
 .icInput,.icArea,.icSelect{width:100%;padding:10px 12px;margin:6px 0 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}.icArea{min-height:100px;resize:vertical}.icBtn{padding:9px 13px;border:0;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff;font-weight:800;cursor:pointer;margin:4px 5px 4px 0}.icBtn.alt{background:transparent;border:1px solid var(--border,#1e293b);color:var(--text,#fff)}
 .icResult{margin-top:10px;padding:12px;border-radius:11px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.25);white-space:pre-wrap;font-size:13px;line-height:1.5}.icHomeCard{margin:14px 0;padding:16px;border-radius:16px;border:1px solid rgba(14,165,233,.35);background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(139,92,246,.12));cursor:pointer}.icHomeCard b{font-size:15px}.icHomeCard small{display:block;color:var(--text-dim,#94a3b8);margin-top:4px}
-@media(max-width:650px){#icOverlay{padding:0}#icPanel{height:100vh;border-radius:0}.icBody{padding:12px}}
+@media(max-width:650px){#icOverlay,#procOverlay,#algOverlay{padding:0}#icPanel,#procPanel,#algPanel{height:100vh;border-radius:0}.icBody{padding:12px}}
 
 /* ═══════ v40 — Espacio clínico (Cálculos/Algoritmos/Procedimientos): liquid glass ═══════ */
-#icOverlay{background:
+#icOverlay,#procOverlay,#algOverlay{background:
   radial-gradient(600px 460px at 14% 8%,rgba(14,165,233,.18),transparent 60%),
   radial-gradient(640px 500px at 86% 6%,rgba(139,92,246,.18),transparent 60%),
   radial-gradient(700px 560px at 60% 100%,rgba(236,72,153,.13),transparent 62%),
   linear-gradient(180deg,rgba(5,11,24,.9),rgba(8,10,28,.93))!important;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-#icPanel{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))!important;
+#icPanel,#procPanel,#algPanel{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))!important;
   border:1px solid rgba(255,255,255,.14)!important;
   -webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);
   box-shadow:0 30px 80px rgba(0,0,0,.5)!important}
@@ -12569,6 +12570,9 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
   box-shadow:0 8px 22px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.18)!important}
 .icInput,.icArea,.icSelect{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.15)!important}
 .icResult{background:rgba(14,165,233,.12)!important;border:1px solid rgba(14,165,233,.3)!important}
+.icSearchRow{display:flex;gap:8px;margin-bottom:12px}
+.icSearchRow .icInput{margin:0;flex:1}
+.icMicBtn{position:static!important;flex:0 0 auto;width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--text,#fff);font-size:18px;cursor:pointer}
 .alg-group{margin-bottom:18px}
 .alg-group-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.02em;
   text-transform:uppercase;color:var(--text,#e2e8f0);margin:4px 0 10px;padding-bottom:6px;
@@ -12580,6 +12584,15 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .alg-tab.on{background:rgba(45,212,191,.15);border-color:rgba(45,212,191,.3);color:#2DD4BF}
 .alg-tab:hover:not(.on){background:rgba(255,255,255,.08)}
 .alg-tab .alg-group-count{margin-left:4px}
+.proc-cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.proc-cat-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;cursor:pointer;
+  padding:16px 14px;border-radius:16px;color:var(--text,#fff);
+  background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.13);transition:.18s;font-family:inherit}
+.proc-cat-card:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.5);box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.proc-cat-ico{font-size:28px;line-height:1}
+.proc-cat-card b{font-size:14px;line-height:1.3}
+.proc-cat-card small{color:var(--text-dim,#94a3b8);font-size:12px}
 .proc-detail-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
 .proc-detail-code{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(14,165,233,.14);color:#38bdf8}
 .proc-detail-type{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text-dim,#94a3b8)}
@@ -12600,10 +12613,22 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
   </section>
 </div>
 <button id="icFab" title="Espacio clínico inteligente">🧠</button>
+<div id="procOverlay" aria-hidden="true">
+  <section id="procPanel" role="dialog" aria-modal="true" aria-label="Procedimientos">
+    <div class="icHead"><span style="font-size:27px">📝</span><div><h2>Procedimientos</h2><small style="color:var(--text-dim,#94a3b8)">Guías paso a paso por especialidad</small></div><button class="icClose" id="procClose" aria-label="Cerrar procedimientos">×</button></div>
+    <div class="icBody" id="procBody"></div>
+  </section>
+</div>
+<div id="algOverlay" aria-hidden="true">
+  <section id="algPanel" role="dialog" aria-modal="true" aria-label="Algoritmos">
+    <div class="icHead"><span style="font-size:27px">🔀</span><div><h2>Algoritmos</h2><small style="color:var(--text-dim,#94a3b8)">Actuación rápida por especialidad</small></div><button class="icClose" id="algClose" aria-label="Cerrar algoritmos">×</button></div>
+    <div class="icBody" id="algBody"></div>
+  </section>
+</div>
 <script id="inurseClinicalFixScript">
 (function(){
 'use strict';
-const tabs=[['assistant','Asistente','✨'],['shift','Mi turno','🕒'],['cases','Casos','🗂️'],['calc','Calculadoras','🧮'],['alg','Algoritmos','🔀'],['integrate','Interpretación','🔬'],['media','Multimedia','🎬'],['diary','Diario','📔'],['procedures','Procedimientos','📝']];
+const tabs=[['assistant','Asistente','✨'],['shift','Mi turno','🕒'],['cases','Casos','🗂️'],['calc','Calculadoras','🧮'],['integrate','Interpretación','🔬'],['media','Multimedia','🎬'],['diary','Diario','📔']];
 const $=s=>document.querySelector(s); const esc=s=>String(s||'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const ALG={
 'Sepsis':{src:'Surviving Sepsis Campaign',steps:['Confirmar sospecha de infección y valorar disfunción orgánica.','ABCDE, monitorización, accesos, glucemia, temperatura y diuresis.','Obtener lactato y cultivos sin retrasar el tratamiento cuando proceda.','Administrar antimicrobianos según gravedad, foco y protocolo local.','Valorar fluidoterapia con reevaluación dinámica y evitar sobrecarga.','Si persiste hipotensión, activar manejo de shock y soporte vasopresor según protocolo.','Buscar y controlar el foco; reevaluar respuesta, perfusión y lactato.']},
@@ -12678,6 +12703,8 @@ var releaseIcFocusTrap=null;
 function open(){ $('#icOverlay').classList.add('on'); $('#icOverlay').setAttribute('aria-hidden','false'); if(releaseIcFocusTrap)releaseIcFocusTrap(); releaseIcFocusTrap=window.iNurseFocusTrap($('#icPanel')); }
 function close(){ $('#icOverlay').classList.remove('on'); $('#icOverlay').setAttribute('aria-hidden','true'); if(releaseIcFocusTrap){releaseIcFocusTrap();releaseIcFocusTrap=null;} }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#icOverlay').classList.contains('on'))close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#procOverlay').classList.contains('on'))closeProc()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#algOverlay').classList.contains('on'))closeAlg()});
 function save(k,v){localStorage.setItem('inurse_ic_'+k,JSON.stringify(v))} function load(k,d){try{return JSON.parse(localStorage.getItem('inurse_ic_'+k))??d}catch(e){return d}}
 function askVivi(text){try{if(typeof window.openViviWithContext==='function'){window.openViviWithContext(text);close();return}}catch(e){} try{if(typeof window.openIn72==='function'){window.openIn72(text);close();return}}catch(e){} const fab=document.querySelector('.fab,[data-vivi],#viviBtn,#v29Vivi');if(fab)fab.click();setTimeout(()=>{const q=document.querySelector('.qinput,#viviInput,textarea[placeholder*="Vivi"],textarea[placeholder*="Pregunta"]');if(q){q.value=text;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus()}},250);close()}
 function card(title,body){return `<div class="icCard"><h3>${title}</h3>${body}</div>`}
@@ -12736,89 +12763,187 @@ function getBibAlgs(){
   window._bibAlgsCache=groups;
   return groups;
 }
-function renderAlgList(){
+function algNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim()}
+var algCurrentCat=null;
+var algCurrentBibCat=null;
+var releaseAlgFocusTrap=null;
+function openAlg(){
+  algCurrentCat=null;algCurrentBibCat=null;
+  $('#algOverlay').classList.add('on');
+  $('#algOverlay').setAttribute('aria-hidden','false');
+  renderAlgRoot();
+  if(releaseAlgFocusTrap)releaseAlgFocusTrap();
+  releaseAlgFocusTrap=window.iNurseFocusTrap($('#algPanel'));
+}
+function closeAlg(){
+  $('#algOverlay').classList.remove('on');
+  $('#algOverlay').setAttribute('aria-hidden','true');
+  if(releaseAlgFocusTrap){releaseAlgFocusTrap();releaseAlgFocusTrap=null;}
+}
+function algCoreGroups(){
   const groups={};
   Object.keys(ALG).forEach(function(name){
     const cat=ALG_CAT[name]||'Otros';
     (groups[cat]=groups[cat]||[]).push(name);
   });
   const order=ALG_CAT_ORDER.slice();
-  Object.keys(groups).forEach(function(c){ if(order.indexOf(c)===-1) order.push(c); });
-
+  Object.keys(groups).forEach(function(c){if(order.indexOf(c)===-1)order.push(c)});
+  return {groups:groups,order:order};
+}
+function renderAlgRoot(){
+  const gc=algCoreGroups();
   var bibGroups=getBibAlgs();
   var bibCats=Object.keys(bibGroups).sort(function(a,b){return a.localeCompare(b,'es')});
-
-  var totalAlg=Object.keys(ALG).length;
   var totalBib=0; bibCats.forEach(function(c){totalBib+=bibGroups[c].length});
-
-  let html='<input class="icInput" id="algFilter" placeholder="🔎 Buscar algoritmo o especialidad…" style="margin-bottom:12px">';
-  html+='<div class="alg-tabs" id="algTabs"><button class="alg-tab on" data-alg-tab="core">Algoritmos clave <span class="alg-group-count">'+totalAlg+'</span></button><button class="alg-tab" data-alg-tab="bib">Biblioteca completa <span class="alg-group-count">'+totalBib+'</span></button></div>';
-
-  html+='<div id="algCorePane">';
-  order.forEach(function(cat){
-    const names=groups[cat]; if(!names||!names.length) return;
+  let html='<div class="icSearchRow"><input class="icInput" id="algRootFilter" placeholder="🔎 Buscar especialidad o algoritmo…"><button type="button" class="icMicBtn qmic" id="algRootMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="proc-cat-grid" id="algCatRootGrid">';
+  gc.order.forEach(function(cat){
+    const names=gc.groups[cat]; if(!names||!names.length) return;
     const ico=ALG_CAT_ICON[cat]||'📋';
-    html+='<div class="alg-group" data-alg-group="'+esc(cat)+'">'
-      +'<div class="alg-group-head">'+ico+' '+esc(cat)+' <span class="alg-group-count">'+names.length+'</span></div>'
-      +'<div class="icGrid">'
-      +names.map(function(x){
-        return '<button class="icCard" data-alg="'+esc(x)+'" data-alg-name="'+esc(x.toLowerCase())+'" data-alg-cat="'+esc(cat.toLowerCase())+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(x)+'</h3><p>'+esc(ALG[x].src)+'</p></button>';
-      }).join('')
-      +'</div></div>';
+    const hay=esc(algNorm(cat+' '+names.join(' ')));
+    html+='<button class="proc-cat-card" data-alg-cat="'+esc(cat)+'" data-alg-cat-hay="'+hay+'"><span class="proc-cat-ico">'+ico+'</span><b>'+esc(cat)+'</b><small>'+names.length+' algoritmo'+(names.length===1?'':'s')+'</small></button>';
   });
+  if(totalBib){
+    const hay=esc(algNorm('Biblioteca completa '+bibCats.join(' ')));
+    html+='<button class="proc-cat-card" data-alg-bib-root="1" data-alg-cat-hay="'+hay+'"><span class="proc-cat-ico">📚</span><b>Biblioteca completa</b><small>'+totalBib+' fichas</small></button>';
+  }
   html+='</div>';
-
-  html+='<div id="algBibPane" style="display:none">';
-  bibCats.forEach(function(cat){
+  html+='<p class="icResult" id="algCatEmpty" style="display:none">No se ha encontrado ninguna especialidad.</p>';
+  $('#algBody').innerHTML=html;
+  $('#algRootFilter').oninput=filterAlgRoot;
+  document.querySelectorAll('#algCatRootGrid [data-alg-cat]').forEach(function(x){x.onclick=function(){showAlgCategory(x.dataset.algCat)}});
+  const bibBtn=document.querySelector('#algCatRootGrid [data-alg-bib-root]'); if(bibBtn)bibBtn.onclick=function(){renderAlgBibRoot()};
+}
+function filterAlgRoot(){
+  const n=algNorm(($('#algRootFilter')||{}).value);
+  let any=false;
+  document.querySelectorAll('#algCatRootGrid .proc-cat-card').forEach(function(c){
+    const hay=(c.dataset.algCatHay||'');
+    const show=!n||hay.indexOf(n)!==-1;
+    c.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  const empty=$('#algCatEmpty'); if(empty)empty.style.display=any?'none':'block';
+}
+function showAlgCategory(cat){
+  algCurrentCat=cat;algCurrentBibCat=null;
+  const gc=algCoreGroups();
+  const names=gc.groups[cat]||[];
+  const ico=ALG_CAT_ICON[cat]||'📋';
+  let html='<button class="icBtn alt" id="backAlgCats">← Especialidades</button>';
+  html+='<div class="icHead" style="padding:14px 0 10px;border:0"><span style="font-size:22px">'+ico+'</span><div><h2 style="font-size:17px">'+esc(cat)+'</h2><small style="color:var(--text-dim,#94a3b8)">'+names.length+' algoritmo'+(names.length===1?'':'s')+'</small></div></div>';
+  html+='<div class="icSearchRow"><input class="icInput" id="algFilter" placeholder="🔎 Buscar algoritmo…"><button type="button" class="icMicBtn qmic" id="algMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="icGrid" id="algCatGrid">'+names.map(function(x){
+    const hay=esc(algNorm(x));
+    return '<button class="icCard" data-alg="'+esc(x)+'" data-alg-hay="'+hay+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(x)+'</h3><p>'+esc(ALG[x].src)+'</p></button>';
+  }).join('')+'</div>';
+  $('#algBody').innerHTML=html;
+  $('#backAlgCats').onclick=function(){algCurrentCat=null;renderAlgRoot()};
+  $('#algFilter').oninput=filterAlgCategory;
+  document.querySelectorAll('#algCatGrid [data-alg]').forEach(function(x){x.onclick=function(){showAlg(x.dataset.alg)}});
+}
+function filterAlgCategory(){
+  const n=algNorm(($('#algFilter')||{}).value);
+  document.querySelectorAll('#algCatGrid [data-alg]').forEach(function(c){
+    c.style.display=(!n||(c.dataset.algHay||'').indexOf(n)!==-1)?'':'none';
+  });
+}
+function renderAlgBibRoot(){
+  algCurrentCat=null;algCurrentBibCat=null;
+  var bibGroups=getBibAlgs();
+  var bibCats=Object.keys(bibGroups).sort(function(a,b){return a.localeCompare(b,'es')});
+  let html='<button class="icBtn alt" id="backAlgBibCats">← Especialidades</button>';
+  html+='<div class="icHead" style="padding:14px 0 10px;border:0"><span style="font-size:22px">📚</span><div><h2 style="font-size:17px">Biblioteca completa</h2><small style="color:var(--text-dim,#94a3b8)">Algoritmos de la Biblioteca virtual, por bloque</small></div></div>';
+  html+='<div class="icSearchRow"><input class="icInput" id="algBibRootFilter" placeholder="🔎 Buscar bloque o algoritmo…"><button type="button" class="icMicBtn qmic" id="algBibRootMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="proc-cat-grid" id="algBibCatRootGrid">'+bibCats.map(function(cat){
     var items=bibGroups[cat];
-    html+='<div class="alg-group" data-alg-group="'+esc(cat)+'">'
-      +'<div class="alg-group-head">📋 '+esc(cat)+' <span class="alg-group-count">'+items.length+'</span></div>'
-      +'<div class="icGrid">'
-      +items.map(function(x){
-        return '<button class="icCard" data-bib-alg="'+esc(x.id)+'" data-alg-name="'+esc(x.titulo.toLowerCase())+'" data-alg-cat="'+esc(cat.toLowerCase())+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(x.titulo)+'</h3><p>'+esc(cat)+'</p></button>';
-      }).join('')
-      +'</div></div>';
-  });
-  html+='</div>';
-
-  return html;
+    const hay=esc(algNorm(cat+' '+items.map(function(x){return x.titulo}).join(' ')));
+    return '<button class="proc-cat-card" data-alg-bib-cat="'+esc(cat)+'" data-alg-cat-hay="'+hay+'"><span class="proc-cat-ico">📋</span><b>'+esc(cat)+'</b><small>'+items.length+' ficha'+(items.length===1?'':'s')+'</small></button>';
+  }).join('')+'</div>';
+  html+='<p class="icResult" id="algBibCatEmpty" style="display:none">No se ha encontrado ningún bloque.</p>';
+  $('#algBody').innerHTML=html;
+  $('#backAlgBibCats').onclick=function(){renderAlgRoot()};
+  $('#algBibRootFilter').oninput=filterAlgBibRoot;
+  document.querySelectorAll('#algBibCatRootGrid [data-alg-bib-cat]').forEach(function(x){x.onclick=function(){showAlgBibCategory(x.dataset.algBibCat)}});
 }
-function filterAlg(){
-  const q=(document.getElementById('algFilter')||{}).value||'';
-  const n=q.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-  document.querySelectorAll('[data-alg-group]').forEach(function(g){
-    let any=false;
-    g.querySelectorAll('[data-alg],[data-bib-alg]').forEach(function(c){
-      const hay=((c.dataset.algName||'')+' '+(c.dataset.algCat||'')).normalize('NFD').replace(/[̀-ͯ]/g,'');
-      const show=!n||hay.indexOf(n)!==-1;
-      c.style.display=show?'':'none';
-      if(show) any=true;
-    });
-    g.style.display=any?'':'none';
+function filterAlgBibRoot(){
+  const n=algNorm(($('#algBibRootFilter')||{}).value);
+  let any=false;
+  document.querySelectorAll('#algBibCatRootGrid .proc-cat-card').forEach(function(c){
+    const hay=(c.dataset.algCatHay||'');
+    const show=!n||hay.indexOf(n)!==-1;
+    c.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  const empty=$('#algBibCatEmpty'); if(empty)empty.style.display=any?'none':'block';
+}
+function showAlgBibCategory(cat){
+  algCurrentBibCat=cat;algCurrentCat=null;
+  var bibGroups=getBibAlgs();
+  var items=bibGroups[cat]||[];
+  let html='<button class="icBtn alt" id="backAlgBibItems">← Biblioteca completa</button>';
+  html+='<div class="icHead" style="padding:14px 0 10px;border:0"><span style="font-size:22px">📋</span><div><h2 style="font-size:17px">'+esc(cat)+'</h2><small style="color:var(--text-dim,#94a3b8)">'+items.length+' ficha'+(items.length===1?'':'s')+'</small></div></div>';
+  html+='<div class="icSearchRow"><input class="icInput" id="algBibFilter" placeholder="🔎 Buscar algoritmo…"><button type="button" class="icMicBtn qmic" id="algBibMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="icGrid" id="algBibCatGrid">'+items.map(function(x){
+    const hay=esc(algNorm(x.titulo));
+    return '<button class="icCard" data-bib-alg="'+esc(x.id)+'" data-alg-hay="'+hay+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(x.titulo)+'</h3><p>'+esc(cat)+'</p></button>';
+  }).join('')+'</div>';
+  $('#algBody').innerHTML=html;
+  $('#backAlgBibItems').onclick=function(){algCurrentBibCat=null;renderAlgBibRoot()};
+  $('#algBibFilter').oninput=filterAlgBibCategory;
+  document.querySelectorAll('#algBibCatGrid [data-bib-alg]').forEach(function(x){x.onclick=function(){showBibAlg(x.dataset.bibAlg)}});
+}
+function filterAlgBibCategory(){
+  const n=algNorm(($('#algBibFilter')||{}).value);
+  document.querySelectorAll('#algBibCatGrid [data-bib-alg]').forEach(function(c){
+    c.style.display=(!n||(c.dataset.algHay||'').indexOf(n)!==-1)?'':'none';
   });
 }
-function showAlg(name){const a=ALG[name];$('#icBody').innerHTML=`<button class="icBtn alt" id="backAlg">← Algoritmos</button><div class="icCard"><h3>${name}</h3><p><b>Fuente de referencia:</b> ${a.src}. Adaptar siempre al protocolo y competencias del centro.</p><div id="algSteps">${a.steps.map((x,i)=>`<div class="icResult"><b>${i+1}.</b> ${x}</div>`).join('')}</div><button class="icBtn" id="algVivi">Continuar con Vivi</button></div>`;$('#backAlg').onclick=()=>renderTab('alg');$('#algVivi').onclick=()=>askVivi(`Amplía y guía paso a paso el algoritmo de ${name}, usando recomendaciones oficiales actuales. Contexto interno: ${a.steps.join(' | ')}`)}
+function algExportText(title,src,cat,steps){
+  var lines=[title];
+  if(src) lines.push('Fuente: '+src);
+  if(cat) lines.push('Categoría: '+cat);
+  lines.push('');
+  lines.push('Pasos:');
+  steps.forEach(function(s,i){lines.push((i+1)+'. '+s)});
+  lines.push('');
+  lines.push('Adaptar siempre al protocolo local y a las competencias del centro. Contenido educativo de apoyo (iNurse).');
+  return lines.join('\n');
+}
+function showAlg(name){
+  const a=ALG[name];
+  if(!a){renderAlgRoot();return}
+  $('#algBody').innerHTML=`<button class="icBtn alt" id="backAlg">← ${esc(algCurrentCat||'Especialidades')}</button><div class="icCard"><h3>${esc(name)}</h3><p><b>Fuente de referencia:</b> ${esc(a.src)}. Adaptar siempre al protocolo y competencias del centro.</p><div id="algSteps">${a.steps.map((x,i)=>`<div class="icResult"><b>${i+1}.</b> ${esc(x)}</div>`).join('')}</div><button class="icBtn" id="algVivi">Continuar con Vivi</button> <button class="icBtn alt" id="algExport">📤 Exportar</button></div>`;
+  $('#backAlg').onclick=function(){algCurrentCat?showAlgCategory(algCurrentCat):renderAlgRoot()};
+  $('#algVivi').onclick=()=>askVivi(`Amplía y guía paso a paso el algoritmo de ${name}, usando recomendaciones oficiales actuales. Contexto interno: ${a.steps.join(' | ')}`);
+  $('#algExport').onclick=()=>exportShare(name,algExportText(name,a.src,algCurrentCat,a.steps));
+}
 function showBibAlg(id){
   var bibGroups=getBibAlgs();var item=null;
   Object.values(bibGroups).forEach(function(arr){arr.forEach(function(x){if(x.id===id)item=x})});
   if(!item) return;
   var stepsHtml='';
+  var stepTexts=[];
   if(Array.isArray(item.pasos)){
     stepsHtml=item.pasos.map(function(p,i){
       var num=p.paso||(i+1);
-      return '<div class="icResult"><b>'+num+'.</b> '+esc(p.accion||p.descripcion||'')+(p.objetivo?'<br><small style="color:#2DD4BF">→ '+esc(p.objetivo)+'</small>':'')+'</div>';
+      var texto=p.accion||p.descripcion||'';
+      stepTexts.push(texto+(p.objetivo?' → '+p.objetivo:''));
+      return '<div class="icResult"><b>'+num+'.</b> '+esc(texto)+(p.objetivo?'<br><small style="color:#2DD4BF">→ '+esc(p.objetivo)+'</small>':'')+'</div>';
     }).join('');
   }else if(typeof item.pasos==='string'){
     stepsHtml='<div class="icResult">'+esc(item.pasos)+'</div>';
+    stepTexts=[item.pasos];
   }
-  $('#icBody').innerHTML='<button class="icBtn alt" id="backAlg">← Algoritmos</button>'
+  $('#algBody').innerHTML='<button class="icBtn alt" id="backAlg">← '+esc(item.cat||'Biblioteca completa')+'</button>'
     +'<div class="icCard"><h3>'+esc(item.titulo)+'</h3>'
     +'<p><b>Categoría:</b> '+esc(item.cat)+'</p>'
     +'<div id="algSteps">'+stepsHtml+'</div>'
     +'<button class="icBtn" id="algVivi">Ampliar con Vivi</button>'
     +'<button class="icBtn alt" id="algOpenLib">📚 Ver ficha completa</button>'
+    +'<button class="icBtn alt" id="algExport">📤 Exportar</button>'
     +'</div>';
-  $('#backAlg').onclick=function(){renderTab('alg')};
+  $('#backAlg').onclick=function(){algCurrentBibCat?showAlgBibCategory(algCurrentBibCat):renderAlgBibRoot()};
   $('#algVivi').onclick=function(){
     var ctx=Array.isArray(item.pasos)?item.pasos.map(function(p){return p.accion||''}).join(' | '):String(item.pasos||'');
     askVivi('Amplía y guía paso a paso: '+item.titulo+'. Contexto interno: '+ctx);
@@ -12826,39 +12951,72 @@ function showBibAlg(id){
   $('#algOpenLib').onclick=function(){
     if(window.iNurse21&&window.iNurse21.openItem) window.iNurse21.openItem(item.id);
   };
+  $('#algExport').onclick=function(){exportShare(item.titulo,algExportText(item.titulo,'',item.cat,stepTexts))};
 }
 function getProcData(){return (typeof PROCEDIMIENTOS_DATA!=='undefined'?PROCEDIMIENTOS_DATA:null)||{meta:[],items:[]}}
-function renderProcList(){
-  const data=getProcData();
-  const byCat={};
-  data.items.forEach(function(p){(byCat[p.cat]=byCat[p.cat]||[]).push(p)});
-  let html='<input class="icInput" id="procFilter" placeholder="🔎 Buscar procedimiento, material o complicación…" style="margin-bottom:12px">';
-  data.meta.forEach(function(cat){
-    const list=byCat[cat.id]||[];
-    if(!list.length) return;
-    html+='<div class="alg-group" data-proc-group="'+esc(cat.id)+'">'
-      +'<div class="alg-group-head">'+(cat.icon||'📝')+' '+esc(cat.label)+' <span class="alg-group-count">'+list.length+'</span></div>'
-      +'<div class="icGrid">'
-      +list.map(function(p){
-        const hay=esc((p.title+' '+p.subtype+' '+p.summary+' '+(p.material||[]).join(' ')+' '+(p.complicaciones||[]).join(' ')).toLowerCase());
-        return '<button class="icCard" data-proc="'+esc(p.code)+'" data-proc-hay="'+hay+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(p.title)+'</h3><p><b>'+esc(p.subtype)+'</b></p><p>'+esc(p.summary)+'</p></button>';
-      }).join('')
-      +'</div></div>';
-  });
-  return html;
+function procNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim()}
+var procCurrentCat=null;
+var releaseProcFocusTrap=null;
+function openProc(){
+  procCurrentCat=null;
+  $('#procOverlay').classList.add('on');
+  $('#procOverlay').setAttribute('aria-hidden','false');
+  renderProcRoot();
+  if(releaseProcFocusTrap)releaseProcFocusTrap();
+  releaseProcFocusTrap=window.iNurseFocusTrap($('#procPanel'));
 }
-function filterProc(){
-  const q=(document.getElementById('procFilter')||{}).value||'';
-  const n=q.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-  document.querySelectorAll('[data-proc-group]').forEach(function(g){
-    let any=false;
-    g.querySelectorAll('[data-proc]').forEach(function(c){
-      const hay=(c.dataset.procHay||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
-      const show=!n||hay.indexOf(n)!==-1;
-      c.style.display=show?'':'none';
-      if(show) any=true;
-    });
-    g.style.display=any?'':'none';
+function closeProc(){
+  $('#procOverlay').classList.remove('on');
+  $('#procOverlay').setAttribute('aria-hidden','true');
+  if(releaseProcFocusTrap){releaseProcFocusTrap();releaseProcFocusTrap=null;}
+}
+function renderProcRoot(){
+  const data=getProcData();
+  let html='<div class="icSearchRow"><input class="icInput" id="procRootFilter" placeholder="🔎 Buscar especialidad o procedimiento…"><button type="button" class="icMicBtn qmic" id="procRootMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="proc-cat-grid" id="procCatRootGrid">'+data.meta.map(function(cat){
+    const titles=data.items.filter(function(p){return p.cat===cat.id}).map(function(p){return p.title}).join(' ');
+    const hay=esc(procNorm(cat.label+' '+titles));
+    return '<button class="proc-cat-card" data-proc-cat="'+esc(cat.id)+'" data-proc-cat-hay="'+hay+'"><span class="proc-cat-ico">'+(cat.icon||'📝')+'</span><b>'+esc(cat.label)+'</b><small>'+cat.count+' ficha'+(cat.count===1?'':'s')+'</small></button>';
+  }).join('')+'</div>';
+  html+='<p class="icResult" id="procCatEmpty" style="display:none">No se ha encontrado ninguna especialidad.</p>';
+  $('#procBody').innerHTML=html;
+  $('#procRootFilter').oninput=filterProcRoot;
+  document.querySelectorAll('#procCatRootGrid [data-proc-cat]').forEach(function(x){x.onclick=function(){showProcCategory(x.dataset.procCat)}});
+}
+function filterProcRoot(){
+  const n=procNorm(($('#procRootFilter')||{}).value);
+  let any=false;
+  document.querySelectorAll('#procCatRootGrid [data-proc-cat]').forEach(function(c){
+    const hay=(c.dataset.procCatHay||'');
+    const show=!n||hay.indexOf(n)!==-1;
+    c.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  const empty=$('#procCatEmpty'); if(empty)empty.style.display=any?'none':'block';
+}
+function showProcCategory(catId){
+  procCurrentCat=catId;
+  const data=getProcData();
+  const cat=data.meta.find(function(c){return c.id===catId});
+  if(!cat){renderProcRoot();return}
+  const items=data.items.filter(function(p){return p.cat===catId});
+  let html='<button class="icBtn alt" id="backProcCats">← Especialidades</button>';
+  html+='<div class="icHead" style="padding:14px 0 10px;border:0"><span style="font-size:22px">'+(cat.icon||'📝')+'</span><div><h2 style="font-size:17px">'+esc(cat.label)+'</h2><small style="color:var(--text-dim,#94a3b8)">'+items.length+' ficha'+(items.length===1?'':'s')+'</small></div></div>';
+  html+='<div class="icSearchRow"><input class="icInput" id="procFilter" placeholder="🔎 Buscar procedimiento, material o complicación…"><button type="button" class="icMicBtn qmic" id="procMic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button></div>';
+  html+='<div class="icGrid" id="procCatGrid">'+items.map(function(p){
+    const hay=esc(procNorm(p.title+' '+p.subtype+' '+p.summary+' '+(p.material||[]).join(' ')+' '+(p.complicaciones||[]).join(' ')));
+    return '<button class="icCard" data-proc="'+esc(p.code)+'" data-proc-hay="'+hay+'" style="text-align:left;cursor:pointer;color:var(--text,#fff)"><h3>'+esc(p.title)+'</h3><p><b>'+esc(p.subtype)+'</b></p><p>'+esc(p.summary)+'</p></button>';
+  }).join('')+'</div>';
+  $('#procBody').innerHTML=html;
+  $('#backProcCats').onclick=function(){procCurrentCat=null;renderProcRoot()};
+  $('#procFilter').oninput=filterProcCategory;
+  document.querySelectorAll('#procCatGrid [data-proc]').forEach(function(x){x.onclick=function(){showProc(x.dataset.proc)}});
+}
+function filterProcCategory(){
+  const n=procNorm(($('#procFilter')||{}).value);
+  document.querySelectorAll('#procCatGrid [data-proc]').forEach(function(c){
+    const hay=(c.dataset.procHay||'');
+    c.style.display=(!n||hay.indexOf(n)!==-1)?'':'none';
   });
 }
 function procSection(title,items,ordered){
@@ -12869,9 +13027,9 @@ function procSection(title,items,ordered){
 function showProc(code){
   const data=getProcData();
   const p=data.items.find(function(x){return x.code===code});
-  if(!p){renderTab('procedures');return}
-  let html='<button class="icBtn alt" id="backProc">← Procedimientos</button>';
-  html+='<div class="icCard"><div class="proc-detail-head"><span class="proc-detail-code">'+esc(p.code)+'</span><span class="proc-detail-type">'+esc(p.subtype)+'</span></div><h3>'+esc(p.title)+'</h3><p>'+esc(p.summary)+'</p><button class="icBtn" id="procVivi">Ampliar con Vivi</button> <button class="icBtn alt" id="procVideo">🎬 Vídeo</button></div>';
+  if(!p){renderProcRoot();return}
+  let html=procCurrentCat?'<button class="icBtn alt" id="backProc">← '+esc((data.meta.find(function(c){return c.id===procCurrentCat})||{}).label||'Especialidades')+'</button>':'<button class="icBtn alt" id="backProc">← Especialidades</button>';
+  html+='<div class="icCard"><div class="proc-detail-head"><span class="proc-detail-code">'+esc(p.code)+'</span><span class="proc-detail-type">'+esc(p.subtype)+'</span></div><h3>'+esc(p.title)+'</h3><p>'+esc(p.summary)+'</p><button class="icBtn" id="procVivi">Ampliar con Vivi</button> <button class="icBtn alt" id="procVideo">🎬 Vídeo</button> <button class="icBtn alt" id="procExport">📤 Exportar</button></div>';
   html+='<div class="icGrid">'
     +procSection('Objetivos',p.objetivos)
     +procSection('Indicaciones',p.indicaciones)
@@ -12891,20 +13049,44 @@ function showProc(code){
   if(p.evidencia&&p.evidencia.length) html+='<p class="icResult">'+p.evidencia.map(function(x){return esc(x)}).join('<br>')+'</p>';
   if(p.bibliografia&&p.bibliografia.length) html+='<div class="icCard"><h3>Bibliografía</h3><ul class="biblio-list">'+p.bibliografia.map(function(b){return '<li>'+(b.url?'<a href="'+esc(b.url)+'" target="_blank" rel="noopener">'+esc(b.label)+'</a>':esc(b.label))+'</li>'}).join('')+'</ul></div>';
   html+='<p class="icResult">Contenido educativo. Realizar solo por personal capacitado, con prescripción, supervisión y protocolo local cuando corresponda.</p>';
-  $('#icBody').innerHTML=html;
-  $('#backProc').onclick=()=>renderTab('procedures');
+  $('#procBody').innerHTML=html;
+  $('#backProc').onclick=function(){procCurrentCat?showProcCategory(procCurrentCat):renderProcRoot()};
   $('#procVivi').onclick=()=>askVivi(`Desarrolla el procedimiento ${p.title} (${p.subtype}) de forma completa y actualizada, con indicaciones, contraindicaciones, material, preparación, técnica, seguridad, complicaciones y cuidados de enfermería.`);
   $('#procVideo').onclick=()=>window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(p.title+' procedimiento sanitario formación'),'_blank','noopener');
+  $('#procExport').onclick=()=>exportShare(p.title,procExportText(p));
+}
+function exportShare(title,text){
+  if(navigator.share){navigator.share({title:title,text:text}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('📤 Copiado al portapapeles')})}
+}
+function procExportText(p){
+  var lines=[p.title,p.subtype,'',p.summary,''];
+  function sec(label,items){if(items&&items.length){lines.push(label+':');items.forEach(function(x){lines.push('- '+x)});lines.push('')}}
+  sec('Objetivos',p.objetivos);
+  sec('Indicaciones',p.indicaciones);
+  sec('Contraindicaciones y precauciones',p.contraindicaciones);
+  sec('Material necesario',p.material);
+  sec('Preparación',p.preparacion);
+  if(p.pasos&&p.pasos.length){lines.push('Procedimiento paso a paso:');p.pasos.forEach(function(x,i){lines.push((i+1)+'. '+x)});lines.push('')}
+  if(p.algoritmo&&p.algoritmo.length){lines.push('Algoritmo rápido de actuación:');p.algoritmo.forEach(function(x,i){lines.push((i+1)+'. '+x)});lines.push('')}
+  sec('Cuidados posteriores',p.cuidados);
+  sec('Complicaciones',p.complicaciones);
+  sec('Signos de alarma',p.alarma);
+  sec('Registro de enfermería',p.registro);
+  if(p.checklist&&p.checklist.length){lines.push('Checklist de seguridad:');p.checklist.forEach(function(x){lines.push('☐ '+x)});lines.push('')}
+  if(p.bibliografia&&p.bibliografia.length){lines.push('Bibliografía:');p.bibliografia.forEach(function(b){lines.push('- '+b.label+(b.url?' — '+b.url:''))});lines.push('')}
+  lines.push('Contenido educativo de apoyo (iNurse). Verificar siempre con el protocolo local y el juicio profesional.');
+  return lines.join('\n');
 }
 function renderTab(id){document.querySelectorAll('.icTab').forEach(b=>b.classList.toggle('on',b.dataset.id===id));const b=$('#icBody');
 if(id==='assistant')b.innerHTML=`<div class="icGrid"><div class="icCard"><h3>Asistente clínico guiado</h3><input class="icInput" id="icaAge" placeholder="Edad y contexto"><textarea class="icArea" id="icaReason" placeholder="Motivo de consulta y evolución"></textarea><textarea class="icArea" id="icaData" placeholder="Constantes, exploración, analítica, ECG, RX..."></textarea><button class="icBtn" id="icaSend">Analizar con Vivi</button></div><div class="icCard"><h3>Resultado esperado</h3><p>Datos observados, prioridades, diferenciales, alarmas, pruebas pendientes, actuación, cuidados y límites.</p></div></div>`;
 if(id==='shift'){const d=load('shift',{notes:'',pending:''});b.innerHTML=`<div class="icCard"><h3>Mi turno</h3><textarea class="icArea" id="icsNotes" placeholder="Notas sin datos identificativos">${esc(d.notes)}</textarea><textarea class="icArea" id="icsPending" placeholder="Pendientes y aprendizajes">${esc(d.pending)}</textarea><button class="icBtn" id="icsSave">Guardar</button><button class="icBtn alt" id="icsSummary">Resumir con Vivi</button></div>`}
 if(id==='cases')b.innerHTML=`<div class="icCard"><h3>Caso clínico interactivo</h3><select class="icSelect" id="iccTopic"><option>Urgencias</option><option>UCI</option><option>Cardiología</option><option>Respiratorio</option><option>Neurología</option><option>Trauma</option></select><select class="icSelect" id="iccLevel"><option>Básico</option><option>Intermedio</option><option>Avanzado</option></select><button class="icBtn" id="iccStart">Crear caso</button></div>`;
-if(id==='calc')b.innerHTML=renderCalc(); if(id==='alg')b.innerHTML=renderAlgList();
+if(id==='calc')b.innerHTML=renderCalc();
 if(id==='integrate')b.innerHTML=`<div class="icCard"><h3>Interpretación conjunta</h3><textarea class="icArea" id="iciClinical" placeholder="Clínica y exploración"></textarea><textarea class="icArea" id="iciTests" placeholder="ECG, RX, gasometría, analítica y otros hallazgos"></textarea><button class="icBtn" id="iciSend">Integrar con Vivi</button></div>`;
 if(id==='media'){const items=load('media',[]);b.innerHTML=`<div class="icGrid"><div class="icCard"><h3>Añadir recurso</h3><input class="icInput" id="icmTitle" placeholder="Título"><input class="icInput" id="icmUrl" placeholder="https://..."><input class="icInput" id="icmTags" placeholder="Etiquetas"><button class="icBtn" id="icmAdd">Guardar</button></div><div class="icCard"><h3>Biblioteca</h3>${items.length?items.map((x,i)=>`<p><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a> <small>${esc(x.tags)}</small> <button class="icBtn alt" data-del-media="${i}">Eliminar</button></p>`).join(''):'<p>Sin recursos guardados.</p>'}</div></div>`}
 if(id==='diary'){const items=load('diary',[]);b.innerHTML=`<div class="icGrid"><div class="icCard"><h3>Nueva entrada</h3><input class="icInput" id="icdTitle" placeholder="Título"><textarea class="icArea" id="icdText" placeholder="Caso o aprendizaje, sin datos identificativos"></textarea><button class="icBtn" id="icdAdd">Guardar</button></div><div class="icCard"><h3>Entradas</h3>${items.length?items.map((x,i)=>`<div class="icResult"><b>${esc(x.title)}</b><br>${esc(x.text)}<br><small>${esc(x.date)}</small><br><button class="icBtn alt" data-del-diary="${i}">Eliminar</button></div>`).join(''):'<p>Sin entradas.</p>'}</div></div>`}
-if(id==='procedures')b.innerHTML=renderProcList();bind(id)}
+bind(id)}
 function n(id){return +($(id)?.value||0)}
 function bind(id){
 if(id==='assistant')$('#icaSend').onclick=()=>askVivi(`Analiza de forma completa y estructurada. Edad/contexto: ${$('#icaAge').value}\nMotivo: ${$('#icaReason').value}\nDatos: ${$('#icaData').value}`);
@@ -12918,14 +13100,14 @@ if(k==='met'){const na=n('#cNa'),cl=n('#cCl'),h=n('#cHco'),g=n('#cGlu');if(!na||
 if(k==='osm'){const na=n('#cONa'),g=n('#cOGlu'),bun=n('#cBun');if(!na)throw 0;$('#outOsm').textContent=`Osmolaridad: ${(2*na+g/18+bun/2.8).toFixed(1)} mOsm/kg`}
 if(k==='ped'){const kg=n('#cPKg');if(!kg)throw 0;let r=kg<=10?4*kg:kg<=20?40+2*(kg-10):60+(kg-20);$('#outPed').textContent=`Mantenimiento: ${r.toFixed(1)} ml/h`}
 if(k==='gcs'){const x=n('#gEye')+n('#gVerb')+n('#gMot');$('#outGcs').textContent=`Glasgow: ${x}/15${x<=8?' · gravedad alta; valorar vía aérea según contexto':''}`}}catch(e){const out=btn.parentElement.querySelector('.icResult');if(out)out.textContent='Completa los datos requeridos y revisa las unidades.'}});
-if(id==='alg'){document.querySelectorAll('[data-alg]').forEach(x=>x.onclick=()=>showAlg(x.dataset.alg));document.querySelectorAll('[data-bib-alg]').forEach(x=>x.onclick=()=>showBibAlg(x.dataset.bibAlg));const af=$('#algFilter');if(af)af.oninput=filterAlg;document.querySelectorAll('.alg-tab').forEach(t=>t.onclick=function(){document.querySelectorAll('.alg-tab').forEach(b=>b.classList.remove('on'));t.classList.add('on');var core=$('#algCorePane'),bib=$('#algBibPane');if(t.dataset.algTab==='bib'){if(core)core.style.display='none';if(bib)bib.style.display=''}else{if(core)core.style.display='';if(bib)bib.style.display='none'}})}
 if(id==='integrate')$('#iciSend').onclick=()=>askVivi(`Integra clínica y pruebas, separando hallazgos, contradicciones, gravedad, diferenciales y actuación. Clínica: ${$('#iciClinical').value}\nPruebas: ${$('#iciTests').value}`);
 if(id==='media'){$('#icmAdd').onclick=()=>{const a=load('media',[]);a.unshift({title:$('#icmTitle').value||'Recurso',url:$('#icmUrl').value,tags:$('#icmTags').value});save('media',a);renderTab('media')};document.querySelectorAll('[data-del-media]').forEach(x=>x.onclick=()=>{const a=load('media',[]);a.splice(+x.dataset.delMedia,1);save('media',a);renderTab('media')})}
-if(id==='diary'){$('#icdAdd').onclick=()=>{const a=load('diary',[]);a.unshift({title:$('#icdTitle').value||'Entrada',text:$('#icdText').value,date:new Date().toLocaleString()});save('diary',a);renderTab('diary')};document.querySelectorAll('[data-del-diary]').forEach(x=>x.onclick=()=>{const a=load('diary',[]);a.splice(+x.dataset.delDiary,1);save('diary',a);renderTab('diary')})}
-if(id==='procedures'){document.querySelectorAll('[data-proc]').forEach(x=>x.onclick=()=>showProc(x.dataset.proc));const pf=$('#procFilter');if(pf)pf.oninput=filterProc}}
-function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-screen','main'];let host;for(const q of qs){host=document.querySelector(q);if(host)break}if(!host||document.getElementById('icHomeCard'))return;const c=document.createElement('div');c.id='icHomeCard';c.className='icHomeCard';c.innerHTML='<b>🧠 Espacio clínico inteligente</b><small>10 calculadoras, 8 algoritmos y 370 procedimientos con contenido interno.</small>';c.onclick=open;host.appendChild(c)}
-function init(){$('#icTabs').innerHTML=tabs.map((t,i)=>`<button class="icTab${i===0?' on':''}" data-id="${t[0]}">${t[2]?`<span class="icTab-ic">${t[2]}</span>`:''}${t[1]}</button>`).join('');$('#icTabs').onclick=e=>{const x=e.target.closest('.icTab');if(x)renderTab(x.dataset.id)};$('#icFab').onclick=open;$('#icClose').onclick=close;$('#icOverlay').onclick=e=>{if(e.target.id==='icOverlay')close()};renderTab('assistant');addHomeCard();setTimeout(addHomeCard,1200);setTimeout(addHomeCard,3000)}
+if(id==='diary'){$('#icdAdd').onclick=()=>{const a=load('diary',[]);a.unshift({title:$('#icdTitle').value||'Entrada',text:$('#icdText').value,date:new Date().toLocaleString()});save('diary',a);renderTab('diary')};document.querySelectorAll('[data-del-diary]').forEach(x=>x.onclick=()=>{const a=load('diary',[]);a.splice(+x.dataset.delDiary,1);save('diary',a);renderTab('diary')})}}
+function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-screen','main'];let host;for(const q of qs){host=document.querySelector(q);if(host)break}if(!host||document.getElementById('icHomeCard'))return;const c=document.createElement('div');c.id='icHomeCard';c.className='icHomeCard';c.innerHTML='<b>🧠 Espacio clínico inteligente</b><small>Calculadoras clínicas, asistente y organización del turno.</small>';c.onclick=open;host.appendChild(c)}
+function init(){$('#icTabs').innerHTML=tabs.map((t,i)=>`<button class="icTab${i===0?' on':''}" data-id="${t[0]}">${t[2]?`<span class="icTab-ic">${t[2]}</span>`:''}${t[1]}</button>`).join('');$('#icTabs').onclick=e=>{const x=e.target.closest('.icTab');if(x)renderTab(x.dataset.id)};$('#icFab').onclick=open;$('#icClose').onclick=close;$('#icOverlay').onclick=e=>{if(e.target.id==='icOverlay')close()};renderTab('assistant');addHomeCard();setTimeout(addHomeCard,1200);setTimeout(addHomeCard,3000);$('#procClose').onclick=closeProc;$('#procOverlay').onclick=e=>{if(e.target.id==='procOverlay')closeProc()};$('#algClose').onclick=closeAlg;$('#algOverlay').onclick=e=>{if(e.target.id==='algOverlay')closeAlg()}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+window.openProc=openProc;
+window.openAlg=openAlg;
 
 /* ---- API global: biblioteca de algoritmos accesible por Vivi ---- */
 function _algNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
@@ -16878,8 +17060,8 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "calc":       if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
       case "rx":         clickId("rxFab") || (window.openRx&&window.openRx()); return;
       case "ecg":        clickId("ecgFab") || (window.openEcg&&window.openEcg()); return;
-      case "procedimientos": openIC("procedures"); return;
-      case "algoritmos": openIC("alg"); return;
+      case "procedimientos": if(typeof window.openProc==='function'){ window.openProc(); return; } openIC("procedures"); return;
+      case "algoritmos": if(typeof window.openAlg==='function'){ window.openAlg(); return; } openIC("alg"); return;
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
