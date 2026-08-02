@@ -6,7 +6,7 @@
      y accesibles offline si ya se consultaron).
    - POST y cross-origin: pasan directos a la red (no se cachean).
 */
-const VERSION = "inurse-pwa-v1";
+const VERSION = "inurse-pwa-v2";
 const SHELL_CACHE = `${VERSION}-shell`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -85,8 +85,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // API → network-first con fallback a caché.
-  if (url.pathname.startsWith("/api/")) {
+  // API y datos de la app (/data/*.js, *.json: procedimientos, guías,
+  // vademécum...) → network-first con fallback a caché. Este contenido
+  // cambia con cada actualización de la app; con cache-first (como el
+  // resto de estáticos) el service worker serviría para siempre la
+  // primera copia que se descargó, sin enterarse nunca de contenido
+  // nuevo aunque el servidor ya lo tenga.
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/data/")) {
     event.respondWith(
       fetch(req)
         .then((res) => {
