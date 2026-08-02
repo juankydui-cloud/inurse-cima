@@ -1,0 +1,46 @@
+{
+  "_generado": "a partir de codigos_NNN_curados_iNurse.xlsx — regenerar con build_nnn_json.py",
+  "_aviso": "Solo se incluyen términos con Estado=Verificado (códigos confirmados manualmente en NNNConsult). Nada inventado.",
+  "verificados": {
+    "riesgo de deterioro de la integridad cutánea": {
+      "termino_original": "riesgo de deterioro de la integridad cutánea",
+      "nanda": {
+        "code": "00047",
+        "label": "Riesgo de deterioro de la integridad cutánea"
+      },
+      "nic": {
+        "code": "3540",
+        "label": "Prevención de úlceras por presión"
+      },
+      "noc": {
+        "code": "1101",
+        "label": "Integridad tisular: piel y membranas"
+      },
+      "fuente": "NNNConsult (Elsevier) 2024",
+      "fecha_verificacion": "01/08/2026",
+      "revisado_por": "JCV"
+    }
+  },
+  "pendientes_de_verificar": [
+    "dolor torácico agudo",
+    "disminución del gasto cardíaco",
+    "intolerancia a la actividad",
+    "patrón respiratorio ineficaz",
+    "deterioro del intercambio gaseoso",
+    "exceso de volumen de líquidos",
+    "riesgo de perfusión tisular cardíaca ineficaz",
+    "ansiedad ante procedimiento o diagnóstico",
+    "conocimientos deficientes sobre el régimen terapéutico",
+    "riesgo de sangrado (anticoagulación)",
+    "riesgo de caídas",
+    "fatiga",
+    "riesgo de confusión aguda (síncope / bajo gasto)",
+    "afrontamiento ineficaz",
+    "riesgo de nivel de glucemia inestable",
+    "mantenimiento ineficaz de la salud",
+    "deterioro de la movilidad física",
+    "insomnio",
+    "riesgo de infección (vías / procedimientos invasivos)",
+    "temor relacionado con el pronóstico"
+  ]
+}
