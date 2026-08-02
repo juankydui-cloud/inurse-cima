@@ -13157,6 +13157,7 @@ function filterProcCategory(){
 }
 function procBuildSections(p){
   const secs=[{key:'resumen',label:'Resumen',body:p.summary}];
+  if(p.definicion) secs.push({key:'definicion',label:'Definición',body:p.definicion});
   function addList(key,label,items,ordered){if(items&&items.length)secs.push({key:key,label:label,items:items,ordered:!!ordered})}
   addList('objetivos','Objetivos',p.objetivos);
   addList('indicaciones','Indicaciones',p.indicaciones);
@@ -13165,11 +13166,17 @@ function procBuildSections(p){
   addList('prep','Preparación',p.preparacion);
   addList('pasos','Paso a paso',p.pasos,true);
   addList('algoritmo','Algoritmo rápido',p.algoritmo,true);
+  addList('monitorizacion','Monitorización',p.monitorizacion);
   addList('cuidados','Cuidados posteriores',p.cuidados);
   addList('complicaciones','Complicaciones',p.complicaciones);
   addList('alarma','Signos de alarma',p.alarma);
+  addList('errores','Errores frecuentes',p.errores);
+  addList('perlas','Perlas clínicas',p.perlas);
+  addList('adaptacion','Adaptación por ámbito',p.adaptacion);
+  addList('educacion','Educación al paciente',p.educacion);
   addList('registro','Registro',p.registro);
   if(p.checklist&&p.checklist.length) secs.push({key:'checklist',label:'Checklist',checklist:p.checklist});
+  if(p.viviguide) secs.push({key:'viviguide',label:'Enfoque con Vivi',body:p.viviguide});
   if(p.bibliografia&&p.bibliografia.length) secs.push({key:'bibliografia',label:'Bibliografía',biblio:p.bibliografia});
   return secs;
 }
