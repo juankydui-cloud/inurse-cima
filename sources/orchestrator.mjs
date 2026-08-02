@@ -6,6 +6,7 @@ import { searchOpenFDA } from "./openfda.mjs";
 import { searchClinicalTrials } from "./clinicaltrials.mjs";
 import { searchSemanticScholar } from "./semanticscholar.mjs";
 import { searchWHO } from "./who.mjs";
+import { searchCIMA } from "./cima.mjs";
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -23,7 +24,7 @@ const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNu
    - Consulta los ensayos clínicos activos de ClinicalTrials.gov para evidencia emergente.
    - Consulta papers académicos en Semantic Scholar para perspectiva amplia de la literatura.
    - Consulta documentos de la OMS (WHO IRIS) para recomendaciones internacionales.
-   - Si la pregunta involucra fármacos, consulta las fichas técnicas de la FDA (OpenFDA) y el vademécum interno.
+   - Si la pregunta involucra fármacos, consulta primero el Vademécum oficial español (CIMA-AEMPS) por ser la fuente autorizada en España; usa la ficha técnica de la FDA (OpenFDA) como complemento cuando aporte algo que CIMA no cubra (p. ej. black box warnings), y el vademécum interno de iNurse.
    - Integra toda la información recuperada en una respuesta cohesionada.
 
 3. **Nunca respondas solo de memoria.** Siempre fundamenta tus afirmaciones en fuentes recuperadas. Si no encuentras evidencia suficiente, indícalo explícitamente.
@@ -246,6 +247,10 @@ async function searchAllSources(question) {
   const queries = generateQueries(question);
   const guidelineQuery = `(${queries[0]}) AND (${GUIDELINE_ORGS.join(" OR ")})`;
   const drugName = detectDrugName(question);
+  const drugRelated = isDrugRelated(question);
+  // Para CIMA (mercado español) usamos el término original en castellano, no la
+  // traducción a inglés de DRUG_NAMES (pensada para PubMed/OpenFDA).
+  const cimaQuery = normalize(question).split(" ").filter(w => w.length > 3)[0] || queries[0];
 
   const searches = [
     searchPubMed(queries[0], { limit: 8 }),
@@ -256,10 +261,11 @@ async function searchAllSources(question) {
     drugName ? searchOpenFDA(drugName) : Promise.resolve(null),
     searchClinicalTrials(queries[0], { limit: 5 }),
     searchSemanticScholar(queries[0], { limit: 5 }),
-    searchWHO(queries[0], { limit: 5 })
+    searchWHO(queries[0], { limit: 5 }),
+    drugRelated ? searchCIMA(cimaQuery, { limit: 5 }) : Promise.resolve({ items: [] })
   ];
 
-  const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult] =
+  const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult] =
     await Promise.allSettled(searches);
 
   const articles = [];
@@ -284,8 +290,9 @@ async function searchAllSources(question) {
   const clinicalTrials = ctResult.status === "fulfilled" ? (ctResult.value?.items || []) : [];
   const semanticScholar = scholarResult.status === "fulfilled" ? (scholarResult.value?.items || []) : [];
   const whoDocuments = whoResult.status === "fulfilled" ? (whoResult.value?.items || []) : [];
+  const cimaDrugs = cimaResult.status === "fulfilled" ? (cimaResult.value?.items || []) : [];
 
-  const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult];
+  const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult];
 
   return {
     articles: articles.slice(0, 12),
@@ -294,6 +301,7 @@ async function searchAllSources(question) {
     clinicalTrials: clinicalTrials.slice(0, 3),
     semanticScholar: semanticScholar.slice(0, 3),
     whoDocuments: whoDocuments.slice(0, 3),
+    cimaDrugs: cimaDrugs.slice(0, 5),
     drugDetected: drugName,
     queries,
     errors: allSettled
@@ -307,7 +315,7 @@ async function searchAllSources(question) {
 // que abarca todos los tipos de fuente. Es deliberadamente la misma lista y la misma
 // numeración que se envía al frontend (buildSourcesPayload) para que los números que
 // Gemini use al citar ([n]) coincidan exactamente con los que el cliente enlaza.
-function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments }, clientContext) {
+function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments, cimaDrugs }, clientContext) {
   let ctx = "";
   const refs = [];
   let n = 0;
@@ -350,6 +358,22 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
       if (g.date) ctx += ` — ${g.date}`;
       if (g.url) ctx += `\nURL: ${g.url}`;
       if (g.summary) ctx += `\nResumen: ${g.summary}`;
+      ctx += "\n";
+    });
+    ctx += "\n";
+  }
+
+  if (cimaDrugs.length > 0) {
+    ctx += "--- VADEMÉCUM OFICIAL ESPAÑOL (CIMA-AEMPS) ---\n";
+    cimaDrugs.forEach(m => {
+      const num = ++n;
+      refs.push({ n: num, type: "drug", title: m.name || "Ficha CIMA", journal: "CIMA-AEMPS", year: "", url: m.url || "", source: "CIMA-AEMPS" });
+      ctx += `\n[${num}] ${m.name}`;
+      if (m.lab) ctx += ` — ${m.lab}`;
+      ctx += "\n";
+      if (m.active) ctx += `Principios activos: ${m.active}\n`;
+      ctx += `Comercializado: ${m.commercialized ? "sí" : "no"} | Autorizado: ${m.authorized ? "sí" : "no"}\n`;
+      if (m.url) ctx += `Ficha técnica: ${m.url}\n`;
       ctx += "\n";
     });
     ctx += "\n";
@@ -557,8 +581,8 @@ function buildSourcesPayload(refs, { queries, errors }) {
 
 async function prepareOrchestration(question, clientContext) {
   const searchResults = await searchAllSources(question);
-  const { articles, niceGuidelines, fdaDrug, drugDetected, queries, errors } = searchResults;
-  console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length} | NICE: ${niceGuidelines.length} | FDA: ${fdaDrug ? "sí" : "no"}` +
+  const { articles, niceGuidelines, fdaDrug, cimaDrugs, drugDetected, queries, errors } = searchResults;
+  console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length} | NICE: ${niceGuidelines.length} | FDA: ${fdaDrug ? "sí" : "no"} | CIMA: ${cimaDrugs.length}` +
     (drugDetected ? ` | Fármaco: ${drugDetected}` : "") +
     (errors.length ? ` | Errores: ${errors.join("; ")}` : ""));
 

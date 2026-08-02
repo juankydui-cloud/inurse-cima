@@ -9098,11 +9098,17 @@ body.inurse-home .disclaimer{margin-top:0!important}
 body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
 #in50Home{max-width:960px;margin:0 auto 18px;display:block}.in50-hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:30px;padding:18px;background:linear-gradient(135deg,rgba(34,211,238,.16),rgba(139,92,246,.14) 46%,rgba(244,63,94,.13));box-shadow:0 24px 70px rgba(0,0,0,.35);backdrop-filter:blur(18px) saturate(1.2)}
 [data-theme="light"] .in50-hero{border-color:rgba(15,23,42,.12);box-shadow:0 16px 38px rgba(15,23,42,.10)}.in50-hero::after{content:"";position:absolute;right:-70px;top:-80px;width:210px;height:210px;border-radius:999px;background:rgba(255,255,255,.12);filter:blur(10px)}
+.in50-searchbar{display:flex;align-items:center;gap:8px;margin-top:14px;position:relative;z-index:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:6px 6px 6px 14px}
+.in50-search-ico{font-size:16px;opacity:.8}
+.in50-searchbar input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font:inherit;font-size:14px;padding:8px 4px}
+.in50-searchbar input::placeholder{color:var(--text-dim);opacity:.85}
+.in50-search-mic{position:static!important;flex:0 0 auto;width:36px;height:36px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--in50-cyan),var(--in50-violet));color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+[data-theme="light"] .in50-searchbar{background:rgba(15,23,42,.05);border-color:rgba(15,23,42,.12)}
 .in50-top{display:flex;gap:14px;align-items:center;position:relative;z-index:1}.in50-logo{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(135deg,var(--in50-cyan),var(--in50-violet) 52%,var(--in50-rose));box-shadow:0 20px 50px rgba(139,92,246,.35)}.in50-logo svg{width:58px;height:58px}.in50-title h2{font-size:26px;line-height:1;margin:0;font-weight:900;letter-spacing:-.8px}.in50-title p{margin:7px 0 0;color:var(--text-dim);font-size:14px;line-height:1.45}.in50-badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.in50-badge{font-size:11px;font-weight:800;padding:5px 8px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.06);color:var(--text)}
 .in50-section-title{display:flex;align-items:center;gap:8px;margin:18px 2px 10px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}.in50-section-title::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,var(--border),transparent)}
 .in50-critical{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px;position:relative;z-index:1}.in50-critical button,.in50-card,.in50-setting{border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.04));color:var(--text);border-radius:18px;padding:13px 12px;cursor:pointer;font:inherit;text-align:left;box-shadow:0 12px 34px rgba(0,0,0,.18);transition:transform .15s,border-color .2s,background .2s}.in50-critical button:hover,.in50-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--qc) 55%,var(--border));background:color-mix(in srgb,var(--qc) 10%,transparent)}.in50-critical .em{font-size:25px;display:block;margin-bottom:6px}.in50-critical b{display:block;font-size:13px;letter-spacing:-.2px}.in50-critical small{display:block;margin-top:3px;font-size:10.5px;color:var(--text-dim);line-height:1.25}
 .in50-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.in50-card{min-height:76px;display:flex;gap:11px;align-items:flex-start}.in50-card .em{font-size:24px;flex:0 0 28px}.in50-card b{display:block;font-size:14px}.in50-card small{display:block;margin-top:3px;color:var(--text-dim);font-size:11.5px;line-height:1.35}.in50-empty{border:1px dashed var(--border);border-radius:16px;padding:16px;color:var(--text-dim);font-size:13px;line-height:1.45;background:rgba(255,255,255,.035)}
-#in50GlobalResults{display:none;max-width:960px;margin:0 auto 18px}.in50-results-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.in50-results-head b{font-size:15px}.in50-results-head button{margin-left:auto;border:1px solid var(--border);border-radius:11px;background:var(--card-solid);color:var(--text);padding:8px 11px;cursor:pointer}.in50-result{display:flex;gap:12px;align-items:flex-start;padding:13px;margin-bottom:9px;border-radius:16px;border:1px solid var(--border);border-left:4px solid var(--rc);background:var(--card-solid);cursor:pointer}.in50-result:hover{border-color:color-mix(in srgb,var(--rc) 55%,var(--border))}.in50-result .em{font-size:23px;width:28px;text-align:center}.in50-result b{font-size:14.5px}.in50-result p{margin:4px 0 0;color:var(--text-dim);font-size:12.5px;line-height:1.4}.in50-result .tag{margin-left:auto;font-size:10px;text-transform:uppercase;font-weight:900;color:var(--rc);padding:3px 7px;border-radius:7px;background:color-mix(in srgb,var(--rc) 12%,transparent)}
+#in50GlobalResults{display:none;max-width:960px;margin:0 auto 18px}.in50-results-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}.in50-results-head b{font-size:15px;flex:1;min-width:140px}.in50-results-head button{border:1px solid var(--border);border-radius:11px;background:var(--card-solid);color:var(--text);padding:8px 11px;cursor:pointer;font-size:12.5px;white-space:nowrap}.in50-results-head button:hover{border-color:#22D3EE}.in50-results-subhead{font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--text-dim);margin:14px 2px 8px}.in50-result{display:flex;gap:12px;align-items:flex-start;padding:13px;margin-bottom:9px;border-radius:16px;border:1px solid var(--border);border-left:4px solid var(--rc);background:var(--card-solid);cursor:pointer}.in50-result:hover{border-color:color-mix(in srgb,var(--rc) 55%,var(--border))}.in50-result .em{font-size:23px;width:28px;text-align:center}.in50-result b{font-size:14.5px}.in50-result p{margin:4px 0 0;color:var(--text-dim);font-size:12.5px;line-height:1.4}.in50-result .tag{margin-left:auto;font-size:10px;text-transform:uppercase;font-weight:900;color:var(--rc);padding:3px 7px;border-radius:7px;background:color-mix(in srgb,var(--rc) 12%,transparent)}
 #in50Settings{display:none;max-width:960px;margin:0 auto 18px}.in50-settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.in50-setting{cursor:default}.in50-setting h4{font-size:15px;margin:0 0 5px}.in50-setting p{font-size:12.5px;color:var(--text-dim);line-height:1.45;margin:0 0 10px}.in50-setting button{border:none;border-radius:11px;padding:9px 12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--in50-cyan),var(--in50-violet));cursor:pointer;font:inherit;font-size:12px}.in50-url{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:12px;margin-bottom:8px}
 .fab-stack{background:rgba(7,10,18,.72)!important;border:1px solid rgba(255,255,255,.15)!important;backdrop-filter:blur(18px) saturate(1.2)!important;box-shadow:0 18px 54px rgba(0,0,0,.36)!important}.in50-dock-btn{--dk:#0EA5E9}.in50-dock-active .dk-lbl{color:#fff!important}.in50-dock-active::after{content:"";position:absolute;bottom:4px;width:18px;height:3px;border-radius:3px;background:var(--dk)}
 @media(max-width:720px){.in50-critical{grid-template-columns:repeat(2,1fr)}.in50-grid,.in50-settings-grid{grid-template-columns:1fr}.in50-title h2{font-size:22px}.in50-logo{width:64px;height:64px;border-radius:21px}.in50-logo svg{width:50px;height:50px}}
@@ -9150,6 +9156,8 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
   function searchAll(raw){var q=norm(raw).trim(); var terms=q.split(/\s+/).filter(Boolean); if(!q)return []; var res=[]; docs().forEach(function(d){var st=score(docText(d),terms); if(st)res.push({type:'doc',id:d.id,title:d.title,summary:d.summary||d.source||'',em:iconForDoc(d),tag:'Protocolo',color:colorForDoc(d),score:st})}); vadem().forEach(function(d){var st=score(drugText(d),terms); if(st)res.push({type:'drug',id:d.id,title:d.name||d.title,summary:d.accion||d.indicacion||d.dosis||'',em:'💊',tag:'Fármaco',color:'#EC4899',score:st})}); SCALES.forEach(function(s){var st=score(norm([s.title,s.tags,s.summary].join(' ')),terms); if(st)res.push({type:'scale',id:s.id,title:s.title,summary:s.summary,em:s.em,tag:'Escala',color:'#0EA5E9',score:st})});
     // Algoritmos de actuación (biblioteca interna de Vivi)
     try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.search){ window.iNurseAlgLib.search(raw,12).forEach(function(a){ res.push({type:'alg',id:a.name,title:a.name,summary:'Algoritmo de actuación · '+(a.cat||'')+(a.src?' · '+a.src:''),em:'🧩',tag:'Algoritmo',color:'#22D3EE',score:a.score*4}); }); } }catch(e){}
+    // Procedimientos de enfermería (fichas por especialidad)
+    try{ if(window.iNurseProcSearch&&window.iNurseProcSearch.search){ window.iNurseProcSearch.search(raw,12).forEach(function(p){ res.push({type:'proc',id:p.code,cat:p.cat,title:p.title,summary:'Procedimiento · '+(p.summary||''),em:'📋',tag:'Procedimiento',color:'#0891B2',score:p.score*3}); }); } }catch(e){}
     // Secciones / módulos de la app (biblioteca, guías, evidencia, patologías, farmacología, rayos X, electro, procedimientos, algoritmos, proyectos…)
     try{ if(Array.isArray(window.INURSE_SECTIONS)){ window.INURSE_SECTIONS.forEach(function(sec){ var st=score(norm([sec.t,sec.kw].join(' ')),terms); if(st)res.push({type:'section',id:sec.id,title:sec.t,summary:'Abrir sección · '+sec.t,em:sec.em||'🔷',tag:'Sección',color:'#8B5CF6',score:st+2}); }); } }catch(e){}
     // Calculadoras clínicas
@@ -9157,10 +9165,52 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
     return res.sort(function(a,b){return b.score-a.score}).slice(0,40)}
   function iconForDoc(d){var c=catsOf(d).join(' '),t=norm((d.title||'')+' '+(d.tags||'')); if(/cardio|iam|coronario|ecg/.test(c+' '+t))return '❤️'; if(/ictus|neuro|glasgow/.test(c+' '+t))return '🧠'; if(/resp|asma|epoc|ventila/.test(c+' '+t))return '🫁'; if(/trauma|politrauma/.test(c+' '+t))return '🚑'; if(/uci|critico/.test(c+' '+t))return '🏥'; if(/farm|medic/.test(c+' '+t))return '💊'; return '📄'}
   function colorForDoc(d){var c=catsOf(d).join(' '); if(c.indexOf('cardio')>=0)return '#F43F5E'; if(c.indexOf('ictus')>=0||c.indexOf('neuro')>=0)return '#8B5CF6'; if(c.indexOf('resp')>=0)return '#22D3EE'; if(c.indexOf('trauma')>=0||c.indexOf('emer')>=0)return '#FB923C'; if(c.indexOf('uci')>=0)return '#6366F1'; if(c.indexOf('farm')>=0)return '#EC4899'; return '#14B8A6'}
-  function showResults(q){var host=document.getElementById('in50GlobalResults'); if(!host)return; var r=searchAll(q); if(!q.trim()){host.style.display='none'; return} host.style.display='block'; host.innerHTML='<div class="in50-results-head"><b>Resultados globales para “'+esc(q)+'”</b><button id="in50CloseResults">Cerrar</button></div>'+ (r.length?r.map(renderResult).join(''):'<div class="in50-empty">No he encontrado resultados en protocolos, fármacos, escalas, algoritmos ni calculadoras.</div>'); var close=document.getElementById('in50CloseResults'); if(close)close.onclick=function(){host.style.display='none'}; host.querySelectorAll('[data-in50-open]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-in50-open')))}})}
-  function renderResult(r){return '<div class="in50-result" style="--rc:'+r.color+'" data-in50-open=\''+JSON.stringify({type:r.type,id:r.id,title:r.title}).replace(/'/g,'&#39;')+'\'><span class="em">'+r.em+'</span><div style="flex:1"><b>'+esc(r.title)+'</b><p>'+esc(String(r.summary||'').replace(/<[^>]*>/g,'').slice(0,160))+'</p></div><span class="tag">'+esc(r.tag)+'</span></div>'}
-  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else if(r.type==='alg'){ addRecent({type:'alg',id:r.id,title:r.title,em:'🧩'}); try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.open){ window.iNurseAlgLib.open(r.id); return; } }catch(e){} toast('Algoritmo: '+r.title); } else if(r.type==='calc'){ addRecent({type:'calc',id:r.id,title:r.title,em:'🧮'}); try{ if(typeof window.openCalcs==='function'){ window.openCalcs(r.id); return; } }catch(e){} toast('Calculadora: '+r.title); } else if(r.type==='section'){ try{ if(typeof window.iNurseOpenSection==='function'){ window.iNurseOpenSection(r.id); return; } }catch(e){} toast('Sección: '+r.title); } else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); /* Las escalas del índice tienen calculadora propia; en CALCS 'glasgow' se llama 'gcs'. */ var cid=({glasgow:'gcs'})[r.id]||r.id; try{ if(typeof window.openCalcs==='function' && typeof CALCS!=='undefined' && CALCS[cid]){ window.openCalcs(cid); return; } }catch(e){} var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
-  function buildHome(){var main=document.querySelector('main'); if(!main||document.getElementById('in50Home'))return; var home=document.createElement('section'); home.id='in50Home'; home.innerHTML='<div class="in50-hero"><div class="in50-top"><div class="in50-logo">'+LOGO+'</div><div class="in50-title"><h2>iNurse</h2><p>Apoyo clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos en menos de 5 segundos.</p><div class="in50-badges"><span class="in50-badge">🌙 modo oscuro</span><span class="in50-badge">🔎 búsqueda global</span><span class="in50-badge">⭐ favoritos</span><span class="in50-badge">📡 guías actualizables</span></div></div></div><div class="in50-critical">'+CRITICAL.map(function(c){return '<button style="--qc:'+c.color+'" data-crit="'+c.key+'"><span class="em">'+c.em+'</span><b>'+c.label+'</b><small>'+c.sub+'</small></button>'}).join('')+'</div></div><div class="in50-section-title">📚 Guías clínicas</div><div class="in50-grid"><button class="in50-card" data-menu="1"><span class="em">☰</span><span><b>Abrir menú de guías</b><small>Organizadas por especialidad, con Farmacología UCI dentro de UCI.</small></span></button><button class="in50-card" data-searchfocus="1"><span class="em">🔎</span><span><b>Buscador global</b><small>Protocolos, fármacos, escalas y algoritmos.</small></span></button><button class="in50-card" data-evidence="1"><span class="em">📚</span><span><b>Biblioteca de Evidencia</b><small>Literatura clínica de Europe PMC. Estudios y guías por especialidad.</small></span></button><button class="in50-card" data-settings="1"><span class="em">⚙️</span><span><b>Configuración</b><small>Tema, actualización de guías y contenido offline.</small></span></button></div><div class="in50-section-title">⭐ </div><div id="in50Favs"></div><div class="in50-section-title">🕘 Últimos consultados</div><div id="in50Recent"></div>'; var res=document.createElement('section'); res.id='in50GlobalResults'; main.insertBefore(res,main.firstChild); main.insertBefore(home,res); home.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; if(b.dataset.library){if(window.iNurse21&&typeof window.iNurse21.open==='function')window.iNurse21.open('all');else document.getElementById('library21Btn')?.click();} if(b.dataset.menu)document.getElementById('v29MenuBtn')?.click(); if(b.dataset.searchfocus)document.getElementById('search')?.focus(); if(b.dataset.evidence)location.href='evidencia.html'; if(b.dataset.settings)showSettings(); if(b.dataset.crit)openCritical(b.dataset.crit)}); }
+  var cimaSearchSeq=0;
+  function resultsSummaryText(q,r){
+    if(!r.length)return 'Sin resultados para '+q+'.';
+    var lines=r.slice(0,15).map(function(x,i){return (i+1)+'. '+x.title+' — '+x.tag+(x.summary?': '+String(x.summary).replace(/<[^>]*>/g,'').slice(0,140):'')});
+    return 'Resultados globales para '+q+'. '+r.length+' resultados encontrados.\n\n'+lines.join('\n');
+  }
+  function wireResultsActions(q,getResults){
+    var readBtn=document.getElementById('in50ReadResults'),shareBtn=document.getElementById('in50ShareResults');
+    if(readBtn)readBtn.onclick=function(){var text=resultsSummaryText(q,getResults()); if(typeof window.iNurseReadText==='function')window.iNurseReadText('Resultados de búsqueda',text,readBtn); else if('speechSynthesis' in window){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='es-ES';window.speechSynthesis.speak(u)}};
+    if(shareBtn)shareBtn.onclick=function(){var text=resultsSummaryText(q,getResults()); if(typeof window.iNurseShareContent==='function')window.iNurseShareContent('Resultados de búsqueda iNurse: '+q,text); else if(navigator.share){navigator.share({title:'Resultados iNurse',text:text})}else if(navigator.clipboard){navigator.clipboard.writeText(text);toast('Resultados copiados')}};
+  }
+  function showResults(q){
+    var host=document.getElementById('in50GlobalResults'); if(!host)return;
+    var mySeq=++cimaSearchSeq;
+    var r=searchAll(q);
+    if(!q.trim()){host.style.display='none'; return}
+    host.style.display='block';
+    host.innerHTML='<div class="in50-results-head"><b>Resultados globales para “'+esc(q)+'”</b>'+
+      '<button id="in50ReadResults" title="Leer resultados en voz alta">🔊 Leer</button>'+
+      '<button id="in50ShareResults" title="Exportar / compartir resultados">📤 Exportar</button>'+
+      '<button id="in50CloseResults">Cerrar</button></div>'+
+      '<div id="in50ResultsList">'+(r.length?r.map(renderResult).join(''):'<div class="in50-empty">No he encontrado resultados en protocolos, fármacos, escalas, procedimientos, algoritmos ni calculadoras.</div>')+'</div>'+
+      '<div id="in50CimaResults"></div>';
+    var close=document.getElementById('in50CloseResults'); if(close)close.onclick=function(){host.style.display='none'};
+    function bindOpen(){host.querySelectorAll('[data-in50-open]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-in50-open')))}})}
+    bindOpen();
+    var allResults=r.slice();
+    wireResultsActions(q,function(){return allResults});
+    // Vademécum oficial español (CIMA-AEMPS): búsqueda en vivo, se añade cuando responde.
+    if(q.trim().length>=3){
+      fetch('/api/cima/search?mode=name&q='+encodeURIComponent(q.trim())+'&commercial=1')
+        .then(function(res){return res.ok?res.json():null})
+        .then(function(data){
+          if(mySeq!==cimaSearchSeq||!data||!Array.isArray(data.items)||!data.items.length)return;
+          var cimaItems=data.items.slice(0,6).map(function(m){return {type:'cima',id:m.nregistro,title:m.nombre,summary:'Vademécum CIMA-AEMPS'+(m.labtitular?' · '+m.labtitular:''),em:'💊',tag:'CIMA',color:'#DB2777',url:'https://cima.aemps.es/cima/publico/detalle.html?nregistro='+encodeURIComponent(m.nregistro)}});
+          allResults=allResults.concat(cimaItems);
+          var cimaHost=document.getElementById('in50CimaResults');
+          if(cimaHost)cimaHost.innerHTML='<div class="in50-results-subhead">💊 Vademécum CIMA-AEMPS (en vivo)</div>'+cimaItems.map(renderResult).join('');
+          bindOpen();
+        })
+        .catch(function(){});
+    }
+  }
+  function renderResult(r){return '<div class="in50-result" style="--rc:'+r.color+'" data-in50-open=\''+JSON.stringify({type:r.type,id:r.id,title:r.title,cat:r.cat,url:r.url}).replace(/'/g,'&#39;')+'\'><span class="em">'+r.em+'</span><div style="flex:1"><b>'+esc(r.title)+'</b><p>'+esc(String(r.summary||'').replace(/<[^>]*>/g,'').slice(0,160))+'</p></div><span class="tag">'+esc(r.tag)+'</span></div>'}
+  function openResult(r){ if(r.type==='doc')openDocId(r.id); else if(r.type==='drug')openDrugId(r.id); else if(r.type==='cima'){ if(r.url){window.open(r.url,'_blank','noopener');return} var btn=document.getElementById('vadeBtn'); if(btn)btn.click(); setTimeout(function(){var inp=document.getElementById('vadeSearch'); if(inp){inp.value=r.title;inp.dispatchEvent(new Event('input',{bubbles:true}))}},180); } else if(r.type==='proc'){ addRecent({type:'proc',id:r.id,title:r.title,em:'📋'}); try{ if(window.iNurseProcSearch&&window.iNurseProcSearch.open){ window.iNurseProcSearch.open(r.cat,r.id); return; } }catch(e){} toast('Procedimiento: '+r.title); } else if(r.type==='alg'){ addRecent({type:'alg',id:r.id,title:r.title,em:'🧩'}); try{ if(window.iNurseAlgLib&&window.iNurseAlgLib.open){ window.iNurseAlgLib.open(r.id); return; } }catch(e){} toast('Algoritmo: '+r.title); } else if(r.type==='calc'){ addRecent({type:'calc',id:r.id,title:r.title,em:'🧮'}); try{ if(typeof window.openCalcs==='function'){ window.openCalcs(r.id); return; } }catch(e){} toast('Calculadora: '+r.title); } else if(r.type==='section'){ try{ if(typeof window.iNurseOpenSection==='function'){ window.iNurseOpenSection(r.id); return; } }catch(e){} toast('Sección: '+r.title); } else {addRecent({type:'scale',id:r.id,title:r.title,em:'📊'}); /* Las escalas del índice tienen calculadora propia; en CALCS 'glasgow' se llama 'gcs'. */ var cid=({glasgow:'gcs'})[r.id]||r.id; try{ if(typeof window.openCalcs==='function' && typeof CALCS!=='undefined' && CALCS[cid]){ window.openCalcs(cid); return; } }catch(e){} var q=document.getElementById('search'); if(q){q.value=r.title;q.dispatchEvent(new Event('input',{bubbles:true}))} toast('Escala localizada: '+r.title)} }
+  function buildHome(){var main=document.querySelector('main'); if(!main||document.getElementById('in50Home'))return; var home=document.createElement('section'); home.id='in50Home'; home.innerHTML='<div class="in50-hero"><div class="in50-top"><div class="in50-logo">'+LOGO+'</div><div class="in50-title"><h2>iNurse</h2><p>Apoyo clínico rápido para enfermería: protocolos, fármacos, escalas, calculadoras y algoritmos críticos en menos de 5 segundos.</p><div class="in50-badges"><span class="in50-badge">🌙 modo oscuro</span><span class="in50-badge">🔎 búsqueda global</span><span class="in50-badge">⭐ favoritos</span><span class="in50-badge">📡 guías actualizables</span></div></div><div class="in50-searchbar"><span class="in50-search-ico">🔎</span><input id="in50SearchInput" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic in50-search-mic" id="in50SearchMic" title="Buscar por voz">🎙️</button></div></div><div class="in50-critical">'+CRITICAL.map(function(c){return '<button style="--qc:'+c.color+'" data-crit="'+c.key+'"><span class="em">'+c.em+'</span><b>'+c.label+'</b><small>'+c.sub+'</small></button>'}).join('')+'</div></div><div class="in50-section-title">📚 Guías clínicas</div><div class="in50-grid"><button class="in50-card" data-menu="1"><span class="em">☰</span><span><b>Abrir menú de guías</b><small>Organizadas por especialidad, con Farmacología UCI dentro de UCI.</small></span></button><button class="in50-card" data-searchfocus="1"><span class="em">🔎</span><span><b>Buscador global</b><small>Protocolos, fármacos, procedimientos y algoritmos.</small></span></button><button class="in50-card" data-evidence="1"><span class="em">📚</span><span><b>Biblioteca de Evidencia</b><small>Literatura clínica de Europe PMC. Estudios y guías por especialidad.</small></span></button><button class="in50-card" data-settings="1"><span class="em">⚙️</span><span><b>Configuración</b><small>Tema, actualización de guías y contenido offline.</small></span></button></div><div class="in50-section-title">⭐ </div><div id="in50Favs"></div><div class="in50-section-title">🕘 Últimos consultados</div><div id="in50Recent"></div>'; var res=document.createElement('section'); res.id='in50GlobalResults'; main.insertBefore(res,main.firstChild); main.insertBefore(home,res); home.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; if(b.dataset.library){if(window.iNurse21&&typeof window.iNurse21.open==='function')window.iNurse21.open('all');else document.getElementById('library21Btn')?.click();} if(b.dataset.menu)document.getElementById('v29MenuBtn')?.click(); if(b.dataset.searchfocus)document.getElementById('in50SearchInput')?.focus(); if(b.dataset.evidence)location.href='evidencia.html'; if(b.dataset.settings)showSettings(); if(b.dataset.crit)openCritical(b.dataset.crit)}); var homeInput=document.getElementById('in50SearchInput'); if(homeInput)homeInput.addEventListener('input',function(){showResults(homeInput.value||'')}); }
   function renderHomeLists(){var fhost=document.getElementById('in50Favs'),rhost=document.getElementById('in50Recent'); if(fhost){var ids=favs(); var ds=ids.map(function(id){return docs().find(function(d){return d.id===id})}).filter(Boolean).slice(0,6); fhost.innerHTML=ds.length?'<div class="in50-grid">'+ds.map(function(d){return '<button class="in50-card" data-doc="'+esc(d.id)+'"><span class="em">'+iconForDoc(d)+'</span><span><b>'+esc(d.title)+'</b><small>'+esc(d.summary||d.source||'')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">Todavía no tienes favoritos. Pulsa la estrella de cualquier protocolo para guardarlo aquí.</div>'; fhost.querySelectorAll('[data-doc]').forEach(function(b){b.onclick=function(){openDocId(b.dataset.doc)}})} if(rhost){var arr=readLS('inurse_recent_v5',[]).slice(0,6); rhost.innerHTML=arr.length?'<div class="in50-grid">'+arr.map(function(x){return '<button class="in50-card" data-recent=\''+JSON.stringify(x).replace(/'/g,'&#39;')+'\'><span class="em">'+(x.em||'📄')+'</span><span><b>'+esc(x.title)+'</b><small>'+esc(x.type==='drug'?'Fármaco':x.type==='scale'?'Escala':'Protocolo')+'</small></span></button>'}).join('')+'</div>':'<div class="in50-empty">El historial se generará automáticamente al abrir protocolos, fármacos o escalas.</div>'; rhost.querySelectorAll('[data-recent]').forEach(function(b){b.onclick=function(){openResult(JSON.parse(b.getAttribute('data-recent')))}})} }
   function openCritical(k){var c=CRITICAL.find(function(x){return x.key===k}); if(!c)return; var res=searchAll(c.q); var first=res.find(function(r){return r.type==='doc'}); if(first)openDocId(first.id); else showResults(c.q)}
   function buildSettings(){var main=document.querySelector('main'); if(!main||document.getElementById('in50Settings'))return; var s=document.createElement('section'); s.id='in50Settings'; s.innerHTML='<div class="in50-section-title">⚙️ Configuración iNurse</div><div class="in50-settings-grid"><div class="in50-setting"><h4>Modo oscuro / claro</h4><p>Cambia el tema visual para guardias de noche o consulta diurna.</p><button data-set-theme>Alternar tema</button></div><div class="in50-setting"><h4>Actualizar guías sin reinstalar</h4><p>Preparado para cargar un archivo JSON remoto con nuevas guías, fármacos o escalas. En esta versión queda configurada la base técnica.</p><input class="in50-url" id="in50UpdateUrl" placeholder="URL futura de guías.json"><button data-check-update>Comprobar actualización</button></div><div class="in50-setting"><h4>Contenido offline</h4><p>La app ya funciona como archivo local. Cuando se publique como PWA, podrá cachear guías para uso sin conexión.</p><button data-offline>Preparar modo offline</button></div><div class="in50-setting"><h4>Datos personales</h4><p> e historial se guardan solo en este dispositivo mediante almacenamiento local.</p><button data-clear-history>Vaciar historial</button></div></div>'; main.insertBefore(s,document.getElementById('in50Home')?.nextSibling||main.firstChild); s.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; if(b.dataset.setTheme!==undefined)document.getElementById('themeBtn')?.click(); if(b.dataset.checkUpdate!==undefined){var u=document.getElementById('in50UpdateUrl')?.value||''; toast(u?'Conector de actualización preparado: '+u:'Añade la URL del JSON de guías cuando esté disponible.')} if(b.dataset.offline!==undefined)toast('Base offline preparada. Al empaquetarla como PWA se activará la caché.'); if(b.dataset.clearHistory!==undefined){writeLS('inurse_recent_v5',[]);renderHomeLists();toast('Historial vaciado')}})}
@@ -9170,6 +9220,7 @@ body.in50-ready main{padding-top:12px!important}.chips{display:none!important}
   function patchSearch(){var inp=document.getElementById('search'); if(!inp)return; inp.placeholder='Buscar protocolos, fármacos, escalas o algoritmos...'; inp.addEventListener('input',function(){window.__INURSE_HOME=false; var h=document.getElementById('in50Home'); if(h)h.style.display=inp.value.trim()?'none':'block'; var s=document.getElementById('in50Settings'); if(s)s.style.display='none'; showResults(inp.value||'')},true)}
   function patchDock(){var stack=document.querySelector('.fab-stack'); if(!stack)return; function mk(id,em,lbl,cb,color){var b=document.getElementById(id); if(!b){b=document.createElement('button');b.id=id;stack.appendChild(b)} b.classList.add('in50-dock-btn'); b.style.setProperty('--dk',color); b.innerHTML='<span class="dk-em">'+em+'</span><span class="dk-lbl">'+lbl+'</span>'; b.onclick=cb; return b} mk('in50HomeDock','🏠','Inicio',showHome,'#22D3EE'); var calc=document.getElementById('calcFab'); if(calc){calc.style.setProperty('--dk','#0EA5E9'); calc.classList.add('in50-dock-btn')} var rx=document.getElementById('rxFab'); if(rx){rx.style.setProperty('--dk','#8B5CF6'); rx.classList.add('in50-dock-btn')} var ecg=document.getElementById('ecgFab'); if(ecg){ecg.style.setProperty('--dk','#14B8A6'); ecg.classList.add('in50-dock-btn')} mk('in50SettingsDock','⚙️','Config',showSettings,'#F59E0B'); ['in50HomeDock','calcFab','rxFab','ecgFab','in50SettingsDock'].forEach(function(id){var el=document.getElementById(id); if(el)stack.appendChild(el)}); var vivi=document.getElementById('viviFab'); if(vivi)vivi.style.display='none'; }
   function patchManifest(){var old=document.querySelector('link[rel="manifest"]'); if(!old){var l=document.createElement('link'); l.rel='manifest'; l.href='/manifest.json'; document.head.appendChild(l);} else {old.href='/manifest.json';} var m=document.querySelector('meta[name="apple-mobile-web-app-title"]')||document.createElement('meta'); m.name='apple-mobile-web-app-title'; m.content='iNurse'; document.head.appendChild(m)}
+  window.showGlobalResults=showResults;
   ready(function(){document.body.classList.add('in50-ready'); patchManifest(); buildHome(); buildSettings(); patchSearch(); patchStars(); patchDock(); renderHomeLists(); var oldHome=document.getElementById('viviHero'); if(oldHome)oldHome.style.display='none'; setTimeout(function(){var h=document.getElementById('in50Home'); if(h)h.style.display='block'; var c=document.getElementById('content'); if(c&&window.__INURSE_HOME)c.innerHTML='';},500); });
 })();
 </script>
@@ -13221,7 +13272,10 @@ function wireFicheActions(prefix,title,fullText,onBeforeVivi){
 }
 function showProc(code){
   const data=getProcData();
-  const p=data.items.find(function(x){return x.code===code});
+  // Los códigos (ej. "IN-004") se generaron por archivo de origen y no son únicos
+  // globalmente entre especialidades; si hay una categoría activa, se prioriza esa.
+  const p=data.items.find(function(x){return x.code===code&&(!procCurrentCat||x.cat===procCurrentCat)})
+    ||data.items.find(function(x){return x.code===code});
   if(!p){renderProcRoot();return}
   const cat=data.meta.find(function(c){return c.id===p.cat});
   const icon=(cat&&cat.icon)||'📝';
@@ -13292,6 +13346,26 @@ function addHomeCard(){const qs=['#in50Home .in60-shell','#in50Home','.home-scre
 function init(){$('#icTabs').innerHTML=tabs.map((t,i)=>`<button class="icTab${i===0?' on':''}" data-id="${t[0]}">${t[2]?`<span class="icTab-ic">${t[2]}</span>`:''}${t[1]}</button>`).join('');$('#icTabs').onclick=e=>{const x=e.target.closest('.icTab');if(x)renderTab(x.dataset.id)};$('#icFab').onclick=open;$('#icClose').onclick=close;$('#icOverlay').onclick=e=>{if(e.target.id==='icOverlay')close()};renderTab('assistant');addHomeCard();setTimeout(addHomeCard,1200);setTimeout(addHomeCard,3000);$('#procClose').onclick=closeProc;$('#procOverlay').onclick=e=>{if(e.target.id==='procOverlay')closeProc()};$('#algClose').onclick=closeAlg;$('#algOverlay').onclick=e=>{if(e.target.id==='algOverlay')closeAlg()}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 window.openProc=openProc;
+window.iNurseProcSearch={
+  search:function(query,limit){
+    const q=procNorm(query);if(!q)return[];
+    const toks=q.split(/\s+/).filter(Boolean);if(!toks.length)return[];
+    const data=getProcData();
+    const out=[];
+    data.items.forEach(function(p){
+      const hay=procNorm([p.title,p.summary,p.subtype].join(' '));
+      let score=0;toks.forEach(function(t){if(hay.includes(t))score+=hay.startsWith(t)?3:1;if(procNorm(p.title).includes(t))score+=3});
+      if(score>0)out.push({cat:p.cat,code:p.code,title:p.title,summary:p.summary,score:score});
+    });
+    out.sort(function(a,b){return b.score-a.score});
+    return limit?out.slice(0,limit):out;
+  },
+  open:function(cat,code){
+    openProc();
+    setTimeout(function(){showProcCategory(cat);setTimeout(function(){showProc(code)},30)},30);
+    return true;
+  }
+};
 window.openAlg=openAlg;
 
 /* ---- API global: biblioteca de algoritmos accesible por Vivi ---- */
@@ -13352,7 +13426,7 @@ window.iNurseAlgLib={
   find:algFind,
   search:algSearch,
   get:function(name){ var a=ALG[name]; return a?{name:name,src:a.src,steps:a.steps.slice(),cat:ALG_CAT[name]||''}:null; },
-  open:function(name){ if(!ALG[name]) return false; open(); renderTab('alg'); setTimeout(function(){ showAlg(name); },30); return true; },
+  open:function(name){ if(!ALG[name]) return false; if(typeof window.openAlg==='function')window.openAlg(); setTimeout(function(){ showAlg(name); },30); return true; },
   list:function(){ return Object.keys(ALG).map(function(n){ return {name:n,src:ALG[n].src,cat:ALG_CAT[n]||''}; }); }
 };
 })();
@@ -17045,6 +17119,17 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-vivi-mini b{ display:block; color:#fff; font-size:15px; }
 .nx-vivi-mini small{ color:#9fb0d6; font-size:11.5px; }
 
+.nx-searchbar{ display:flex; align-items:center; gap:8px; padding:6px 6px 6px 14px; border-radius:16px;
+  background:rgba(20,30,60,.5); border:1px solid rgba(120,150,220,.18); }
+.nx-search-ico{ font-size:16px; opacity:.8; }
+.nx-searchbar input{ flex:1; background:transparent; border:none; outline:none; color:#e7ecff; font:inherit; font-size:14px; padding:9px 4px; min-width:0; }
+.nx-searchbar input::placeholder{ color:#8aa0c8; opacity:.9; }
+.nx-search-mic{ position:static!important; flex:0 0 auto; width:36px; height:36px; border-radius:11px; border:none;
+  background:linear-gradient(135deg,#22d3ee,#8b5cf6); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+[data-theme="light"] .nx-searchbar{ background:rgba(255,255,255,.7); border-color:rgba(15,23,42,.12); }
+[data-theme="light"] .nx-searchbar input{ color:#0f172a; }
+[data-theme="light"] .nx-searchbar input::placeholder{ color:#64748b; }
+
 /* Hero: Vivi centrado, grande y con fondo */
 .nx-hero{ display:flex; justify-content:center; margin-bottom:6px; }
 .nx-vivi-hero{ width:100%; max-width:560px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px;
@@ -17342,6 +17427,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>iNurse</h1><small>Apoyo clínico rápido</small></div></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
+      +   '<div class="nx-searchbar"><span class="nx-search-ico">🔎</span><input id="nxSearch" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic nx-search-mic" id="nxSearchMic" title="Buscar por voz">🎙️</button></div>'
       +   '<div class="nx-hero">'
       +     '<button class="nx-vivi-hero" data-vivi="1" title="Hablar con Vivi">'+viviAvatar()+'<b>Vivi</b><small>Tu asistente clínico</small><span class="nx-vivi-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span><span class="nx-vivi-hero-cta">💬 Hablar con Vivi</span></button>'
       +   '</div>'
@@ -17352,8 +17438,11 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       + '<div class="in60-shell" style="display:none"></div>';
   }
   function forwardSearch(q){
+    var nxInp=document.getElementById("nxSearch");
+    if(nxInp){ nxInp.value=q; nxInp.focus(); }
+    if(typeof window.showGlobalResults==='function'){ window.showGlobalResults(q); return; }
     var real=document.getElementById("search");
-    if(real){ real.value=q; real.dispatchEvent(new Event("input",{bubbles:true})); real.focus(); }
+    if(real){ real.value=q; real.dispatchEvent(new Event("input",{bubbles:true})); }
   }
   function goToSpec(spec){
     window.__INURSE_HOME = false;
@@ -17404,7 +17493,10 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       }
     });
     var inp=home.querySelector("#nxSearch");
-    if(inp){ inp.addEventListener("keydown",function(e){ if(e.key==="Enter"&&inp.value.trim()){ forwardSearch(inp.value.trim()); } }); }
+    if(inp){
+      inp.addEventListener("input",function(){ if(typeof window.showGlobalResults==='function') window.showGlobalResults(inp.value||''); });
+      inp.addEventListener("keydown",function(e){ if(e.key==="Enter"&&inp.value.trim()){ forwardSearch(inp.value.trim()); } });
+    }
   }
   function build(){
     var home=document.getElementById("in50Home"); if(!home) return false;
