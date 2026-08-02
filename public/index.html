@@ -179,6 +179,18 @@
 .nanda-card .nlinks{font-size:11.5px;color:var(--text-dim,#94A3B8);margin-top:6px;line-height:1.5}
 .nanda-card .nlinks b{color:#A855F7}
 .nanda-section{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim,#94A3B8);font-weight:700;margin:16px 0 8px}
+.nnn-validator{margin:8px 0 16px}
+.nnn-input-row{display:flex;gap:8px;align-items:center}
+.nnn-search{flex:1;background:var(--card-solid,#0d1420);border:1px solid var(--border,#1E293B);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text,#F1F5F9);outline:none}
+.nnn-search:focus{border-color:#14B8A6}
+.nnn-search::placeholder{color:var(--text-dim,#94A3B8);opacity:.7}
+.nnn-msg{font-size:13px;color:var(--text-dim,#94A3B8);margin-top:10px;padding:10px;border-radius:8px;background:var(--card-solid,#0d1420)}
+.nnn-warn{color:#F59E0B}
+.nnn-coded{margin-top:10px}
+.nnn-unvalidated{margin-top:10px;padding:12px;border-radius:10px;background:var(--card-solid,#0d1420);border:1px solid var(--border,#1E293B)}
+.nnn-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.3px;padding:3px 10px;border-radius:6px;background:#14B8A6;color:#fff;margin-bottom:4px}
+.nnn-badge-pending{background:#F59E0B;color:#000}
+.nnn-reason{font-size:13px;color:var(--text-dim,#94A3B8);margin-top:6px;line-height:1.45}
 
 
 .pato-wrap{max-width:960px;margin:0 auto}
@@ -3899,13 +3911,65 @@ function renderHerramientas(){
     '<div class="nlinks"><b>NOC:</b> '+n.noc+'<br><b>NIC:</b> '+n.nic+'</div></div>'
   ).join('');
   cont.innerHTML='<div class="tools-wrap">'+
-    '<div class="pato-intro">🧰 <b>Herramientas clínicas para enfermería.</b> Calculadoras interactivas y taxonomía enfermera NANDA/NIC/NOC. Pulsa una calculadora para usarla.</div>'+
+    '<div class="pato-intro">🧰 <b>Herramientas clínicas para enfermería.</b> Calculadoras interactivas, validador de terminología NNN y taxonomía enfermera NANDA/NIC/NOC.</div>'+
     '<div class="nanda-section">🧮 Calculadoras clínicas</div>'+
     '<div class="tools-grid">'+calcTiles+'</div>'+
+    '<div class="nanda-section" style="margin-top:20px">🔍 Validador de diagnósticos enfermeros (NNN)</div>'+
+    '<div class="pato-intro">Escribe un diagnóstico enfermero y valida si tiene código NANDA-I / NIC / NOC verificado en NNNConsult. Solo devuelve códigos confirmados manualmente — nunca inventa.</div>'+
+    '<div class="nnn-validator">'+
+      '<div class="nnn-input-row">'+
+        '<input type="text" id="nnnInput" class="nnn-search" placeholder="Ej: riesgo de deterioro de la integridad cutánea" autocomplete="off">'+
+        '<button id="nnnBtn" class="calc-btn" style="margin:0;white-space:nowrap">Validar</button>'+
+      '</div>'+
+      '<div id="nnnResult"></div>'+
+    '</div>'+
     '<div class="nanda-section" style="margin-top:20px">📋 Diagnósticos enfermeros NANDA · NOC · NIC (UCI / hospitalización)</div>'+
-    '<div class="pato-intro">Los 15 diagnósticos NANDA más usados en UCI y hospitalización, con sus resultados esperados (NOC) e intervenciones (NIC). Base para ir ampliando.</div>'+
+    '<div class="pato-intro">Los 15 diagnósticos NANDA más usados en UCI y hospitalización, con sus resultados esperados (NOC) e intervenciones (NIC). Pulsa uno para validarlo.</div>'+
     nandaCards+
     '</div>';
+  const nnnInput=document.getElementById('nnnInput');
+  const nnnBtn=document.getElementById('nnnBtn');
+  const nnnResult=document.getElementById('nnnResult');
+  async function validarNNN(){
+    const valor=nnnInput.value.trim();
+    if(valor.length<2){nnnResult.innerHTML='<div class="nnn-msg nnn-warn">Escribe al menos 2 caracteres.</div>';return;}
+    nnnBtn.disabled=true;nnnBtn.textContent='Validando…';
+    nnnResult.innerHTML='<div class="nnn-msg">Consultando diccionario NNN…</div>';
+    try{
+      const r=await fetch('/api/terminology/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valor,via:'nnn'})});
+      const d=await r.json();
+      if(!r.ok){nnnResult.innerHTML='<div class="nnn-msg nnn-warn">'+(d.error||'Error')+'</div>';return;}
+      if(d.code_status==='coded'){
+        nnnResult.innerHTML=
+          '<div class="nnn-coded">'+
+            '<div class="nnn-badge">✓ Código verificado</div>'+
+            '<div class="nanda-card" style="margin-top:8px">'+
+              '<div class="ncode">NANDA-I '+d.nanda.code+'</div>'+
+              '<div class="ntitle">'+d.nanda.label+'</div>'+
+              '<div class="nlinks" style="margin-top:8px"><b>NIC:</b> '+d.nic.code+' — '+d.nic.label+'</div>'+
+              '<div class="nlinks"><b>NOC:</b> '+d.noc.code+' — '+d.noc.label+'</div>'+
+              '<div class="nlinks" style="margin-top:6px;font-size:10.5px"><b>Fuente:</b> '+d.fuente+' · <b>Verificado:</b> '+d.fecha_verificacion+' · <b>Por:</b> '+d.revisado_por+'</div>'+
+            '</div>'+
+          '</div>';
+      }else{
+        nnnResult.innerHTML=
+          '<div class="nnn-unvalidated">'+
+            '<div class="nnn-badge nnn-badge-pending">⚠ Sin código verificado</div>'+
+            '<div class="nnn-reason">'+(d.reason||'Término no encontrado en el diccionario NNN.')+'</div>'+
+          '</div>';
+      }
+    }catch(e){nnnResult.innerHTML='<div class="nnn-msg nnn-warn">Error de conexión: '+e.message+'</div>';}
+    finally{nnnBtn.disabled=false;nnnBtn.textContent='Validar';}
+  }
+  nnnBtn.onclick=validarNNN;
+  nnnInput.addEventListener('keydown',e=>{if(e.key==='Enter')validarNNN();});
+  document.querySelectorAll('.nanda-card').forEach(card=>{
+    card.style.cursor='pointer';
+    card.addEventListener('click',()=>{
+      const title=card.querySelector('.ntitle');
+      if(title){nnnInput.value=title.textContent;validarNNN();}
+    });
+  });
 }
 function renderCalc(id){
   const cont=$("#content"); const c=CALCULADORAS.find(x=>x.id===id); if(!c)return;
