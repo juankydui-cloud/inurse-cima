@@ -5980,7 +5980,7 @@ render();
  }
 
  var SPEC_NAMES_CC={cardio:'Cardiología',intensiva:'UCI / Medicina Intensiva',urgencias:'Urgencias',neuro:'Neurología',trauma:'Traumatología y Quemados',otras:'Otras especialidades'};
- function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,hist,route,onDelta){
+ function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,hist,route,onDelta,nearbyCtx){
   var key=lget(KEYK,''),backend=backendUrl();
   var memory=caseMemory.slice(-6).join('\n');
   var mySpec='';try{mySpec=localStorage.getItem('inurse_myspec_v1')||'';}catch(e){}
@@ -6050,6 +6050,7 @@ render();
   if(litCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE D · PUBMED + CROSSREF (LITERATURA CIENTÍFICA)\n'+litCtx;
   if(guidelineCtx)ctx+=(ctx?'\n\n':'')+'## RESULTADOS DE PUBMED FILTRADOS POR GUÍAS CLÍNICAS INTERNACIONALES\n'+guidelineCtx;
   if(niceCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE F · NICE (GUÍAS OFICIALES)\n'+niceCtx;
+  if(nearbyCtx)ctx+=(ctx?'\n\n':'')+'## SERVICIOS SANITARIOS CERCANOS AL USUARIO (ubicación compartida por el propio usuario)\n'+nearbyCtx;
   var refsBlock=refsContextBlock(window.__v20Refs||[]);
   if(refsBlock)ctx+=(ctx?'\n\n':'')+refsBlock;
   var prompt=routePrompt(route);
@@ -6077,7 +6078,7 @@ render();
     window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20PmcSources=[];window.__v20NiceSources=[];
    }
    var backendPayload={
-    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
+    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||'',nearby:nearbyCtx||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
     attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
    };
    function callBackendNonStreaming(){
@@ -6211,7 +6212,11 @@ render();
   }
   var canStream=(_mode==='direct'||_mode==='backend')&&!att;
   chat.setAttribute('aria-busy','true'); // evita que el lector de pantalla anuncie cada fragmento mientras llega en streaming
-  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null).then(function(reply){
+  var nearbyCtx='';
+  if(/hospital|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i.test(text||'')&&window.iNurseNearby&&window.iNurseNearby.hasConsent&&window.iNurseNearby.hasConsent()){
+   try{nearbyCtx=await window.iNurseNearby.getContextText()}catch(e){}
+  }
+  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null,nearbyCtx).then(function(reply){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    var refsNow=window.__v20Refs||refs;
    if(window.__v20OrchestratorSources&&window.__v20OrchestratorSources.length)allSources=allSources.concat(window.__v20OrchestratorSources);
@@ -12709,10 +12714,10 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 
 <style id="inurseClinicalFixStyle">
 #icFab{position:fixed;left:18px;bottom:24px;z-index:12000;width:58px;height:58px;border:0;border-radius:50%;cursor:pointer;font-size:26px;color:#fff;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);box-shadow:0 12px 34px rgba(14,165,233,.42)}
-#icOverlay,#procOverlay,#algOverlay{position:fixed;inset:0;z-index:11990;display:none;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);padding:18px}
-#icOverlay.on,#procOverlay.on,#algOverlay.on{display:flex;align-items:center;justify-content:center}
+#icOverlay,#procOverlay,#algOverlay,#nearbyOverlay{position:fixed;inset:0;z-index:11990;display:none;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);padding:18px}
+#icOverlay.on,#procOverlay.on,#algOverlay.on,#nearbyOverlay.on{display:flex;align-items:center;justify-content:center}
 #icPanel{width:min(1080px,100%);height:min(88vh,900px);background:var(--bg2,#0d1320);border:1px solid var(--border,#1e293b);border-radius:22px;overflow:hidden;display:grid;grid-template-rows:auto auto 1fr;box-shadow:0 24px 70px rgba(0,0,0,.55)}
-#procPanel,#algPanel{width:min(1080px,100%);height:min(88vh,900px);background:var(--bg2,#0d1320);border:1px solid var(--border,#1e293b);border-radius:22px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+#procPanel,#algPanel,#nearbyPanel{width:min(1080px,100%);height:min(88vh,900px);background:var(--bg2,#0d1320);border:1px solid var(--border,#1e293b);border-radius:22px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .icHead{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border,#1e293b)}
 .icHead h2{font-size:18px;flex:1}.icClose{width:38px;height:38px;border:1px solid var(--border,#1e293b);border-radius:11px;background:transparent;color:var(--text,#fff);font-size:20px;cursor:pointer}
 .icTabs{display:flex;gap:7px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--border,#1e293b)}
@@ -12720,16 +12725,16 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .icBody{overflow:auto;padding:16px}.icView{display:none}.icView.on{display:block}.icView p,.icView li{font-size:13.5px;line-height:1.6;color:var(--text-dim,#94a3b8)}.icView ul,.icView ol{padding-left:20px;margin:0}.icGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.icCard{background:var(--card-solid,#111827);border:1px solid var(--border,#1e293b);border-radius:15px;padding:14px}.icCard h3{font-size:15px;margin-bottom:8px}.icCard p,.icCard li{font-size:13px;line-height:1.5;color:var(--text-dim,#94a3b8)}
 .icInput,.icArea,.icSelect{width:100%;padding:10px 12px;margin:6px 0 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}.icArea{min-height:100px;resize:vertical}.icBtn{padding:9px 13px;border:0;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff;font-weight:800;cursor:pointer;margin:4px 5px 4px 0}.icBtn.alt{background:transparent;border:1px solid var(--border,#1e293b);color:var(--text,#fff)}
 .icResult{margin-top:10px;padding:12px;border-radius:11px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.25);white-space:pre-wrap;font-size:13px;line-height:1.5}.icHomeCard{margin:14px 0;padding:16px;border-radius:16px;border:1px solid rgba(14,165,233,.35);background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(139,92,246,.12));cursor:pointer}.icHomeCard b{font-size:15px}.icHomeCard small{display:block;color:var(--text-dim,#94a3b8);margin-top:4px}
-@media(max-width:650px){#icOverlay,#procOverlay,#algOverlay{padding:0}#icPanel,#procPanel,#algPanel{height:100vh;border-radius:0}.icBody{padding:12px}}
+@media(max-width:650px){#icOverlay,#procOverlay,#algOverlay,#nearbyOverlay{padding:0}#icPanel,#procPanel,#algPanel,#nearbyPanel{height:100vh;border-radius:0}.icBody{padding:12px}}
 
 /* ═══════ v40 — Espacio clínico (Cálculos/Algoritmos/Procedimientos): liquid glass ═══════ */
-#icOverlay,#procOverlay,#algOverlay{background:
+#icOverlay,#procOverlay,#algOverlay,#nearbyOverlay{background:
   radial-gradient(600px 460px at 14% 8%,rgba(14,165,233,.18),transparent 60%),
   radial-gradient(640px 500px at 86% 6%,rgba(139,92,246,.18),transparent 60%),
   radial-gradient(700px 560px at 60% 100%,rgba(236,72,153,.13),transparent 62%),
   linear-gradient(180deg,rgba(5,11,24,.9),rgba(8,10,28,.93))!important;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-#icPanel,#procPanel,#algPanel{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))!important;
+#icPanel,#procPanel,#algPanel,#nearbyPanel{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02))!important;
   border:1px solid rgba(255,255,255,.14)!important;
   -webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);
   box-shadow:0 30px 80px rgba(0,0,0,.5)!important}
@@ -12784,6 +12789,27 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .biblio-list{list-style:none;padding-left:0;margin:0}
 .biblio-list li{margin-bottom:6px}
 .biblio-list a{color:#38bdf8;text-decoration:none}
+.nearby-permission{text-align:center;padding:34px 18px;max-width:480px;margin:0 auto}
+.nearby-permission .em{font-size:44px;display:block;margin-bottom:12px}
+.nearby-permission h3{font-size:17px;margin-bottom:8px}
+.nearby-permission p{font-size:13.5px;color:var(--text-dim,#94a3b8);line-height:1.55;margin-bottom:18px}
+.nearby-list{display:flex;flex-direction:column;gap:10px}
+.nearby-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;
+  background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.13)}
+.nearby-item .ico{font-size:24px;width:30px;text-align:center;flex:0 0 30px}
+.nearby-item .info{flex:1;min-width:0}
+.nearby-item .info b{font-size:14.5px}
+.nearby-item .info small{display:block;color:var(--text-dim,#94a3b8);font-size:12px;margin-top:2px;line-height:1.4}
+.nearby-item .dist{flex:0 0 auto;text-align:right;font-size:12px;font-weight:800;color:#2DD4BF}
+.nearby-item .actions{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.nearby-item .actions a,.nearby-item .actions button{font-size:11.5px;padding:6px 10px;border-radius:9px;text-decoration:none;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--text,#fff);cursor:pointer;font-family:inherit}
+.nearby-type-tag{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+  padding:2px 7px;border-radius:6px;margin-top:4px}
+.nearby-type-tag.hospital{background:rgba(239,68,68,.18);color:#F87171}
+.nearby-type-tag.aed{background:rgba(250,204,21,.18);color:#FACC15}
+.nearby-topbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.nearby-topbar select{padding:8px 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}
 .biblio-list a:hover{text-decoration:underline}
 </style>
 <script src="/data/procedimientos.js"></script>
@@ -12805,6 +12831,12 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
   <section id="algPanel" role="dialog" aria-modal="true" aria-label="Algoritmos">
     <div class="icHead"><span style="font-size:27px">🔀</span><div><h2>Algoritmos</h2><small style="color:var(--text-dim,#94a3b8)">Actuación rápida por especialidad</small></div><button class="icClose" id="algClose" aria-label="Cerrar algoritmos">×</button></div>
     <div class="icBody" id="algBody"></div>
+  </section>
+</div>
+<div id="nearbyOverlay" aria-hidden="true">
+  <section id="nearbyPanel" role="dialog" aria-modal="true" aria-label="Servicios sanitarios cercanos">
+    <div class="icHead"><span style="font-size:27px">📍</span><div><h2>Servicios sanitarios cercanos</h2><small style="color:var(--text-dim,#94a3b8)">Hospitales y desfibriladores (DEA) cerca de ti</small></div><button class="icClose" id="nearbyClose" aria-label="Cerrar servicios cercanos">×</button></div>
+    <div class="icBody" id="nearbyBody"></div>
   </section>
 </div>
 <script id="inurseClinicalFixScript">
@@ -13366,6 +13398,134 @@ window.iNurseProcSearch={
     return true;
   }
 };
+
+/* ---- Servicios sanitarios cercanos (geolocalización + OpenStreetMap) ---- */
+var releaseNearbyFocusTrap=null;
+var nearbyLastResults=null,nearbyLastCoords=null;
+function nearbyConsent(){try{return localStorage.getItem('inurse_geo_consent')==='1'}catch(e){return false}}
+function setNearbyConsent(v){try{localStorage.setItem('inurse_geo_consent',v?'1':'0')}catch(e){}}
+function nearbyIco(kind){return kind==='aed'?'⚡':'🏥'}
+function nearbyTypeLabel(kind){return kind==='aed'?'Desfibrilador (DEA)':'Hospital / urgencias'}
+function renderNearbyPermission(){
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span>'+
+    '<h3>Permite tu ubicación</h3>'+
+    '<p>Para indicarte los hospitales y desfibriladores (DEA) más cercanos, iNurse necesita tu ubicación. Solo se usa para esta búsqueda: no se guarda en ningún servidor ni se comparte con nadie.</p>'+
+    '<button class="icBtn" id="nearbyAllowBtn">📍 Permitir ubicación y buscar</button></div>';
+  var btn=$('#nearbyAllowBtn');
+  if(btn)btn.onclick=function(){requestNearbySearch('all')};
+}
+function renderNearbyLoading(){
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando OpenStreetMap.</p></div>';
+}
+function renderNearbyError(msg){
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>No se ha podido obtener tu ubicación</h3><p>'+esc(msg)+'</p><button class="icBtn alt" id="nearbyRetryBtn">Reintentar</button></div>';
+  var r=$('#nearbyRetryBtn');if(r)r.onclick=function(){requestNearbySearch('all')};
+}
+function nearbyResultsSummary(items){
+  if(!items.length)return 'No he encontrado hospitales ni desfibriladores en un radio de 5 kilómetros.';
+  var lines=items.slice(0,10).map(function(x,i){return (i+1)+'. '+x.name+' ('+nearbyTypeLabel(x.kind)+'), a '+x.distanceKm+' kilómetros'+(x.address?', '+x.address:'')});
+  return 'He encontrado '+items.length+' servicios sanitarios cerca de ti. '+lines.join('. ')+'.';
+}
+function renderNearbyResults(data){
+  nearbyLastResults=data.items||[];
+  var typeSel='<div class="nearby-topbar"><select id="nearbyTypeFilter">'+
+    '<option value="all">🏥⚡ Hospitales y DEA</option><option value="hospital">🏥 Solo hospitales</option><option value="aed">⚡ Solo DEA</option></select>'+
+    '<button class="icBtn alt" id="nearbyReadBtn">🔊 Leer</button>'+
+    '<button class="icBtn alt" id="nearbyShareBtn">📤 Exportar</button>'+
+    '<button class="icBtn alt" id="nearbyRefreshBtn">↻ Actualizar ubicación</button></div>';
+  var list=nearbyLastResults.length
+    ? '<div class="nearby-list">'+nearbyLastResults.map(function(x){
+        return '<div class="nearby-item"><span class="ico">'+nearbyIco(x.kind)+'</span>'+
+          '<div class="info"><b>'+esc(x.name)+'</b><br><span class="nearby-type-tag '+x.kind+'">'+esc(nearbyTypeLabel(x.kind))+'</span>'+
+          (x.address?'<small>'+esc(x.address)+'</small>':'')+
+          (x.phone?'<small>☎ '+esc(x.phone)+'</small>':'')+
+          '<div class="actions"><a href="'+esc(x.mapsUrl)+'" target="_blank" rel="noopener">🗺️ Cómo llegar</a></div></div>'+
+          '<span class="dist">'+x.distanceKm+' km</span></div>';
+      }).join('')+'</div>'
+    : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en OpenStreetMap dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
+  $('#nearbyBody').innerHTML=typeSel+list;
+  var sel=$('#nearbyTypeFilter');if(sel)sel.onchange=function(){requestNearbySearch(sel.value,true)};
+  var refresh=$('#nearbyRefreshBtn');if(refresh)refresh.onclick=function(){requestNearbySearch((sel&&sel.value)||'all')};
+  var readBtn=$('#nearbyReadBtn');
+  if(readBtn)readBtn.onclick=function(){
+    var text=nearbyResultsSummary(nearbyLastResults);
+    if(typeof window.iNurseReadText==='function')window.iNurseReadText('Servicios sanitarios cercanos',text,readBtn);
+    else if('speechSynthesis' in window){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='es-ES';window.speechSynthesis.speak(u)}
+  };
+  var shareBtn=$('#nearbyShareBtn');
+  if(shareBtn)shareBtn.onclick=function(){
+    var text=nearbyResultsSummary(nearbyLastResults);
+    if(typeof window.iNurseShareContent==='function')window.iNurseShareContent('Servicios sanitarios cercanos',text);
+    else if(navigator.share)navigator.share({title:'Servicios sanitarios cercanos',text:text});
+    else if(navigator.clipboard){navigator.clipboard.writeText(text);if(typeof toast==='function')toast('Copiado')}
+  };
+}
+function requestNearbySearch(type,skipGeoPrompt){
+  renderNearbyLoading();
+  if(!('geolocation' in navigator)){renderNearbyError('Este dispositivo o navegador no soporta geolocalización.');return}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    setNearbyConsent(true);
+    nearbyLastCoords={lat:pos.coords.latitude,lon:pos.coords.longitude};
+    fetch('/api/nearby?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&type='+encodeURIComponent(type||'all'))
+      .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+      .then(function(res){
+        if(!res.ok){renderNearbyError(res.d.error||'Error consultando el servidor.');return}
+        renderNearbyResults(res.d);
+      })
+      .catch(function(e){renderNearbyError('Error de conexión: '+e.message)});
+  },function(err){
+    var msg=err.code===1?'Has denegado el permiso de ubicación. Actívalo en los ajustes del navegador para usar esta función.'
+      :err.code===2?'No se ha podido determinar tu ubicación.'
+      :'Se agotó el tiempo de espera al obtener tu ubicación.';
+    renderNearbyError(msg);
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+}
+function openNearby(){
+  $('#nearbyOverlay').classList.add('on');$('#nearbyOverlay').setAttribute('aria-hidden','false');
+  if(releaseNearbyFocusTrap)releaseNearbyFocusTrap();
+  releaseNearbyFocusTrap=window.iNurseFocusTrap($('#nearbyPanel'));
+  if(nearbyConsent())requestNearbySearch('all');else renderNearbyPermission();
+}
+function closeNearby(){
+  $('#nearbyOverlay').classList.remove('on');$('#nearbyOverlay').setAttribute('aria-hidden','true');
+  if(releaseNearbyFocusTrap){releaseNearbyFocusTrap();releaseNearbyFocusTrap=null}
+}
+$('#nearbyClose').onclick=closeNearby;
+$('#nearbyOverlay').onclick=function(e){if(e.target.id==='nearbyOverlay')closeNearby()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#nearbyOverlay').classList.contains('on'))closeNearby()});
+window.openNearby=openNearby;
+// API para que el chat de Vivi enriquezca sus respuestas con datos reales de
+// ubicación cuando el usuario ya concedió el permiso previamente (nunca pide
+// permiso de forma silenciosa: si no está ya concedido, no hace nada).
+window.iNurseNearby={
+  hasConsent:nearbyConsent,
+  getContextText:function(){
+    if(!nearbyConsent()||!('geolocation' in navigator))return Promise.resolve('');
+    return new Promise(function(resolve){
+      var done=false;
+      var timer=setTimeout(function(){if(!done){done=true;resolve('')}},6000);
+      navigator.geolocation.getCurrentPosition(function(pos){
+        if(done)return;
+        fetch('/api/nearby?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&type=all')
+          .then(function(r){return r.ok?r.json():null})
+          .then(function(d){
+            if(done)return;done=true;clearTimeout(timer);
+            if(!d||!d.items||!d.items.length){resolve('');return}
+            resolve(nearbyResultsSummary(d.items));
+          }).catch(function(){if(!done){done=true;clearTimeout(timer);resolve('')}});
+      },function(){if(!done){done=true;clearTimeout(timer);resolve('')}},{timeout:5000,maximumAge:120000});
+    });
+  }
+};
+/* Comando de voz: "hospital cercano", "dea cercano", "desfibrilador", "dónde puedo ir"... */
+(function(){
+  var origHVC=window.handleVoiceCommand;
+  var re=/hospital(es)?\s+(m[aá]s\s+)?cercan|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|servicios?\s+sanitarios?\s+cercan|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i;
+  window.handleVoiceCommand=function(text){
+    if(re.test(String(text||''))){openNearby();return true}
+    return origHVC?origHVC(text):false;
+  };
+})();
 window.openAlg=openAlg;
 
 /* ---- API global: biblioteca de algoritmos accesible por Vivi ---- */
@@ -17332,6 +17492,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "ecg":        clickId("ecgFab") || (window.openEcg&&window.openEcg()); return;
       case "procedimientos": if(typeof window.openProc==='function'){ window.openProc(); return; } openIC("procedures"); return;
       case "algoritmos": if(typeof window.openAlg==='function'){ window.openAlg(); return; } openIC("alg"); return;
+      case "cercanos":   if(typeof window.openNearby==='function'){ window.openNearby(); return; } return;
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
@@ -17365,6 +17526,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     {id:'ecg',          t:'Electro / ECG',         em:'📈', kw:'electro ecg electrocardiograma ritmo arritmia electros'},
     {id:'procedimientos',t:'Procedimientos',       em:'📝', kw:'procedimientos tecnicas enfermeria paso a paso material checklist'},
     {id:'algoritmos',   t:'Algoritmos',            em:'🔀', kw:'algoritmos protocolos criticos actuacion pauta emergencia'},
+    {id:'cercanos',     t:'Servicios cercanos',    em:'📍', kw:'hospital cercano dea desfibrilador urgencias mas cercano donde puedo ir ubicacion mapa geolocalizacion'},
     {id:'proyectos',    t:'Proyectos ConVive',     em:'👥', kw:'proyectos convive documentos colaborativo trabajo equipo'}
   ];
   var SPECS = [
@@ -17385,6 +17547,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   var QUICK = [
     { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
     { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
+    { k:"cercanos",       ic:"📍", t:"Servicios cercanos", s:"Hospitales y desfibriladores (DEA) cerca de ti." },
     { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
   ];
   var NAV = [
@@ -17543,6 +17706,14 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'</div>'
 
       +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">📍</span>Ubicación</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Permite tu ubicación para que Vivi pueda indicarte, cuando lo preguntes por voz o por escrito, el hospital o desfibrilador (DEA) más cercano. Solo se usa en el momento de la consulta, no se guarda en ningún servidor.</p>'
+      +'<div class="nx-aj-row"><span id="nxGeoStatus">'+((function(){try{return localStorage.getItem('inurse_geo_consent')==='1'}catch(e){return false}})()?'✅ Ubicación permitida':'⭕ Ubicación no compartida todavía')+'</span><button class="nx-aj-theme-btn" id="nxGeoOpen">📍 Servicios cercanos</button></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">✨</span>Configurar Vivi</div>'
       +'<div class="nx-aj-card">'
       +'<div class="nx-aj-field"><label for="nxViviName">Nombre del asistente</label><input type="text" id="nxViviName" value="'+esc(viviSaved.name||'Vivi')+'" placeholder="Vivi"></div>'
@@ -17630,6 +17801,12 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       document.getElementById('nxThemeLabel').textContent=themeLabels[curTheme];
       var tb=document.getElementById('themeBtn');
       if(tb){ tb.textContent=curTheme==='light'?'☀️':curTheme==='night'?'🌚':'🌙'; }
+    };
+
+    var geoOpenBtn=document.getElementById('nxGeoOpen');
+    if(geoOpenBtn)geoOpenBtn.onclick=function(){
+      if(ov&&ov.parentNode)ov.remove();
+      if(typeof window.openNearby==='function')window.openNearby();
     };
 
     document.getElementById('nxViviSave').onclick=function(){
