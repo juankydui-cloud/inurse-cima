@@ -7062,6 +7062,62 @@ function closeCalcs(){
 }
 document.addEventListener('click',function(e){ if(e.target && e.target.id==='calcOverlay') closeCalcs(); });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var ov=document.getElementById('calcOverlay'); if(ov && ov.classList.contains('on')) closeCalcs(); } });
+function renderNnnValidator(){
+  return `<div class="calc-widget">
+    <div class="calc-title"><span class="calc-icon">📋</span>Validador de diagnósticos enfermeros
+      <span class="calc-tag">NANDA-I · NIC · NOC</span></div>
+    <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 14px;line-height:1.45">Escribe un diagnóstico enfermero y valida si tiene código verificado en NNNConsult. Solo devuelve códigos confirmados manualmente — nunca inventa.</p>
+    <div class="calc-fields" style="grid-template-columns:1fr">
+      <div class="calc-field">
+        <label for="calc-nnn-input">Diagnóstico enfermero</label>
+        <input type="text" id="calc-nnn-input" placeholder="Ej: riesgo de deterioro de la integridad cutánea" autocomplete="off">
+      </div>
+    </div>
+    <div class="calc-actions" style="justify-content:flex-start;margin-bottom:14px">
+      <button class="btn-primary" id="calcNnnBtn">🔍 Validar</button>
+    </div>
+    <div class="calc-result" id="calcNnnResult" style="min-height:60px">Escribe un diagnóstico y pulsa Validar.</div>
+    <div class="calc-warn">Solo se devuelven códigos verificados manualmente en NNNConsult (Elsevier). Los términos pendientes o desconocidos se indican como tales — nunca se fabrica un código.</div>
+  </div>
+  <div class="calc-widget" style="margin-top:14px">
+    <div class="calc-title"><span class="calc-icon">📚</span>Diagnósticos frecuentes (UCI / hospitalización)</div>
+    <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px">Pulsa un diagnóstico para validarlo.</p>
+    <div id="calcNnnQuickList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  </div>`;
+}
+function bindNnnValidator(){
+  const inp=document.getElementById('calc-nnn-input');
+  const btn=document.getElementById('calcNnnBtn');
+  const out=document.getElementById('calcNnnResult');
+  const quickList=document.getElementById('calcNnnQuickList');
+  if(!btn||!inp||!out) return;
+  const NANDA_QUICK=typeof NANDA_DATA!=='undefined'?NANDA_DATA:[];
+  if(quickList){quickList.innerHTML=NANDA_QUICK.map(n=>'<button class="btn-outline nnn-quick" style="font-size:11px;padding:5px 10px" data-nnn-q="'+escapeHtml(n.title)+'">'+escapeHtml(n.title)+'</button>').join('');quickList.addEventListener('click',function(e){const b=e.target.closest('[data-nnn-q]');if(b){inp.value=b.dataset.nnnQ;doValidate()}})}
+  async function doValidate(){
+    const v=inp.value.trim();
+    if(v.length<2){out.innerHTML='<div class="calc-detail" style="color:#F59E0B">Escribe al menos 2 caracteres.</div>';return}
+    btn.disabled=true;btn.textContent='Validando…';
+    out.innerHTML='<div class="calc-detail">Consultando diccionario NNN…</div>';
+    try{
+      const r=await fetch('/api/terminology/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valor:v,via:'nnn'})});
+      const d=await r.json();
+      if(!r.ok){out.innerHTML='<div class="calc-detail" style="color:#F59E0B">'+(d.error||'Error')+'</div>';return}
+      if(d.code_status==='coded'){
+        out.innerHTML='<div class="calc-main" style="font-size:16px">✓ Código verificado</div>'+
+          '<div class="calc-detail"><b style="color:#14B8A6">NANDA-I '+escapeHtml(d.nanda.code)+'</b> — '+escapeHtml(d.nanda.label)+'</div>'+
+          '<div class="calc-detail"><b style="color:#A855F7">NIC '+escapeHtml(d.nic.code)+'</b> — '+escapeHtml(d.nic.label)+'</div>'+
+          '<div class="calc-detail"><b style="color:#A855F7">NOC '+escapeHtml(d.noc.code)+'</b> — '+escapeHtml(d.noc.label)+'</div>'+
+          '<div class="calc-interp">Fuente: '+escapeHtml(d.fuente)+' · Verificado: '+escapeHtml(d.fecha_verificacion)+' · Por: '+escapeHtml(d.revisado_por)+'</div>';
+      }else{
+        out.innerHTML='<div class="calc-main" style="font-size:16px;color:#F59E0B">⚠ Sin código verificado</div>'+
+          '<div class="calc-detail">'+escapeHtml(d.reason||'Término no encontrado.')+'</div>';
+      }
+    }catch(e){out.innerHTML='<div class="calc-detail" style="color:#F59E0B">Error de conexión: '+e.message+'</div>'}
+    finally{btn.disabled=false;btn.textContent='🔍 Validar'}
+  }
+  btn.onclick=doValidate;
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')doValidate()});
+}
 function showCalc(id){
   const body = document.getElementById("calcBody");
   if(!body) return;
@@ -7069,6 +7125,9 @@ function showCalc(id){
   if(id==="perf"){
     body.innerHTML = renderPerf();
     setTimeout(()=>{ onPerfFarm(); }, 30);
+  } else if(id==="nnn"){
+    body.innerHTML = renderNnnValidator();
+    setTimeout(()=>bindNnnValidator(), 30);
   } else {
     body.innerHTML = renderCalc(id);
     setTimeout(()=>runCalc(), 30);
@@ -8109,6 +8168,7 @@ function dermPick(el){
 <button class="calc-tab" data-c="rass" data-spec="intensiva" onclick="showCalc('rass')">😴 RASS</button>
 <button class="calc-tab" data-c="morse" onclick="showCalc('morse')">⚠️ Morse</button>
 <button class="calc-tab" data-c="dolor" onclick="showCalc('dolor')">🤕 Dolor</button>
+      <button class="calc-tab" data-c="nnn" onclick="showCalc('nnn')">📋 NANDA/NIC/NOC</button>
       <button class="calc-tab v27-calc-alg-tab" type="button" onclick="closeCalcs();window.iNurseAlgorithms.openHub()">🧩 Algoritmos</button>
     </div>
     <div class="calc-body">
