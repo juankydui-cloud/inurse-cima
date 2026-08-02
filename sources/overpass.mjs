@@ -1,6 +1,16 @@
 import { requestJSON } from "../cache.mjs";
 
-const OVERPASS_BASE = process.env.OVERPASS_BASE || "https://overpass-api.de/api/interpreter";
+// El mirror público overpass-api.de es el más conocido pero también el más
+// sobrecargado; cuando está ocupado devuelve una página HTML de error en vez
+// de JSON, lo que rompe el parseo. Se prueban varios mirrors públicos en
+// orden hasta que uno responda, en vez de fallar a la primera.
+const OVERPASS_MIRRORS = process.env.OVERPASS_BASE
+  ? [process.env.OVERPASS_BASE]
+  : [
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter",
+      "https://overpass.openstreetmap.ru/api/interpreter"
+    ];
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -41,15 +51,26 @@ export async function searchNearby(lat, lon, { radius = 5000, kinds = ["hospital
   if (kinds.includes("aed")) {
     clauses.push(`node["emergency"="defibrillator"](around:${radius},${lat},${lon});`);
   }
-  const query = `[out:json][timeout:20];(${clauses.join("")});out center tags;`;
+  const query = `[out:json][timeout:25];(${clauses.join("")});out center tags;`;
 
   // GET con la query como parámetro: requestJSON() serializa cualquier body
   // como JSON, lo que rompería la sintaxis de Overpass QL, así que se envía
   // como querystring en vez de como POST con cuerpo "data=...".
-  const raw = await requestJSON(`${OVERPASS_BASE}?data=${encodeURIComponent(query)}`, {
-    ttl: 10 * 60 * 1000,
-    label: "OpenStreetMap (Overpass)"
-  });
+  let raw = null, lastErr = null;
+  for (const mirror of OVERPASS_MIRRORS) {
+    try {
+      raw = await requestJSON(`${mirror}?data=${encodeURIComponent(query)}`, {
+        ttl: 10 * 60 * 1000,
+        label: "OpenStreetMap (Overpass)",
+        timeout: 28000
+      });
+      break;
+    } catch (err) {
+      lastErr = err;
+      // se prueba el siguiente mirror
+    }
+  }
+  if (!raw) throw lastErr || new Error("Ningún servidor de OpenStreetMap respondió");
 
   const elements = raw?.elements || [];
   const items = [];
