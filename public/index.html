@@ -12794,16 +12794,17 @@ Ayúdame a organizar, revisar, ampliar o continuar el proyecto. No inventes dato
 .nearby-permission h3{font-size:17px;margin-bottom:8px}
 .nearby-permission p{font-size:13.5px;color:var(--text-dim,#94a3b8);line-height:1.55;margin-bottom:18px}
 .nearby-list{display:flex;flex-direction:column;gap:10px}
-.nearby-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;
-  background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.13)}
+.nearby-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;cursor:pointer;
+  background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.13);transition:.15s}
+.nearby-item:hover,.nearby-item:focus-visible{border-color:rgba(56,189,248,.55);transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.28)}
 .nearby-item .ico{font-size:24px;width:30px;text-align:center;flex:0 0 30px}
 .nearby-item .info{flex:1;min-width:0}
 .nearby-item .info b{font-size:14.5px}
 .nearby-item .info small{display:block;color:var(--text-dim,#94a3b8);font-size:12px;margin-top:2px;line-height:1.4}
 .nearby-item .dist{flex:0 0 auto;text-align:right;font-size:12px;font-weight:800;color:#2DD4BF}
 .nearby-item .actions{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
-.nearby-item .actions a,.nearby-item .actions button{font-size:11.5px;padding:6px 10px;border-radius:9px;text-decoration:none;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--text,#fff);cursor:pointer;font-family:inherit}
+.nearby-go{font-size:11.5px;padding:6px 10px;border-radius:9px;display:inline-block;
+  background:rgba(45,212,191,.14);border:1px solid rgba(45,212,191,.3);color:#2DD4BF;font-weight:700}
 .nearby-type-tag{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
   padding:2px 7px;border-radius:6px;margin-top:4px}
 .nearby-type-tag.hospital{background:rgba(239,68,68,.18);color:#F87171}
@@ -13434,16 +13435,21 @@ function renderNearbyResults(data){
     '<button class="icBtn alt" id="nearbyShareBtn">📤 Exportar</button>'+
     '<button class="icBtn alt" id="nearbyRefreshBtn">↻ Actualizar ubicación</button></div>';
   var list=nearbyLastResults.length
-    ? '<div class="nearby-list">'+nearbyLastResults.map(function(x){
-        return '<div class="nearby-item"><span class="ico">'+nearbyIco(x.kind)+'</span>'+
+    ? '<div class="nearby-list">'+nearbyLastResults.map(function(x,i){
+        return '<div class="nearby-item" data-maps-i="'+i+'" role="button" tabindex="0"><span class="ico">'+nearbyIco(x.kind)+'</span>'+
           '<div class="info"><b>'+esc(x.name)+'</b><br><span class="nearby-type-tag '+x.kind+'">'+esc(nearbyTypeLabel(x.kind))+'</span>'+
           (x.address?'<small>'+esc(x.address)+'</small>':'')+
           (x.phone?'<small>☎ '+esc(x.phone)+'</small>':'')+
-          '<div class="actions"><a href="'+esc(x.mapsUrl)+'" target="_blank" rel="noopener">🗺️ Cómo llegar</a></div></div>'+
+          '<div class="actions"><span class="nearby-go">🗺️ Toca para abrir la ruta</span></div></div>'+
           '<span class="dist">'+x.distanceKm+' km</span></div>';
       }).join('')+'</div>'
     : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en OpenStreetMap dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
   $('#nearbyBody').innerHTML=typeSel+list;
+  function goToItem(i){var it=nearbyLastResults[i];if(it&&it.mapsUrl)window.open(it.mapsUrl,'_blank','noopener')}
+  $('#nearbyBody').querySelectorAll('[data-maps-i]').forEach(function(el){
+    el.onclick=function(){goToItem(+el.dataset.mapsI)};
+    el.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();goToItem(+el.dataset.mapsI)}};
+  });
   var sel=$('#nearbyTypeFilter');if(sel)sel.onchange=function(){if(nearbyLastCoords)searchNearbyAt(nearbyLastCoords,sel.value);else requestNearbySearch(sel.value)};
   var refresh=$('#nearbyRefreshBtn');if(refresh)refresh.onclick=function(){requestNearbySearch((sel&&sel.value)||'all')};
   var readBtn=$('#nearbyReadBtn');
