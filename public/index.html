@@ -13417,9 +13417,9 @@ function renderNearbyPermission(){
 function renderNearbyLoading(){
   $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando OpenStreetMap.</p></div>';
 }
-function renderNearbyError(msg){
-  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>No se ha podido obtener tu ubicación</h3><p>'+esc(msg)+'</p><button class="icBtn alt" id="nearbyRetryBtn">Reintentar</button></div>';
-  var r=$('#nearbyRetryBtn');if(r)r.onclick=function(){requestNearbySearch('all')};
+function renderNearbyError(msg,title,retryFn){
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>'+esc(title||'No se ha podido obtener tu ubicación')+'</h3><p>'+esc(msg)+'</p><button class="icBtn alt" id="nearbyRetryBtn">Reintentar</button></div>';
+  var r=$('#nearbyRetryBtn');if(r)r.onclick=retryFn||function(){requestNearbySearch('all')};
 }
 function nearbyResultsSummary(items){
   if(!items.length)return 'No he encontrado hospitales ni desfibriladores en un radio de 5 kilómetros.';
@@ -13444,7 +13444,7 @@ function renderNearbyResults(data){
       }).join('')+'</div>'
     : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en OpenStreetMap dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
   $('#nearbyBody').innerHTML=typeSel+list;
-  var sel=$('#nearbyTypeFilter');if(sel)sel.onchange=function(){requestNearbySearch(sel.value,true)};
+  var sel=$('#nearbyTypeFilter');if(sel)sel.onchange=function(){if(nearbyLastCoords)searchNearbyAt(nearbyLastCoords,sel.value);else requestNearbySearch(sel.value)};
   var refresh=$('#nearbyRefreshBtn');if(refresh)refresh.onclick=function(){requestNearbySearch((sel&&sel.value)||'all')};
   var readBtn=$('#nearbyReadBtn');
   if(readBtn)readBtn.onclick=function(){
@@ -13460,25 +13460,32 @@ function renderNearbyResults(data){
     else if(navigator.clipboard){navigator.clipboard.writeText(text);if(typeof toast==='function')toast('Copiado')}
   };
 }
-function requestNearbySearch(type,skipGeoPrompt){
+function searchNearbyAt(coords,type){
   renderNearbyLoading();
-  if(!('geolocation' in navigator)){renderNearbyError('Este dispositivo o navegador no soporta geolocalización.');return}
+  fetch('/api/nearby?lat='+coords.lat+'&lon='+coords.lon+'&type='+encodeURIComponent(type||'all'))
+    .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+    .then(function(res){
+      if(!res.ok){
+        renderNearbyError(res.d.error||'El servidor no ha podido consultar OpenStreetMap.','No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
+        return;
+      }
+      renderNearbyResults(res.d);
+    })
+    .catch(function(e){renderNearbyError('Error de conexión: '+e.message,'No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)})});
+}
+function requestNearbySearch(type){
+  renderNearbyLoading();
+  if(!('geolocation' in navigator)){renderNearbyError('Este dispositivo o navegador no soporta geolocalización.','Ubicación no disponible');return}
   navigator.geolocation.getCurrentPosition(function(pos){
     setNearbyConsent(true);
     nearbyLastCoords={lat:pos.coords.latitude,lon:pos.coords.longitude};
-    fetch('/api/nearby?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&type='+encodeURIComponent(type||'all'))
-      .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
-      .then(function(res){
-        if(!res.ok){renderNearbyError(res.d.error||'Error consultando el servidor.');return}
-        renderNearbyResults(res.d);
-      })
-      .catch(function(e){renderNearbyError('Error de conexión: '+e.message)});
+    searchNearbyAt(nearbyLastCoords,type);
   },function(err){
     var msg=err.code===1?'Has denegado el permiso de ubicación. Actívalo en los ajustes del navegador para usar esta función.'
-      :err.code===2?'No se ha podido determinar tu ubicación.'
+      :err.code===2?'El navegador no ha podido calcular tu posición (GPS/Wi-Fi). Comprueba que la ubicación esté activada en los ajustes del sistema, no solo en el navegador, e inténtalo de nuevo.'
       :'Se agotó el tiempo de espera al obtener tu ubicación.';
-    renderNearbyError(msg);
-  },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+    renderNearbyError(msg,'No se ha podido obtener tu ubicación',function(){requestNearbySearch(type)});
+  },{enableHighAccuracy:false,timeout:15000,maximumAge:120000});
 }
 function openNearby(){
   $('#nearbyOverlay').classList.add('on');$('#nearbyOverlay').setAttribute('aria-hidden','false');
