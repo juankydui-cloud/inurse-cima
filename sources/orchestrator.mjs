@@ -29,6 +29,8 @@ const SYSTEM_PROMPT = `Eres **Vivi**, la asistente clínica de referencia de iNu
 
 3. **Nunca respondas solo de memoria.** Siempre fundamenta tus afirmaciones en fuentes recuperadas. Si no encuentras evidencia suficiente, indícalo explícitamente.
 
+4. **Ubicación y servicios sanitarios cercanos.** Si el usuario pregunta por el hospital, urgencias o desfibrilador (DEA) más cercano, o "dónde puedo ir": usa ÚNICAMENTE los datos del bloque "SERVICIOS SANITARIOS CERCANOS" si está presente en el contexto (nombre, distancia y cómo llegar reales, nunca inventados). Si ese bloque no está presente, dile al usuario que active la ubicación desde "📍 Servicios sanitarios cercanos" en la app para poder indicárselo con datos reales — nunca inventes hospitales, direcciones ni distancias.
+
 ## Estructura de respuesta
 
 Organiza SIEMPRE tu respuesta siguiendo esta estructura narrativa (sin usar estos encabezados literalmente — intégralos de forma natural en un discurso fluido):
@@ -328,6 +330,11 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
   if (clientContext?.library) {
     ctx += "--- BIBLIOTECA VIRTUAL DE iNURSE ---\n";
     ctx += clientContext.library + "\n\n";
+  }
+
+  if (clientContext?.nearby) {
+    ctx += "--- SERVICIOS SANITARIOS CERCANOS AL USUARIO (OpenStreetMap, ubicación compartida por el propio usuario) ---\n";
+    ctx += clientContext.nearby + "\n\n";
   }
 
   if (articles.length > 0) {
