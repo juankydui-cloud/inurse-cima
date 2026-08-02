@@ -7565,8 +7565,8 @@ function renderSos(){
         <div class="sos-big-txt">LLAMAR 112</div>
       </button>
       <button class="sos-med" onclick="sosLocation()">
-        <div>📍 Enviar mi ubicación por WhatsApp</div>
-        <small>Compartirá coordenadas GPS a un contacto</small>
+        <div>📍 Enviar mi ubicación y pedir ayuda</div>
+        <small>Por WhatsApp a todos tus contactos, con el hospital más cercano</small>
       </button>
       <button class="sos-med" onclick="sosShowCard()">
         <div>🆔 Mostrar mi ficha en pantalla</div>
@@ -7675,20 +7675,33 @@ async function sosLocation(){
     const acc = Math.round(pos.coords.accuracy);
     const gmap = `https://maps.google.com/?q=${lat},${lon}`;
     const nombre = d.nombre || "";
-    const msg = `🚨 EMERGENCIA${nombre?" — "+nombre:""}%0AMi ubicación actual (±${acc}m):%0A${encodeURIComponent(gmap)}%0A%0AEstoy pidiendo ayuda. Por favor, contacta con emergencias si no puedes hablar conmigo.`;
-    // Elegir primer contacto o preguntar
-    let target = d.contactos[0];
-    if(d.contactos.length>1){
-      const names = d.contactos.map((c,i)=>`${i+1}. ${c.nombre}`).join("\n");
-      const sel = prompt(`Envía tu ubicación a:\n${names}\n\nEscribe el número:`, "1");
-      if(!sel) return;
-      const idx = parseInt(sel)-1;
-      if(isNaN(idx) || !d.contactos[idx]) { toast("Contacto inválido"); return; }
-      target = d.contactos[idx];
-    }
-    const tel = target.tel.replace(/[^0-9+]/g,"");
-    const wa = `https://wa.me/${tel.replace("+","")}?text=${msg}`;
-    window.open(wa, "_blank");
+
+    // Hospital/DEA más cercano (OpenStreetMap): best-effort, nunca bloquea el
+    // envío del SOS si tarda o falla — la ubicación propia ya es lo esencial.
+    let hospitalLine = "";
+    try{
+      const nearbyRes = await Promise.race([
+        fetch(`/api/nearby?lat=${lat}&lon=${lon}&type=all&radius=8000`).then(r=>r.ok?r.json():null),
+        new Promise(res=>setTimeout(()=>res(null),6000))
+      ]);
+      const nearest = nearbyRes && Array.isArray(nearbyRes.items) ? nearbyRes.items[0] : null;
+      if(nearest){
+        hospitalLine = `%0A%0A${nearest.kind==='aed'?'⚡ DEA':'🏥 Hospital'} más cercano: ${encodeURIComponent(nearest.name)} (a ${nearest.distanceKm} km)%0A${encodeURIComponent(nearest.mapsUrl)}`;
+      }
+    }catch(e){}
+
+    const msg = `🚨 NECESITO AYUDA${nombre?" — "+nombre:""}%0ALlámame si puedes.%0A%0AMi ubicación actual (±${acc}m):%0A${encodeURIComponent(gmap)}${hospitalLine}`;
+
+    let sent=0;
+    d.contactos.forEach(function(c,i){
+      const tel=(c.tel||"").replace(/[^0-9+]/g,"").replace("+","");
+      if(!tel)return;
+      const wa=`https://wa.me/${tel}?text=${msg}`;
+      setTimeout(function(){window.open(wa,"_blank")},i*350);
+      sent++;
+    });
+    if(sent){toast(`📤 Mensaje de SOS preparado para ${sent} contacto${sent>1?'s':''} (confirma el envío en cada chat)`);}
+    else{toast("Los contactos no tienen un teléfono válido");}
   }catch(e){
     toast("❌ No se pudo obtener la ubicación: " + (e.message||""));
   }
@@ -13536,6 +13549,15 @@ window.iNurseNearby={
   var re=/hospital(es)?\s+(m[aá]s\s+)?cercan|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|servicios?\s+sanitarios?\s+cercan|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i;
   window.handleVoiceCommand=function(text){
     if(re.test(String(text||''))){openNearby();return true}
+    return origHVC?origHVC(text):false;
+  };
+})();
+/* Comando de voz: "SOS", "socorro", "emergencia", "necesito ayuda", "llama al 112"... */
+(function(){
+  var origHVC=window.handleVoiceCommand;
+  var re=/\bsos\b|\bsocorro\b|\bemergencia\b|necesito\s+ayuda|pide\s+ayuda|ayuda\s+urgente|llama\s+al?\s+112|activa\s+(el\s+)?sos/i;
+  window.handleVoiceCommand=function(text){
+    if(re.test(String(text||''))){if(typeof window.openSos==='function')window.openSos();return true}
     return origHVC?origHVC(text):false;
   };
 })();
