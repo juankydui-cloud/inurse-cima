@@ -6213,7 +6213,7 @@ render();
   var canStream=(_mode==='direct'||_mode==='backend')&&!att;
   chat.setAttribute('aria-busy','true'); // evita que el lector de pantalla anuncie cada fragmento mientras llega en streaming
   var nearbyCtx='';
-  if(/hospital|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i.test(text||'')&&window.iNurseNearby&&window.iNurseNearby.hasConsent&&window.iNurseNearby.hasConsent()){
+  if(/hospital|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i.test(text||'')&&window.iNurseNearby&&window.iNurseNearby.getContextText){
    try{nearbyCtx=await window.iNurseNearby.getContextText()}catch(e){}
   }
   call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null,nearbyCtx).then(function(reply){
@@ -13525,13 +13525,20 @@ window.openNearby=openNearby;
 // permiso de forma silenciosa: si no está ya concedido, no hace nada).
 window.iNurseNearby={
   hasConsent:nearbyConsent,
+  // Si el usuario ya dio el permiso antes, esto es casi instantáneo (el
+  // navegador no vuelve a preguntar). Si es la primera vez que pregunta por
+  // ubicación —aunque sea directamente a Vivi, sin haber abierto antes el
+  // panel de Servicios cercanos—, el propio navegador muestra aquí su aviso
+  // nativo de permiso; nunca se pide en silencio ni se inventa nada si lo
+  // deniega o tarda demasiado: Vivi simplemente no recibe ese contexto.
   getContextText:function(){
-    if(!nearbyConsent()||!('geolocation' in navigator))return Promise.resolve('');
+    if(!('geolocation' in navigator))return Promise.resolve('');
     return new Promise(function(resolve){
       var done=false;
-      var timer=setTimeout(function(){if(!done){done=true;resolve('')}},6000);
+      var timer=setTimeout(function(){if(!done){done=true;resolve('')}},15000);
       navigator.geolocation.getCurrentPosition(function(pos){
         if(done)return;
+        setNearbyConsent(true);
         fetch('/api/nearby?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&type=all')
           .then(function(r){return r.ok?r.json():null})
           .then(function(d){
@@ -13539,7 +13546,7 @@ window.iNurseNearby={
             if(!d||!d.items||!d.items.length){resolve('');return}
             resolve(nearbyResultsSummary(d.items));
           }).catch(function(){if(!done){done=true;clearTimeout(timer);resolve('')}});
-      },function(){if(!done){done=true;clearTimeout(timer);resolve('')}},{timeout:5000,maximumAge:120000});
+      },function(){if(!done){done=true;clearTimeout(timer);resolve('')}},{enableHighAccuracy:false,timeout:12000,maximumAge:120000});
     });
   }
 };
@@ -17321,6 +17328,9 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
 .nx-searchbar input::placeholder{ color:#8aa0c8; opacity:.9; }
 .nx-search-mic{ position:static!important; flex:0 0 auto; width:36px; height:36px; border-radius:11px; border:none;
   background:linear-gradient(135deg,#22d3ee,#8b5cf6); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.nx-search-sos{ flex:0 0 auto; width:36px; height:36px; border-radius:11px; border:none;
+  background:linear-gradient(135deg,#DC2626,#EF4444); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.nx-search-sos:hover{ filter:brightness(1.12); }
 [data-theme="light"] .nx-searchbar{ background:rgba(255,255,255,.7); border-color:rgba(15,23,42,.12); }
 [data-theme="light"] .nx-searchbar input{ color:#0f172a; }
 [data-theme="light"] .nx-searchbar input::placeholder{ color:#64748b; }
@@ -17528,6 +17538,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       case "procedimientos": if(typeof window.openProc==='function'){ window.openProc(); return; } openIC("procedures"); return;
       case "algoritmos": if(typeof window.openAlg==='function'){ window.openAlg(); return; } openIC("alg"); return;
       case "cercanos":   if(typeof window.openNearby==='function'){ window.openNearby(); return; } return;
+      case "sos":        if(typeof window.openSos==='function'){ window.openSos(); return; } return;
       case "proyectos":  if(window.iNurseProjects&&window.iNurseProjects.open){ window.iNurseProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.iNurseTurno&&window.iNurseTurno.open){ window.iNurseTurno.open(); return; } return;
@@ -17582,7 +17593,6 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
   var QUICK = [
     { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
     { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
-    { k:"cercanos",       ic:"📍", t:"Servicios cercanos", s:"Hospitales y desfibriladores (DEA) cerca de ti." },
     { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
   ];
   var NAV = [
@@ -17625,7 +17635,7 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>iNurse</h1><small>Apoyo clínico rápido</small></div></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
-      +   '<div class="nx-searchbar"><span class="nx-search-ico">🔎</span><input id="nxSearch" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic nx-search-mic" id="nxSearchMic" title="Buscar por voz">🎙️</button></div>'
+      +   '<div class="nx-searchbar"><span class="nx-search-ico">🔎</span><input id="nxSearch" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic nx-search-mic" id="nxSearchMic" title="Buscar por voz">🎙️</button><button class="nx-search-sos" id="nxSearchSos" title="SOS" data-fire="sos">🆘</button></div>'
       +   '<div class="nx-hero">'
       +     '<button class="nx-vivi-hero" data-vivi="1" title="Hablar con Vivi">'+viviAvatar()+'<b>Vivi</b><small>Tu asistente clínico</small><span class="nx-vivi-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span><span class="nx-vivi-hero-cta">💬 Hablar con Vivi</span></button>'
       +   '</div>'
@@ -17741,6 +17751,14 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
       +'</div>'
 
       +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🆘</span>Emergencia</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Llama al 112, muestra tu ficha médica al personal que te atienda o avisa a tus contactos de emergencia con tu ubicación y el hospital más cercano.</p>'
+      +'<div class="nx-aj-row"><span>Configura tu ficha y tus contactos aquí</span><button class="nx-aj-theme-btn" id="nxSosOpen" style="background:linear-gradient(135deg,#DC2626,#EF4444)">🆘 Abrir SOS</button></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">📍</span>Ubicación</div>'
       +'<div class="nx-aj-card">'
       +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Permite tu ubicación para que Vivi pueda indicarte, cuando lo preguntes por voz o por escrito, el hospital o desfibrilador (DEA) más cercano. Solo se usa en el momento de la consulta, no se guarda en ningún servidor.</p>'
@@ -17842,6 +17860,12 @@ body:not(.in60-content-mode) #viviFab { display:none !important; }
     if(geoOpenBtn)geoOpenBtn.onclick=function(){
       if(ov&&ov.parentNode)ov.remove();
       if(typeof window.openNearby==='function')window.openNearby();
+    };
+
+    var sosOpenBtn=document.getElementById('nxSosOpen');
+    if(sosOpenBtn)sosOpenBtn.onclick=function(){
+      if(ov&&ov.parentNode)ov.remove();
+      if(typeof window.openSos==='function')window.openSos();
     };
 
     document.getElementById('nxViviSave').onclick=function(){
