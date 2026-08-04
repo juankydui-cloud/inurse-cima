@@ -31,7 +31,7 @@ function httpRequest(urlString, { method = "GET", body = null, timeout = 18000, 
       headers: {
         "Accept": accept,
         "Content-Type": contentType,
-        "User-Agent": "iNurse-CIMA/28.1",
+        "User-Agent": "Enferix-CIMA/28.1",
         ...(bodyText ? { "Content-Length": Buffer.byteLength(bodyText) } : {}),
         ...extraHeaders
       }

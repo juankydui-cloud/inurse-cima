@@ -1,5 +1,5 @@
 /**
- * terminology-connector.mjs — iNurse
+ * terminology-connector.mjs — Enferix
  * ---------------------------------------------------------------------------
  * Capa 3 (validación determinista) de la arquitectura de 3 capas.
  *
