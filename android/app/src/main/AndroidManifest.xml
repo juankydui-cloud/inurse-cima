@@ -37,7 +37,7 @@
 
     <!-- Permissions -->
     <!-- CAMERA y RECORD_AUDIO: la app web usa navigator.mediaDevices para
-         captura de ECG/RX y voz (Vivi manos libres). uses-feature required="false"
+         captura de ECG/RX y voz (Javny manos libres). uses-feature required="false"
          para que la app siga instalable en dispositivos sin cámara/micrófono. -->
 
     <uses-permission android:name="android.permission.INTERNET" />

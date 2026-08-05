@@ -7,7 +7,7 @@ function normalizeList(data) {
   return data?.resultados || data?.medicamentos || data?.items || data?.content || [];
 }
 
-// Búsqueda de medicamentos autorizados en España (CIMA-AEMPS) para que Vivi consulte
+// Búsqueda de medicamentos autorizados en España (CIMA-AEMPS) para que Javny consulte
 // la ficha técnica oficial española antes de responder preguntas sobre fármacos,
 // en vez de depender solo de OpenFDA (que refleja el mercado estadounidense).
 export async function searchCIMA(query, { limit = 5 } = {}) {

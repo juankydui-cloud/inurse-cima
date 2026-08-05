@@ -1,7 +1,7 @@
 # Panel clínico editorial — Bitácora de revisiones
 
 Registro de revisiones del contenido clínico de iNurse (fármacos, algoritmos,
-calculadoras, Biblioteca Virtual y respuestas de Vivi). Cada entrada nueva se
+calculadoras, Biblioteca Virtual y respuestas de Javny). Cada entrada nueva se
 añade en la tabla siguiente y se cierra con un commit que referencia su fila,
 por ejemplo `docs: revisión REVISIONES.md#3`.
 
@@ -13,7 +13,7 @@ por ejemplo `docs: revisión REVISIONES.md#3`.
 | 2 | Calculadoras clínicas (scores, perfusiones, goteos) | Antes de publicar |
 | 3 | Algoritmos y guías por patología no críticos | Cada 4 semanas |
 | 4 | Biblioteca Virtual (1.676 fichas) | Por lotes, priorizando fichas más consultadas |
-| 5 | Respuestas de Vivi (asistente IA) | Auditoría muestral mensual |
+| 5 | Respuestas de Javny (asistente IA) | Auditoría muestral mensual |
 
 ## Checklist mínima por revisión
 
