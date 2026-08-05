@@ -4,7 +4,7 @@ Este proyecto usa [Capacitor](https://capacitorjs.com) como envoltorio nativo. L
 app nativa **no** empaqueta una copia estática del frontend: carga directamente
 `https://inurse-cima.onrender.com` dentro de un WebView (ver `server.url` en
 `capacitor.config.json`). Esto es intencional — iNurse depende de un backend
-propio (Vivi/Gemini, CIMA-AEMPS, cuentas, sincronización) y no funciona como
+propio (Naia/Gemini, CIMA-AEMPS, cuentas, sincronización) y no funciona como
 sitio estático. La ventaja: no hay que reconstruir ni volver a subir la app
 nativa cada vez que cambie el frontend — los cambios en `public/index.html` se
 ven en la app en cuanto se despliegan en Render, igual que en el navegador.
