@@ -11,7 +11,7 @@ import { searchCIMA } from "./cima.mjs";
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
-const SYSTEM_PROMPT = `Eres **Naia**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
+const SYSTEM_PROMPT = `Eres **Javny**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
 
 ## Principios fundamentales
 
@@ -653,7 +653,7 @@ export async function orchestrateStream({ question, context: clientContext, hist
   onEvent({ type: "done", answer, sources, fetchedAt: new Date().toISOString() });
 }
 
-// Sonda de diagnóstico para /api/naia/health: hace la llamada más pequeña posible a
+// Sonda de diagnóstico para /api/javny/health: hace la llamada más pequeña posible a
 // Gemini y devuelve el motivo exacto si falla, en vez de propagar la excepción. Sirve
 // para separar de un vistazo los tres fallos que se confunden entre sí desde la app
 // (clave ausente o inválida, modelo no disponible, y cuota agotada), sin tener que
