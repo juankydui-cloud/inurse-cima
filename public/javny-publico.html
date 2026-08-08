@@ -338,7 +338,7 @@
     flex-direction: column;
     gap: 10px;
     min-height: 360px;
-    max-height: 420px;
+    max-height: 560px;
     overflow-y: auto;
     scroll-behavior: smooth;
   }
@@ -391,6 +391,35 @@
     border-top: 1px dashed color-mix(in srgb, var(--signal) 40%, transparent);
     color: var(--signal);
     font-weight: 700;
+  }
+  .bubble-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+    align-self: flex-start;
+  }
+  .bubble-actions button {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal-strong);
+    background: var(--teal-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background-color .15s ease, transform .15s ease;
+  }
+  .bubble-actions button:hover { transform: translateY(-1px); }
+  .bubble-actions button.on {
+    background: var(--teal-strong);
+    color: #fff;
+    border-color: transparent;
   }
   .bubble-time {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -903,6 +932,52 @@
       return b;
     }
 
+    // ---- Escuchar / copiar cada respuesta, como en la app de Enferix ----
+    var currentUtterance = null;
+    function stripMd(text) {
+      return text.replace(/[#*_`]/g, '').replace(/\n{2,}/g, '. ').replace(/\n/g, ' ');
+    }
+    function toggleSpeak(text, btn) {
+      if (!('speechSynthesis' in window)) { micError('Este navegador no puede leer en voz alta.'); return; }
+      if (currentUtterance && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        currentUtterance = null;
+        btn.classList.remove('on');
+        btn.textContent = '🔊 Leer';
+        return;
+      }
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(stripMd(text));
+      u.lang = 'es-ES';
+      u.onend = function () { btn.classList.remove('on'); btn.textContent = '🔊 Leer'; currentUtterance = null; };
+      u.onerror = u.onend;
+      currentUtterance = u;
+      btn.classList.add('on');
+      btn.textContent = '⏹ Detener';
+      speechSynthesis.speak(u);
+    }
+    function addBubbleActions(text) {
+      var row = document.createElement('div');
+      row.className = 'bubble-actions';
+      var speakBtn = document.createElement('button');
+      speakBtn.type = 'button';
+      speakBtn.textContent = '🔊 Leer';
+      speakBtn.addEventListener('click', function () { toggleSpeak(text, speakBtn); });
+      var copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.textContent = '📋 Copiar';
+      copyBtn.addEventListener('click', function () {
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+          copyBtn.textContent = '✅ Copiado';
+          setTimeout(function () { copyBtn.textContent = '📋 Copiar'; }, 1500);
+        }).catch(function () { copyBtn.textContent = 'No se pudo copiar'; });
+      });
+      row.appendChild(speakBtn);
+      row.appendChild(copyBtn);
+      chatLog.appendChild(row);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
     if (chatForm) {
       chatForm.addEventListener('submit', function (ev) {
         ev.preventDefault();
@@ -944,6 +1019,7 @@
               t.className = 'bubble-time mono';
               t.textContent = 'respondido en ' + ms.toFixed(1).replace('.', ',') + ' s';
               chatLog.appendChild(t);
+              if (evt.answer) addBubbleActions(evt.answer);
               chatLog.scrollTop = chatLog.scrollHeight;
             } else if (evt.type === 'error') {
               throw new Error(evt.error || 'Error de Javny');
