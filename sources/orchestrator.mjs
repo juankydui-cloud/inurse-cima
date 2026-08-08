@@ -84,6 +84,32 @@ Organiza SIEMPRE tu respuesta siguiendo esta estructura narrativa (sin usar esto
 - Indica claramente cuando una recomendación tiene nivel de evidencia bajo o se basa en consenso de expertos.
 - No inventes datos, bibliografía, dosis, concentraciones ni protocolos. Las dosis documentales deben marcarse para verificación institucional/farmacéutica.`;
 
+// Prompt para el público general (no personal sanitario) en javny-publico.html.
+// Deliberadamente MÁS conservador que SYSTEM_PROMPT: lenguaje sencillo, nunca dosis
+// ni indicaciones de fármacos para autoadministrarse, y prioriza siempre remitir a
+// un profesional o al 112 ante cualquier duda de gravedad, en vez de desarrollar una
+// respuesta clínica exhaustiva como haría con un profesional de enfermería.
+const SYSTEM_PROMPT_PUBLIC = `Eres **Javny**, un asistente de orientación sanitaria de Enferix pensado para cualquier persona, no para personal sanitario. Quien te escribe puede no tener ningún conocimiento médico.
+
+## Principios fundamentales
+
+1. **Habla claro y sencillo.** Nada de jerga médica sin explicar, nada de estructura de caso clínico. Responde como lo haría una persona con calma y sentido común, en frases cortas y directas.
+
+2. **Nunca sustituyes a un profesional.** No diagnosticas, no prescribes dosis de medicamentos, no decides tratamientos. Como mucho, orientas sobre primeros pasos razonables y generales (p. ej. "limpia la herida con agua", "aplica frío", "hidrátate") y siempre remites a un profesional (médico, farmacéutico, urgencias) para cualquier decisión clínica real.
+
+3. **La seguridad va antes que la respuesta larga.** Si hay cualquier indicio de gravedad (dolor torácico, dificultad para respirar, sangrado que no para, pérdida de conocimiento, convulsiones, síntomas en un bebé o embarazada, sospecha de intoxicación, ideas de autolesión, o cualquier duda razonable sobre riesgo vital), la PRIMERA frase de tu respuesta debe decir explícitamente que llame al 112 o acuda a urgencias, antes de cualquier otra explicación.
+
+4. **No inventes datos.** Si te preguntan por el hospital, urgencias o desfibrilador más cercano: usa ÚNICAMENTE el bloque "SERVICIOS SANITARIOS CERCANOS" del contexto si está presente. Si no está, dile que pulse "Hospital más cercano" o "DEA" en la propia pantalla para que puedas indicárselo con datos reales.
+
+5. **No fabriques dosis, principios activos ni interacciones de fármacos.** Si preguntan sobre un medicamento concreto, da solo la información general que aparezca en el vademécum CIMA del contexto (para qué sirve, si necesita receta) y remite siempre a su farmacéutico o médico para la dosis exacta — nunca la calcules ni la sugieras tú.
+
+## Longitud y tono
+
+- Respuestas breves: 3-8 frases en la mayoría de los casos, no un texto largo tipo artículo.
+- Cercano pero serio — nunca alarmista sin motivo, pero tampoco quitando importancia a algo grave.
+- Responde en el idioma en que te pregunten (castellano o catalán).
+- No uses corchetes de cita [1][2] ni bloques de "Referencias": esto es para el público general, no para un informe clínico.`;
+
 const MEDICAL_TERMS = {
   "parada cardiorrespiratoria": "cardiac arrest resuscitation",
   "pcr": "cardiac arrest CPR",
@@ -601,15 +627,15 @@ async function prepareOrchestration(question, clientContext) {
   };
 }
 
-function buildSystemPrompt(caseMemory) {
-  let sys = SYSTEM_PROMPT;
+function buildSystemPrompt(caseMemory, audience) {
+  let sys = audience === "public" ? SYSTEM_PROMPT_PUBLIC : SYSTEM_PROMPT;
   if (caseMemory?.length) {
     sys += "\n\n[MEMORIA TEMPORAL DEL CASO]\n" + caseMemory.slice(-6).join("\n") + "\n[FIN MEMORIA]";
   }
   return sys;
 }
 
-export async function orchestrate({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }) {
+export async function orchestrate({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment, audience }) {
   const key = apiKey || process.env.GEMINI_API_KEY || "";
   if (!key) {
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
@@ -617,11 +643,11 @@ export async function orchestrate({ question, context: clientContext, history, a
 
   const { userPrompt, sources } = await prepareOrchestration(question, clientContext);
 
-  const answer = await callGemini(buildSystemPrompt(caseMemory), userPrompt, {
+  const answer = await callGemini(buildSystemPrompt(caseMemory, audience), userPrompt, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
-    maxOutputTokens: 8192,
+    maxOutputTokens: audience === "public" ? 1024 : 8192,
     temperature: 0.3
   });
 
@@ -633,7 +659,7 @@ export async function orchestrate({ question, context: clientContext, history, a
 // (fuentes en cuanto se resuelve la búsqueda, texto parcial a medida que Gemini lo
 // genera, y un evento final "done"). No escribe nada en la red directamente: eso lo
 // hace el llamador (server.mjs), que decide el formato de transporte (NDJSON).
-export async function orchestrateStream({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }, onEvent) {
+export async function orchestrateStream({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment, audience }, onEvent) {
   const key = apiKey || process.env.GEMINI_API_KEY || "";
   if (!key) {
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
@@ -642,11 +668,11 @@ export async function orchestrateStream({ question, context: clientContext, hist
   const { userPrompt, sources } = await prepareOrchestration(question, clientContext);
   onEvent({ type: "sources", sources });
 
-  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
+  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory, audience), userPrompt, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
-    maxOutputTokens: 8192,
+    maxOutputTokens: audience === "public" ? 1024 : 8192,
     temperature: 0.3
   }, (fullText) => onEvent({ type: "delta", text: fullText }));
 
