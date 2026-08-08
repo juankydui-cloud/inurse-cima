@@ -426,6 +426,18 @@
   .phone-input .mic:hover { transform: scale(1.06); }
   .phone-input .mic:disabled { opacity: .5; cursor: default; transform: none; }
   .phone-input .mic svg { width: 14px; height: 14px; color: #fff; }
+  .mic-voice { background: var(--paper-raised); border: 1px solid var(--line); }
+  .mic-voice svg { color: var(--teal-strong); }
+  .mic-voice.listening {
+    background: var(--signal);
+    animation: mic-pulse 1.2s infinite;
+  }
+  .mic-voice.listening svg { color: #fff; }
+  .mic-voice.busy { opacity: .6; cursor: wait; }
+  @keyframes mic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 45%, transparent); }
+    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--signal) 0%, transparent); }
+  }
 
   /* ---------- value props ---------- */
   .section {
@@ -711,7 +723,10 @@
           <div class="bubble-time mono">respondido en 0,5 s</div>
         </div>
         <form class="phone-input" id="chatForm">
-          <input class="chat-text" id="chatText" type="text" autocomplete="off" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta a Javny">
+          <button class="mic mic-voice" type="button" id="micBtn" aria-label="Hablar con Javny" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+          </button>
+          <input class="chat-text" id="chatText" type="text" autocomplete="off" placeholder="Escribe o pulsa el micrófono…" aria-label="Escribe tu pregunta a Javny">
           <button class="mic" type="submit" aria-label="Enviar pregunta">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
@@ -1010,6 +1025,137 @@
         showNearby(kind, btn);
       });
     });
+
+    // ---- Hablar con Javny: reconocimiento de voz nativo, con respaldo por grabación ----
+    var micBtn = document.getElementById('micBtn');
+    var micActive = null; // { type: 'sr'|'rec', obj, stream? }
+
+    function micSetBusy(busy) {
+      if (!micBtn) return;
+      micBtn.classList.toggle('busy', busy);
+      micBtn.disabled = busy;
+    }
+    function micSetListening(on) {
+      if (!micBtn) return;
+      micBtn.classList.toggle('listening', on);
+      micBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function micError(msg) {
+      addBubble('bot', msg).bubble.classList.add('error');
+    }
+    function submitSpokenText(text) {
+      text = (text || '').trim();
+      if (!text) return;
+      chatText.value = text;
+      chatForm.requestSubmit ? chatForm.requestSubmit() : chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+
+    function startNativeRecognition(SR) {
+      var r = new SR();
+      micActive = { type: 'sr', obj: r };
+      r.lang = 'es-ES';
+      r.interimResults = true;
+      r.continuous = false;
+      var finalText = '';
+      r.onresult = function (e) {
+        var interim = '';
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+          else interim += e.results[i][0].transcript;
+        }
+        chatText.value = (finalText + interim).trim();
+      };
+      r.onerror = function (e) {
+        micSetListening(false);
+        micActive = null;
+        if (e.error === 'not-allowed' || e.error === 'permission-denied') {
+          micError('No tengo permiso para usar el micrófono. Actívalo en los ajustes del navegador y vuelve a intentarlo.');
+        } else if (e.error !== 'aborted' && e.error !== 'no-speech') {
+          micError('No se ha podido reconocer la voz (' + e.error + ').');
+        }
+      };
+      r.onend = function () {
+        micSetListening(false);
+        micActive = null;
+        if (finalText.trim()) submitSpokenText(finalText);
+      };
+      r.start();
+      micSetListening(true);
+    }
+
+    function blobToBase64(blob) {
+      return new Promise(function (resolve, reject) {
+        var fr = new FileReader();
+        fr.onload = function () { resolve(String(fr.result).split(',')[1] || ''); };
+        fr.onerror = reject;
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    function startRecordingFallback(stream) {
+      var chunks = [];
+      var mr = new MediaRecorder(stream);
+      micActive = { type: 'rec', obj: mr, stream: stream };
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        micSetListening(false);
+        micActive = null;
+        micSetBusy(true);
+        var blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+        blobToBase64(blob).then(function (b64) {
+          return fetch('/api/javny/transcribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ audio: b64, mimeType: blob.type || 'audio/webm' })
+          });
+        }).then(function (r) {
+          return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || ('HTTP ' + r.status)); return d; });
+        }).then(function (data) {
+          if (data.text) submitSpokenText(data.text);
+          else micError('No he entendido audio claro. Prueba a hablar más cerca del micrófono.');
+        }).catch(function (err) {
+          micError('No se pudo transcribir: ' + err.message);
+        }).finally(function () {
+          micSetBusy(false);
+        });
+      };
+      mr.start();
+      micSetListening(true);
+      setTimeout(function () {
+        if (micActive && micActive.obj === mr && mr.state === 'recording') mr.stop();
+      }, 15000);
+    }
+
+    if (micBtn) {
+      micBtn.addEventListener('click', function () {
+        if (micActive) {
+          if (micActive.type === 'sr') micActive.obj.stop();
+          else if (micActive.type === 'rec') micActive.obj.stop();
+          return;
+        }
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SR) {
+          try { startNativeRecognition(SR); return; } catch (e) { /* cae al respaldo por grabación */ }
+        }
+        if (navigator.mediaDevices && window.MediaRecorder) {
+          micSetBusy(true);
+          navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+            micSetBusy(false);
+            startRecordingFallback(stream);
+          }).catch(function (err) {
+            micSetBusy(false);
+            if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
+              micError('No tengo permiso para usar el micrófono. Actívalo en los ajustes del navegador.');
+            } else {
+              micError('No se ha podido acceder al micrófono.');
+            }
+          });
+        } else {
+          micError('Tu navegador no permite hablar por voz aquí. Puedes escribir la pregunta.');
+        }
+      });
+    }
   })();
 </script>
 </body>
