@@ -2,9 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Javny — asistente sanitario para cualquier persona</title>
 <meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Orientación sanitaria inmediata para cualquier persona, con hospitales y desfibriladores cercanos.">
+
+<link rel="manifest" href="/manifest-javny.json">
+<meta name="theme-color" content="#0b4f49">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Javny">
 <style>
   :root {
     --paper: #f3f7f6;
@@ -67,6 +77,9 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     overflow-x: hidden;
+    /* Instalada como app (viewport-fit=cover), respeta el notch/isla dinámica. */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .mono {
@@ -1154,6 +1167,14 @@
         } else {
           micError('Tu navegador no permite hablar por voz aquí. Puedes escribir la pregunta.');
         }
+      });
+    }
+
+    // Registro del service worker: permite instalarla como app (icono en el
+    // escritorio/pantalla de inicio, sin barra de navegador) — nunca cachea /api/*.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw-javny.js').catch(function () { /* progressive enhancement */ });
       });
     }
   })();
