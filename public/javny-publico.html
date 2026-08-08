@@ -68,23 +68,25 @@
 
   * { box-sizing: border-box; }
 
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; height: 100%; }
 
   body {
     margin: 0;
+    height: 100vh;
+    height: 100dvh;
     background: var(--paper);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
     /* Instalada como app (viewport-fit=cover), respeta el notch/isla dinámica. */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
   a { color: inherit; }
 
@@ -94,232 +96,190 @@
     border-radius: 6px;
   }
 
+  #app {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
   @media (prefers-reduced-motion: no-preference) {
-    .reveal {
+    #app {
       opacity: 0;
-      transform: translateY(16px);
-      transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1);
+      transform: translateY(8px);
+      transition: opacity .5s ease, transform .5s cubic-bezier(.2,.7,.3,1);
     }
-    .reveal.is-in {
-      opacity: 1;
-      transform: none;
-    }
+    #app.is-in { opacity: 1; transform: none; }
   }
 
   .wrap {
-    max-width: 1180px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 0 clamp(20px, 5vw, 56px);
+    width: 100%;
+    padding: 0 clamp(14px, 4vw, 28px);
   }
 
-  /* ---------- concept tag ---------- */
-  .concept-bar {
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 12.5px;
-    letter-spacing: .03em;
-  }
-  .concept-bar-inner {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 9px clamp(20px, 5vw, 56px);
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-    flex-wrap: wrap;
-  }
-  .concept-bar b { color: var(--teal-strong); font-weight: 700; }
-
-  /* ---------- header ---------- */
-  header.top {
-    padding: 22px 0 8px;
-  }
+  /* ---------- top bar ---------- */
+  header.top { padding: 14px 0 10px; }
   .top-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
   }
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     font-weight: 800;
-    font-size: 19px;
+    font-size: 17px;
     letter-spacing: -0.01em;
   }
   .brand .dot {
-    width: 9px; height: 9px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: var(--teal);
     box-shadow: 0 0 0 4px var(--teal-soft);
   }
-  .top-actions {
-    display: flex;
-    gap: 10px;
-    font-size: 13.5px;
+  .top-note {
+    font-size: 11.5px;
     color: var(--ink-soft);
-  }
-
-  /* ---------- hero ---------- */
-  .hero {
-    padding: clamp(32px, 6vw, 68px) 0 clamp(24px, 5vw, 48px);
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: clamp(28px, 5vw, 64px);
-    align-items: center;
-  }
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 12px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--teal-strong);
-    background: var(--teal-soft);
-    border: 1px solid var(--line);
-    padding: 5px 11px 5px 9px;
-    border-radius: 999px;
-    margin-bottom: 20px;
-  }
-  .eyebrow svg { width: 13px; height: 13px; }
-
-  h1.hero-h {
-    font-size: clamp(34px, 5vw, 54px);
-    line-height: 1.04;
-    letter-spacing: -0.025em;
-    font-weight: 800;
-    margin: 0 0 18px;
-    text-wrap: balance;
-  }
-  h1.hero-h em {
-    font-style: normal;
-    color: var(--teal-strong);
   }
 
-  .hero-lede {
-    font-size: 17.5px;
-    color: var(--ink-soft);
-    max-width: 46ch;
-    margin: 0 0 30px;
-  }
-
-  .hero-ctas {
+  /* ---------- disclaimer strip ---------- */
+  .disclaimer-strip {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 34px;
-  }
-  .btn {
-    display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 14.5px;
-    font-weight: 700;
-    padding: 12px 20px;
-    border-radius: 11px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    text-decoration: none;
-    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
-  }
-  .btn-primary {
-    background: var(--teal-strong);
-    color: #fbfffe;
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--teal-strong) 70%, transparent);
-  }
-  .btn-signal {
     background: var(--signal-soft);
+    border: 1px solid color-mix(in srgb, var(--signal) 28%, transparent);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .disclaimer-strip svg { width: 15px; height: 15px; color: var(--signal); flex: none; }
+  .disclaimer-strip b { color: var(--signal); }
+  .disclaimer-strip a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+    font-weight: 700;
     color: var(--signal);
-    border-color: color-mix(in srgb, var(--signal) 30%, transparent);
-  }
-  .btn-signal:hover {
-    transform: translateY(-2px);
-    background: color-mix(in srgb, var(--signal-soft) 70%, var(--signal) 12%);
-  }
-  .btn svg { width: 16px; height: 16px; flex: none; }
-
-  .hero-stats {
-    display: flex;
-    gap: clamp(20px, 4vw, 40px);
-    border-top: 1px solid var(--line);
-    padding-top: 20px;
-    position: relative;
-  }
-  .stat b {
-    display: block;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 22px;
-    letter-spacing: -0.01em;
-  }
-  .stat span {
-    font-size: 12.5px;
-    color: var(--ink-soft);
-  }
-  .vitals-line {
-    position: absolute;
-    top: -1px;
-    left: 0;
-    width: 120px;
-    height: 24px;
-    overflow: hidden;
-    opacity: .55;
-  }
-  .vitals-line svg { display: block; }
-  .vitals-line path {
-    stroke: var(--teal);
-    stroke-width: 1.4;
-    fill: none;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .vitals-line path {
-      stroke-dasharray: 220;
-      stroke-dashoffset: 220;
-      animation: draw 3.2s ease-in-out infinite;
-    }
-  }
-  @keyframes draw {
-    0% { stroke-dashoffset: 220; }
-    45% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -220; }
   }
 
-  /* ---------- phone mock ---------- */
-  .phone-stage {
-    position: relative;
-    display: flex;
-    justify-content: center;
+  /* ---------- quick actions bar ---------- */
+  .qbar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
   }
-  .phone {
-    width: min(340px, 100%);
+  .qbtn {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     background: var(--paper-raised);
     border: 1px solid var(--line);
-    border-radius: 28px;
-    box-shadow: 0 30px 60px -25px hsl(var(--shadow) / 0.35), 0 6px 18px hsl(var(--shadow) / 0.12);
-    overflow: hidden;
-    transform: rotate(1.4deg);
+    border-radius: 12px;
+    padding: 9px 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
   }
-  .phone-head {
+  .qbtn:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--teal) 40%, var(--line));
+    box-shadow: 0 10px 20px -16px hsl(var(--shadow) / 0.4);
+  }
+  .qbtn .ic {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--teal-soft);
+    color: var(--teal-strong);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qbtn.urgent .ic { background: var(--signal-soft); color: var(--signal); }
+  .qbtn.urgent:hover { border-color: color-mix(in srgb, var(--signal) 45%, var(--line)); }
+  .qbtn svg { width: 14px; height: 14px; }
+  .qbtn span { font-size: 11px; font-weight: 600; line-height: 1.2; }
+
+  .hospital-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--teal-soft-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0;
+    transition: max-height .35s ease, opacity .3s ease, padding .35s ease, margin .35s ease, border-width .35s ease;
+  }
+  .hospital-result.is-open {
+    max-height: 120px;
+    opacity: 1;
+    padding-top: 12px; padding-bottom: 12px; margin-bottom: 10px; border-width: 1px;
+  }
+  .hospital-result .hr-name { font-size: 13px; font-weight: 700; }
+  .hospital-result .hr-addr { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+  .hospital-result .hr-dist {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--teal-strong);
+    white-space: nowrap;
+  }
+  .hospital-result .hr-dist small {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+
+  /* ---------- chat (pantalla principal) ---------- */
+  .chat-wrap { flex: 1; min-height: 0; display: flex; padding-bottom: clamp(10px, 3vw, 20px); }
+  .chat-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: min(560px, 70dvh);
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 24px 48px -30px hsl(var(--shadow) / 0.3);
+    overflow: hidden;
+  }
+  .chat-head {
     background: var(--teal-strong);
     color: #f1fffc;
-    padding: 16px 18px 14px;
+    padding: 13px 16px;
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: none;
   }
-  .phone-head .avatar {
+  .chat-head .avatar {
     width: 30px; height: 30px; border-radius: 50%;
     background: rgba(255,255,255,.18);
     display: flex; align-items: center; justify-content: center;
     flex: none;
   }
-  .phone-head .avatar svg { width: 16px; height: 16px; }
-  .phone-head .meta b { display: block; font-size: 14px; font-weight: 700; }
-  .phone-head .meta span { font-size: 11.5px; opacity: .8; display: flex; align-items: center; gap: 5px; }
+  .chat-head .avatar svg { width: 16px; height: 16px; }
+  .chat-head .meta b { display: block; font-size: 14px; font-weight: 700; }
+  .chat-head .meta span { font-size: 11.5px; opacity: .8; display: flex; align-items: center; gap: 5px; }
   .pulse-dot {
     width: 6px; height: 6px; border-radius: 50%;
     background: #7fffd4;
@@ -332,21 +292,17 @@
     100% { box-shadow: 0 0 0 0 rgba(127,255,212,0); }
   }
 
-  .phone-body {
-    padding: 16px 14px 14px;
+  .chat-body {
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-height: 360px;
-    max-height: 560px;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     scroll-behavior: smooth;
   }
-  .bubble.bot.pending {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
+  .bubble.bot.pending { display: inline-flex; align-items: center; gap: 5px; }
   .bubble.bot.pending span {
     width: 5px; height: 5px; border-radius: 50%;
     background: var(--teal);
@@ -365,11 +321,11 @@
     color: var(--signal);
   }
   .bubble {
-    max-width: 86%;
+    max-width: 88%;
     padding: 10px 13px;
     border-radius: 14px;
-    font-size: 13.5px;
-    line-height: 1.42;
+    font-size: 14px;
+    line-height: 1.48;
   }
   .bubble.user {
     align-self: flex-end;
@@ -392,12 +348,7 @@
     color: var(--signal);
     font-weight: 700;
   }
-  .bubble-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 2px;
-    align-self: flex-start;
-  }
+  .bubble-actions { display: flex; gap: 6px; margin-top: 2px; align-self: flex-start; }
   .bubble-actions button {
     appearance: none;
     -webkit-appearance: none;
@@ -416,11 +367,7 @@
     transition: background-color .15s ease, transform .15s ease;
   }
   .bubble-actions button:hover { transform: translateY(-1px); }
-  .bubble-actions button.on {
-    background: var(--teal-strong);
-    color: #fff;
-    border-color: transparent;
-  }
+  .bubble-actions button.on { background: var(--teal-strong); color: #fff; border-color: transparent; }
   .bubble-time {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 10.5px;
@@ -430,34 +377,32 @@
   }
   .bubble-time.right { align-self: flex-end; }
 
-  .phone-input {
-    margin-top: auto;
+  .chat-input {
+    flex: none;
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 6px 6px 6px 14px;
-    font-size: 12.5px;
-    color: var(--ink-soft);
+    padding: 10px;
+    border-top: 1px solid var(--line);
+    background: var(--paper-raised);
   }
   .chat-text {
     flex: 1;
     min-width: 0;
-    border: none;
-    background: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 999px;
     outline: none;
     font: inherit;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--ink);
-    padding: 6px 0;
+    padding: 10px 16px;
   }
   .chat-text::placeholder { color: var(--ink-soft); }
-  .phone-input .mic {
+  .chat-input .mic {
     appearance: none;
     -webkit-appearance: none;
-    width: 30px; height: 30px; border-radius: 50%;
+    width: 38px; height: 38px; border-radius: 50%;
     background: var(--teal-strong);
     border: none;
     display: flex; align-items: center; justify-content: center;
@@ -465,15 +410,12 @@
     cursor: pointer;
     transition: transform .15s ease, background-color .15s ease;
   }
-  .phone-input .mic:hover { transform: scale(1.06); }
-  .phone-input .mic:disabled { opacity: .5; cursor: default; transform: none; }
-  .phone-input .mic svg { width: 14px; height: 14px; color: #fff; }
-  .mic-voice { background: var(--paper-raised); border: 1px solid var(--line); }
+  .chat-input .mic:hover { transform: scale(1.06); }
+  .chat-input .mic:disabled { opacity: .5; cursor: default; transform: none; }
+  .chat-input .mic svg { width: 16px; height: 16px; color: #fff; }
+  .mic-voice { background: var(--paper); border: 1px solid var(--line); }
   .mic-voice svg { color: var(--teal-strong); }
-  .mic-voice.listening {
-    background: var(--signal);
-    animation: mic-pulse 1.2s infinite;
-  }
+  .mic-voice.listening { background: var(--signal); animation: mic-pulse 1.2s infinite; }
   .mic-voice.listening svg { color: #fff; }
   .mic-voice.busy { opacity: .6; cursor: wait; }
   @keyframes mic-pulse {
@@ -481,352 +423,57 @@
     50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--signal) 0%, transparent); }
   }
 
-  /* ---------- value props ---------- */
-  .section {
-    padding: clamp(40px, 6vw, 72px) 0;
-    border-top: 1px solid var(--line);
-  }
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
-  h2.section-h {
-    font-size: clamp(22px, 3vw, 30px);
-    letter-spacing: -0.02em;
-    font-weight: 800;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .section-note {
-    max-width: 40ch;
-    color: var(--ink-soft);
-    font-size: 14px;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-  }
-  .card {
-    background: var(--paper-raised);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 22px 20px;
-    transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
-  }
-  .card:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--teal) 40%, var(--line));
-    box-shadow: 0 16px 30px -22px hsl(var(--shadow) / 0.4);
-  }
-  .card .ic {
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    background: var(--teal-soft);
-    color: var(--teal-strong);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px;
-  }
-  .card .ic svg { width: 18px; height: 18px; }
-  .card h3 {
-    font-size: 15.5px;
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-  }
-  .card p {
-    font-size: 13.5px;
-    color: var(--ink-soft);
-    margin: 0;
-    line-height: 1.5;
-  }
-
-  /* ---------- quick actions ---------- */
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-  .action {
-    appearance: none;
-    -webkit-appearance: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--paper-raised);
-    border: 1px solid var(--line);
-    border-radius: 13px;
-    padding: 16px;
-    text-align: left;
-    width: 100%;
-    margin: 0;
-    font: inherit;
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-  }
-  .action:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--teal) 40%, var(--line));
-    box-shadow: 0 14px 26px -20px hsl(var(--shadow) / 0.4);
-  }
-  .action.urgent:hover {
-    border-color: color-mix(in srgb, var(--signal) 45%, var(--line));
-  }
-  .action .ic {
-    width: 30px; height: 30px;
-    border-radius: 8px;
-    background: var(--teal-soft);
-    color: var(--teal-strong);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .action.urgent .ic { background: var(--signal-soft); color: var(--signal); }
-  .action svg { width: 16px; height: 16px; }
-  .action b { font-size: 13.5px; }
-  .action span { font-size: 12px; color: var(--ink-soft); }
-
-  /* ---------- hospital result reveal ---------- */
-  .hospital-result {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background: var(--teal-soft-2);
-    border: 1px solid var(--line);
-    border-radius: 13px;
-    padding: 14px 18px;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height .35s ease, opacity .3s ease, padding .35s ease, margin .35s ease;
-  }
-  .hospital-result.is-open {
-    max-height: 120px;
-    opacity: 1;
-  }
-  .hospital-result .hr-name { font-size: 13.5px; font-weight: 700; }
-  .hospital-result .hr-addr { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
-  .hospital-result .hr-dist {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--teal-strong);
-    white-space: nowrap;
-  }
-  .hospital-result .hr-dist small {
-    display: block;
-    font-size: 10.5px;
-    font-weight: 500;
-    color: var(--ink-soft);
-    text-align: right;
-  }
-
-  /* ---------- disclaimer ---------- */
-  .disclaimer {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    background: var(--signal-soft);
-    border: 1px solid color-mix(in srgb, var(--signal) 30%, transparent);
-    border-radius: 14px;
-    padding: 20px 22px;
-  }
-  .disclaimer .ic {
-    width: 30px; height: 30px; flex: none;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--signal) 16%, transparent);
-    color: var(--signal);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .disclaimer svg { width: 16px; height: 16px; }
-  .disclaimer p {
-    margin: 0;
-    font-size: 14px;
-    color: var(--ink);
-    max-width: 62ch;
-  }
-  .disclaimer b { color: var(--signal); }
-
-  /* ---------- sources strip ---------- */
-  .sources {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 22px;
-    align-items: center;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    letter-spacing: .02em;
-  }
-  .sources span::before {
-    content: "·";
-    margin-right: 22px;
-    color: var(--line);
-  }
-  .sources span:first-child::before { content: none; margin: 0; }
-
+  /* ---------- footer ---------- */
   footer.foot {
+    flex: none;
     border-top: 1px solid var(--line);
-    padding: 26px 0 40px;
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 12.5px;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    font-size: 11px;
     color: var(--ink-soft);
+    text-align: center;
   }
+  footer.foot .src { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; }
-    .phone { transform: none; }
-    .cards { grid-template-columns: 1fr; }
-    .actions { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) {
+    .qbar { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
-<div class="concept-bar">
-  <div class="concept-bar-inner">
-    <span><b>Boceto de concepto</b> — maqueta visual, sin backend real conectado. Antes de construirlo de verdad hay que resolver responsabilidad médica, moderación y protocolos de escalado.</span>
-  </div>
-</div>
-
-<header class="top">
-  <div class="wrap top-inner">
-    <div class="brand">
-      <span class="dot"></span>
-      Javny
-    </div>
-    <div class="top-actions">Para cualquier persona ante una duda o incidencia de salud</div>
-  </div>
-</header>
-
-<main>
-  <section class="hero wrap">
-    <div>
-      <span class="eyebrow reveal hero-reveal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
-        Respuesta inmediata
-      </span>
-      <h1 class="hero-h reveal hero-reveal" style="transition-delay:.08s">Cuando pasa algo con tu salud, <em>no busques</em> — pregunta.</h1>
-      <p class="hero-lede reveal hero-reveal" style="transition-delay:.16s">Javny explica qué hacer, cuándo esperar y cuándo llamar al 112 — con las mismas fuentes sanitarias oficiales que usamos en Enferix, en un lenguaje que entiende cualquiera, no solo personal clínico.</p>
-      <div class="hero-ctas reveal hero-reveal" style="transition-delay:.24s">
-        <a class="btn btn-primary" href="#chat">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
-          Preguntar a Javny
-        </a>
-        <a class="btn btn-signal" href="#acciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
-          Llamar al 112
-        </a>
+<div id="app">
+  <div class="wrap" style="padding-top:0">
+    <header class="top">
+      <div class="top-inner">
+        <div class="brand"><span class="dot"></span>Javny</div>
+        <div class="top-note">Enferix · orientación sanitaria</div>
       </div>
-      <div class="hero-stats reveal hero-reveal" style="transition-delay:.32s">
-        <svg class="vitals-line" viewBox="0 0 120 24" aria-hidden="true">
-          <path d="M0 12 L22 12 L28 3 L34 21 L40 12 L120 12"/>
-        </svg>
-        <div class="stat"><b class="mono">0,6 s</b><span>media de primera respuesta</span></div>
-        <div class="stat"><b class="mono">24/7</b><span>disponible, sin listas de espera</span></div>
-        <div class="stat"><b class="mono">100%</b><span>fuentes sanitarias citadas</span></div>
-      </div>
+    </header>
+
+    <div class="disclaimer-strip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+      <span><b>No sustituye la atención médica profesional.</b> Ante una emergencia vital, <a href="tel:112">llama al 112</a>.</span>
     </div>
 
-    <div class="phone-stage reveal hero-reveal" id="chat" style="transition-delay:.12s">
-      <div class="phone">
-        <div class="phone-head">
-          <div class="avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <div class="meta">
-            <b>Javny</b>
-            <span><span class="pulse-dot"></span> escuchando</span>
-          </div>
-        </div>
-        <div class="phone-body" id="chatLog">
-          <div class="bubble user">Mi hijo se ha caído en el parque, le sangra la rodilla y no para de llorar</div>
-          <div class="bubble-time right mono">14:12</div>
-
-          <div class="bubble bot">
-            Tranquila, vamos paso a paso. Siéntalo, limpia la herida con agua (no alcohol) y presiona con una gasa o paño limpio 5–10 minutos sin levantarlo para mirar.
-            <span class="esc">⚠ Llama al 112 si: el sangrado no cede tras 10 min de presión, ves el hueso, o pierde el conocimiento.</span>
-          </div>
-          <div class="bubble-time mono">respondido en 0,4 s</div>
-
-          <div class="bubble user">Ya ha parado, ¿tengo que llevarlo a urgencias igualmente?</div>
-          <div class="bubble-time right mono">14:13</div>
-
-          <div class="bubble bot">Si el corte mide menos de 1 cm y los bordes están juntos, puede bastar con vigilarlo en casa. Te dejo el centro de salud más cercano por si prefieres que lo revisen.</div>
-          <div class="bubble-time mono">respondido en 0,5 s</div>
-        </div>
-        <form class="phone-input" id="chatForm">
-          <button class="mic mic-voice" type="button" id="micBtn" aria-label="Hablar con Javny" aria-pressed="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
-          </button>
-          <input class="chat-text" id="chatText" type="text" autocomplete="off" placeholder="Escribe o pulsa el micrófono…" aria-label="Escribe tu pregunta a Javny">
-          <button class="mic" type="submit" aria-label="Enviar pregunta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <section class="section wrap">
-    <div class="section-head reveal">
-      <h2 class="section-h">La misma base que ya usamos en Enferix, adaptada para quien no es sanitario</h2>
-      <p class="section-note">Nada se inventa: cada respuesta se apoya en fuentes reales, no en la memoria del modelo.</p>
-    </div>
-    <div class="cards">
-      <div class="card reveal">
+    <div class="qbar" id="acciones">
+      <button class="qbtn" type="button" id="whatIfBtn">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
-        <h3>Fuentes sanitarias reales</h3>
-        <p>Vademécum CIMA-AEMPS, guías clínicas y protocolos oficiales — igual que en la versión profesional, no una respuesta genérica de internet.</p>
-      </div>
-      <div class="card reveal" style="transition-delay:.08s">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7Z"/></svg></div>
-        <h3>Sabe dónde estás</h3>
-        <p>Localiza hospitales, urgencias y desfibriladores cercanos en segundos, sin que tengas que buscar tú el mapa.</p>
-      </div>
-      <div class="card reveal" style="transition-delay:.16s">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></div>
-        <h3>Sabe cuándo callarse y decir "112"</h3>
-        <p>Ante señales de gravedad, no improvisa una respuesta larga: corta, avisa y prioriza que llames a emergencias.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section wrap" id="acciones">
-    <div class="section-head reveal">
-      <h2 class="section-h">Accesos directos para el momento en que ocurre</h2>
-    </div>
-    <div class="actions">
-      <button class="action" type="button" id="whatIfBtn">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
-        <b>Qué hacer si…</b>
-        <span>Quemaduras, cortes, fiebre, atragantamiento</span>
+        <span>Qué hacer si…</span>
       </button>
-      <button class="action" type="button" id="hospitalBtn" data-kind="hospital" aria-expanded="false" aria-controls="hospitalResult">
+      <button class="qbtn" type="button" id="hospitalBtn" data-kind="hospital" aria-expanded="false" aria-controls="hospitalResult">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7Z"/></svg></div>
-        <b>Hospital más cercano</b>
-        <span>Con ruta y tiempo estimado</span>
+        <span>Hospital cercano</span>
       </button>
-      <button class="action" type="button" id="aedBtn" data-kind="aed" aria-expanded="false" aria-controls="hospitalResult">
+      <button class="qbtn" type="button" id="aedBtn" data-kind="aed" aria-expanded="false" aria-controls="hospitalResult">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-        <b>Desfibrilador (DEA)</b>
-        <span>El más próximo a tu ubicación</span>
+        <span>DEA cercano</span>
       </button>
-      <a class="action urgent" href="tel:112">
+      <a class="qbtn urgent" href="tel:112">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></div>
-        <b>Llamar al 112</b>
-        <span>Un toque, sin buscar el número</span>
+        <span>Llamar 112</span>
       </a>
     </div>
+
     <div class="hospital-result" id="hospitalResult">
       <div>
         <div class="hr-name" id="hrName">—</div>
@@ -834,55 +481,57 @@
       </div>
       <div class="hr-dist" id="hrDist"><span id="hrKm">—</span><small id="hrEta"></small></div>
     </div>
-  </section>
+  </div>
 
-  <section class="section wrap">
-    <div class="disclaimer reveal">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></div>
-      <p><b>Javny no sustituye la atención médica profesional.</b> Es un apoyo para orientarte y darte primeros pasos, no un diagnóstico. Ante cualquier emergencia vital, llama siempre al 112 primero.</p>
+  <div class="chat-wrap wrap">
+    <div class="chat-card" id="chat">
+      <div class="chat-head">
+        <div class="avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="meta">
+          <b>Javny</b>
+          <span><span class="pulse-dot"></span> escuchando</span>
+        </div>
+      </div>
+      <div class="chat-body" id="chatLog">
+        <div class="bubble user">Mi hijo se ha caído en el parque, le sangra la rodilla y no para de llorar</div>
+        <div class="bubble-time right mono">14:12</div>
+
+        <div class="bubble bot">
+          Tranquila, vamos paso a paso. Siéntalo, limpia la herida con agua (no alcohol) y presiona con una gasa o paño limpio 5–10 minutos sin levantarlo para mirar.
+          <span class="esc">⚠ Llama al 112 si: el sangrado no cede tras 10 min de presión, ves el hueso, o pierde el conocimiento.</span>
+        </div>
+        <div class="bubble-time mono">respondido en 0,4 s</div>
+
+        <div class="bubble user">Ya ha parado, ¿tengo que llevarlo a urgencias igualmente?</div>
+        <div class="bubble-time right mono">14:13</div>
+
+        <div class="bubble bot">Si el corte mide menos de 1 cm y los bordes están juntos, puede bastar con vigilarlo en casa. Te dejo el centro de salud más cercano por si prefieres que lo revisen.</div>
+        <div class="bubble-time mono">respondido en 0,5 s</div>
+      </div>
+      <form class="chat-input" id="chatForm">
+        <button class="mic mic-voice" type="button" id="micBtn" aria-label="Hablar con Javny" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+        </button>
+        <input class="chat-text" id="chatText" type="text" autocomplete="off" placeholder="Escribe o pulsa el micrófono…" aria-label="Escribe tu pregunta a Javny">
+        <button class="mic" type="submit" aria-label="Enviar pregunta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
     </div>
-  </section>
+  </div>
 
-  <section class="wrap" style="padding-bottom: 8px;">
-    <div class="sources">
-      <span>CIMA-AEMPS</span>
-      <span>Guías clínicas SNS</span>
-      <span>OMS</span>
-      <span>NICE Guidelines</span>
-      <span>OpenStreetMap · hospitales y DEA</span>
-    </div>
-  </section>
-</main>
-
-<footer class="foot wrap">
-  <span>Javny — misma base que Enferix, pensada para el público general.</span>
-  <span>Boceto de concepto · no es la app en producción</span>
-</footer>
+  <footer class="foot wrap">
+    Javny — misma base que Enferix · <span class="src">CIMA-AEMPS · PubMed · NICE · OMS · OpenStreetMap</span>
+  </footer>
+</div>
 
 <script>
   (function () {
-    // Entrada del hero: pequeño respiro tras el primer pintado, no en cuanto carga el DOM.
     requestAnimationFrame(function () {
-      setTimeout(function () {
-        document.querySelectorAll('.hero-reveal').forEach(function (el) { el.classList.add('is-in'); });
-      }, 40);
+      setTimeout(function () { document.getElementById('app').classList.add('is-in'); }, 30);
     });
-
-    // Resto de secciones: se revelan al entrar en el viewport.
-    var revealEls = document.querySelectorAll('.reveal:not(.hero-reveal)');
-    if ('IntersectionObserver' in window && revealEls.length) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-in');
-            io.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-      revealEls.forEach(function (el) { io.observe(el); });
-    } else {
-      revealEls.forEach(function (el) { el.classList.add('is-in'); });
-    }
 
     // ---- Chat real: streaming NDJSON contra /api/javny/public/chat/stream ----
     var chatLog = document.getElementById('chatLog');
@@ -894,9 +543,8 @@
       var d = new Date();
       return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     }
-    // Javny responde ahora con el mismo formato que en Enferix (negritas, párrafos,
-    // listas, encabezados de sección) — sin esto se verían los asteriscos y almohadillas
-    // tal cual en vez de darles estilo.
+    // Javny responde con el mismo formato que en Enferix (negritas, párrafos, listas,
+    // encabezados de sección) — sin esto se verían los asteriscos y almohadillas tal cual.
     function mdToHtml(text) {
       var s = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       s = s.replace(/^### (.+)$/gm, '<b style="display:block;margin:10px 0 4px">$1</b>');
