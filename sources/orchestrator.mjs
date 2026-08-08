@@ -562,7 +562,7 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder("utf-8");
-  let buf = "", full = "", blockReason = "", finishReason = "", sawCandidate = false;
+  let buf = "", full = "", blockReason = "", finishReason = "", sawCandidate = false, rawSample = "";
 
   function handleEvent(jsonStr) {
     if (!jsonStr || jsonStr === "[DONE]") return;
@@ -578,26 +578,40 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
     }
   }
 
-  while (true) {
-    const chunk = await reader.read();
-    if (chunk.done) break;
-    buf += decoder.decode(chunk.value, { stream: true });
-    const events = buf.split("\n\n");
-    buf = events.pop();
-    for (const raw of events) {
-      const line = raw.trim();
+  // Un bloque de evento SSE puede traer más de una línea (p. ej. "event: message"
+  // antes de "data: ..."), así que se busca la línea "data:" DENTRO del bloque en
+  // vez de exigir que el bloque entero empiece por ella — si Gemini añade líneas
+  // adicionales delante, la versión anterior descartaba el evento entero en silencio.
+  function processBlock(block) {
+    for (const rawLine of block.split("\n")) {
+      const line = rawLine.trim();
       if (line.indexOf("data:") !== 0) continue;
       handleEvent(line.replace(/^data:\s*/, "").trim());
     }
   }
+
+  while (true) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    const decoded = decoder.decode(chunk.value, { stream: true });
+    if (rawSample.length < 600) rawSample += decoded;
+    buf += decoded;
+    const events = buf.split("\n\n");
+    buf = events.pop();
+    for (const raw of events) processBlock(raw);
+  }
   // Último evento sin salto de línea final tras él (la conexión se cerró justo después).
-  const lastLine = buf.trim();
-  if (lastLine.indexOf("data:") === 0) handleEvent(lastLine.replace(/^data:\s*/, "").trim());
+  if (buf.trim()) processBlock(buf);
 
   if (!full.trim()) {
     if (blockReason) throw new Error(`Gemini bloqueó la respuesta por seguridad de contenido (${blockReason}). Reformula la pregunta.`);
     if (finishReason) throw new Error(`Gemini interrumpió la respuesta sin generar texto (motivo: ${finishReason}).`);
-    if (!sawCandidate) throw new Error("Gemini no devolvió ningún candidato de respuesta (posible cambio en el formato de streaming del modelo).");
+    if (!sawCandidate) {
+      // La muestra cruda solo va al log del servidor (nunca al cliente): puede contener
+      // fragmentos de la respuesta de Gemini que no conviene mostrar tal cual en la app.
+      console.error("[Gemini stream] Sin candidatos. Muestra cruda:", rawSample.slice(0, 600));
+      throw new Error("Gemini no devolvió ningún candidato de respuesta (posible cambio en el formato de streaming del modelo).");
+    }
     throw new Error("Gemini devolvió una respuesta vacía.");
   }
 
