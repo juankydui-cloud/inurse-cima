@@ -865,10 +865,27 @@
       var d = new Date();
       return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     }
+    // Javny responde ahora con el mismo formato que en Enferix (negritas, párrafos,
+    // listas, encabezados de sección) — sin esto se verían los asteriscos y almohadillas
+    // tal cual en vez de darles estilo.
+    function mdToHtml(text) {
+      var s = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      s = s.replace(/^### (.+)$/gm, '<b style="display:block;margin:10px 0 4px">$1</b>');
+      s = s.replace(/^## (.+)$/gm, '<b style="display:block;margin:12px 0 4px">$1</b>');
+      s = s.replace(/^# (.+)$/gm, '<b style="display:block;margin:12px 0 4px">$1</b>');
+      s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+      s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      s = s.replace(/^- (.+)$/gm, '<span style="display:block;margin:2px 0 2px 14px">• $1</span>');
+      s = s.replace(/^(\d+)\. (.+)$/gm, '<span style="display:block;margin:2px 0 2px 14px">$1. $2</span>');
+      s = s.replace(/\n{2,}/g, '<br><br>');
+      s = s.replace(/\n/g, '<br>');
+      return s;
+    }
     function addBubble(role, text) {
       var b = document.createElement('div');
       b.className = 'bubble ' + (role === 'user' ? 'user' : 'bot');
-      b.textContent = text;
+      if (role === 'user') b.textContent = text;
+      else b.innerHTML = mdToHtml(text);
       chatLog.appendChild(b);
       var t = document.createElement('div');
       t.className = 'bubble-time mono' + (role === 'user' ? ' right' : '');
@@ -919,7 +936,7 @@
             try { evt = JSON.parse(line); } catch (e) { return; }
             if (evt.type === 'delta' && evt.text) {
               if (!answered) { pending.remove(); pending = addBubble('bot', '').bubble; pending.classList.remove('pending'); answered = true; }
-              pending.textContent = evt.text;
+              pending.innerHTML = mdToHtml(evt.text);
               chatLog.scrollTop = chatLog.scrollHeight;
             } else if (evt.type === 'done') {
               var ms = Math.round(performance.now() - startedAt) / 1000;
