@@ -1,0 +1,22 @@
+name: Keep javny-publico despierto
+
+# Render duerme los servicios del plan Free tras 15 min sin peticiones, y la
+# siguiente petición tarda 30-60s en responder mientras arranca. Este workflow
+# hace un ping ligero cada 10 min para que nunca llegue a dormirse. No usa
+# minutos de pago: el repositorio es público, así que Actions es gratis.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/javny/health
+        run: |
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 60 https://javny-publico.onrender.com/api/javny/health)
+          echo "HTTP $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 500 ]; then
+            echo "::warning::javny-publico respondió $code"
+          fi
