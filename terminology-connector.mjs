@@ -6,8 +6,10 @@
  * Dos fuentes:
  *   - "nnn"    → nnn_codes.json, generado a partir de la tabla Excel
  *                de códigos NANDA-I / NIC / NOC verificados manualmente en NNNConsult.
- *   - "snomed" → un servidor de terminología real (p. ej. Snowstorm) — DESACTIVADO
- *                hasta que tengas la licencia de sanidad.gob.es y la URL del servidor.
+ *   - "snomed" → snapshot local de la Edición Española de SNOMED CT (RF2,
+ *                descargado con licencia de afiliado MLDS). Coincidencia EXACTA
+ *                de término normalizado únicamente: sin fuzzy match, para no
+ *                arriesgarse a citar un código que no corresponde.
  *
  * Regla de oro:
  *   Si no hay conector, o no hay coincidencia, NUNCA se fabrica un código.
@@ -18,6 +20,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { snomedExactLookup, snomedDataAvailable } from "./sources/snomed.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -72,16 +75,25 @@ async function nnnLookup(value) {
   };
 }
 
-const SNOMED_ENDPOINT = process.env.SNOMED_TERMINOLOGY_URL || null;
-
 async function snomedLookup(value) {
-  if (!SNOMED_ENDPOINT) {
+  if (!snomedDataAvailable()) {
     return {
       code_status: "unvalidated",
-      reason: "ningún servidor SNOMED conectado (pendiente licencia sanidad.gob.es)",
+      reason: "snapshot de SNOMED CT (snomed_ct_es.tsv.gz) no encontrado en el servidor",
     };
   }
-  return { code_status: "unvalidated", reason: "conector SNOMED preparado pero aún no implementado" };
+  const hit = await snomedExactLookup(value);
+  if (!hit) {
+    return {
+      code_status: "unvalidated",
+      reason: "término no encontrado como coincidencia exacta en SNOMED CT Edición Española",
+    };
+  }
+  return {
+    code_status: "coded",
+    snomed: { conceptId: hit.conceptId, term: hit.term },
+    fuente: "SNOMED CT Edición Española (RF2, snapshot local)",
+  };
 }
 
 const CONNECTORS = {
