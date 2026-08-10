@@ -5938,6 +5938,35 @@ render();
   }
  }
 
+ /* ---- SNOMED CT Retrieval (candidatos; Javny solo debe citar coincidencia exacta) ---- */
+ async function snomedRetrieve(query, limit) {
+  window.__v20SnomedSources = [];
+  if (!query || query.trim().length === 0) return '';
+  limit = limit || 6;
+  try {
+    var response = await fetch('/api/snomed/search?q=' + encodeURIComponent(query) + '&limit=' + limit);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    var data = await response.json();
+    if (!data.items || data.items.length === 0) return '';
+
+    var ctx = '';
+    data.items.forEach(function(c) {
+      ctx += '- ' + c.term + ' — SNOMED CT: ' + c.conceptId + '\n';
+      window.__v20SnomedSources.push({
+        type: 'snomed',
+        title: c.term,
+        id: c.url || '',
+        meta: 'SNOMED CT · ' + c.conceptId
+      });
+    });
+
+    return ctx;
+  } catch (error) {
+    console.error('SNOMED retrieval error:', error);
+    return '';
+  }
+ }
+
  /* ---- Gemini (streaming, modo directo con clave propia) ---- */
  async function streamGeminiDirect(sys,contents,key,onDelta){
   var url='https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':streamGenerateContent?alt=sse&key='+encodeURIComponent(key);
@@ -5980,7 +6009,7 @@ render();
  }
 
  var SPEC_NAMES_CC={cardio:'Cardiología',intensiva:'UCI / Medicina Intensiva',urgencias:'Urgencias',neuro:'Neurología',trauma:'Traumatología y Quemados',otras:'Otras especialidades'};
- function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,hist,route,onDelta,nearbyCtx){
+ function call(userText,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,snomedCtx,hist,route,onDelta,nearbyCtx){
   var key=lget(KEYK,''),backend=backendUrl();
   var memory=caseMemory.slice(-6).join('\n');
   var mySpec='';try{mySpec=localStorage.getItem('inurse_myspec_v1')||'';}catch(e){}
@@ -5998,10 +6027,15 @@ render();
    "FUENTE B = Biblioteca virtual (documentación clínica interna); "+
    "FUENTE C = Europe PMC (evidencia científica publicada, acceso abierto); "+
    "FUENTE D = PubMed + Crossref (literatura científica, 140M+ artículos); "+
-   "FUENTE F = NICE (guías oficiales del National Institute for Health and Care Excellence, recuperadas directamente de su API). "+
+   "FUENTE F = NICE (guías oficiales del National Institute for Health and Care Excellence, recuperadas directamente de su API); "+
+   "FUENTE G = SNOMED CT Edición Española (candidatos de terminología clínica oficial con su código de concepto). "+
    "Si entre los resultados de PubMed aparecen guías de organismos reconocidos (ESC, ERC, JBI u otros), destácalas, "+
    "pero no las presentes como si fueran un repositorio propio integrado. "+
    "Cuando haya guías NICE disponibles en la FUENTE F, cítalas con su título y URL oficial. "+
+   "Cuando la FUENTE G incluya un candidato cuyo término coincida EXACTAMENTE (mismas palabras, sin diferencias) con el "+
+   "término clínico principal de la pregunta, puedes mencionar su código una vez de forma natural: nombre del término "+
+   "(SNOMED CT: código). Si ningún candidato coincide con exactitud, NO cites ningún código SNOMED aunque los candidatos "+
+   "sean parecidos o relacionados: es preferible omitirlo a citar un código que no corresponde exactamente. "+
    "Integra la evidencia de TODAS las fuentes recuperadas para elaborar respuestas rigurosas con base científica. "+
    "Puedes combinar fuentes para razonar, pero conserva la procedencia y señala las discrepancias entre ellas cuando existan. "+
    "No inventes datos, bibliografía, dosis, concentraciones ni protocolos; las dosis deben marcarse para verificación "+
@@ -6050,6 +6084,7 @@ render();
   if(litCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE D · PUBMED + CROSSREF (LITERATURA CIENTÍFICA)\n'+litCtx;
   if(guidelineCtx)ctx+=(ctx?'\n\n':'')+'## RESULTADOS DE PUBMED FILTRADOS POR GUÍAS CLÍNICAS INTERNACIONALES\n'+guidelineCtx;
   if(niceCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE F · NICE (GUÍAS OFICIALES)\n'+niceCtx;
+  if(snomedCtx)ctx+=(ctx?'\n\n':'')+'## FUENTE G · SNOMED CT (EDICIÓN ESPAÑOLA, CANDIDATOS)\n'+snomedCtx;
   if(nearbyCtx)ctx+=(ctx?'\n\n':'')+'## SERVICIOS SANITARIOS CERCANOS AL USUARIO (ubicación compartida por el propio usuario)\n'+nearbyCtx;
   var refsBlock=refsContextBlock(window.__v20Refs||[]);
   if(refsBlock)ctx+=(ctx?'\n\n':'')+refsBlock;
@@ -6078,7 +6113,7 @@ render();
     window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20PmcSources=[];window.__v20NiceSources=[];
    }
    var backendPayload={
-    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',refs:refsBlock||'',nearby:nearbyCtx||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
+    question:userText,context:{guides:guideCtx||'',library:libraryCtx||'',pmc:pmcCtx||'',literature:(litCtx||'')+(refsBlock?'\n\n'+refsBlock:''),guidelines:guidelineCtx||'',nice:niceCtx||'',snomed:snomedCtx||'',refs:refsBlock||'',nearby:nearbyCtx||''},history:hist.slice(-10),caseMemory:caseMemory.slice(-6),route:route||{},
     attachment:att?{kind:att.kind,mime:att.mime,name:att.name,data:att.data||'',text:att.text||'',mediaType:inferMediaType(att,userText)}:null
    };
    function callBackendNonStreaming(){
@@ -6178,7 +6213,7 @@ render();
   }
   var typ=document.createElement('div');typ.className='cc-typing';typ.innerHTML='<span></span><span></span><span></span>';chat.appendChild(typ);chat.scrollTop=chat.scrollHeight;
   var route=routeQuestion(text||'',att);var snapshot=caseSnapshot(text||'',route);window.__v21LastQuestion=text||'';
-  var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='',niceCtx='';
+  var gd=retrieveDetailed(text||''),guideCtx=gd.context||'',libraryCtx='',pmcCtx='',litCtx='',guidelineCtx='',niceCtx='',snomedCtx='';
   try{if(typeof window.EnferixLibraryRetrieve==='function')libraryCtx=window.EnferixLibraryRetrieve(text||'',8)||''}catch(e){}
   var _mode=connectionMode();
   if(_mode==='backend'){
@@ -6186,20 +6221,21 @@ render();
       antes de llamar a Gemini; repetir esas 4 búsquedas aquí solo añadía espera sin
       aportar nada (el servidor las ignoraba). Se dejan vacías: call() reconstruye las
       referencias a partir de lo que devuelve el propio backend. */
-   window.__v20PmcSources=[];window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20NiceSources=[];
+   window.__v20PmcSources=[];window.__v20LiteratureSources=[];window.__v20GuidelineSources=[];window.__v20NiceSources=[];window.__v20SnomedSources=[];
   } else {
    var _r=await Promise.all([
     withTimeout(pmcRetrieve(text||'',8).catch(function(){return '';}),7000),
     withTimeout(literatureRetrieve(text||'',8).catch(function(){return '';}),7000),
     withTimeout(guidelineRetrieve(text||'',6).catch(function(){return '';}),7000),
-    withTimeout(niceRetrieve(text||'',6).catch(function(){return '';}),7000)
+    withTimeout(niceRetrieve(text||'',6).catch(function(){return '';}),7000),
+    withTimeout(snomedRetrieve(text||'',6).catch(function(){return '';}),7000)
    ]);
-   pmcCtx=_r[0]||'';litCtx=_r[1]||'';guidelineCtx=_r[2]||'';niceCtx=_r[3]||'';
+   pmcCtx=_r[0]||'';litCtx=_r[1]||'';guidelineCtx=_r[2]||'';niceCtx=_r[3]||'';snomedCtx=_r[4]||'';
   }
   var librarySources=parseLibrarySources(libraryCtx);
   window.__v20GuideSources=gd.sources||[];window.__v20LibrarySources=librarySources;
   window.__v20OrchestratorSources=[];
-  var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20PmcSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]);
+  var allSources=(gd.sources||[]).concat(librarySources).concat(window.__v20LiteratureSources||[]).concat(window.__v20PmcSources||[]).concat(window.__v20GuidelineSources||[]).concat(window.__v20NiceSources||[]).concat(window.__v20SnomedSources||[]);
   var refs=buildNumberedRefs(text); window.__v20Refs=refs;
   var streamNode=null;
   function onStreamDelta(fullText){
@@ -6216,7 +6252,7 @@ render();
   if(/hospital|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i.test(text||'')&&window.EnferixNearby&&window.EnferixNearby.getContextText){
    try{nearbyCtx=await window.EnferixNearby.getContextText()}catch(e){}
   }
-  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null,nearbyCtx).then(function(reply){
+  call(text,att,guideCtx,libraryCtx,pmcCtx,litCtx,guidelineCtx,niceCtx,snomedCtx,messages.slice(0,-1),route,canStream?onStreamDelta:null,nearbyCtx).then(function(reply){
    if(streamNode&&streamNode.parentNode)streamNode.parentNode.removeChild(streamNode);
    var refsNow=window.__v20Refs||refs;
    if(window.__v20OrchestratorSources&&window.__v20OrchestratorSources.length)allSources=allSources.concat(window.__v20OrchestratorSources);
@@ -12949,7 +12985,10 @@ ${card('Glasgow','<select class="icSelect" id="gEye"><option value="4">Ocular 4 
 <div style="margin-top:18px"><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim,#94A3B8);margin:0 0 10px">🔍 Validador de diagnósticos enfermeros (NNN)</h3>
 <div class="icCard"><h3>Validar diagnóstico NANDA-I / NIC / NOC</h3><p style="font-size:12.5px;color:var(--text-dim,#94A3B8);margin:0 0 10px;line-height:1.4">Escribe un diagnóstico enfermero y valida si tiene código verificado en NNNConsult. Solo devuelve códigos confirmados manualmente — nunca inventa.</p>
 <div style="display:flex;gap:8px;align-items:center"><input class="icInput" id="icNnnInput" placeholder="Ej: riesgo de deterioro de la integridad cutánea" style="flex:1"><button class="icBtn" id="icNnnBtn">Validar</button></div>
-<div id="icNnnResult" class="icResult" style="margin-top:10px">—</div></div></div>`}
+<div id="icNnnResult" class="icResult" style="margin-top:10px">—</div></div>
+<div class="icCard" style="margin-top:14px"><h3>Validar término en SNOMED CT (Edición Española)</h3><p style="font-size:12.5px;color:var(--text-dim,#94A3B8);margin:0 0 10px;line-height:1.4">Escribe una patología, procedimiento o hallazgo clínico y busca su código oficial SNOMED CT. Solo devuelve coincidencia exacta — nunca inventa un código.</p>
+<div style="display:flex;gap:8px;align-items:center"><input class="icInput" id="icSnomedInput" placeholder="Ej: neumotórax" style="flex:1"><button class="icBtn" id="icSnomedBtn">Validar</button></div>
+<div id="icSnomedResult" class="icResult" style="margin-top:10px">—</div></div></div>`}
 const ALG_CAT={
 'Sepsis':'Urgencias','PCR':'Urgencias','Trauma':'Urgencias','Hemorragia masiva':'Urgencias','Soporte vital avanzado y arritmias peri-parada':'Urgencias',
 'IAM':'Cardiovascular','Fibrilación auricular':'Cardiovascular','Insuficiencia cardiaca aguda y edema agudo de pulmón':'Cardiovascular',
@@ -13385,6 +13424,8 @@ if(k==='ped'){const kg=n('#cPKg');if(!kg)throw 0;let r=kg<=10?4*kg:kg<=20?40+2*(
 if(k==='gcs'){const x=n('#gEye')+n('#gVerb')+n('#gMot');$('#outGcs').textContent=`Glasgow: ${x}/15${x<=8?' · gravedad alta; valorar vía aérea según contexto':''}`}}catch(e){const out=btn.parentElement.querySelector('.icResult');if(out)out.textContent='Completa los datos requeridos y revisa las unidades.'}});
 const icNnnInput=$('#icNnnInput'),icNnnBtn=$('#icNnnBtn'),icNnnOut=$('#icNnnResult');
 if(icNnnBtn){const icValidarNNN=async function(){const v=icNnnInput.value.trim();if(v.length<2){icNnnOut.textContent='Escribe al menos 2 caracteres.';return;}icNnnBtn.disabled=true;icNnnBtn.textContent='Validando…';icNnnOut.textContent='Consultando diccionario NNN…';try{const r=await fetch('/api/terminology/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valor:v,via:'nnn'})});const d=await r.json();if(!r.ok){icNnnOut.innerHTML='<span style="color:#F59E0B">'+(d.error||'Error')+'</span>';return;}if(d.code_status==='coded'){icNnnOut.innerHTML='<div style="margin-bottom:6px"><span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:#14B8A6;color:#fff">✓ Código verificado</span></div><div style="font-size:13px"><b style="color:#14B8A6">NANDA-I '+d.nanda.code+'</b> — '+d.nanda.label+'<br><b style="color:#A855F7">NIC '+d.nic.code+'</b> — '+d.nic.label+'<br><b style="color:#A855F7">NOC '+d.noc.code+'</b> — '+d.noc.label+'<br><span style="font-size:10.5px;color:var(--text-dim,#94A3B8)">Fuente: '+d.fuente+' · Verificado: '+d.fecha_verificacion+' · Por: '+d.revisado_por+'</span></div>';}else{icNnnOut.innerHTML='<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:#F59E0B;color:#000;margin-bottom:4px">⚠ Sin código verificado</span><br><span style="font-size:13px;color:var(--text-dim,#94A3B8)">'+(d.reason||'Término no encontrado.')+'</span>';}}catch(e){icNnnOut.innerHTML='<span style="color:#F59E0B">Error de conexión: '+e.message+'</span>';}finally{icNnnBtn.disabled=false;icNnnBtn.textContent='Validar';}};icNnnBtn.onclick=icValidarNNN;icNnnInput.addEventListener('keydown',e=>{if(e.key==='Enter')icValidarNNN()})}
+const icSnomedInput=$('#icSnomedInput'),icSnomedBtn=$('#icSnomedBtn'),icSnomedOut=$('#icSnomedResult');
+if(icSnomedBtn){const icValidarSnomed=async function(){const v=icSnomedInput.value.trim();if(v.length<2){icSnomedOut.textContent='Escribe al menos 2 caracteres.';return;}icSnomedBtn.disabled=true;icSnomedBtn.textContent='Validando…';icSnomedOut.textContent='Consultando SNOMED CT…';try{const r=await fetch('/api/terminology/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valor:v,via:'snomed'})});const d=await r.json();if(!r.ok){icSnomedOut.innerHTML='<span style="color:#F59E0B">'+(d.error||'Error')+'</span>';return;}if(d.code_status==='coded'){icSnomedOut.innerHTML='<div style="margin-bottom:6px"><span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:#14B8A6;color:#fff">✓ Código verificado</span></div><div style="font-size:13px"><b style="color:#14B8A6">SNOMED CT '+d.snomed.conceptId+'</b> — '+d.snomed.term+'<br><span style="font-size:10.5px;color:var(--text-dim,#94A3B8)">Fuente: '+d.fuente+'</span></div>';}else{icSnomedOut.innerHTML='<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:#F59E0B;color:#000;margin-bottom:4px">⚠ Sin código verificado</span><br><span style="font-size:13px;color:var(--text-dim,#94A3B8)">'+(d.reason||'Término no encontrado.')+'</span>';}}catch(e){icSnomedOut.innerHTML='<span style="color:#F59E0B">Error de conexión: '+e.message+'</span>';}finally{icSnomedBtn.disabled=false;icSnomedBtn.textContent='Validar';}};icSnomedBtn.onclick=icValidarSnomed;icSnomedInput.addEventListener('keydown',e=>{if(e.key==='Enter')icValidarSnomed()})}
 if(id==='integrate')$('#iciSend').onclick=()=>askJavny(`Integra clínica y pruebas, separando hallazgos, contradicciones, gravedad, diferenciales y actuación. Clínica: ${$('#iciClinical').value}\nPruebas: ${$('#iciTests').value}`);
 if(id==='media'){$('#icmAdd').onclick=()=>{const a=load('media',[]);a.unshift({title:$('#icmTitle').value||'Recurso',url:$('#icmUrl').value,tags:$('#icmTags').value});save('media',a);renderTab('media')};document.querySelectorAll('[data-del-media]').forEach(x=>x.onclick=()=>{const a=load('media',[]);a.splice(+x.dataset.delMedia,1);save('media',a);renderTab('media')})}
 if(id==='diary'){$('#icdAdd').onclick=()=>{const a=load('diary',[]);a.unshift({title:$('#icdTitle').value||'Entrada',text:$('#icdText').value,date:new Date().toLocaleString()});save('diary',a);renderTab('diary')};document.querySelectorAll('[data-del-diary]').forEach(x=>x.onclick=()=>{const a=load('diary',[]);a.splice(+x.dataset.delDiary,1);save('diary',a);renderTab('diary')})}}
