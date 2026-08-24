@@ -3,15 +3,15 @@
    cercanos): mostrar una respuesta médica o una ubicación de hospital antigua en vez
    de un aviso claro de "sin conexión" sería peor que no responder nada.
 */
-const VERSION = "javny-publico-pwa-v1";
+const VERSION = "javny-publico-pwa-v2";
 const SHELL_CACHE = `${VERSION}-shell`;
 
 const SHELL_ASSETS = [
   "/javny-publico.html",
   "/manifest-javny.json",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/icon-512-maskable.png",
+  "/icon-192-v2.png",
+  "/icon-512-v2.png",
+  "/icon-512-maskable-v2.png",
 ];
 
 self.addEventListener("install", (event) => {

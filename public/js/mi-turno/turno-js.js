@@ -164,7 +164,7 @@
       if('serviceWorker' in navigator && navigator.serviceWorker.ready){
         navigator.serviceWorker.ready.then(function(reg){
           if(reg&&reg.showNotification&&window.Notification&&Notification.permission==='granted'){
-            reg.showNotification(title,{body:body,icon:'/icon-192.png',badge:'/icon-192.png',tag:'inurse-turno-'+Date.now()});
+            reg.showNotification(title,{body:body,icon:'/icon-192-v2.png',badge:'/icon-192-v2.png',tag:'inurse-turno-'+Date.now()});
           } else if(window.Notification&&Notification.permission==='granted'){ new Notification(title,{body:body}); }
         }).catch(function(){ try{ if(window.Notification&&Notification.permission==='granted') new Notification(title,{body:body}); }catch(e){} });
       } else if(window.Notification&&Notification.permission==='granted'){ new Notification(title,{body:body}); }
