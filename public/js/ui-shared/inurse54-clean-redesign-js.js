@@ -2,22 +2,7 @@
 (function(){
   "use strict";
 
-  const STETHO = `<svg class="in54-stetho" viewBox="0 0 80 80" aria-hidden="true">
-    <defs>
-      <linearGradient id="in54sg" x1="0" y1="0" x2="1" y2="1">
-        <stop stop-color="#22D3EE"/><stop offset=".52" stop-color="#8B5CF6"/><stop offset="1" stop-color="#EC4899"/>
-      </linearGradient>
-      <filter id="in54glow" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <rect width="80" height="80" rx="22" fill="url(#in54sg)"/>
-    <path d="M25 18v17c0 10 7 18 16 18s16-8 16-18V18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path d="M19 18h12M51 18h12" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path d="M41 53v6c0 8 6 14 14 14s14-6 14-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="69" cy="56" r="7" fill="#06111f" stroke="#fff" stroke-width="4"/>
-    <path d="M49 38c3-7 12-7 15 0 3-7 15-4 15 5 0 11-15 18-15 18s-15-7-15-18c0-9 9-12 15-5" transform="translate(-14 -1) scale(.72)" fill="#F43F5E" stroke="#fff" stroke-width="3" stroke-linejoin="round" filter="url(#in54glow)"/>
-  </svg>`;
+  const STETHO = `<img src="/icon-512-v2.png" alt="Enferix" style="width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit">`;
 
   const JAVNY_FACE = `<svg class="in54-javny-face" viewBox="0 0 96 96" aria-hidden="true">
     <defs>

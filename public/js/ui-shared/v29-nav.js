@@ -15,14 +15,7 @@
   window.__SPEC_SETS = {};
   SPECIALTIES.forEach(function(s){ window.__SPEC_SETS[s.key] = s.cats; });
 
-  var LOGO_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+
-    '<g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">'+
-    '<path d="M30 26 V46 a20 20 0 0 0 40 0 V26"/>'+
-    '<path d="M50 66 V74 a12 12 0 0 0 12 12"/></g>'+
-    '<circle cx="30" cy="24" r="5" fill="#fff"/>'+
-    '<circle cx="70" cy="24" r="5" fill="#fff"/>'+
-    '<circle cx="62" cy="86" r="10" fill="#fff"/>'+
-    '<circle cx="62" cy="86" r="5" fill="#6d28d9"/></svg>';
+  var LOGO_SVG = '<img src="/icon-512-v2.png" alt="Enferix" style="width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit">';
 
   function docsOf(cats){
     if(typeof DOCS==='undefined') return [];

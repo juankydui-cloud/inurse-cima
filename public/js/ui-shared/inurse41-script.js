@@ -1,7 +1,7 @@
 
 (function(){
   'use strict';
-  var LOGO = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Enferix"><defs><linearGradient id="inL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="0.48" stop-color="#8B5CF6"/><stop offset="1" stop-color="#F43F5E"/></linearGradient></defs><rect width="100" height="100" rx="26" fill="url(#inL)"/><path d="M30 24v20c0 16 10 27 23 27s23-11 23-27V24" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="30" cy="22" r="5" fill="#fff"/><circle cx="76" cy="22" r="5" fill="#fff"/><path d="M53 71v6c0 9 7 15 16 15s16-6 16-15" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="77" r="9" fill="#fff"/><circle cx="85" cy="77" r="4" fill="#182235"/><path d="M44 42c5-11 20-11 25 0 5-11 20-8 20 5 0 15-20 25-20 25S49 62 49 47c0-13 15-16 20-5" transform="translate(-14 0) scale(.92)" fill="#F43F5E" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>`;
+  var LOGO = '<img src="/icon-512-v2.png" alt="Enferix">';
   function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
   function setHtml(sel, html){ var el=document.querySelector(sel); if(el) el.innerHTML=html; }
   function setText(sel, txt){ var el=document.querySelector(sel); if(el) el.textContent=txt; }
