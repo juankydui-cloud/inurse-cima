@@ -1,0 +1,20 @@
+
+/* Enferix v7 · Farmacología visible en home */
+body.in57-visual .in57-actions{
+  grid-template-columns:repeat(5,1fr)!important;
+}
+
+body.in57-visual .in57-action[data-in57="farmacos"]{
+  display:block!important;
+}
+
+@media (max-width: 1050px){
+  body.in57-visual .in57-actions{
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+}
+@media (max-width: 700px){
+  body.in57-visual .in57-actions{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+}

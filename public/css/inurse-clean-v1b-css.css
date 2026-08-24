@@ -1,0 +1,6 @@
+
+body:not(.in60-content-mode) main{display:block!important}
+body:not(.in60-content-mode) main > :not(#in50Home){display:none!important}
+body:not(.in60-content-mode) #in50Home{display:block!important}
+body.in60-content-mode #in50Home{display:none!important}
+body.in60-content-mode main{display:block!important}

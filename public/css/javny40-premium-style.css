@@ -1,0 +1,107 @@
+
+:root{
+  --javny-bg:#050814;
+  --javny-bg-soft:#08111f;
+  --javny-panel:rgba(13,22,38,.82);
+  --javny-card:rgba(17,27,46,.78);
+  --javny-card-2:rgba(255,255,255,.055);
+  --javny-text:#F8FAFC;
+  --javny-muted:#A8B3C7;
+  --javny-border:rgba(148,163,184,.20);
+  --javny-cyan:#4DE7FF;
+  --javny-violet:#8B5CF6;
+  --javny-pink:#F472B6;
+  --javny-rose:#FB7185;
+  --javny-amber:#FBBF24;
+  --javny-green:#34D399;
+  --javny-shadow:0 24px 70px rgba(0,0,0,.46);
+  --javny-glass:blur(22px) saturate(1.25);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 460px at 10% -10%, rgba(77,231,255,.18), transparent 60%),
+    radial-gradient(820px 460px at 94% 0%, rgba(244,114,182,.18), transparent 58%),
+    radial-gradient(900px 540px at 50% 120%, rgba(139,92,246,.18), transparent 56%),
+    linear-gradient(180deg,#050814 0%,#07101d 46%,#050814 100%) !important;
+  color:var(--javny-text) !important;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),transparent 72%);
+}
+header{
+  background:linear-gradient(180deg,rgba(5,8,20,.88),rgba(5,8,20,.58) 70%,transparent) !important;
+  border-bottom:1px solid rgba(255,255,255,.09) !important;
+  backdrop-filter:var(--javny-glass) !important;
+}
+.logo,.cc-wl,.javny-face-mini{
+  background:linear-gradient(135deg,var(--javny-cyan),var(--javny-violet) 52%,var(--javny-pink)) !important;
+  box-shadow:0 18px 48px rgba(139,92,246,.34), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+h1{font-size:19px !important;letter-spacing:-.55px !important}
+h1 small{color:rgba(226,232,240,.72) !important}
+.search,.qinput,.vade-search input,.calc-field input,.calc-field select,.triage-input-box textarea,#ccTa{
+  background:rgba(255,255,255,.07) !important;
+  border-color:rgba(255,255,255,.13) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+.search:focus,.qinput:focus,#ccTa:focus{box-shadow:0 0 0 4px rgba(77,231,255,.15), inset 0 1px 0 rgba(255,255,255,.06) !important;border-color:rgba(77,231,255,.55) !important}
+.icon-btn,.chip,.tool-card,.card,.group-card,.vcard,.calc-widget,.triage-input-box,.triage-summary,.triage-actions,.pato-tile,.pato-drug,.nanda-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.045)) !important;
+  border-color:rgba(255,255,255,.12) !important;
+  backdrop-filter:blur(18px) saturate(1.25);
+  box-shadow:0 14px 44px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+.card,.group-card,.vcard,.tool-card,.pato-tile{border-radius:22px !important}
+.card-head,.group-header{padding:18px !important}
+.ctitle,.gname,.vc-name{letter-spacing:-.28px !important}
+.csummary,.csource,.gcount,.tdesc{color:rgba(226,232,240,.68) !important}
+.chip{padding:9px 15px !important;color:rgba(226,232,240,.78) !important}
+.chip.active{transform:translateY(-2px) !important;box-shadow:0 12px 32px rgba(77,231,255,.22) !important}
+.fab,.fab-rec,.fab-ecg,.fab-rx,.fab-atlas,#calcFab,#ccFab{
+  box-shadow:0 18px 50px rgba(139,92,246,.42), inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+.fab-stack{bottom:22px !important;right:18px !important}
+.disclaimer{
+  background:rgba(251,191,36,.08) !important;border-color:rgba(251,191,36,.22) !important;border-radius:18px !important;
+}
+/* Chat Javny */
+#ccWrap{
+  border:1px solid rgba(255,255,255,.13) !important;border-radius:28px !important;
+  background:linear-gradient(180deg,rgba(8,13,28,.96),rgba(7,13,24,.94)) !important;
+  box-shadow:0 28px 80px rgba(0,0,0,.55) !important;backdrop-filter:var(--javny-glass) !important;
+}
+.cc-head{background:linear-gradient(135deg,rgba(77,231,255,.12),rgba(139,92,246,.14),rgba(244,114,182,.12)) !important;border-bottom:1px solid rgba(255,255,255,.12) !important}
+.cc-brand h1::after{content:" 4.0";font-size:11px;color:var(--javny-cyan);vertical-align:super;margin-left:4px}
+.cc-msg.b{background:rgba(255,255,255,.075) !important;border:1px solid rgba(255,255,255,.10) !important;border-radius:20px 20px 20px 8px !important}
+.cc-msg.u{background:linear-gradient(135deg,rgba(77,231,255,.28),rgba(139,92,246,.26)) !important;border-radius:20px 20px 8px 20px !important}
+.cc-send,.qsend,.calc-btn,.btn-primary,.triage-run,.train-start-btn{
+  background:linear-gradient(135deg,var(--javny-cyan),var(--javny-violet) 54%,var(--javny-pink)) !important;
+  color:white !important;box-shadow:0 12px 30px rgba(139,92,246,.28) !important;
+}
+#ccFab{width:66px !important;height:66px !important;border-radius:24px !important;font-size:0 !important;background:linear-gradient(135deg,#4DE7FF,#8B5CF6 50%,#F472B6) !important}
+#ccFab::before{content:"";width:48px;height:48px;background-image:var(--javny-face-url);background-size:contain;background-repeat:no-repeat;background-position:center;display:block;animation:javnyFloat 3.4s ease-in-out infinite}
+@keyframes javnyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.cc-welcome h2{font-size:24px !important;letter-spacing:-.6px !important}.cc-welcome p{color:rgba(226,232,240,.74) !important}
+/* Modal polish */
+.modal,.vade-panel,.calc-modal,.f3-modal,.atlas-panel{background:rgba(8,13,28,.96) !important;border-color:rgba(255,255,255,.13) !important;box-shadow:0 28px 90px rgba(0,0,0,.58) !important;backdrop-filter:var(--javny-glass) !important}
+.modal-head,.vade-head,.calc-head,.f3-head,.atlas-bar{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03)) !important;border-bottom:1px solid rgba(255,255,255,.11) !important}
+/* modo noche más cómodo */
+[data-theme="night"] body{background:#000 !important}
+[data-theme="night"] #ccWrap,[data-theme="night"] .card,[data-theme="night"] .group-card{box-shadow:none !important;border-width:2px !important}
+/* Modo claro: el fondo/color de body de arriba ("Javny 4.0 Premium") ignora el
+   tema y siempre pinta oscuro. Se corrige aquí para el fondo base de la
+   página; el resto de componentes (chat, tarjetas) mantiene su estética
+   actual a propósito. */
+[data-theme="light"] body{background:var(--bg) !important;color:var(--text) !important}
+/* Modo claro: la cabecera de Inicio (marca, nav superior, etiquetas de
+   sección) usa colores fijos pensados para fondo oscuro y quedan casi
+   invisibles sobre el fondo claro (contraste <2.5:1). Se corrige con las
+   variables del tema claro sin tocar el resto del bloque. */
+[data-theme="light"] .nx-brand small,
+[data-theme="light"] .nx-section{color:var(--text-dim) !important}
+[data-theme="light"] .nx-nav button{background:var(--card-solid) !important;color:var(--text) !important;border-color:var(--border) !important}
+[data-theme="light"] .nx-nav button.on{color:#fff !important}

@@ -1,0 +1,9 @@
+
+/* Enferix v7 · Corrección: Fármacos abre Vademécum, no RX */
+body.in57-visual .in57-action[data-in57="farmacos"] .ico {
+  background: linear-gradient(145deg, rgba(34,211,238,.18), rgba(20,184,166,.16)) !important;
+}
+
+body.in57-visual .in57-action[data-in57="farmacos"] {
+  border-color: rgba(34,211,238,.18) !important;
+}

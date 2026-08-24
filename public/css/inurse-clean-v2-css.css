@@ -1,0 +1,29 @@
+
+.in60-secondary-title{margin:2px 2px -4px;font-size:12px;font-weight:850;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dim)}
+.in60-consult{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.in60-consult .in60-action{min-height:94px;background:linear-gradient(145deg,rgba(20,184,166,.11),rgba(5,10,24,.42))}
+.in60-consult .in60-action[data-in60="vademecum"]{background:linear-gradient(145deg,rgba(236,72,153,.12),rgba(5,10,24,.42))}
+.in60-consult .in60-action[data-in60="pathologies"]:hover{border-color:rgba(20,184,166,.60)}
+.in60-consult .in60-action[data-in60="vademecum"]:hover{border-color:rgba(236,72,153,.60)}
+.in60-consult .in60-action .ico{margin-bottom:6px}
+.in60-more{display:flex;justify-content:flex-end;margin-top:-4px}
+.in60-more button{border:1px solid rgba(255,255,255,.11);border-radius:13px;background:rgba(255,255,255,.045);color:var(--text-dim);padding:9px 13px;font:700 12px var(--font-family);cursor:pointer}
+.in60-more button:hover{color:var(--text);border-color:rgba(34,211,238,.35)}
+
+/* Control persistente de lectura */
+#in61SpeechDock{position:fixed;left:50%;bottom:18px;transform:translate(-50%,130%);z-index:12000;display:flex;align-items:center;gap:7px;
+  max-width:calc(100vw - 24px);padding:8px 9px;border:1px solid rgba(255,255,255,.16);border-radius:17px;
+  background:rgba(7,13,27,.94);backdrop-filter:blur(18px);box-shadow:0 18px 54px rgba(0,0,0,.48);opacity:0;pointer-events:none;transition:.22s ease}
+#in61SpeechDock.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+#in61SpeechDock .in61-wave{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:linear-gradient(135deg,#22D3EE,#8B5CF6)}
+#in61SpeechDock .in61-label{min-width:88px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;font-weight:750;color:#E2E8F0}
+#in61SpeechDock button{height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.13);padding:0 11px;background:rgba(255,255,255,.06);color:#F8FAFC;font:750 11.5px var(--font-family);cursor:pointer}
+#in61SpeechDock button:hover{background:rgba(255,255,255,.12)}
+#in61SpeechDock .stop{background:rgba(244,63,94,.16);border-color:rgba(244,63,94,.32);color:#FDA4AF}
+.tool.speaking,.ans-tool.speaking{position:relative}
+.tool.speaking:after,.ans-tool.speaking:after{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 0 currentColor;animation:in61Pulse 1.15s infinite}
+@keyframes in61Pulse{70%{box-shadow:0 0 0 7px transparent}}
+@media(max-width:520px){
+  .in60-consult{grid-template-columns:1fr 1fr}.in60-consult .in60-action{min-height:100px}
+  #in61SpeechDock{bottom:10px;gap:5px;padding:7px}#in61SpeechDock .in61-label{display:none}#in61SpeechDock button{padding:0 9px}
+}

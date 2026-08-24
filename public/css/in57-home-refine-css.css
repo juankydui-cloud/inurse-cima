@@ -1,0 +1,31 @@
+
+body.in57-visual .in57-tags, 
+body.in57-visual .in57-mini-grid,
+body.in57-visual .in57-section[data-in57-hide="explorar"],
+body.in57-visual .in57-section[data-in57-hide="favoritos"]{display:none!important}
+body.in57-visual .in57-panel{padding-top:20px!important}
+body.in57-visual .in57-head{position:relative; padding-right:110px}
+body.in57-visual .in57-javny-top{
+  position:absolute; top:0; right:0; width:88px; height:88px; border-radius:24px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(145deg, rgba(106,86,255,.34), rgba(255,95,168,.22) 58%, rgba(73,216,255,.16));
+  box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  color:#fff; cursor:pointer; transition:transform .18s ease, border-color .18s ease;
+}
+body.in57-visual .in57-javny-top:hover{transform:translateY(-2px); border-color:rgba(73,216,255,.34)}
+body.in57-visual .in57-javny-top .em{font-size:28px; line-height:1}
+body.in57-visual .in57-javny-top .lb{font-size:13px; font-weight:800; letter-spacing:-.01em}
+body.in57-visual .in57-actions{grid-template-columns:repeat(4,1fr)!important}
+body.in57-visual .in57-action[data-in57="javny"],
+body.in57-visual .in57-action[data-in57="search"]{display:none!important}
+body.in57-visual .in57-action[data-in57="guides"],
+body.in57-visual .in57-action[data-in57="calc"],
+body.in57-visual .in57-action[data-in57="rx"],
+body.in57-visual .in57-action[data-in57="ecg"]{display:block!important}
+body.in57-visual #javnyFab, body.in57-visual #ccFab, body.in57-visual #in50JavnyDock{display:none!important}
+@media (max-width: 840px){
+  body.in57-visual .in57-head{padding-right:0}
+  body.in57-visual .in57-javny-top{position:static; margin-top:14px; width:100%; height:auto; padding:14px 16px; border-radius:18px; flex-direction:row; justify-content:flex-start}
+  body.in57-visual .in57-actions{grid-template-columns:repeat(2,1fr)!important}
+}

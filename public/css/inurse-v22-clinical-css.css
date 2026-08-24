@@ -1,0 +1,80 @@
+
+.v22-setting-note{
+  margin:-2px 0 11px;padding:8px 9px;border-radius:9px;border:1px solid #1f2c49;
+  background:#10192b;color:#8aa0c8;font-size:9.5px;line-height:1.45
+}
+.v22-case{
+  margin-top:10px;border:1px solid rgba(20,184,166,.28);border-radius:12px;
+  background:linear-gradient(135deg,rgba(20,184,166,.07),rgba(14,165,233,.05));overflow:hidden
+}
+.v22-case-head{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid rgba(20,184,166,.18)}
+.v22-case-head span:first-child{
+  width:30px;height:30px;display:grid;place-items:center;border-radius:9px;
+  background:linear-gradient(135deg,#14B8A6,#0EA5E9);font-size:16px
+}
+.v22-case-head b{display:block;font-size:11.5px;color:#eef4ff}
+.v22-case-head small{display:block;margin-top:1px;color:#8aa0c8;font-size:8.8px}
+.v22-case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:9px}
+.v22-case-cell{padding:7px 8px;border:1px solid #213552;border-radius:9px;background:#10192b}
+.v22-case-cell b{display:block;color:#8aa0c8;font-size:8px;text-transform:uppercase;letter-spacing:.06em}
+.v22-case-cell span{display:block;margin-top:2px;color:#eef4ff;font-size:10px;font-weight:750;line-height:1.35}
+.v22-case-cell.alert{border-color:rgba(244,63,94,.38);background:rgba(244,63,94,.07)}
+.v22-case-cell.missing{border-color:rgba(251,191,36,.32);background:rgba(251,191,36,.06)}
+.v22-missing{
+  display:flex;gap:4px;flex-wrap:wrap;padding:0 9px 9px
+}
+.v22-missing span{
+  padding:4px 6px;border-radius:999px;border:1px solid rgba(251,191,36,.28);
+  background:rgba(251,191,36,.06);color:#fcd34d;font-size:8.3px;font-weight:800
+}
+.v22-verify{
+  margin-top:10px;border:1px solid #233557;border-radius:12px;background:#0d1728;overflow:hidden
+}
+.v22-verify.ok{border-color:rgba(52,211,153,.34)}
+.v22-verify.warn{border-color:rgba(251,191,36,.38)}
+.v22-verify.risk{border-color:rgba(251,113,133,.42)}
+.v22-verify-head{display:flex;align-items:center;gap:8px;padding:9px 10px}
+.v22-vicon{
+  width:31px;height:31px;display:grid;place-items:center;flex:0 0 31px;
+  border-radius:10px;background:#14223a;font-size:16px
+}
+.v22-verify.ok .v22-vicon{background:rgba(52,211,153,.12)}
+.v22-verify.warn .v22-vicon{background:rgba(251,191,36,.12)}
+.v22-verify.risk .v22-vicon{background:rgba(251,113,133,.12)}
+.v22-vcopy{flex:1;min-width:0}
+.v22-vcopy b{display:block;font-size:11.5px;color:#eef4ff}
+.v22-vcopy small{display:block;margin-top:1px;color:#8aa0c8;font-size:8.8px;line-height:1.35}
+.v22-score{
+  width:39px;height:39px;border-radius:50%;display:grid;place-items:center;
+  border:3px solid #334155;color:#eef4ff;font-size:10px;font-weight:900
+}
+.v22-verify.ok .v22-score{border-color:#34d399}
+.v22-verify.warn .v22-score{border-color:#fbbf24}
+.v22-verify.risk .v22-score{border-color:#fb7185}
+.v22-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:0 9px 9px}
+.v22-check{
+  display:flex;align-items:flex-start;gap:5px;padding:6px 7px;border:1px solid #20314e;
+  border-radius:8px;background:#10192b;color:#9fb0cb;font-size:8.8px;line-height:1.35
+}
+.v22-check.good{color:#6ee7b7;border-color:rgba(52,211,153,.22)}
+.v22-check.bad{color:#fda4af;border-color:rgba(251,113,133,.25)}
+.v22-check.note{color:#fde68a;border-color:rgba(251,191,36,.23)}
+.v22-issues{border-top:1px solid #1f2c49;padding:8px 10px}
+.v22-issues b{display:block;margin-bottom:4px;color:#8aa0c8;font-size:8.5px;text-transform:uppercase;letter-spacing:.06em}
+.v22-issues ul{margin:0;padding-left:16px}
+.v22-issues li{margin:3px 0;color:#c5d0e3;font-size:9.2px;line-height:1.4}
+.v22-verifying{animation:v22pulse 1.3s ease-in-out infinite}
+@keyframes v22pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.v22-memory-card{max-width:560px!important}
+.v22-memory-list{max-height:50vh;overflow:auto;margin:12px 0}
+.v22-memory-item{
+  margin-bottom:7px;padding:9px 10px;border:1px solid #1f2c49;border-radius:10px;
+  background:#10192b;color:#cbd5e1;font-size:10.5px;line-height:1.45
+}
+.v22-memory-item small{display:block;margin-bottom:3px;color:#64748b;font-size:8px;font-weight:850;text-transform:uppercase}
+.v22-memory-empty{text-align:center;padding:25px 10px;color:#64748b;font-size:11px}
+.v22-memory-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v22-danger{background:rgba(244,63,94,.1)!important;border:1px solid rgba(244,63,94,.35)!important;color:#fda4af!important}
+@media(max-width:620px){
+ .v22-case-grid,.v22-checks{grid-template-columns:1fr}
+}

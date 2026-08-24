@@ -1,0 +1,34 @@
+
+/* ═══════ v41 — Rayos X + Electros (imagen): liquid glass ═══════ */
+#rxOverlay,#ecgOverlay{background:
+  radial-gradient(600px 460px at 14% 8%,rgba(139,92,246,.18),transparent 60%),
+  radial-gradient(640px 500px at 86% 6%,rgba(56,189,248,.16),transparent 60%),
+  radial-gradient(700px 560px at 60% 100%,rgba(236,72,153,.13),transparent 62%),
+  rgba(3,6,18,.82)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#rxOverlay .modal,#ecgOverlay .modal{
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02))!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);
+  box-shadow:0 -10px 50px rgba(0,0,0,.55)!important}
+@media(min-width:620px){#rxOverlay .modal,#ecgOverlay .modal{box-shadow:0 30px 80px rgba(0,0,0,.55)!important}}
+#rxOverlay .modal-head,#ecgOverlay .modal-head{border-bottom:1px solid rgba(255,255,255,.1)!important}
+#rxOverlay .modal-close,#ecgOverlay .modal-close{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.16)!important}
+#rxOverlay .ecg-drop,#ecgOverlay .ecg-drop{border:2px dashed rgba(255,255,255,.22)!important;
+  background:rgba(255,255,255,.04)!important;border-radius:16px!important}
+#rxOverlay .qinput,#ecgOverlay .qinput{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.16)!important}
+#rxOverlay .in62-lab,#ecgOverlay .in62-lab{background:linear-gradient(155deg,rgba(255,255,255,.08),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(255,255,255,.13)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#rxOverlay .in62-action,#ecgOverlay .in62-action{background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.03))!important;
+  border:1px solid rgba(255,255,255,.14)!important;border-radius:14px!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#rxOverlay .in62-action:hover,#ecgOverlay .in62-action:hover{border-color:rgba(139,92,246,.6)!important;transform:translateY(-2px)}
+/* Rayos X + Electros: cámara grande clicable + botones a 2 columnas */
+#rxOverlay .ecg-drop.rx-camera,#ecgOverlay .ecg-drop.rx-camera{padding:40px 16px 34px!important;display:flex;flex-direction:column;align-items:center;gap:6px}
+#rxOverlay .ecg-drop.rx-camera .di,#ecgOverlay .ecg-drop.rx-camera .di{font-size:84px!important;line-height:1;display:block;margin-bottom:10px;
+  filter:drop-shadow(0 8px 20px rgba(139,92,246,.45));transition:transform .2s}
+#rxOverlay .ecg-drop.rx-camera:hover,#ecgOverlay .ecg-drop.rx-camera:hover{border-color:rgba(139,92,246,.6)!important;background:rgba(139,92,246,.06)!important}
+#rxOverlay .ecg-drop.rx-camera:hover .di,#ecgOverlay .ecg-drop.rx-camera:hover .di{transform:scale(1.06)}
+#rxOverlay .rx-camera-txt,#ecgOverlay .rx-camera-txt{display:block;font-size:14px;font-weight:700;color:#e7ecff}
+#rxOverlay .rx-camera-txt small,#ecgOverlay .rx-camera-txt small{display:block;font-size:11.5px;color:#91a7c4;font-weight:500;margin-top:3px}
+#rxOverlay .in62-actions,#ecgOverlay .in62-actions{grid-template-columns:1fr 1fr!important}

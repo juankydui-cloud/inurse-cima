@@ -1,0 +1,140 @@
+
+/* Parte de turno SBAR */
+#in32SbarOverlay{position:fixed;inset:0;z-index:2147483500;display:none;background:rgba(7,16,31,.96);backdrop-filter:blur(20px) saturate(1.2);color:#eef6ff;overflow-y:auto;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+#in32SbarOverlay.on{display:flex;align-items:center;justify-content:center}
+.in32-sbar-shell{width:100%;max-width:700px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.in32-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.in32-header .in32-title{flex:1}
+.in32-header h2{font-size:22px;margin:0;color:#eaf2ff}
+.in32-header p{font-size:13px;color:#91a7c4;margin:3px 0 0}
+#in32Close{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#eef6ff;font-size:22px;cursor:pointer;transition:all .2s}
+#in32Close:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12)}
+.in32-body{min-height:300px}
+.in32-section{margin-bottom:20px}
+.in32-section label{display:block;font-size:13px;font-weight:700;color:#a9bdd7;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase}
+.in32-input{width:100%;min-height:120px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#eef6ff;font-family:inherit;font-size:14px;resize:vertical;outline:none}
+.in32-input:focus{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.08)}
+.in32-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.in32-btn{padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#eef6ff;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.in32-btn:hover{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.12)}
+.in32-btn.primary{background:linear-gradient(135deg,#22d3ee,#0ea5e9);border:none;color:#000}
+.in32-btn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(34,211,238,.3)}
+.in32-btn.secondary{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.08)}
+.in32-loading{text-align:center;padding:40px;font-size:16px;color:#a9bdd7}
+.in32-sbar-content{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;line-height:1.7;color:#cddcec;font-size:14px}
+.in32-sbar-content h3{font-size:15px;color:#22d3ee;margin:16px 0 8px;font-weight:700}
+.in32-sbar-content h3:first-child{margin-top:0}
+.in32-result-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.in32-result{display:block}
+@media(max-width:600px){
+  .in32-sbar-shell{max-width:100%;margin:10px;border-radius:16px;padding:16px}
+  .in32-input{min-height:100px;font-size:16px}
+  .in32-btn{flex:1}
+}
+
+#in196Overlay{position:fixed;inset:0;z-index:2147483600;display:none;background:#07101f;color:#eef6ff;
+  font-family:Outfit,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#in196Overlay.on{display:flex!important;flex-direction:column}
+body.in196-open{overflow:hidden}
+#in196Overlay .h{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;
+  background:#0b1628;border-bottom:1px solid #243a59}
+#in196Overlay .h .lg{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(135deg,#18C6C8,#0FA8DA 48%,#0A56D6)}
+#in196Overlay .h b{display:block;font-size:16px}
+#in196Overlay .h small{display:block;color:#91a7c4;font-size:10.5px;font-weight:700;margin-top:2px}
+#in196Overlay .h .sp{flex:1}
+#in196Overlay button{font-family:inherit}
+#in196Close{width:42px;height:42px;border-radius:13px;border:1px solid #243a59;background:#13233b;color:#eef6ff;font-size:19px;cursor:pointer}
+#in196Overlay .tb{padding:10px 14px;background:#09142a;border-bottom:1px solid #1c2f4c;display:flex;flex-direction:column;gap:9px}
+#in196Search{width:100%;padding:12px 14px;border-radius:13px;border:1px solid #243a59;background:#0f1d33;color:#eef6ff;font-size:15px;outline:none}
+#in196Overlay .rows{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+#in196Overlay .rows::-webkit-scrollbar{display:none}
+#in196Overlay .chip{white-space:nowrap;padding:8px 12px;border-radius:999px;border:1px solid #243a59;background:#0f1d33;
+  color:#c7d7ee;font-size:12px;font-weight:700;cursor:pointer}
+#in196Overlay .chip.on{background:#0A6ED1;border-color:#0A6ED1;color:#fff}
+#in196Overlay .body{flex:1;min-height:0;display:flex}
+#in196List{flex:0 0 100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 40px}
+#in196Overlay .cnt{font-size:11px;font-weight:800;color:#7f97b6;margin-bottom:9px;letter-spacing:.4px}
+#in196Overlay .card{width:100%;text-align:left;display:block;padding:13px 14px;margin-bottom:9px;border-radius:15px;
+  border:1px solid #22344f;background:#0e1c31;color:#eef6ff;cursor:pointer}
+#in196Overlay .card b{display:block;font-size:14.5px;margin-bottom:3px}
+#in196Overlay .card em{display:block;font-style:normal;font-size:10.5px;color:#7f97b6;font-weight:700;margin-bottom:5px}
+#in196Overlay .card span{display:block;font-size:12.5px;color:#a9bdd7;line-height:1.45}
+#in196Detail{display:none;position:absolute;inset:0;background:#07101f;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 60px}
+#in196Detail.on{display:block}
+#in196Detail h2{font-size:20px;margin:6px 0 10px}
+#in196Detail h3{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:#18C6C8;margin:18px 0 6px}
+#in196Detail p,#in196Detail li{font-size:14px;line-height:1.55;color:#cfdcec}
+#in196Detail ul,#in196Detail ol{padding-left:18px;margin:4px 0}
+#in196Detail .warn{margin-top:20px;padding:12px 14px;border-radius:13px;background:#3a2410;border:1px solid #7a4a12;font-size:12.5px;color:#f5d9b0}
+#in196Back{padding:10px 14px;border-radius:12px;border:1px solid #243a59;background:#13233b;color:#eef6ff;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px}
+#in196Overlay .acts{display:flex;gap:8px;margin:10px 0 4px;flex-wrap:wrap}
+#in196Overlay .acts button{padding:9px 13px;border-radius:11px;border:1px solid #243a59;background:#13233b;color:#eef6ff;font-size:12.5px;font-weight:700;cursor:pointer}
+@media(min-width:900px){
+  #in196List{flex:0 0 42%;border-right:1px solid #1c2f4c}
+  #in196Detail{position:relative;display:block;flex:1}
+  #in196Back{display:none}
+}
+
+/* ═══════ v36 — Biblioteca virtual: liquid glass + fichas compactas en cuadrícula ═══════ */
+#in196Overlay{background:
+  radial-gradient(620px 460px at 12% 6%,rgba(56,189,248,.20),transparent 60%),
+  radial-gradient(640px 500px at 88% 4%,rgba(217,70,160,.15),transparent 60%),
+  radial-gradient(700px 560px at 60% 100%,rgba(139,92,246,.18),transparent 62%),
+  linear-gradient(180deg,#050b18,#08111f 55%,#050912)!important}
+#in196Overlay .h{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02))!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4)}
+#in196Overlay .h .lg{background:linear-gradient(145deg,#22d3ee,#34d399)!important;
+  box-shadow:0 8px 22px rgba(34,211,238,.4),inset 0 1px 0 rgba(255,255,255,.5)!important}
+#in196Close{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.16)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#in196Overlay .tb{background:rgba(255,255,255,.04)!important;border-bottom:1px solid rgba(255,255,255,.1)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3)}
+#in196Search{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:14px!important}
+#in196Overlay .chip{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#in196Overlay .chip.on{background:linear-gradient(135deg,#22d3ee,#0ea5e9)!important;border-color:transparent!important;
+  color:#fff!important;box-shadow:0 6px 18px rgba(34,211,238,.4)!important}
+
+/* Fichas pequeñas en cuadrícula compacta (ancho completo) */
+#in196Overlay .body{display:block!important;position:relative}
+#in196List{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px;
+  align-content:start;padding:16px 16px 48px!important;flex:none!important;border-right:none!important}
+#in196Overlay .cnt{grid-column:1/-1;margin-bottom:2px!important}
+#in196Overlay .card{margin-bottom:0!important;min-height:78px;display:flex!important;flex-direction:column;
+  justify-content:center;gap:5px;padding:12px 13px!important;border-radius:16px!important;
+  background:linear-gradient(155deg,rgba(255,255,255,.11),rgba(255,255,255,.03))!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.3);backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:0 8px 22px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  transition:transform .18s,border-color .18s,box-shadow .18s!important}
+#in196Overlay .card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.55)!important;
+  box-shadow:0 16px 36px rgba(30,120,220,.34)!important}
+#in196Overlay .card .cico{font-size:22px;line-height:1;display:block;margin-bottom:3px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+#in196Overlay .card b{font-size:12.5px!important;line-height:1.3;margin-bottom:0!important;font-weight:700;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#in196Overlay .card em{font-size:9px!important;margin-bottom:0!important;color:#7fd8e8!important;font-weight:800;
+  letter-spacing:.3px;text-transform:uppercase;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#in196Overlay .card span{display:none!important}
+/* Recuadros de bloque (portada de la Biblioteca) */
+#in196Overlay .card.folder{min-height:120px;justify-content:flex-start;align-items:center;text-align:center;
+  gap:8px;padding:18px 12px!important;
+  background:linear-gradient(160deg,rgba(56,189,248,.16),rgba(255,255,255,.03))!important;
+  border:1px solid rgba(56,189,248,.22)!important}
+#in196Overlay .card.folder .cico{font-size:34px;margin-bottom:2px;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
+#in196Overlay .card.folder b{font-size:13px!important;-webkit-line-clamp:3}
+#in196Overlay .card.folder em{color:#a9bdd7!important;font-size:10px!important;text-transform:none;letter-spacing:.2px}
+#in196Overlay .card.folder:hover{border-color:rgba(56,189,248,.7)!important}
+#in196Overlay .card.in196-back-card{min-height:120px;justify-content:center;align-items:center;text-align:center;
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02))!important;
+  border:1px dashed rgba(255,255,255,.28)!important}
+#in196Overlay .card.in196-back-card .cico{font-size:30px}
+/* En desktop: rejilla a ancho completo; el detalle aparece como overlay */
+@media(min-width:900px){
+  #in196List{flex:none!important;border-right:none!important}
+  #in196Detail{position:absolute!important;inset:0;display:none;flex:none!important}
+  #in196Detail.on{display:block!important}
+  #in196Back{display:block!important}
+}

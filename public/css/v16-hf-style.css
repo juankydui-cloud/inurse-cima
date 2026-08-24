@@ -1,0 +1,49 @@
+
+/* ================================================================
+   CAPA v16 — Modo manos libres con palabra de activación
+   ================================================================ */
+
+/* ---- Indicador flotante de escucha continua ---- */
+#hfBar{
+  position:fixed;top:0;left:0;right:0;z-index:150;pointer-events:none;
+  height:3px;background:linear-gradient(90deg,transparent,#22D3EE,#A855F7,#22D3EE,transparent);
+  background-size:200% 100%;opacity:0;transition:opacity .3s;
+  animation:hfSlide 2.2s linear infinite;
+}
+#hfBar.on{opacity:.85}
+@keyframes hfSlide{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Chip flotante que confirma que está escuchando */
+#hfChip{
+  position:fixed;top:12px;left:50%;transform:translateX(-50%) translateY(-60px);
+  z-index:151;padding:8px 16px 8px 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--card-solid) 92%,transparent);backdrop-filter:blur(16px);
+  border:1px solid color-mix(in srgb,#22D3EE 40%,var(--border));
+  color:var(--text);font-family:var(--font-family);font-size:13px;font-weight:800;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 10px 30px rgba(34,211,238,.35);
+  transition:transform .3s cubic-bezier(.34,1.4,.5,1),opacity .2s;opacity:0;pointer-events:none;
+}
+#hfChip.on{transform:translateX(-50%) translateY(calc(12px + env(safe-area-inset-top,0px)));opacity:1}
+#hfChip .dot{width:9px;height:9px;border-radius:50%;background:#22D3EE;
+  box-shadow:0 0 12px #22D3EE;animation:hfPulse 1.2s ease-in-out infinite}
+#hfChip.hearing{border-color:color-mix(in srgb,#A855F7 60%,var(--border));
+  box-shadow:0 10px 30px rgba(168,85,247,.5)}
+#hfChip.hearing .dot{background:#A855F7;box-shadow:0 0 14px #A855F7;animation:hfPulse .6s ease-in-out infinite}
+@keyframes hfPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
+
+/* Toast grande cuando reconoce la palabra clave */
+#hfFlash{
+  position:fixed;inset:0;z-index:149;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(168,85,247,.35),transparent 55%);
+  opacity:0;transition:opacity .18s;
+}
+#hfFlash.on{opacity:1;animation:hfFlashOut .8s ease-out forwards}
+@keyframes hfFlashOut{0%{opacity:.9}100%{opacity:0}}
+
+[data-theme="night"] #hfBar{background:linear-gradient(90deg,transparent,#FFD24A,#FFB020,transparent)}
+[data-theme="night"] #hfChip{border-width:2px}
+
+@media (prefers-reduced-motion:reduce){
+  #hfBar{animation:none} #hfChip .dot{animation:none}
+}

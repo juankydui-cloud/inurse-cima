@@ -1,0 +1,21 @@
+
+/* ================================================================
+   Enferix v4.1 — navegación limpia, menú de guías y dock uniforme
+   ================================================================ */
+:root{--inurse-cyan:#22D3EE;--inurse-violet:#8B5CF6;--inurse-pink:#F43F5E;}
+/* Cabecera: solo marca, búsqueda, inicio y menú */
+#shareAllBtn,#vadeBtn,#triageBtn,#trainBtn,#sosBtn,#themeBtn{display:none!important}
+.top{gap:12px!important}
+.top h1{font-size:21px!important;letter-spacing:-.6px!important}
+.top h1 small{content:"";font-size:11px!important;text-transform:none!important;letter-spacing:.03em!important}
+.top .logo,.v29-head .mk,.cc-logo{background:linear-gradient(135deg,var(--inurse-cyan),var(--inurse-violet),var(--inurse-pink))!important}
+.top .logo svg,.v29-head .mk svg,.cc-logo svg{width:100%!important;height:100%!important;display:block!important}
+/* Pantalla principal sin acordeones de fichas */
+body.inurse-home main .count, body.inurse-home main #content{display:none!important}
+body.inurse-home main{padding-top:0!important}
+body.inurse-home .disclaimer{margin-top:0!important}
+/* Menú */
+.v29-head h2{font-size:17px!important}
+.v29-head h2 small{font-size:11px!important}
+.v29-sec.guides-title{color:#E2E8F0!important;margin-top:6px!important}
+.v29-tools .v29-row[data-hide="1"]{display:none!important}

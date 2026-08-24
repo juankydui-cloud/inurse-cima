@@ -1,0 +1,326 @@
+
+:root{
+  --n54-bg:#050814;
+  --n54-panel:rgba(10,18,34,.78);
+  --n54-card:rgba(13,25,46,.72);
+  --n54-line:rgba(148,163,184,.20);
+  --n54-text:#F8FAFC;
+  --n54-muted:#A8B3C7;
+  --n54-cyan:#22D3EE;
+  --n54-violet:#8B5CF6;
+  --n54-pink:#EC4899;
+  --n54-red:#F43F5E;
+  --n54-amber:#F59E0B;
+  --n54-green:#22C55E;
+}
+
+/* Limpieza visual general */
+body{
+  background:
+    radial-gradient(900px 420px at 8% 18%,rgba(34,211,238,.10),transparent 60%),
+    radial-gradient(1000px 520px at 92% 24%,rgba(236,72,153,.12),transparent 60%),
+    radial-gradient(900px 520px at 48% 100%,rgba(139,92,246,.10),transparent 65%),
+    linear-gradient(180deg,#050814,#050814 45%,#070A12)!important;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),transparent 76%);
+  z-index:-1;
+}
+header{
+  border-bottom:1px solid rgba(148,163,184,.14)!important;
+  background:linear-gradient(180deg,rgba(5,8,20,.96),rgba(5,8,20,.74))!important;
+}
+main{
+  max-width:980px!important;
+  padding-top:18px!important;
+}
+
+/* Iconos SVG dentro de logos */
+.in54-stetho,
+.in54-javny-face{
+  display:block;
+  width:100%;
+  height:100%;
+}
+.logo svg,
+.in50-logo svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* Quitamos la tarjeta duplicada V5.0 y la fila de accesos rápidos duplicada */
+#in50Home .in50-hero,
+#in50Home .in50-critical,
+#in50Home .in50-title,
+#in50Home .in50-badges{
+  display:none!important;
+}
+#in50Home{
+  margin-top:0!important;
+}
+#in50Home .in50-section-title:first-of-type{
+  margin-top:12px!important;
+}
+#in50Home .in50-grid{
+  gap:12px!important;
+}
+#in50Home .in50-card{
+  min-height:86px!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.062),rgba(255,255,255,.032))!important;
+}
+
+/* Cabecera: icono fonendo */
+header .top .logo{
+  background:linear-gradient(135deg,var(--n54-cyan),var(--n54-violet),var(--n54-pink))!important;
+}
+
+/* Dock inferior más limpio */
+.fab-stack{
+  left:50%!important;
+  right:auto!important;
+  bottom:18px!important;
+  transform:translateX(-50%)!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:6px!important;
+  padding:8px!important;
+  border-radius:28px!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  background:rgba(8,13,30,.78)!important;
+  backdrop-filter:blur(22px) saturate(1.3)!important;
+  box-shadow:0 18px 54px rgba(0,0,0,.45)!important;
+}
+.in50-dock-btn,
+#calcFab,#rxFab,#ecgFab,#in50HomeDock,#in50SettingsDock,#javnyFab{
+  position:static!important;
+  width:70px!important;
+  height:58px!important;
+  border-radius:18px!important;
+  padding:6px 8px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:var(--n54-muted)!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+.in50-dock-btn:hover,
+#calcFab:hover,#rxFab:hover,#ecgFab:hover,#in50HomeDock:hover,#in50SettingsDock:hover,#javnyFab:hover{
+  background:rgba(139,92,246,.14)!important;
+  color:#fff!important;
+}
+.dk-em{
+  font-size:23px!important;
+  line-height:1!important;
+  margin-bottom:4px!important;
+}
+.dk-lbl{
+  font-size:10px!important;
+  text-transform:uppercase!important;
+  letter-spacing:.03em!important;
+}
+
+/* Javny: avatar humano */
+.cc-logo,
+#javnyFab .dk-em,
+.javny-tab-avatar,
+.in54-javny-avatar{
+  background:linear-gradient(135deg,#0EA5E9,#8B5CF6,#EC4899)!important;
+}
+
+/* Pantalla independiente de protocolo */
+#in54ProtocolScreen{
+  position:fixed;
+  inset:0;
+  z-index:14000;
+  display:none;
+  background:
+    radial-gradient(800px 360px at 88% 12%,rgba(139,92,246,.16),transparent 60%),
+    radial-gradient(700px 360px at 10% 8%,rgba(34,211,238,.11),transparent 60%),
+    #050814;
+  color:var(--n54-text);
+  overflow:auto;
+}
+#in54ProtocolScreen.on{
+  display:block;
+}
+.in54-proto-shell{
+  max-width:980px;
+  margin:0 auto;
+  padding:22px 18px 110px;
+}
+.in54-proto-head{
+  position:sticky;
+  top:0;
+  z-index:3;
+  margin:-22px -18px 18px;
+  padding:16px 18px;
+  background:linear-gradient(180deg,rgba(5,8,20,.96),rgba(5,8,20,.82));
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(148,163,184,.15);
+}
+.in54-proto-head-inner{
+  max-width:980px;
+  margin:0 auto;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.in54-back{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.055);
+  color:#fff;
+  font-size:21px;
+  cursor:pointer;
+}
+.in54-proto-title{
+  flex:1;
+  min-width:0;
+}
+.in54-proto-title h2{
+  margin:0;
+  font-size:22px;
+  letter-spacing:-.35px;
+}
+.in54-proto-title small{
+  display:block;
+  color:var(--n54-muted);
+  font-weight:700;
+  margin-top:3px;
+}
+.in54-proto-actions{
+  display:flex;
+  gap:8px;
+}
+.in54-proto-actions button{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.055);
+  color:#fff;
+  cursor:pointer;
+}
+.in54-proto-banner{
+  display:flex;
+  gap:18px;
+  align-items:center;
+  padding:22px;
+  border-radius:26px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg,rgba(244,63,94,.12),rgba(139,92,246,.10),rgba(34,211,238,.07));
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.in54-proto-icon{
+  width:78px;
+  height:78px;
+  border-radius:24px;
+  display:grid;
+  place-items:center;
+  font-size:43px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);
+  flex-shrink:0;
+}
+.in54-proto-meta h1{
+  margin:0 0 5px;
+  font-size:27px;
+  letter-spacing:-.5px;
+}
+.in54-proto-meta p{
+  margin:0;
+  color:var(--n54-muted);
+  line-height:1.45;
+}
+.in54-tabs{
+  margin:16px 0;
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding:6px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.035);
+}
+.in54-tab{
+  min-width:max-content;
+  padding:10px 16px;
+  border-radius:13px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--n54-muted);
+  font-weight:800;
+  cursor:pointer;
+}
+.in54-tab.on{
+  color:#fff;
+  border-color:rgba(139,92,246,.55);
+  background:rgba(139,92,246,.20);
+}
+.in54-section{
+  margin:12px 0;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(10,18,34,.70);
+  padding:18px;
+  box-shadow:0 14px 34px rgba(0,0,0,.20);
+}
+.in54-section h3{
+  margin:0 0 10px;
+  color:#fff;
+  font-size:18px;
+}
+.in54-section p,
+.in54-section li{
+  color:#D7DEE9;
+  line-height:1.62;
+  font-size:15px;
+}
+.in54-section ul{
+  padding-left:20px;
+}
+.in54-section li{
+  margin:6px 0;
+}
+.in54-ref{
+  color:var(--n54-muted);
+  font-size:13px;
+  padding-top:8px;
+  border-top:1px dashed rgba(255,255,255,.13);
+  margin-top:10px;
+}
+
+/* Evita ver la home por debajo cuando un protocolo está abierto */
+body.in54-protocol-open{
+  overflow:hidden!important;
+}
+
+/* Menú lateral: un poco más limpio */
+.v29-panel,
+#v29Panel{
+  background:rgba(8,13,30,.96)!important;
+  backdrop-filter:blur(24px)!important;
+}
+.v29-spec,
+.v29-row{
+  border-radius:16px!important;
+}

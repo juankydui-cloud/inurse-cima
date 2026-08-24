@@ -1,0 +1,16 @@
+
+.in17-library-title{margin-top:18px!important;color:#0EA5E9!important}
+.in17-library-card{
+  --qc:#0EA5E9;position:relative;overflow:hidden;min-height:104px!important;grid-column:1/-1;
+  border-color:color-mix(in srgb,#0EA5E9 42%,var(--border))!important;
+  background:radial-gradient(circle at 92% 18%,rgba(34,211,238,.18),transparent 34%),
+             linear-gradient(135deg,rgba(14,165,233,.12),rgba(99,102,241,.10),rgba(20,184,166,.08))!important
+}
+.in17-library-card::after{content:"";position:absolute;width:145px;height:145px;border-radius:50%;right:-55px;bottom:-75px;background:rgba(255,255,255,.07);pointer-events:none}
+.in17-library-card .em{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,#18C6C8,#0FA8DA 48%,#0A56D6);box-shadow:0 10px 25px rgba(10,110,209,.28);font-size:27px!important}
+.in17-library-copy{min-width:0;position:relative;z-index:1}
+.in17-library-copy b{font-size:16px!important}
+.in17-library-copy small{max-width:720px;font-size:12px!important}
+.in17-library-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.in17-library-stats span{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;color:var(--text);border:1px solid var(--border);background:color-mix(in srgb,var(--card-solid) 82%,transparent)}
+@media(max-width:720px){.in17-library-card{min-height:118px!important}.in17-library-stats span:nth-child(n+4){display:none}}
