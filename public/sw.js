@@ -6,7 +6,7 @@
      y accesibles offline si ya se consultaron).
    - POST y cross-origin: pasan directos a la red (no se cachean).
 */
-const VERSION = "inurse-pwa-v3";
+const VERSION = "inurse-pwa-v4";
 const SHELL_CACHE = `${VERSION}-shell`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -17,9 +17,9 @@ const SHELL_ASSETS = [
   "/evidencia.html",
   "/literatura.html",
   "/manifest.json",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/icon-512-maskable.png",
+  "/icon-192-v2.png",
+  "/icon-512-v2.png",
+  "/icon-512-maskable-v2.png",
   "/data/guias.js",
   "/data/vademecum.js",
   "/data/diluciones.js",
