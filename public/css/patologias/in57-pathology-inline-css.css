@@ -1,0 +1,158 @@
+
+/* Enferix v7 · Patologías: ficha desplegable inline */
+.in57-patho-overlay {
+  display: none !important;
+}
+
+body.in57-visual .in57-patho-inline {
+  grid-column: 1 / -1;
+  margin: 10px 0 16px;
+  border: 1px solid rgba(103,232,249,.20);
+  background:
+    radial-gradient(600px 240px at 100% 0%, rgba(125,107,255,.14), transparent 60%),
+    linear-gradient(180deg, rgba(8,20,42,.98), rgba(7,14,29,.98));
+  border-radius: 24px;
+  box-shadow: 0 18px 54px rgba(0,0,0,.34);
+  overflow: hidden;
+  animation: in57PathoOpen .18s ease-out;
+}
+
+@keyframes in57PathoOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.in57-visual .in57-patho-inline-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(135deg, rgba(73,216,255,.11), rgba(125,107,255,.10), rgba(255,95,168,.08));
+}
+
+body.in57-visual .in57-patho-inline-ico {
+  width: 50px;
+  height: 50px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  background: linear-gradient(145deg, rgba(73,216,255,.22), rgba(125,107,255,.20));
+  border: 1px solid rgba(255,255,255,.12);
+  flex: 0 0 auto;
+}
+
+body.in57-visual .in57-patho-inline-title {
+  flex: 1;
+}
+
+body.in57-visual .in57-patho-inline-title h3 {
+  margin: 0 0 5px;
+  color: #f8fafc;
+  font-size: 22px;
+  letter-spacing: -.03em;
+}
+
+body.in57-visual .in57-patho-inline-title p {
+  margin: 0;
+  color: #a8b3c7;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+body.in57-visual .in57-patho-inline-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+body.in57-visual .in57-patho-inline-body {
+  padding: 16px 18px 18px;
+}
+
+body.in57-visual .in57-patho-inline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+body.in57-visual .in57-patho-inline-card {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  padding: 14px;
+}
+
+body.in57-visual .in57-patho-inline-card h4 {
+  margin: 0 0 9px;
+  color: #67e8f9;
+  font-size: 14px;
+}
+
+body.in57-visual .in57-patho-inline-card p,
+body.in57-visual .in57-patho-inline-card li {
+  color: #dbe7ff;
+  line-height: 1.48;
+  font-size: 13px;
+}
+
+body.in57-visual .in57-patho-inline-card ul,
+body.in57-visual .in57-patho-inline-card ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+body.in57-visual .in57-patho-inline-card li {
+  margin: 4px 0;
+}
+
+body.in57-visual .in57-patho-inline-related button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 9px 11px;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.055);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+body.in57-visual .in57-patho-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.in57-visual .in57-patho-inline-actions button {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg,rgba(73,216,255,.16),rgba(125,107,255,.14));
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.in57-visual .in57-patho-inline-warn {
+  color: #fbbf24 !important;
+  font-size: 12px !important;
+  margin-top: 10px !important;
+}
+
+body.in57-visual .in56-pato-item.in57-selected {
+  border-color: rgba(103,232,249,.42) !important;
+  background: rgba(103,232,249,.10) !important;
+}
+
+@media(max-width: 760px) {
+  body.in57-visual .in57-patho-inline-grid {
+    grid-template-columns: 1fr;
+  }
+}

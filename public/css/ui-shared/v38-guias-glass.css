@@ -1,0 +1,76 @@
+
+/* ═══════ v38 — Guías clínicas (drawer): liquid glass ═══════ */
+#v29Ov{background:rgba(4,7,14,.5)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#v29Panel{background:linear-gradient(180deg,rgba(20,26,48,.72),rgba(12,16,32,.74))!important;
+  border-left:1px solid rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);
+  box-shadow:-24px 0 70px rgba(0,0,0,.55)!important}
+#v29Panel .v29-head{border-bottom:1px solid rgba(255,255,255,.1)!important}
+#v29Panel .v29-x{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.16)!important}
+#v29Panel .v29-spec{background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(255,255,255,.13)!important;border-radius:16px!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.3);backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:0 8px 22px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.18)!important}
+#v29Panel .v29-spec.open{border-color:color-mix(in srgb,var(--sc) 60%,rgba(255,255,255,.2))!important;
+  box-shadow:0 12px 30px color-mix(in srgb,var(--sc) 22%,transparent),inset 0 1px 0 rgba(255,255,255,.22)!important}
+#v29Panel .v29-doc{border-top:1px solid rgba(255,255,255,.08)!important}
+#v29Panel .v29-doc:hover{background:color-mix(in srgb,var(--sc) 16%,transparent)!important}
+#v29Panel .v29-row{background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+
+/* Pantalla completa + fichas cuadradas centradas en cuadrícula */
+#v29Panel{width:100%!important;max-width:100%!important;border-left:none!important}
+#v29Panel .v29-body{max-width:1080px;margin:0 auto;width:100%;box-sizing:border-box;
+  display:grid!important;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px;
+  align-content:start;padding:20px 20px 52px!important}
+#v29Panel .v29-body>*:not(.v29-spec){grid-column:1/-1}
+#v29Panel .v29-tools{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}
+#v29Panel .v29-spec{margin-bottom:0!important;min-height:126px}
+#v29Panel .v29-sh{flex-direction:column!important;align-items:center;justify-content:center;text-align:center;
+  gap:9px;padding:16px 12px!important;min-height:126px;position:relative}
+#v29Panel .v29-sh::before{display:none!important}
+#v29Panel .v29-sh .em{width:52px;height:52px;display:grid;place-items:center;border-radius:15px;font-size:26px;
+  background:color-mix(in srgb,var(--sc) 30%,transparent)!important;border:1px solid color-mix(in srgb,var(--sc) 42%,transparent);
+  box-shadow:0 6px 16px color-mix(in srgb,var(--sc) 32%,transparent),inset 0 1px 0 rgba(255,255,255,.35)}
+#v29Panel .v29-sh>div{flex:none!important}
+#v29Panel .v29-sh .nm{font-size:13.5px}
+#v29Panel .v29-sh .ct{font-size:10.5px}
+#v29Panel .v29-sh .chev{position:absolute;top:9px;right:11px;font-size:11px}
+#v29Panel .v29-spec.open{grid-column:1/-1;min-height:0}
+#v29Panel .v29-spec.open .v29-sh{flex-direction:row!important;text-align:left;justify-content:flex-start;
+  min-height:0;padding:13px!important}
+#v29Panel .v29-spec.open .v29-sh>div{flex:1!important}
+#v29Panel .v29-spec.open .v29-sh .chev{position:static}
+#v29Panel .v29-spec.open .v29-sh .em{width:44px;height:44px;font-size:22px}
+
+/* Guías clínicas reales (in56): cuadrícula de fichas cuadradas */
+#v29Panel #in56GuidesHost{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:12px;align-content:start;max-width:1080px;margin:0 auto!important;width:100%}
+#v29Panel #in56GuidesHost>*:not(.in56-guide-group){grid-column:1/-1}
+#v29Panel .in56-guide-group{margin-bottom:0!important;
+  background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.03))!important;
+  border:1px solid rgba(255,255,255,.14)!important;border-radius:18px!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.3);backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:0 8px 22px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.2)!important;
+  transition:transform .18s,border-color .18s,box-shadow .18s}
+#v29Panel .in56-guide-group:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.5)!important;
+  box-shadow:0 16px 36px rgba(30,120,220,.32)!important}
+#v29Panel .in56-guide-head{flex-direction:column!important;align-items:center;justify-content:center;
+  text-align:center;gap:9px;padding:16px 12px!important;min-height:132px;position:relative}
+#v29Panel .in56-guide-stripe{display:none!important}
+#v29Panel .in56-guide-emoji{width:52px;height:52px;font-size:26px;border-radius:15px!important;
+  background:color-mix(in srgb,var(--spc,#22D3EE) 26%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--spc,#22D3EE) 40%,transparent);
+  box-shadow:0 6px 16px color-mix(in srgb,var(--spc,#22D3EE) 30%,transparent),inset 0 1px 0 rgba(255,255,255,.35)}
+#v29Panel .in56-guide-meta{flex:none!important}
+#v29Panel .in56-guide-name{font-size:13.5px}
+#v29Panel .in56-guide-count{font-size:10.5px}
+#v29Panel .in56-guide-chevron{position:absolute;top:10px;right:12px;font-size:11px}
+/* Al abrir: ocupa toda la fila y vuelve a horizontal para ver protocolos */
+#v29Panel .in56-guide-group.open{grid-column:1/-1}
+#v29Panel .in56-guide-group.open .in56-guide-head{flex-direction:row!important;text-align:left;
+  justify-content:flex-start;min-height:0;padding:13px!important}
+#v29Panel .in56-guide-group.open .in56-guide-meta{flex:1!important}
+#v29Panel .in56-guide-group.open .in56-guide-chevron{position:static}
+#v29Panel .in56-guide-group.open .in56-guide-emoji{width:40px;height:40px;font-size:20px}

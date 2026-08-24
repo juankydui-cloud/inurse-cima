@@ -1,0 +1,51 @@
+
+/* Pantalla principal limpia: cuatro accesos y Javny, sin duplicados */
+#splash.inurse-force-hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.top > .icon-btn{display:none!important}
+#in52Critical,.in57-quick-grid,.in57-mini-grid,.in50-quick-grid,.in50-shortcuts,
+.fab-stack,#calcFab,#in52SettingsFab,#javnyFab,#ccFab{display:none!important}
+
+#in50Home{display:block!important;max-width:1060px;margin:0 auto;padding:18px 16px 8px}
+#in50Home .in60-shell{display:flex;flex-direction:column;gap:16px}
+.in60-panel{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:20px;
+  background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(99,102,241,.13) 48%,rgba(236,72,153,.12));
+  box-shadow:0 22px 64px rgba(0,0,0,.34)}
+.in60-panel:after{content:"";position:absolute;width:250px;height:250px;right:-110px;top:-130px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);pointer-events:none}
+.in60-head{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.in60-logo{width:62px;height:62px;border-radius:20px;display:grid;place-items:center;font-size:30px;flex:0 0 auto;
+  background:linear-gradient(135deg,#22d3ee,#7c3aed 52%,#ec4899);box-shadow:0 14px 36px rgba(124,58,237,.34)}
+.in60-title{flex:1;min-width:0}.in60-title h2{font-size:25px;line-height:1.05;letter-spacing:-.7px;margin:0}
+.in60-title p{margin:7px 0 0;color:var(--text-dim);font-size:13.5px;line-height:1.45;max-width:650px}
+.in60-javny{width:92px;min-height:92px;border:1px solid rgba(255,255,255,.17);border-radius:25px;padding:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;cursor:pointer;font:inherit;
+  background:linear-gradient(145deg,rgba(34,211,238,.18),rgba(124,58,237,.22),rgba(236,72,153,.16));
+  box-shadow:0 16px 38px rgba(80,70,220,.27)}
+.in60-javny-face{width:62px;height:62px;border-radius:50%;background-image:var(--javny-real-avatar,var(--javny-avatar-url));
+  background-size:cover;background-position:center 38%;box-shadow:0 0 0 3px rgba(255,255,255,.14),0 10px 22px rgba(0,0,0,.27)}
+.in60-javny b{font-size:12px;line-height:1}
+.in60-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:18px;position:relative;z-index:1}
+.in60-action{min-height:112px;border-radius:20px;border:1px solid rgba(255,255,255,.12);padding:15px;text-align:left;color:var(--text);
+  background:rgba(5,10,24,.38);cursor:pointer;font:inherit;transition:transform .16s,border-color .16s,background .16s}
+.in60-action:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.42);background:rgba(255,255,255,.085)}
+.in60-action .ico{font-size:28px;display:block;margin-bottom:9px}.in60-action b{font-size:15px;display:block}
+.in60-action small{display:block;margin-top:5px;color:var(--text-dim);font-size:11.5px;line-height:1.35;font-weight:500}
+.in60-recent{border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:15px 16px;background:rgba(255,255,255,.035)}
+.in60-recent-head{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dim);margin-bottom:9px}
+.in60-empty{font-size:13px;color:var(--text-dim);padding:10px 2px}
+
+/* Menú sin marcas hospitalarias */
+.v29-head h2 small{color:var(--text-dim)!important}
+#v29Panel .v29-head h2{font-size:16px!important}
+
+/* Chat Javny: controles legibles y fondo menos gris */
+#ccWrap{background:linear-gradient(180deg,#07152b,#091b34 58%,#071225)!important}
+.cc-brand p{color:rgba(226,232,240,.78)!important}
+
+@media(max-width:760px){
+  #in50Home{padding:12px 12px 4px}.in60-panel{padding:15px;border-radius:23px}.in60-head{align-items:flex-start}
+  .in60-logo{width:52px;height:52px;border-radius:17px;font-size:25px}.in60-title h2{font-size:21px}.in60-title p{font-size:12.5px}
+  .in60-javny{width:76px;min-height:78px;border-radius:20px;padding:6px}.in60-javny-face{width:50px;height:50px}.in60-javny b{font-size:11px}
+  .in60-actions{grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.in60-action{min-height:104px;padding:13px;border-radius:17px}
+}
+@media(max-width:430px){.in60-head{flex-wrap:wrap}.in60-javny{width:100%;min-height:64px;flex-direction:row;justify-content:flex-start;padding:8px 12px}.in60-javny-face{width:46px;height:46px}.in60-actions{grid-template-columns:1fr 1fr}}

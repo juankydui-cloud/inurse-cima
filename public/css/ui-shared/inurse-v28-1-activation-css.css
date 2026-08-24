@@ -1,0 +1,21 @@
+
+.v281-activation{
+  display:flex;align-items:center;gap:10px;margin-bottom:11px;padding:10px 11px;
+  border:1px solid rgba(245,158,11,.26);border-radius:14px;background:rgba(245,158,11,.065)
+}
+.v281-activation.ok{border-color:rgba(52,211,153,.22);background:rgba(52,211,153,.05)}
+.v281-activation.error{border-color:rgba(251,113,133,.28);background:rgba(251,113,133,.06)}
+.v281-activation-icon{font-size:20px}
+.v281-activation>div:nth-child(2){flex:1;min-width:0}
+.v281-activation b{display:block;color:#fff;font-size:9.5px}
+.v281-activation p{margin:3px 0 0;color:#aab8ca;font-size:8px;line-height:1.45}
+.v281-activation code{padding:2px 4px;border-radius:5px;background:#0e1a2c;color:#67e8f9}
+.v281-activation button{
+  flex:0 0 auto;border:1px solid rgba(148,163,184,.14);border-radius:9px;padding:7px 9px;
+  background:#111d30;color:#fff;font:inherit;font-size:8px;font-weight:900;cursor:pointer
+}
+.v281-activation.ok button{display:none}
+@media(max-width:640px){
+  .v281-activation{align-items:flex-start;flex-wrap:wrap}
+  .v281-activation button{width:100%}
+}

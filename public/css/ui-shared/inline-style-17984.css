@@ -1,0 +1,23 @@
+
+.v29-mic{background:none;border:none;font-size:1.25rem;cursor:pointer;padding:6px 8px;border-radius:50%;transition:all .2s;vertical-align:middle;flex-shrink:0;line-height:1}
+.v29-mic:hover{background:rgba(45,212,191,.12)}
+.v29-mic.listening{animation:v29pulse 1s infinite;background:rgba(239,68,68,.12)}
+@keyframes v29pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+#v29JavnyLifeOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.94);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+#v29JavnyLifeOverlay.on{opacity:1;pointer-events:auto}
+.v29vl-box{width:92%;max-width:460px;text-align:center;color:#fff;padding:1.5rem}
+.v29vl-orb{width:90px;height:90px;border-radius:50%;margin:0 auto 1.2rem;transition:all .3s}
+.v29vl-orb.idle{background:#2DD4BF;opacity:.45}
+.v29vl-orb.listening{background:#2DD4BF;animation:v29orbPulse 1.6s infinite}
+.v29vl-orb.processing{background:#FBBF24;animation:v29orbSpin 1s linear infinite}
+.v29vl-orb.speaking{background:#2DD4BF;animation:v29orbWave .8s ease-in-out infinite}
+@keyframes v29orbPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(45,212,191,.5)}50%{transform:scale(1.1);box-shadow:0 0 0 22px rgba(45,212,191,0)}}
+@keyframes v29orbSpin{0%{transform:rotate(0);border-radius:50%}50%{border-radius:30%}100%{transform:rotate(360deg);border-radius:50%}}
+@keyframes v29orbWave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.2)}}
+.v29vl-label{font-size:1.15rem;display:block;margin-bottom:1.2rem;color:#2DD4BF}
+.v29vl-transcript{font-size:1.05rem;min-height:50px;padding:.8rem;color:rgba(255,255,255,.8);font-style:italic}
+.v29vl-response{font-size:.88rem;max-height:280px;overflow-y:auto;padding:.8rem;text-align:left;color:rgba(255,255,255,.7);line-height:1.55;margin-top:.8rem;-webkit-overflow-scrolling:touch}
+.v29vl-close{margin-top:1.5rem;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;padding:.7rem 1.4rem;border-radius:25px;font-size:.95rem;cursor:pointer}
+.v29vl-fab{position:fixed;bottom:84px;right:20px;width:68px;height:68px;border-radius:50%;background:#2DD4BF;border:none;box-shadow:0 6px 20px rgba(45,212,191,.5);z-index:9998;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:transform .2s}
+.v29vl-fab:active{transform:scale(.9)}
+.v29vl-fab.on{background:#ef4444;box-shadow:0 4px 14px rgba(239,68,68,.4)}

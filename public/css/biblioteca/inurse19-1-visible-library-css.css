@@ -1,0 +1,29 @@
+
+#in17VirtualLibrarySection{
+  margin-top:18px!important;
+  color:#18C6C8!important;
+}
+#in17VirtualLibraryGrid{
+  margin-bottom:4px;
+}
+#in17VirtualLibraryGrid .in17-library-card{
+  display:flex!important;
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+  border-width:2px!important;
+}
+#in17VirtualLibraryGrid .in17-library-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 38px rgba(10,110,209,.24);
+}
+#in17VirtualLibraryGrid .in17-library-copy{
+  display:block;
+}
+#in17VirtualLibraryGrid .in17-library-stats{
+  display:flex!important;
+}
+@media(max-width:720px){
+  #in17VirtualLibrarySection{margin-top:14px!important}
+  #in17VirtualLibraryGrid .in17-library-card{min-height:126px!important}
+}

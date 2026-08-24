@@ -1,0 +1,70 @@
+
+/* ================================================================
+   CAPA VISUAL v14 — Aurora + Glass 3D + Menú desplegable categorías
+   No modifica lógica: solo presentación. Respeta modo noche/claro.
+   ================================================================ */
+
+/* ---- Fondo aurora animado ---- */
+#auroraFx{position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(60px) saturate(1.2);opacity:.55}
+#auroraFx span{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform}
+#auroraFx .a1{width:55vw;height:55vw;left:-10vw;top:-10vh;background:radial-gradient(circle,rgba(34,211,238,.35),transparent 65%);animation:aurDrift1 26s ease-in-out infinite alternate}
+#auroraFx .a2{width:60vw;height:60vw;right:-15vw;top:5vh;background:radial-gradient(circle,rgba(168,85,247,.32),transparent 65%);animation:aurDrift2 32s ease-in-out infinite alternate}
+#auroraFx .a3{width:50vw;height:50vw;left:20vw;bottom:-20vh;background:radial-gradient(circle,rgba(244,63,94,.22),transparent 65%);animation:aurDrift3 38s ease-in-out infinite alternate}
+@keyframes aurDrift1{from{transform:translate(0,0) scale(1)}to{transform:translate(12vw,8vh) scale(1.15)}}
+@keyframes aurDrift2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-10vw,12vh) scale(.95)}}
+@keyframes aurDrift3{from{transform:translate(0,0) scale(1)}to{transform:translate(8vw,-10vh) scale(1.2)}}
+[data-theme="light"] #auroraFx{opacity:.30}
+[data-theme="night"] #auroraFx{display:none}
+@media (prefers-reduced-motion:reduce){#auroraFx span{animation:none!important}}
+
+/* ---- Barra de progreso de scroll ---- */
+#scrollBar{position:fixed;top:0;left:0;height:3px;width:0%;z-index:200;pointer-events:none;
+  background:linear-gradient(90deg,var(--resp),var(--ictus),var(--cardio));
+  box-shadow:0 0 12px rgba(168,85,247,.6);transition:width .08s linear}
+[data-theme="night"] #scrollBar{display:none}
+
+/* ---- Header con más cristal y logo vivo ---- */
+header{backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 82%,transparent) 55%,transparent)}
+.logo{position:relative;box-shadow:0 6px 22px rgba(168,85,247,.45),0 0 0 1px rgba(255,255,255,.08) inset;
+  animation:logoBreath 5s ease-in-out infinite}
+@keyframes logoBreath{0%,100%{box-shadow:0 6px 22px rgba(168,85,247,.45)}50%{box-shadow:0 6px 30px rgba(34,211,238,.55)}}
+.searchwrap{max-width:960px;margin:14px auto 0}
+.search{backdrop-filter:blur(8px)}
+.search:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--ictus) 30%,transparent),0 8px 30px rgba(168,85,247,.25)!important}
+
+/* ---- Tarjetas con profundidad 3D ---- */
+main{perspective:1400px}
+.group-card{
+  --rx:0deg;--ry:0deg;
+  transform:rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0);
+  transform-style:preserve-3d;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--card-solid) 92%,var(--ac)) 0%,var(--card-solid) 45%);
+  border:1px solid color-mix(in srgb,var(--ac) 22%,var(--border));border-left:4px solid var(--ac);
+  box-shadow:0 14px 40px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.05) inset;
+  transition:transform .25s cubic-bezier(.2,.9,.3,1.2),box-shadow .3s,border-color .25s}
+.group-card:hover{box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 30px color-mix(in srgb,var(--ac) 18%,transparent),0 1px 0 rgba(255,255,255,.07) inset}
+.group-ico{box-shadow:0 6px 18px color-mix(in srgb,var(--ac) 35%,transparent);transform:translateZ(24px)}
+.group-card .group-meta,.group-card .group-chev{transform:translateZ(14px)}
+.group-card.open{--rx:0deg;--ry:0deg}
+.card{background:linear-gradient(165deg,color-mix(in srgb,var(--card-solid) 94%,var(--ac)) 0%,var(--card-solid) 50%);
+  box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.card:hover{border-color:color-mix(in srgb,var(--ac) 45%,var(--border));
+  box-shadow:0 12px 32px rgba(0,0,0,.4),0 0 18px color-mix(in srgb,var(--ac) 14%,transparent)}
+[data-theme="light"] .group-card{box-shadow:0 12px 34px rgba(15,23,42,.12)}
+[data-theme="light"] .group-card:hover{box-shadow:0 18px 50px rgba(15,23,42,.18),0 0 26px color-mix(in srgb,var(--ac) 16%,transparent)}
+
+/* ---- Aparición escalonada al hacer scroll ---- */
+.v14-reveal{opacity:0;transform:translateY(22px) scale(.985)}
+.v14-in{opacity:1;transform:translateY(0) scale(1);transition:opacity .5s ease,transform .55s cubic-bezier(.2,.9,.3,1.1)}
+@media (prefers-reduced-motion:reduce){.v14-reveal{opacity:1;transform:none}}
+
+/* ---- FAB principal con pulso ---- */
+.fab{position:relative}
+.fab::after{content:"";position:absolute;inset:-4px;border-radius:34px;z-index:-1;
+  background:linear-gradient(135deg,var(--ictus),var(--cardio));filter:blur(14px);opacity:.55;
+  animation:fabPulse 3.2s ease-in-out infinite}
+@keyframes fabPulse{0%,100%{opacity:.4;transform:scale(.98)}50%{opacity:.75;transform:scale(1.04)}}
+[data-theme="night"] .fab::after{display:none}
+@media (prefers-reduced-motion:reduce){.fab::after{animation:none}}
+

@@ -1,0 +1,7 @@
+
+.in57-patho-inline-actions{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.in57-patho-inline-actions button[data-read],.in57-patho-inline-actions button[data-share]{
+  border:1px solid rgba(73,216,255,.20)!important;background:rgba(73,216,255,.08)!important;color:#dff8ff!important;
+}
+.in57-patho-inline-actions button[data-share]{border-color:rgba(125,107,255,.24)!important;background:rgba(125,107,255,.10)!important}
+.in57-patho-inline-actions button.speaking{background:linear-gradient(135deg,#22D3EE,#8B5CF6)!important;color:#fff!important}

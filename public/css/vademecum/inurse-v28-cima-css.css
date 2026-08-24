@@ -1,0 +1,325 @@
+
+.v28-cima-header{position:relative}
+.v28-cima-header::after{
+  content:"CIMA";position:absolute;right:-7px;bottom:-5px;padding:1px 3px;border-radius:4px;
+  background:#0f766e;color:#fff;border:1px solid rgba(255,255,255,.14);
+  font-size:5.5px;font-weight:950;letter-spacing:.03em
+}
+#v28CimaOverlay{
+  position:fixed;inset:0;z-index:48000;display:none;padding:10px;
+  background:rgba(2,6,15,.91);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  color:#eef4ff;font-family:Outfit,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+#v28CimaOverlay.on{display:block}
+.v28-cima-shell{
+  width:min(1180px,100%);height:100%;margin:auto;display:flex;flex-direction:column;overflow:hidden;
+  border:1px solid rgba(148,163,184,.18);border-radius:25px;
+  background:
+    radial-gradient(circle at 6% 0,rgba(15,118,110,.16),transparent 27%),
+    radial-gradient(circle at 94% 0,rgba(37,137,255,.12),transparent 24%),
+    linear-gradient(180deg,#07111f,#0a1525);
+  box-shadow:0 30px 90px rgba(0,0,0,.64)
+}
+.v28-cima-head{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 14px;
+  border-bottom:1px solid rgba(148,163,184,.14);background:rgba(7,17,31,.86)
+}
+.v28-cima-logo{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;
+  background:linear-gradient(135deg,#0f766e,#2589ff);box-shadow:0 10px 24px rgba(37,137,255,.18)
+}
+.v28-cima-title{flex:1;min-width:0}
+.v28-cima-title h2{margin:0;color:#fff;font-size:17px}
+.v28-cima-title p{margin:2px 0 0;color:#91a4bb;font-size:9px}
+.v28-cima-source{
+  padding:5px 8px;border-radius:999px;background:rgba(20,184,166,.09);
+  border:1px solid rgba(20,184,166,.22);color:#5eead4;font-size:8px;font-weight:950
+}
+.v28-cima-head>button{
+  height:37px;min-width:37px;padding:0 9px;border:1px solid rgba(148,163,184,.15);border-radius:11px;
+  background:#111d30;color:#eef4ff;font:inherit;font-size:10px;font-weight:850;cursor:pointer
+}
+.v28-cima-search-view,.v28-cima-detail-view{flex:1;min-height:0;overflow-y:auto;padding:14px}
+.v28-cima-detail-view{display:none}
+.v28-cima-detail-view.on{display:block}
+.v28-cima-hero{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px;
+  border:1px solid rgba(20,184,166,.18);border-radius:20px;
+  background:linear-gradient(135deg,rgba(15,118,110,.11),rgba(37,137,255,.055))
+}
+.v28-cima-eyebrow{
+  display:inline-flex;padding:5px 8px;border-radius:999px;background:rgba(20,184,166,.09);
+  color:#5eead4;font-size:7.5px;font-weight:950;text-transform:uppercase;letter-spacing:.07em
+}
+.v28-cima-hero h3{margin:9px 0 4px;color:#fff;font-size:20px}
+.v28-cima-hero p{max-width:750px;margin:0;color:#9fb0c5;font-size:10.5px;line-height:1.5}
+.v28-cima-state{
+  min-width:220px;display:flex;align-items:center;gap:9px;padding:10px 11px;
+  border:1px solid rgba(148,163,184,.12);border-radius:14px;background:rgba(9,19,34,.58)
+}
+.v28-cima-state>span{width:10px;height:10px;border-radius:50%;background:#64748b}
+.v28-cima-state>span.ok{background:#34d399;box-shadow:0 0 8px #34d399}
+.v28-cima-state>span.warn{background:#fbbf24}
+.v28-cima-state>span.error{background:#fb7185}
+.v28-cima-state b{display:block;font-size:9.5px}
+.v28-cima-state small{display:block;margin-top:2px;color:#71869f;font-size:7.5px}
+.v28-search-panel{
+  margin-top:12px;padding:12px;border:1px solid rgba(148,163,184,.14);
+  border-radius:18px;background:rgba(9,19,34,.70)
+}
+.v28-search-modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:9px}
+.v28-search-modes button{
+  border:1px solid rgba(148,163,184,.12);border-radius:10px;padding:8px 5px;
+  background:#111d30;color:#91a4bb;font:inherit;font-size:8.5px;font-weight:850;cursor:pointer
+}
+.v28-search-modes button.active{color:#fff;border-color:transparent;background:linear-gradient(135deg,#0f766e,#2589ff)}
+.v28-search-row{
+  display:flex;align-items:center;gap:7px;padding:8px;border:1px solid rgba(148,163,184,.15);
+  border-radius:14px;background:#0e1a2c
+}
+.v28-search-row>span{font-size:17px;margin-left:4px}
+.v28-search-row input{
+  flex:1;min-width:0;border:none;outline:none;background:transparent;color:#eef4ff;
+  font:inherit;font-size:12px
+}
+.v28-search-row input::placeholder{color:#64748b}
+.v28-search-row button{
+  border:1px solid rgba(148,163,184,.14);border-radius:10px;padding:9px 11px;
+  background:#111d30;color:#eef4ff;font:inherit;font-size:9px;font-weight:900;cursor:pointer
+}
+#v28CimaVoice.listening{background:rgba(236,72,153,.13);border-color:rgba(236,72,153,.35);animation:v28mic 1s ease-in-out infinite alternate}
+#v28CimaSubmit{border:none;background:linear-gradient(135deg,#0f766e,#2589ff)}
+@keyframes v28mic{from{transform:scale(.96)}to{transform:scale(1.05)}}
+.v28-voice-state{display:none;margin-top:7px;padding:7px;border-radius:9px;background:#111d30;color:#cbd5e1;font-size:8.5px}
+.v28-voice-state.on{display:block}
+.v28-search-options{display:flex;gap:13px;align-items:center;flex-wrap:wrap;margin-top:9px;color:#91a4bb;font-size:8px}
+.v28-search-options label{display:flex;align-items:center;gap:5px}
+.v28-search-options input{accent-color:#14b8a6}
+#v28SearchHint{margin-left:auto;color:#71869f}
+.v28-pathology-section,.v28-cima-results-section{
+  margin-top:12px;padding:12px;border:1px solid rgba(148,163,184,.13);
+  border-radius:18px;background:rgba(9,19,34,.58)
+}
+.v28-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.v28-section-title b{display:block;color:#fff;font-size:11px}
+.v28-section-title small{display:block;margin-top:2px;color:#71869f;font-size:8px}
+.v28-section-title>button{
+  border:1px solid rgba(148,163,184,.13);border-radius:9px;padding:6px 8px;
+  background:#111d30;color:#9fb0c5;font:inherit;font-size:8px;cursor:pointer
+}
+#v28ResultsCount{color:#5eead4;font-size:8px;font-weight:900}
+.v28-pathology-chips{display:flex;gap:6px;flex-wrap:wrap;max-height:78px;overflow:hidden}
+.v28-pathology-chips.expanded{max-height:none}
+.v28-pathology-chip{
+  border:1px solid rgba(148,163,184,.12);border-radius:999px;padding:7px 9px;
+  background:#0e1a2c;color:#cbd5e1;font:inherit;font-size:8px;font-weight:800;cursor:pointer
+}
+.v28-pathology-chip:hover{border-color:rgba(20,184,166,.35);color:#5eead4}
+.v28-cima-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.v28-result-card{
+  display:flex;gap:10px;padding:12px;border:1px solid rgba(148,163,184,.13);
+  border-radius:15px;background:#0e1a2c;color:#eef4ff;text-align:left;font:inherit;cursor:pointer;transition:.16s ease
+}
+.v28-result-card:hover{transform:translateY(-2px);border-color:rgba(20,184,166,.34);box-shadow:0 12px 25px rgba(0,0,0,.16)}
+.v28-result-icon{
+  width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(15,118,110,.25),rgba(37,137,255,.18));font-size:17px;font-weight:900
+}
+.v28-result-copy{flex:1;min-width:0}
+.v28-result-copy h4{margin:0;color:#fff;font-size:11px;line-height:1.35}
+.v28-result-copy p{margin:4px 0 0;color:#91a4bb;font-size:8.5px;line-height:1.4}
+.v28-result-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.v28-result-tags span{
+  padding:3px 5px;border-radius:6px;border:1px solid rgba(148,163,184,.11);
+  color:#71869f;background:#111d30;font-size:6.8px
+}
+.v28-result-tags .available{color:#6ee7b7;border-color:rgba(52,211,153,.20)}
+.v28-result-tags .supply{color:#fda4af;border-color:rgba(251,113,133,.23)}
+.v28-empty,.v28-loading,.v28-error{
+  grid-column:1/-1;padding:35px 12px;text-align:center;color:#71869f;
+  border:1px dashed rgba(148,163,184,.15);border-radius:15px
+}
+.v28-empty span{font-size:31px}
+.v28-empty b{display:block;margin-top:7px;color:#9fb0c5;font-size:11px}
+.v28-empty p{max-width:550px;margin:4px auto 0;font-size:8.5px;line-height:1.5}
+.v28-loading span,.v28-detail-loading>span{
+  display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:#14b8a6;
+  animation:v28load 1.1s ease-in-out infinite
+}
+.v28-loading span:nth-child(2),.v28-detail-loading>span:nth-child(2){animation-delay:.18s}
+.v28-loading span:nth-child(3),.v28-detail-loading>span:nth-child(3){animation-delay:.36s}
+@keyframes v28load{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.v28-error{color:#fda4af;border-color:rgba(251,113,133,.23)}
+.v28-error button{
+  display:block;margin:10px auto 0;border:1px solid rgba(148,163,184,.14);border-radius:9px;
+  padding:7px 9px;background:#111d30;color:#fff;font:inherit;font-size:8px;cursor:pointer
+}
+.v28-cima-disclaimer{
+  display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:10px 11px;
+  border:1px solid rgba(20,184,166,.16);border-radius:14px;background:rgba(20,184,166,.045)
+}
+.v28-cima-disclaimer span{font-size:16px}
+.v28-cima-disclaimer b{display:block;font-size:9px}
+.v28-cima-disclaimer p{margin:3px 0 0;color:#91a4bb;font-size:8px;line-height:1.45}
+.v28-detail-loading{text-align:center;padding:80px 15px;color:#91a4bb}
+.v28-detail-loading p{font-size:9px}
+.v28-detail-content{display:none}
+.v28-detail-content.on{display:block}
+.v28-drug-hero{
+  padding:14px;border:1px solid rgba(20,184,166,.17);border-radius:19px;
+  background:linear-gradient(135deg,rgba(15,118,110,.09),rgba(37,137,255,.045))
+}
+#v28DetailBack{
+  border:1px solid rgba(148,163,184,.14);border-radius:9px;padding:7px 9px;
+  background:#111d30;color:#eef4ff;font:inherit;font-size:8px;font-weight:850;cursor:pointer
+}
+.v28-drug-main{display:flex;align-items:center;gap:11px;margin-top:11px}
+.v28-drug-icon{
+  width:54px;height:54px;flex:0 0 54px;border-radius:17px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#0f766e,#2589ff);font-size:17px;font-weight:950
+}
+.v28-drug-main>div:nth-child(2){flex:1;min-width:0}
+.v28-drug-main h3{margin:4px 0 3px;color:#fff;font-size:18px;line-height:1.25}
+.v28-drug-main p{margin:0;color:#9fb0c5;font-size:9px;line-height:1.4}
+.v28-drug-status{
+  display:inline-flex;padding:3px 6px;border-radius:999px;background:rgba(20,184,166,.10);
+  color:#5eead4;font-size:7px;font-weight:950
+}
+#v28DrugFavorite{
+  width:39px;height:39px;border:1px solid rgba(148,163,184,.14);border-radius:12px;
+  background:#111d30;color:#fbbf24;font:inherit;font-size:20px;cursor:pointer
+}
+.v28-drug-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:11px}
+.v28-meta-item{padding:8px;border:1px solid rgba(148,163,184,.11);border-radius:10px;background:#0e1a2c}
+.v28-meta-item b{display:block;color:#71869f;font-size:6.8px;text-transform:uppercase;letter-spacing:.05em}
+.v28-meta-item span{display:block;margin-top:3px;color:#eef4ff;font-size:8.5px;line-height:1.35}
+.v28-drug-warnings{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.v28-warning-tag{
+  padding:5px 7px;border-radius:8px;border:1px solid rgba(245,158,11,.22);
+  background:rgba(245,158,11,.055);color:#fde68a;font-size:7px;font-weight:850
+}
+.v28-warning-tag.danger{border-color:rgba(251,113,133,.24);background:rgba(251,113,133,.055);color:#fda4af}
+.v28-warning-tag.ok{border-color:rgba(52,211,153,.20);background:rgba(52,211,153,.05);color:#6ee7b7}
+.v28-drug-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.v28-drug-actions button{
+  border:1px solid rgba(148,163,184,.13);border-radius:10px;padding:8px 10px;
+  background:#111d30;color:#eef4ff;font:inherit;font-size:8px;font-weight:850;cursor:pointer
+}
+#v28AskJavny{border:none;background:linear-gradient(135deg,#8b5cf6,#2589ff)}
+.v28-drug-tabs{
+  display:flex;gap:5px;overflow-x:auto;margin:11px 0;padding:6px;
+  border:1px solid rgba(148,163,184,.12);border-radius:14px;background:#091322;scrollbar-width:none
+}
+.v28-drug-tabs::-webkit-scrollbar{display:none}
+.v28-drug-tabs button{
+  flex:0 0 auto;white-space:nowrap;border:none;border-radius:9px;padding:8px 9px;
+  background:transparent;color:#91a4bb;font:inherit;font-size:8px;font-weight:850;cursor:pointer
+}
+.v28-drug-tabs button.active{background:#111d30;color:#fff}
+.v28-drug-tab-content{
+  min-height:250px;padding:14px;border:1px solid rgba(148,163,184,.13);
+  border-radius:18px;background:rgba(9,19,34,.65)
+}
+.v28-section-content{color:#cbd5e1;font-size:10px;line-height:1.58}
+.v28-section-content h3,.v28-section-content h4{color:#fff;margin:13px 0 6px}
+.v28-section-content h3:first-child,.v28-section-content h4:first-child{margin-top:0}
+.v28-section-content p{margin:7px 0}
+.v28-section-content ul,.v28-section-content ol{padding-left:18px}
+.v28-section-content li{margin:5px 0}
+.v28-section-content table{width:100%;border-collapse:collapse;font-size:8.5px}
+.v28-section-content td,.v28-section-content th{padding:6px;border:1px solid rgba(148,163,184,.14);vertical-align:top}
+.v28-section-content a{color:#67e8f9}
+.v28-section-missing{
+  text-align:center;padding:40px 12px;color:#71869f;border:1px dashed rgba(148,163,184,.14);border-radius:13px
+}
+.v28-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.v28-summary-card{padding:10px;border:1px solid rgba(148,163,184,.12);border-radius:12px;background:#0e1a2c}
+.v28-summary-card b{display:block;color:#5eead4;font-size:8px}
+.v28-summary-card p{margin:5px 0 0;color:#cbd5e1;font-size:9px;line-height:1.45}
+.v28-presentations{margin-top:12px}
+.v28-presentation{
+  display:flex;justify-content:space-between;gap:8px;padding:8px;margin-top:5px;
+  border:1px solid rgba(148,163,184,.11);border-radius:9px;background:#0e1a2c
+}
+.v28-presentation div{min-width:0}
+.v28-presentation b{display:block;font-size:8.5px}
+.v28-presentation small{display:block;margin-top:2px;color:#71869f;font-size:7px}
+.v28-presentation span{white-space:nowrap;color:#6ee7b7;font-size:7px;font-weight:850}
+.v28-presentation span.problem{color:#fda4af}
+.v28-related-pathologies{
+  margin-top:11px;padding:12px;border:1px solid rgba(148,163,184,.13);
+  border-radius:17px;background:rgba(9,19,34,.58)
+}
+.v28-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v28-related-card{
+  padding:9px;border:1px solid rgba(148,163,184,.11);border-radius:10px;
+  background:#0e1a2c;color:#eef4ff;text-align:left;font:inherit;cursor:pointer
+}
+.v28-related-card b{display:block;font-size:8.5px;line-height:1.35}
+.v28-related-card small{display:block;margin-top:3px;color:#71869f;font-size:7px}
+.v28-cima-credit{text-align:center;margin:12px 0 4px;color:#64748b;font-size:7.5px;line-height:1.4}
+.v28-security-list{display:grid;gap:7px}
+.v28-security-card{padding:10px;border:1px solid rgba(148,163,184,.12);border-radius:11px;background:#0e1a2c}
+.v28-security-card b{display:block;font-size:9px}
+.v28-security-card p{margin:4px 0 0;color:#91a4bb;font-size:8px;line-height:1.4}
+.v28-security-card a{display:inline-block;margin-top:6px;color:#67e8f9;font-size:8px}
+@media(max-width:800px){
+  #v28CimaOverlay{padding:0}
+  .v28-cima-shell{border:none;border-radius:0}
+  .v28-cima-hero{display:block}
+  .v28-cima-state{margin-top:11px;min-width:0}
+  .v28-search-modes{grid-template-columns:repeat(2,1fr)}
+  .v28-cima-results{grid-template-columns:1fr}
+  .v28-drug-meta{grid-template-columns:repeat(2,1fr)}
+  .v28-related-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .v28-cima-search-view,.v28-cima-detail-view{padding:9px}
+  .v28-cima-head{padding:9px}
+  .v28-cima-source{display:none}
+  #v28CimaLocal{font-size:0;width:37px;padding:0}
+  #v28CimaLocal::after{content:"iN";font-size:9px}
+  .v28-search-row{flex-wrap:wrap}
+  .v28-search-row input{flex-basis:calc(100% - 35px)}
+  #v28CimaSubmit{flex:1}
+  #v28SearchHint{width:100%;margin-left:0}
+  .v28-summary-grid{grid-template-columns:1fr}
+}
+
+/* ═══════ v37 — Farmacología (vademécum): liquid glass + resultados compactos ═══════ */
+#v28CimaOverlay{background:
+  radial-gradient(620px 460px at 12% 6%,rgba(167,139,250,.20),transparent 60%),
+  radial-gradient(640px 500px at 88% 4%,rgba(56,189,248,.16),transparent 60%),
+  radial-gradient(700px 560px at 60% 100%,rgba(236,72,153,.15),transparent 62%),
+  linear-gradient(180deg,#070512,#0b0a1c 55%,#060512)!important}
+.v28-cima-shell{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015))!important;
+  border:1px solid rgba(255,255,255,.14)!important;-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5)}
+.v28-cima-head{border-bottom:1px solid rgba(255,255,255,.1)!important}
+.v28-cima-logo{background:linear-gradient(145deg,#a78bfa,#7c3aed)!important;box-shadow:0 8px 22px rgba(124,58,237,.4),inset 0 1px 0 rgba(255,255,255,.5)!important}
+.v28-cima-hero,.v28-search-panel,.v28-pathology-section,.v28-cima-results-section{
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(255,255,255,.13)!important;border-radius:22px!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 18px 50px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.2)!important}
+.v28-search-modes button{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important}
+.v28-search-modes button.active{background:linear-gradient(135deg,#a78bfa,#22d3ee)!important;border-color:transparent!important;box-shadow:0 6px 18px rgba(124,58,237,.4)!important}
+.v28-search-row{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:14px!important}
+#v28CimaSubmit{background:linear-gradient(135deg,#a78bfa,#22d3ee)!important}
+.v28-pathology-chip{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.13)!important;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.v28-pathology-chip:hover{border-color:rgba(167,139,250,.5)!important;color:#c4b5fd!important}
+/* Resultados en cuadrícula compacta de fichas verticales */
+.v28-cima-results{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:11px!important}
+.v28-result-card{flex-direction:column!important;gap:7px!important;padding:12px!important;border-radius:16px!important;
+  background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.03))!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.3);backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:0 8px 22px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.2)!important}
+.v28-result-card:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.55)!important;
+  box-shadow:0 16px 36px rgba(124,58,237,.32)!important}
+.v28-result-icon{width:44px;height:44px;flex:0 0 44px;border-radius:14px!important;
+  background:linear-gradient(145deg,rgba(167,139,250,.5),rgba(34,211,238,.35))!important;
+  box-shadow:0 6px 16px rgba(124,58,237,.35),inset 0 1px 0 rgba(255,255,255,.4)!important}
+.v28-result-copy h4{font-size:12px!important;line-height:1.28;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v28-result-copy p{-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}

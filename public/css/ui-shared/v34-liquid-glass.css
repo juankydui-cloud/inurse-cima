@@ -1,0 +1,131 @@
+
+/* ═══════════ v34 — Liquid Glass Home (estilo Apple: profundidad + cristal) ═══════════ */
+
+/* Fondo con aurora que respira: da profundidad detrás del cristal */
+#in50Home{position:relative}
+#in50Home::before{
+  content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(560px 440px at 16% 10%, rgba(56,189,248,.34), transparent 62%),
+    radial-gradient(620px 500px at 86% 6%, rgba(217,70,160,.28), transparent 62%),
+    radial-gradient(700px 540px at 62% 98%, rgba(139,92,246,.32), transparent 62%),
+    radial-gradient(520px 520px at 6% 92%, rgba(16,185,129,.22), transparent 62%);
+  filter:blur(34px) saturate(1.25);
+  animation:v34aurora 28s ease-in-out infinite alternate;
+}
+@keyframes v34aurora{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(-3%,2.5%,0) scale(1.09)}
+  100%{transform:translate3d(3%,-2%,0) scale(1.05)}
+}
+.nx-wrap{position:relative;z-index:1}
+
+/* Paneles: cristal esmerilado con reflejo especular superior */
+.nx-panel{
+  background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.03) 44%,rgba(10,16,40,.30))!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:30px!important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.7)!important;
+  backdrop-filter:blur(28px) saturate(1.7)!important;
+  box-shadow:0 30px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(255,255,255,.05)!important;
+  position:relative;overflow:hidden;
+}
+.nx-panel::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);pointer-events:none}
+
+/* Tarjetas: mini cristales flotantes */
+.nx-card{
+  background:linear-gradient(155deg,rgba(255,255,255,.13),rgba(255,255,255,.04) 52%,rgba(255,255,255,.02))!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:22px!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4)!important;
+  backdrop-filter:blur(14px) saturate(1.4)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.28)!important;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s,border-color .28s!important;
+}
+.nx-card:hover,.nx-card:active{
+  transform:translateY(-5px) scale(1.02)!important;
+  border-color:rgba(255,255,255,.42)!important;
+  box-shadow:0 24px 54px rgba(40,120,255,.34),inset 0 1px 0 rgba(255,255,255,.46)!important;
+}
+
+/* Icono en chip de cristal de color (tipo iOS), flotando suavemente */
+@keyframes v34bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.nx-card .ic{
+  width:56px;height:56px;display:grid;place-items:center;border-radius:17px;font-size:27px;line-height:1;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--chip,#6aa4ff) 42%,transparent),color-mix(in srgb,var(--chip,#6aa4ff) 12%,transparent))!important;
+  border:1px solid color-mix(in srgb,var(--chip,#6aa4ff) 48%,transparent);
+  box-shadow:0 8px 22px color-mix(in srgb,var(--chip,#6aa4ff) 42%,transparent),inset 0 1px 0 rgba(255,255,255,.4)!important;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  filter:none!important;
+  animation:v34bob 4.6s ease-in-out infinite;
+}
+.nx-card:nth-child(2n) .ic{animation-duration:5.2s;animation-delay:.4s}
+.nx-card:nth-child(3n) .ic{animation-duration:5.8s;animation-delay:.8s}
+.nx-card .ic svg{width:31px;height:31px;display:block}
+.nx-main .nx-card:first-child .ic svg{width:35px;height:35px}
+.nx-nav button .ic svg{width:22px;height:22px;display:block}
+
+/* ── Mi especialidad ─────────────────────────────────────────────────── */
+.nx-spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nx-spec-btn{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 10px;border-radius:20px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  transition:all .25s cubic-bezier(.2,.8,.2,1);color:#e2e8f0;font-size:13px;font-weight:700;
+  box-shadow:0 6px 20px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.16)}
+.nx-spec-btn .sem{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--sc) 40%,transparent),color-mix(in srgb,var(--sc) 14%,transparent));
+  border:1px solid color-mix(in srgb,var(--sc) 45%,transparent);
+  box-shadow:0 6px 18px color-mix(in srgb,var(--sc) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}
+.nx-spec-btn:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--sc) 55%,transparent);
+  box-shadow:0 14px 36px color-mix(in srgb,var(--sc) 28%,transparent),inset 0 1px 0 rgba(255,255,255,.22)}
+.nx-spec-btn.on{background:linear-gradient(155deg,color-mix(in srgb,var(--sc) 32%,transparent),color-mix(in srgb,var(--sc) 13%,transparent))!important;
+  border-color:color-mix(in srgb,var(--sc) 68%,transparent)!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--sc) 42%,transparent),0 14px 36px color-mix(in srgb,var(--sc) 30%,transparent),inset 0 1px 0 rgba(255,255,255,.28)!important}
+.nx-spec-label{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.nx-spec-label h3{flex:1}
+.nx-spec-active{font-size:11px;color:#a9bdd7;background:rgba(255,255,255,.08);border-radius:8px;padding:3px 8px;display:none}
+.nx-spec-active.show{display:inline-block}
+@media(max-width:620px){.nx-spec-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Colores por tarjeta */
+.nx-card[data-fire="biblioteca"]{--chip:#34d399}
+.nx-card[data-fire="guias"]{--chip:#22d3ee}
+.nx-card[data-fire="evidencia"]{--chip:#38bdf8}
+.nx-card[data-fire="patologias"]{--chip:#f472b6}
+.nx-card[data-fire="farmaco"]{--chip:#a78bfa}
+.nx-card[data-fire="calc"]{--chip:#f59e0b}
+.nx-card[data-fire="rx"]{--chip:#8b5cf6}
+.nx-card[data-fire="ecg"]{--chip:#ef4444}
+.nx-card[data-fire="procedimientos"]{--chip:#10b981}
+.nx-card[data-fire="algoritmos"]{--chip:#06b6d4}
+.nx-card[data-fire="proyectos"]{--chip:#fb923c}
+
+/* Bento: la primera tarjeta como hero ancho (menos rígido/vertical) */
+.nx-main{grid-template-columns:repeat(6,1fr)!important}
+.nx-main .nx-card:first-child{grid-column:span 2;flex-direction:row!important;justify-content:flex-start;text-align:left;gap:15px;padding:18px 20px!important}
+.nx-main .nx-card:first-child .ic{width:64px;height:64px;font-size:32px;flex:0 0 64px}
+.nx-main .nx-card:first-child b{font-size:17px}
+
+/* Cabecera y Javny con cristal */
+.nx-javny-mini{
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  box-shadow:0 16px 40px rgba(80,70,220,.3),inset 0 1px 0 rgba(255,255,255,.3)!important;
+}
+.nx-nav button{
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.14)!important;
+}
+.nx-nav button.on{background:linear-gradient(135deg,rgba(56,189,248,.32),rgba(139,92,246,.32))!important;border-color:rgba(160,200,255,.6)!important}
+.nx-search{
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:18px!important;
+}
+
+@media(max-width:900px){
+  .nx-main{grid-template-columns:repeat(2,1fr)!important}
+  .nx-main .nx-card:first-child{grid-column:span 2}
+}
+@media (prefers-reduced-motion:reduce){
+  #in50Home::before,.nx-card .ic{animation:none!important}
+}
