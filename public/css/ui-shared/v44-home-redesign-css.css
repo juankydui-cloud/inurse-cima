@@ -14,3 +14,68 @@
   border-color:color-mix(in srgb,#ef4444 85%,transparent) !important;
   box-shadow:0 0 0 4px color-mix(in srgb,#ef4444 30%,transparent),0 4px 14px rgba(239,68,68,.45) !important;
 }
+
+/* ══ Hero de Javny: de tarjeta-botón a campo donde se escribe directamente ══
+   La tarjeta ya no es clicable entera (dentro vive un campo de texto), así que
+   se anula el hover que la levantaba y se reserva el gesto de abrir el chat
+   para el bloque de identidad (foto + nombre). */
+.nx-javny-hero{ cursor:default !important; }
+.nx-javny-hero:hover{ transform:none !important; }
+
+.nx-javny-id{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;padding:0;color:inherit;font:inherit;cursor:pointer;
+  transition:opacity .15s ease;
+}
+.nx-javny-id:hover{ opacity:.85 }
+.nx-javny-id b{ font-size:30px;font-weight:800;line-height:1.05 }
+.nx-javny-id small{ color:#c8bbff;font-size:14px;font-weight:600 }
+
+.nx-javny-ask{
+  width:100%;margin-top:16px;
+  display:flex;align-items:flex-end;gap:8px;
+  padding:6px 6px 6px 14px;border-radius:18px;
+  background:rgba(10,12,28,.55);
+  border:1px solid rgba(150,120,255,.35);
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.nx-javny-ask:focus-within{
+  border-color:rgba(180,150,255,.8);
+  box-shadow:0 0 0 3px rgba(139,92,246,.22);
+}
+.nx-javny-ask textarea{
+  flex:1;min-width:0;resize:none;overflow-y:auto;max-height:132px;
+  background:transparent;border:none;outline:none;
+  color:#e7ecff;font:inherit;font-size:14.5px;line-height:1.4;
+  padding:10px 2px;
+}
+.nx-javny-ask textarea::placeholder{ color:#8aa0c8;opacity:.9 }
+
+.nx-ask-mic,.nx-ask-send{
+  /* .qmic (compartida con los modales) es position:absolute; aquí el micro va
+     en la fila, junto al botón de enviar. */
+  position:static !important;
+  flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;font-size:16px;line-height:1;
+  transition:transform .15s ease,filter .15s ease;
+}
+.nx-ask-mic{ background:rgba(255,255,255,.09);color:#cfd8f5 }
+.nx-ask-mic:hover{ filter:brightness(1.25) }
+.nx-ask-mic.listening{ background:#ef4444;color:#fff;animation:nxAskPulse 1.1s ease-in-out infinite }
+@keyframes nxAskPulse{ 50%{ box-shadow:0 0 0 6px rgba(239,68,68,.22) } }
+.nx-ask-send{
+  background:linear-gradient(135deg,#0EA5E9,#8B5CF6);color:#fff;font-weight:800;
+  box-shadow:0 8px 20px rgba(56,120,240,.42);
+}
+.nx-ask-send:active{ transform:scale(.94) }
+
+[data-theme="light"] .nx-javny-ask{ background:rgba(255,255,255,.72);border-color:rgba(15,23,42,.14) }
+[data-theme="light"] .nx-javny-ask textarea{ color:#0f172a }
+[data-theme="light"] .nx-javny-ask textarea::placeholder{ color:#64748b }
+[data-theme="light"] .nx-ask-mic{ background:rgba(15,23,42,.07);color:#334155 }
+
+@media(max-width:620px){
+  .nx-javny-id b{ font-size:25px }
+  .nx-javny-ask{ margin-top:14px }
+}

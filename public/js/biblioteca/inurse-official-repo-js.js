@@ -35,23 +35,14 @@
  }
  function open(q=''){ensure();query=q||'';cat='all';const ov=document.getElementById('in64OfficialOverlay');ov.classList.add('on');ov.style.display='flex';ov.style.zIndex='2147483000';document.body.style.overflow='hidden';ov.querySelectorAll('[data-cat]').forEach(x=>x.classList.toggle('on',x.dataset.cat==='all'));const input=document.getElementById('in64Search');input.value=query;render();setTimeout(()=>input.focus(),100)}
  function close(){const ov=document.getElementById('in64OfficialOverlay');if(ov){ov.classList.remove('on');ov.style.display='none'}document.body.style.overflow=''}
- function enrichHome(){
-  if(document.getElementById('in64HomeCard'))return;
-  const shell=document.querySelector('#in50Home .in57-shell')||document.querySelector('#in50Home');if(!shell)return;
-  const wrap=document.createElement('div');wrap.id='in64HomeCard';wrap.className='in64-home-wrap';wrap.innerHTML='<div class="in64-home-title">Evidencia y actualización</div><button class="in64-home-card"><span class="in64-home-icon">🏛️</span><span class="in64-home-copy"><b>Repositorio oficial</b><small>Guías actuales por patología y sistema: SNS, AEMPS, OMS, ERC, ESC, GINA, GOLD, NICE y otras fuentes clínicas.</small></span><span class="in64-home-arrow">›</span></button>';wrap.querySelector('button').onclick=()=>open('');
-  // Ocupa el hueco que dejó la barra de búsqueda: justo encima del hero de Javny.
-  const hero=document.querySelector('#in50Home .nx-wrap .nx-hero');
-  if(hero){hero.insertAdjacentElement('beforebegin',wrap);return}
-  const proj=document.getElementById('in63Overlay')?document.querySelector('.in63-home-wrap'):null;if(proj&&proj.parentElement===shell)proj.insertAdjacentElement('afterend',wrap);else shell.appendChild(wrap);
- }
  function addPathologyButton(root){
   const panel=root?.matches?.('.in57-patho-inline')?root:root?.querySelector?.('.in57-patho-inline');if(!panel||panel.querySelector('.in64-patho-btn'))return;
   const actions=panel.querySelector('.in57-patho-inline-actions');const name=panel.querySelector('.in57-patho-inline-title h3')?.textContent?.trim();if(!actions||!name)return;
   const b=document.createElement('button');b.className='in64-patho-btn';b.textContent='🏛️ Fuentes oficiales';b.onclick=()=>open(name);actions.appendChild(b);
  }
  function scanPathologyButtons(){document.querySelectorAll('.in57-patho-inline').forEach(addPathologyButton)}
- function boot(){enrichHome();scanPathologyButtons()}
- document.addEventListener('click',function(e){const hb=e.target.closest('#in64HomeCard .in64-home-card');if(hb){e.preventDefault();e.stopPropagation();open('');return}setTimeout(scanPathologyButtons,80)},true);
+ function boot(){scanPathologyButtons()}
+ document.addEventListener('click',function(){setTimeout(scanPathologyButtons,80)},true);
  if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,500);setTimeout(boot,1500);
  window.EnferixOfficialSources=SOURCES;window.EnferixOpenOfficialRepo=open;
 })();

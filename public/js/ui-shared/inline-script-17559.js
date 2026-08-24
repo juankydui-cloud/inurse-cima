@@ -23,6 +23,7 @@
       case "cercanos":   if(typeof window.openNearby==='function'){ window.openNearby(); return; } return;
       case "sos":        if(typeof window.openSos==='function'){ window.openSos(); return; } return;
       case "proyectos":  if(window.EnferixProjects&&window.EnferixProjects.open){ window.EnferixProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
+      case "fuentes":    if(typeof window.EnferixOpenOfficialRepo==='function'){ window.EnferixOpenOfficialRepo(''); return; } return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.EnferixTurno&&window.EnferixTurno.open){ window.EnferixTurno.open(); return; } return;
       case "ajustes":  openAjustes(); return;
@@ -72,6 +73,7 @@
     {k:"calc",     ic:"🧮", t:"Cálculo"},
     {k:"ecg",      ic:"📈", t:"Electros"},
     {k:"rx",       ic:"🩻", t:"Rayos X"},
+    {k:"fuentes",  ic:"🏛️", t:"Fuentes"},
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
@@ -106,10 +108,32 @@
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
       +   '<div class="nx-hero">'
-      +     '<button class="nx-javny-hero" data-javny="1" title="Hablar con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small><span class="nx-javny-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span><span class="nx-javny-hero-cta">💬 Hablar con Javny</span></button>'
+      +     '<div class="nx-javny-hero">'
+      +       '<button class="nx-javny-id" data-javny="1" title="Abrir la conversación con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small></button>'
+      +       '<div class="nx-javny-ask">'
+      +         '<textarea id="nxAsk" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>'
+      +         '<button class="qmic nx-ask-mic" id="nxAskMic" title="Dictar la pregunta">🎙️</button>'
+      +         '<button class="nx-ask-send" id="nxAskSend" title="Enviar a Javny" aria-label="Enviar a Javny">➤</button>'
+      +       '</div>'
+      +     '</div>'
       +   '</div>'
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
+  }
+  /* Lleva la pregunta escrita en el hero al chat de Javny: lo abre, rellena su
+     campo y lo envía, para que escribir arriba no obligue a repetir la pregunta. */
+  function askJavny(text){
+    text=String(text||"").trim(); if(!text) return;
+    try{ if(typeof window.openJavnyWithContext==='function'){ window.openJavnyWithContext(text); return; } }catch(e){}
+    clickId("ccFab");
+    var tries=0;
+    (function fill(){
+      var ta=document.getElementById("ccTa");
+      if(!ta){ if(tries++<25) setTimeout(fill,80); return; }
+      ta.value=text; ta.dispatchEvent(new Event("input",{bubbles:true})); ta.focus();
+      var send=document.getElementById("ccSend");
+      if(send) setTimeout(function(){ send.click(); },60);
+    })();
   }
   function forwardSearch(q){
     var nxInp=document.getElementById("nxSearch");
@@ -166,10 +190,23 @@
         return;
       }
     });
-    var inp=home.querySelector("#nxSearch");
-    if(inp){
-      inp.addEventListener("input",function(){ if(typeof window.showGlobalResults==='function') window.showGlobalResults(inp.value||''); });
-      inp.addEventListener("keydown",function(e){ if(e.key==="Enter"&&inp.value.trim()){ forwardSearch(inp.value.trim()); } });
+    var ask=home.querySelector("#nxAsk");
+    if(ask){
+      var sendAsk=function(){
+        var t=ask.value.trim(); if(!t) return;
+        askJavny(t); ask.value=""; ask.style.height="";
+      };
+      // Enter envía; Mayús+Enter deja escribir varias líneas.
+      ask.addEventListener("keydown",function(e){
+        if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendAsk(); }
+      });
+      // El campo crece con la pregunta en vez de recortarla.
+      ask.addEventListener("input",function(){
+        ask.style.height="auto";
+        ask.style.height=Math.min(ask.scrollHeight,132)+"px";
+      });
+      var sendBtn=home.querySelector("#nxAskSend");
+      if(sendBtn) sendBtn.addEventListener("click",sendAsk);
     }
   }
   function build(){
