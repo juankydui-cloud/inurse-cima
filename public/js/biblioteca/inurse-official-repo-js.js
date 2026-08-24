@@ -39,6 +39,9 @@
   if(document.getElementById('in64HomeCard'))return;
   const shell=document.querySelector('#in50Home .in57-shell')||document.querySelector('#in50Home');if(!shell)return;
   const wrap=document.createElement('div');wrap.id='in64HomeCard';wrap.className='in64-home-wrap';wrap.innerHTML='<div class="in64-home-title">Evidencia y actualización</div><button class="in64-home-card"><span class="in64-home-icon">🏛️</span><span class="in64-home-copy"><b>Repositorio oficial</b><small>Guías actuales por patología y sistema: SNS, AEMPS, OMS, ERC, ESC, GINA, GOLD, NICE y otras fuentes clínicas.</small></span><span class="in64-home-arrow">›</span></button>';wrap.querySelector('button').onclick=()=>open('');
+  // Ocupa el hueco que dejó la barra de búsqueda: justo encima del hero de Javny.
+  const hero=document.querySelector('#in50Home .nx-wrap .nx-hero');
+  if(hero){hero.insertAdjacentElement('beforebegin',wrap);return}
   const proj=document.getElementById('in63Overlay')?document.querySelector('.in63-home-wrap'):null;if(proj&&proj.parentElement===shell)proj.insertAdjacentElement('afterend',wrap);else shell.appendChild(wrap);
  }
  function addPathologyButton(root){

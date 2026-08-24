@@ -1,0 +1,16 @@
+/* Rediseño del inicio: el botón flotante de Javny Life pasa de un emoji de
+   micrófono a la cara real de Javny, que es quien habla en tiempo real. */
+
+#v29Fab{
+  background-image:var(--javny-real-avatar,var(--javny-avatar-url)) !important;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  font-size:0 !important;          /* oculta el emoji 🎙️ del HTML */
+  overflow:hidden;
+  border:2px solid color-mix(in srgb,#2DD4BF 70%,transparent) !important;
+}
+/* En escucha activa el borde pasa a rojo, conservando la foto. */
+#v29Fab.on{
+  background-color:transparent !important;
+  border-color:color-mix(in srgb,#ef4444 85%,transparent) !important;
+  box-shadow:0 0 0 4px color-mix(in srgb,#ef4444 30%,transparent),0 4px 14px rgba(239,68,68,.45) !important;
+}

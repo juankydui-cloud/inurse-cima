@@ -66,18 +66,6 @@
     {key:'trauma',    em:'🦴', t:'Trauma',            sc:'#DC2626'},
     {key:'otras',     em:'🩺', t:'Otras',             sc:'#0EA5E9'}
   ];
-  var MAIN = [
-    { k:"biblioteca", ic:"📚", t:"Biblioteca virtual", s:"Libros, manuales y recursos de referencia." },
-    { k:"guias",      ic:"📋", t:"Guías clínicas",     s:"Protocolos y guías por especialidad y patología." },
-    { k:"evidencia",  ic:"🔬", t:"Evidencia",          s:"Literatura clínica de PubMed, PMC y preprints." },
-    { k:"patologias", ic:"🫁", t:"Patologías",         s:"Por sistemas, definición, alertas y tratamiento." },
-    { k:"farmaco",    ic:"💊", t:"Farmacología",       s:"Fármacos, vademécum, posologías e interacciones." }
-  ];
-  var QUICK = [
-    { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
-    { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
-    { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
-  ];
   var NAV = [
     {k:"inicio",   ic:"🏠", t:"Inicio"},
     {k:"miturno",  ic:"🌙", t:"Mi turno"},
@@ -87,7 +75,6 @@
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function card(x){ return '<button class="nx-card" data-fire="'+x.k+'"><span class="ic">'+x.ic+'</span><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></button>'; }
   function recentHTML(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
     arr=(arr||[]).slice(0,5);
@@ -118,13 +105,9 @@
       +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>Enferix</h1><small>Apoyo clínico rápido</small></div></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
-      +   '<div class="nx-searchbar"><span class="nx-search-ico">🔎</span><input id="nxSearch" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic nx-search-mic" id="nxSearchMic" title="Buscar por voz">🎙️</button><button class="nx-search-sos" id="nxSearchSos" title="SOS" data-fire="sos">🆘</button></div>'
       +   '<div class="nx-hero">'
       +     '<button class="nx-javny-hero" data-javny="1" title="Hablar con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small><span class="nx-javny-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span><span class="nx-javny-hero-cta">💬 Hablar con Javny</span></button>'
       +   '</div>'
-      +   '<div class="nx-panel"><div class="nx-grid nx-main">'+MAIN.map(card).join("")+'</div></div>'
-      +   '<div class="nx-section">Accesos rápidos</div>'
-      +   '<div class="nx-panel"><div class="nx-grid nx-quick">'+QUICK.map(card).join("")+'</div></div>'
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
   }
