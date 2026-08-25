@@ -1,0 +1,57 @@
+/* Mi turno · mismo lenguaje visual que el resto de la app
+   ────────────────────────────────────────────────────────────────────────────
+   El panel abría ocupando casi toda la pantalla (max-height 92vh) y con los
+   degradados que ya se retiraron del inicio, así que desentonaba y abrumaba
+   nada más entrar.
+
+   Ahora arranca escueto —una hoja baja que ocupa lo justo— y crece con el
+   contenido hasta el mismo 92vh de antes: al desplegar una sección larga
+   (pacientes, checklist, historial) se dispone del mismo sitio de siempre.
+   El color se reserva para la acción, como en el inicio. */
+
+.turno-modal{
+  /* De alto fijo a alto según contenido: escueto al abrir, amplio al usarlo. */
+  height:auto;
+  max-height:92vh;
+  background:var(--card-solid,#111827);
+  border:1px solid var(--border,#1E293B);
+  box-shadow:none;
+}
+
+.turno-head{ padding:14px 16px }
+.turno-head h2{ font-size:15px;font-weight:700 }
+.turno-head small{ font-size:11.5px }
+.turno-head-ico{ font-size:19px }
+
+/* El contador presidía el panel con un número enorme; se reduce a dato. */
+.turno-counter{ padding:9px 16px }
+.turno-counter-time{
+  font-size:15px;font-weight:700;
+  color:var(--text,#f1f5f9);
+}
+.turno-counter-label{ font-size:10.5px }
+
+.turno-tabs{ padding:9px 14px }
+.turno-tab{ font-size:11.5px;padding:7px 13px }
+.turno-tab.active{
+  background:var(--resp,#22D3EE);
+  color:#04121a;
+  border-color:transparent;
+}
+
+.turno-body{ padding:14px 16px }
+
+/* Los campos abrían muy altos y estiraban el panel sin necesidad; crecen al
+   escribir en su lugar. */
+.turno-field textarea{ min-height:62px }
+
+.turno-btn{ font-size:12px;padding:8px 14px;border-radius:999px }
+.turno-btn.primary{
+  background:var(--resp,#22D3EE);
+  color:#04121a;
+  border-color:transparent;
+  font-weight:800;
+}
+
+[data-theme="light"] .turno-tab.active,
+[data-theme="light"] .turno-btn.primary{ color:#03252f }
