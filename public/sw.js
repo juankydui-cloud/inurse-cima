@@ -6,7 +6,7 @@
      y accesibles offline si ya se consultaron).
    - POST y cross-origin: pasan directos a la red (no se cachean).
 */
-const VERSION = "inurse-pwa-v6";
+const VERSION = "inurse-pwa-v7";
 const SHELL_CACHE = `${VERSION}-shell`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -106,7 +106,38 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Estáticos same-origin → cache-first, y se rellena la caché al vuelo.
+  // Código de la app (.js y .css) → network-first con fallback a caché.
+  // Con cache-first el service worker devolvía su copia guardada sin llegar
+  // a preguntar al servidor, así que tras un despliegue la app quedaba en un
+  // estado mezclado: el HTML y los ficheros de nombre nuevo llegaban
+  // actualizados, pero los .js y .css que ya existían se seguían sirviendo
+  // en su versión anterior. Subir VERSION no lo evita, porque las cachés
+  // viejas no se borran hasta que el SW nuevo activa, y para entonces la
+  // página ya se ha pintado con el código viejo.
+  // El servidor manda no-cache + ETag en .js, así que revalidar se resuelve
+  // con un 304 sin cuerpo, y sin red se sigue tirando de la caché.
+  if (/\.(?:js|css)$/i.test(url.pathname)) {
+    event.respondWith(
+      // cache:"reload" salta la caché HTTP del navegador, que si no le
+      // devuelve al propio service worker la copia anterior del fichero y
+      // deja el despliegue a medias igualmente. Es lo mismo que ya hace el
+      // precache de instalación.
+      fetch(new Request(url.pathname + url.search, { cache: "reload", credentials: "same-origin" }))
+        .then((res) => {
+          if (res && res.status === 200 && res.type === "basic") {
+            const copy = res.clone();
+            caches.open(RUNTIME_CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          }
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Resto de estáticos (imágenes, fuentes) → cache-first, y se rellena la
+  // caché al vuelo. Aquí sí es seguro: cuando cambia un icono se le cambia
+  // el nombre (icon-512-v2.png), así que la URL nueva nunca está cacheada.
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
