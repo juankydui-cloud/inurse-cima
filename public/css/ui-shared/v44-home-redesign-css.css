@@ -292,3 +292,20 @@ body:has(.ix-overlay.on) .v29vl-fab{
   .nx-turno-ico svg{ width:24px;height:24px }
   .nx-turno-copy b{ font-size:15px }
 }
+
+/* ══ Ancho aprovechado en tablet y escritorio ══
+   Las tarjetas están limitadas a 520px, que es lo correcto en móvil pero deja
+   media pantalla vacía en una tablet: el inicio se veía encajonado y perdido.
+   A partir de 860px las tarjetas se reparten en dos columnas bajo el hero, que
+   sigue presidiendo a todo lo ancho. */
+@media (min-width:860px){
+  .nx-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:start;
+    max-width:1000px;
+  }
+  .nx-top,.nx-hero{ grid-column:1 / -1 }
+  .nx-pharma,.nx-turno,.nx-recent{ max-width:none;margin:0;width:100% }
+  .nx-javny-ask{ max-width:600px }
+}
