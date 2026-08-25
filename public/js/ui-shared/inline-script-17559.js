@@ -294,12 +294,51 @@
     var themeLabels={'light':'☀️ Modo claro','dark':'🌙 Modo oscuro','night':'🌚 Turno noche'};
     var themeNext={'light':'dark','dark':'night','night':'light'};
 
+    var P=window.EnferixPrefs||{};
+    var ESCALAS=[{v:1,t:'Normal'},{v:1.15,t:'Grande'},{v:1.3,t:'Mayor'},{v:1.5,t:'Máximo'}];
+    var IDIOMAS=P.IDIOMAS||[{id:'es-ES',label:'Español (España)'}];
+    var COMANDOS=['buscar sepsis','abre el vademécum','abre las calculadoras',
+      'abre la biblioteca','patologías','algoritmos','lee la pantalla',
+      'para de leer','modo claro','inicio','ayuda'];
+    var curScale=P.textScale?P.textScale():1;
+    var curLang=P.lang?P.lang():'es-ES';
+    var curRate=P.rate&&P.rate()?P.rate():1.05;
+    var curAutoVoice=P.autoVoice?P.autoVoice():false;
+    var curSpec=''; try{ curSpec=localStorage.getItem('inurse_myspec_v1')||''; }catch(e){}
+    var curSpecEmoji=(SPECS.find(function(s){return s.key===curSpec;})||{em:'🩺'}).em;
+
+    // Los mismos modelos que la app ya usa como cadena de reserva.
+    var MODELOS=[
+      {id:'gemini-3.5-flash',           t:'Equilibrado (por defecto)'},
+      {id:'gemini-3.1-flash-lite',      t:'Más ligero y rápido'},
+      {id:'gemini-3.1-pro-preview',     t:'Más capaz, más lento'}
+    ];
+    var curModel='gemini-3.5-flash';
+    try{ curModel=localStorage.getItem('inurse_gemini_model_v1')||curModel; }catch(e){}
+    var curDatos=(window.EnferixData&&window.EnferixData.resumen)?window.EnferixData.resumen():{claves:0,kb:0,tieneClaveApi:false};
+
     var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
     ov.innerHTML=''
       +'<div class="nx-aj-panel" role="dialog" aria-modal="true" aria-label="Ajustes">'
       +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose" aria-label="Cerrar ajustes">✕</button></div>'
       +'<div class="nx-aj-body">'
 
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
+      +'<div class="nx-aj-card nx-aj-profile">'
+      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
+      +'<div class="nx-aj-profile-fields">'
+      +'<div class="nx-aj-field"><label for="nxProfileName">Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSurname">Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileEmail">Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileHospital">Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSpec">Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
+      +'</div>'
+      +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
+      +'</div>'
+      +'</div>'
+
+      +'</div>'
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">☁️</span>Cuenta y sincronización</div>'
       +'<div class="nx-aj-card" id="nxAccountBox"><div class="nx-aj-row"><span>Comprobando sesión…</span></div></div>'
@@ -309,6 +348,51 @@
       +'<div class="nx-aj-section-title"><span class="ic">🌗</span>Apariencia</div>'
       +'<div class="nx-aj-card">'
       +'<div class="nx-aj-row"><span id="nxThemeLabel">'+(themeLabels[curTheme]||themeLabels.dark)+'</span><button class="nx-aj-theme-btn" id="nxThemeCycle">Cambiar</button></div>'
+      +'<div class="nx-aj-field" style="margin-top:14px"><label>Tamaño del texto</label>'
+      +'<div class="nx-aj-scale" id="nxTextScale">'
+      +  ESCALAS.map(function(s){
+           return '<button type="button" data-scale="'+s.v+'"'+(curScale===s.v?' class="on"':'')+'>'
+             +'<span class="sz">Aa</span><span class="lb">'+esc(s.t)+'</span></button>';
+         }).join('')
+      +'</div></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">'+curSpecEmoji+'</span>Mi especialidad</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Al elegirla, las calculadoras y escalas de tu área se colocan las primeras y quedan resaltadas.</p>'
+      +'<div class="nx-aj-field"><label for="nxAjSpec">Especialidad</label><select id="nxAjSpec">'
+      +'<option value="">Sin especialidad</option>'
+      + SPECS.map(function(s){ return '<option value="'+s.key+'"'+(curSpec===s.key?' selected':'')+'>'+s.em+' '+esc(s.t)+'</option>'; }).join('')
+      +'</select></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🔊</span>Voz y lectura</div>'
+      +'<div class="nx-aj-card">'
+      +'<div class="nx-aj-row"><span>Que Javny lea sus respuestas en voz alta</span>'
+      +'<button class="nx-aj-theme-btn" id="nxAutoVoice">'+(curAutoVoice?'🔊 Activada':'🔇 Desactivada')+'</button></div>'
+      +'<div class="nx-aj-field" style="margin-top:14px"><label for="nxVoiceLang">Idioma y acento</label>'
+      +'<select id="nxVoiceLang">'
+      + IDIOMAS.map(function(l){ return '<option value="'+l.id+'"'+(curLang===l.id?' selected':'')+'>'+esc(l.label)+'</option>'; }).join('')
+      +'</select></div>'
+      +'<div class="nx-aj-field"><label for="nxVoicePick">Voz</label><select id="nxVoicePick"><option value="">Automática</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxVoiceRate">Velocidad</label>'
+      +'<div class="nx-aj-range"><input type="range" id="nxVoiceRate" min="0.6" max="1.6" step="0.05" value="'+curRate+'"><output id="nxVoiceRateOut">'+curRate+'×</output></div></div>'
+      +'<button class="nx-aj-btn" id="nxVoiceTest">▶︎ Probar la voz</button>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🎙️</span>Control por voz</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Puedes manejar la app hablando: abrir secciones, buscar, leer la pantalla o pedir ayuda. Usa el idioma que hayas elegido arriba.</p>'
+      +'<div class="nx-aj-cmds">'
+      + COMANDOS.map(function(c){ return '<span class="nx-aj-cmd">«'+esc(c)+'»</span>'; }).join('')
+      +'</div>'
+      +'<div class="nx-aj-row" style="margin-top:12px"><span>Manos libres: di «oye Javny»</span><button class="nx-aj-theme-btn" id="nxOpenDictado">🎙️ Abrir dictado</button></div>'
       +'</div>'
       +'</div>'
 
@@ -334,23 +418,38 @@
       +'<div class="nx-aj-field"><label for="nxJavnyName">Nombre del asistente</label><input type="text" id="nxJavnyName" value="'+esc(javnySaved.name||'Javny')+'" placeholder="Javny"></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyDetail">Nivel de detalle</label><select id="nxJavnyDetail"><option value="breve"'+(javnySaved.detail==='breve'?' selected':'')+'>Breve</option><option value="normal"'+(javnySaved.detail==='normal'||!javnySaved.detail?' selected':'')+'>Normal</option><option value="detallado"'+(javnySaved.detail==='detallado'?' selected':'')+'>Detallado</option></select></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyLang">Idioma de respuesta</label><select id="nxJavnyLang"><option value="es"'+((javnySaved.lang||'es')==='es'?' selected':'')+'>Español</option><option value="en"'+(javnySaved.lang==='en'?' selected':'')+'>English</option><option value="pt"'+(javnySaved.lang==='pt'?' selected':'')+'>Português</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxJavnyModel">Modelo</label><select id="nxJavnyModel">'
+      + MODELOS.map(function(m){ return '<option value="'+m.id+'"'+(curModel===m.id?' selected':'')+'>'+esc(m.t)+'</option>'; }).join('')
+      +'</select></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyKey">Clave API Gemini</label><input type="password" id="nxJavnyKey" value="'+esc(javnySaved.apiKey||'')+'" placeholder="AIza..."></div>'
       +'<button class="nx-aj-btn" id="nxJavnySave">Guardar configuración de Javny</button>'
       +'</div>'
       +'</div>'
 
-      +'<div class="nx-aj-section">'
-      +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
-      +'<div class="nx-aj-card nx-aj-profile">'
-      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
-      +'<div class="nx-aj-profile-fields">'
-      +'<div class="nx-aj-field"><label for="nxProfileName">Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileSurname">Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileEmail">Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileHospital">Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileSpec">Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
       +'</div>'
-      +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">💾</span>Datos de este dispositivo</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">'
+      +  'Tu perfil, turnos, favoritos, historial y proyectos se guardan en este dispositivo'
+      +  (curDatos.tieneClaveApi?', junto con tu clave de Gemini':'')
+      +  '. Ahora mismo hay <b>'+curDatos.claves+'</b> elementos guardados (~'+curDatos.kb+' KB).</p>'
+      +'<label class="nx-aj-check"><input type="checkbox" id="nxExpKey"><span>Incluir la clave de Gemini en la copia</span></label>'
+      +'<div class="nx-aj-row" style="gap:10px;margin-top:10px">'
+      +'<button class="nx-aj-btn" id="nxExportBtn" style="flex:1;margin:0">⬇︎ Exportar copia</button>'
+      +'<button class="nx-aj-btn" id="nxImportBtn" style="flex:1;margin:0;background:rgba(120,150,220,.15)">⬆︎ Restaurar copia</button>'
+      +'</div>'
+      +'<input type="file" id="nxImportInput" accept="application/json,.json" style="display:none">'
+      +'<div id="nxDataMsg" style="font-size:12px;color:#8aa0c8;margin-top:8px"></div>'
+      +'<hr style="border:none;border-top:1px solid var(--border,#1E293B);margin:15px 0">'
+      +'<div class="nx-aj-row"><span style="font-size:12.5px;line-height:1.4">Borrar todo lo guardado en este dispositivo</span>'
+      +'<button class="nx-aj-theme-btn" id="nxWipeBtn" style="background:linear-gradient(135deg,#DC2626,#EF4444)">Borrar</button></div>'
+      +'<div id="nxWipeConfirm" style="display:none;margin-top:10px">'
+      +'<p style="font-size:12px;color:#FCA5A5;line-height:1.5;margin:0 0 9px">Se borrará todo de <b>este</b> dispositivo y no se puede deshacer. Si tienes cuenta, lo que ya esté sincronizado seguirá en la nube. Si no, exporta una copia antes.</p>'
+      +'<div class="nx-aj-row" style="gap:10px"><button class="nx-aj-btn" id="nxWipeCancel" style="flex:1;margin:0;background:rgba(120,150,220,.15)">Cancelar</button>'
+      +'<button class="nx-aj-btn" id="nxWipeYes" style="flex:1;margin:0;background:linear-gradient(135deg,#DC2626,#EF4444)">Sí, borrar todo</button></div>'
+      +'</div>'
       +'</div>'
       +'</div>'
 
@@ -417,6 +516,161 @@
       var tb=document.getElementById('themeBtn');
       if(tb){ tb.textContent=curTheme==='light'?'☀️':curTheme==='night'?'🌚':'🌙'; }
     };
+
+    /* Tamaño de texto */
+    var scaleBox=document.getElementById('nxTextScale');
+    if(scaleBox) scaleBox.onclick=function(e){
+      var b=e.target.closest('[data-scale]'); if(!b) return;
+      var v=parseFloat(b.dataset.scale);
+      if(P.setTextScale) P.setTextScale(v);
+      scaleBox.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x===b); });
+    };
+
+    /* Especialidad: la misma clave que ya usan las calculadoras para
+       reordenarse, de modo que elegirla aquí surte efecto de verdad. */
+    var specSel=document.getElementById('nxAjSpec');
+    if(specSel) specSel.onchange=function(){
+      try{
+        if(specSel.value) localStorage.setItem('inurse_myspec_v1',specSel.value);
+        else localStorage.removeItem('inurse_myspec_v1');
+      }catch(e){}
+      // El panel del inicio muestra la misma preferencia; se repinta si está.
+      document.querySelectorAll('.nx-spec-btn').forEach(function(b){
+        b.classList.toggle('on', b.dataset.spec===specSel.value);
+      });
+      var act=document.getElementById('nxSpecActive');
+      if(act){
+        var s=SPECS.find(function(x){return x.key===specSel.value;});
+        act.textContent=s?s.t:''; act.classList.toggle('show',!!s);
+      }
+      if(typeof window.reorderCalcTabs==='function'){ try{ window.reorderCalcTabs(); }catch(e){} }
+    };
+
+    /* Voz y lectura */
+    var autoBtn=document.getElementById('nxAutoVoice');
+    if(autoBtn) autoBtn.onclick=function(){
+      curAutoVoice=!curAutoVoice;
+      if(P.setAutoVoice) P.setAutoVoice(curAutoVoice);
+      autoBtn.textContent=curAutoVoice?'🔊 Activada':'🔇 Desactivada';
+    };
+
+    var voicePick=document.getElementById('nxVoicePick');
+    function fillVoices(){
+      if(!voicePick||!P.voicesForLang) return;
+      var list=P.voicesForLang(curLang);
+      var actual=P.pickVoice?P.pickVoice(curLang):null;
+      voicePick.innerHTML='<option value="">Automática</option>'
+        + list.map(function(v){
+            return '<option value="'+esc(v.voiceURI)+'"'+((actual&&actual.voiceURI===v.voiceURI)?' selected':'')+'>'+esc(v.name)+'</option>';
+          }).join('');
+      if(!list.length) voicePick.innerHTML='<option value="">No hay voces instaladas para este idioma</option>';
+    }
+    fillVoices();
+    if(P.onVoicesReady) P.onVoicesReady(fillVoices);
+    if(voicePick) voicePick.onchange=function(){ if(P.setVoice) P.setVoice(voicePick.value); };
+
+    var langSel=document.getElementById('nxVoiceLang');
+    if(langSel) langSel.onchange=function(){
+      curLang=langSel.value;
+      if(P.setLang) P.setLang(curLang);
+      fillVoices();
+    };
+
+    var rateInput=document.getElementById('nxVoiceRate');
+    var rateOut=document.getElementById('nxVoiceRateOut');
+    if(rateInput) rateInput.oninput=function(){
+      curRate=parseFloat(rateInput.value);
+      if(rateOut) rateOut.textContent=curRate.toFixed(2)+'×';
+      if(P.setRate) P.setRate(curRate);
+    };
+
+    var testBtn=document.getElementById('nxVoiceTest');
+    if(testBtn) testBtn.onclick=function(){
+      try{
+        speechSynthesis.cancel();
+        // El módulo de preferencias fija idioma, voz y velocidad al hablar.
+        speechSynthesis.speak(new SpeechSynthesisUtterance('Hola, soy Javny. Así sonaré cuando te lea una respuesta.'));
+      }catch(e){}
+    };
+
+    var dictadoBtn=document.getElementById('nxOpenDictado');
+    if(dictadoBtn) dictadoBtn.onclick=function(){
+      closeAjustes();
+      var f=document.getElementById('recFab');
+      if(f){ f.click(); return; }
+      if(typeof window.openRec==='function') window.openRec();
+    };
+
+    /* Modelo de Javny: se escriben las dos claves a la vez, igual que hace el
+       propio reintento del chat, para que no queden desincronizadas. */
+    var modelSel=document.getElementById('nxJavnyModel');
+    if(modelSel) modelSel.onchange=function(){
+      var m=modelSel.value;
+      try{
+        localStorage.setItem('inurse_gemini_model_v1',m);
+        var raw=localStorage.getItem('inurse52_javny_config');
+        if(raw){ var o=JSON.parse(raw); o.model=m; localStorage.setItem('inurse52_javny_config',JSON.stringify(o)); }
+      }catch(e){}
+    };
+
+    /* Datos de este dispositivo */
+    var dataMsg=document.getElementById('nxDataMsg');
+    function decir(txt,color){ if(dataMsg){ dataMsg.textContent=txt; dataMsg.style.color=color||'#8aa0c8'; } }
+
+    var exportBtn=document.getElementById('nxExportBtn');
+    if(exportBtn) exportBtn.onclick=function(){
+      try{
+        var conClave=!!(document.getElementById('nxExpKey')||{}).checked;
+        var copia=window.EnferixData.exportar(conClave);
+        var blob=new Blob([JSON.stringify(copia,null,2)],{type:'application/json'});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a');
+        a.href=url;
+        a.download='enferix-copia-'+new Date().toISOString().slice(0,10)+'.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); },2000);
+        decir(conClave
+          ? '✓ Copia descargada. Contiene tu clave de Gemini: no la compartas.'
+          : '✓ Copia descargada, sin la clave de Gemini.','#4ade80');
+      }catch(e){ decir('No se pudo exportar: '+e.message,'#f87171'); }
+    };
+
+    var importBtn=document.getElementById('nxImportBtn');
+    var importInput=document.getElementById('nxImportInput');
+    if(importBtn&&importInput){
+      importBtn.onclick=function(){ importInput.click(); };
+      importInput.onchange=function(){
+        var f=importInput.files&&importInput.files[0]; if(!f) return;
+        var fr=new FileReader();
+        fr.onload=function(){
+          try{
+            var n=window.EnferixData.importar(String(fr.result||''));
+            decir('✓ Restaurados '+n+' elementos. Recargando…','#4ade80');
+            setTimeout(function(){ location.reload(); },900);
+          }catch(e){ decir(e.message,'#f87171'); }
+        };
+        fr.onerror=function(){ decir('No se pudo leer el fichero.','#f87171'); };
+        fr.readAsText(f);
+        importInput.value='';
+      };
+    }
+
+    // Borrado en dos pasos: es irreversible y no debe dispararse de un roce.
+    var wipeBtn=document.getElementById('nxWipeBtn');
+    var wipeBox=document.getElementById('nxWipeConfirm');
+    if(wipeBtn&&wipeBox){
+      wipeBtn.onclick=function(){ wipeBox.style.display=wipeBox.style.display==='none'?'block':'none'; };
+      var cancel=document.getElementById('nxWipeCancel');
+      if(cancel) cancel.onclick=function(){ wipeBox.style.display='none'; };
+      var yes=document.getElementById('nxWipeYes');
+      if(yes) yes.onclick=function(){
+        try{
+          var n=window.EnferixData.borrar();
+          decir('✓ Borrados '+n+' elementos. Recargando…','#4ade80');
+        }catch(e){}
+        setTimeout(function(){ location.reload(); },900);
+      };
+    }
 
     var geoOpenBtn=document.getElementById('nxGeoOpen');
     if(geoOpenBtn)geoOpenBtn.onclick=function(){
