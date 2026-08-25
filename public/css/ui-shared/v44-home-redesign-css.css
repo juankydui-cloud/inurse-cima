@@ -245,3 +245,50 @@ body:has(.ix-overlay.on) .nx-search-fab,
 body:has(.ix-overlay.on) .v29vl-fab{
   display:none !important;
 }
+
+/* ══ Mi turno en el inicio ══
+   Si hay un turno en marcha es, probablemente, lo más relevante que puede
+   haber en esta pantalla. Misma tarjeta que Farmacología —icono, título y
+   contenido— para que el inicio siga leyéndose como una sola pieza. */
+.nx-turno{ width:100%;max-width:520px;margin:14px auto 0 }
+.nx-turno-card{
+  display:block;width:100%;text-align:left;cursor:pointer;font-family:inherit;
+  padding:18px;border-radius:20px;color:var(--text,#f1f5f9);
+  background:var(--card-solid,#111827);
+  border:1px solid var(--border,#1E293B);
+  transition:border-color .15s ease;
+}
+.nx-turno-card:hover{ border-color:color-mix(in srgb,var(--resp,#22D3EE) 45%,transparent) }
+
+.nx-turno-head{ display:flex;align-items:center;gap:12px }
+.nx-turno-ico{
+  flex:0 0 auto;width:42px;height:42px;border-radius:12px;
+  display:grid;place-items:center;
+  background:color-mix(in srgb,var(--resp,#22D3EE) 14%,transparent);
+  color:var(--resp,#22D3EE);
+  border:1px solid var(--border,#1E293B);
+}
+.nx-turno-ico svg{ width:26px;height:26px;display:block }
+.nx-turno-copy{ flex:1;min-width:0 }
+.nx-turno-copy b{ display:block;font-size:16px;font-weight:700;line-height:1.2 }
+.nx-turno-copy small{ display:block;margin-top:2px;font-size:11.5px;line-height:1.35;color:var(--text-dim,#94a3b8) }
+.nx-turno-pct{
+  flex:0 0 auto;font-size:12px;font-weight:700;
+  color:var(--text-dim,#94a3b8);font-variant-numeric:tabular-nums;
+}
+
+.nx-turno-barra{
+  height:4px;border-radius:999px;margin:14px 0 10px;overflow:hidden;
+  background:rgba(255,255,255,.08);
+}
+.nx-turno-barra i{ display:block;height:100%;background:var(--resp,#22D3EE) }
+.nx-turno-datos{ font-size:11.5px;line-height:1.4;color:var(--text-dim,#94a3b8) }
+
+[data-theme="light"] .nx-turno-barra{ background:rgba(15,23,42,.10) }
+
+@media(max-width:620px){
+  .nx-turno-card{ padding:15px;border-radius:18px }
+  .nx-turno-ico{ width:38px;height:38px;border-radius:11px }
+  .nx-turno-ico svg{ width:24px;height:24px }
+  .nx-turno-copy b{ font-size:15px }
+}
