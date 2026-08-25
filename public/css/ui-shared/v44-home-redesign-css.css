@@ -233,3 +233,15 @@
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .nx-recent-item .tx small{ display:block;margin-top:1px;font-size:11px;color:var(--text-dim,#94a3b8) }
+
+/* Los dos flotantes van a z-index 9998, por encima de cualquier panel, así que
+   tapaban el contenido de Mi turno y de los modales abiertos desde él. Se
+   ocultan mientras haya un panel abierto: ahí no hacen falta y estorban. */
+body:has(.turno-overlay.on) .nx-search-fab,
+body:has(.turno-overlay.on) .v29vl-fab,
+body:has(.overlay.show) .nx-search-fab,
+body:has(.overlay.show) .v29vl-fab,
+body:has(.ix-overlay.on) .nx-search-fab,
+body:has(.ix-overlay.on) .v29vl-fab{
+  display:none !important;
+}
