@@ -23,6 +23,9 @@
       case "cercanos":   if(typeof window.openNearby==='function'){ window.openNearby(); return; } return;
       case "sos":        if(typeof window.openSos==='function'){ window.openSos(); return; } return;
       case "proyectos":  if(window.EnferixProjects&&window.EnferixProjects.open){ window.EnferixProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
+      case "fuentes":    if(typeof window.EnferixOpenOfficialRepo==='function'){ window.EnferixOpenOfficialRepo(''); return; } return;
+      case "perfusiones":if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
+      case "dosisped":   if(typeof window.openCalcs==='function'){ window.openCalcs('dosisPed'); return; } openIC("calc"); return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
       case "miturno":  if(window.EnferixTurno&&window.EnferixTurno.open){ window.EnferixTurno.open(); return; } return;
       case "ajustes":  openAjustes(); return;
@@ -66,28 +69,16 @@
     {key:'trauma',    em:'🦴', t:'Trauma',            sc:'#DC2626'},
     {key:'otras',     em:'🩺', t:'Otras',             sc:'#0EA5E9'}
   ];
-  var MAIN = [
-    { k:"biblioteca", ic:"📚", t:"Biblioteca virtual", s:"Libros, manuales y recursos de referencia." },
-    { k:"guias",      ic:"📋", t:"Guías clínicas",     s:"Protocolos y guías por especialidad y patología." },
-    { k:"evidencia",  ic:"🔬", t:"Evidencia",          s:"Literatura clínica de PubMed, PMC y preprints." },
-    { k:"patologias", ic:"🫁", t:"Patologías",         s:"Por sistemas, definición, alertas y tratamiento." },
-    { k:"farmaco",    ic:"💊", t:"Farmacología",       s:"Fármacos, vademécum, posologías e interacciones." }
-  ];
-  var QUICK = [
-    { k:"procedimientos", ic:"📝", t:"Procedimientos",  s:"Técnicas de enfermería paso a paso." },
-    { k:"algoritmos",     ic:"🔀", t:"Algoritmos",      s:"Algoritmos críticos y protocolos rápidos." },
-    { k:"proyectos",      ic:"👥", t:"Proyectos ConVive", s:"Proyectos, documentos y trabajo colaborativo." }
-  ];
   var NAV = [
     {k:"inicio",   ic:"🏠", t:"Inicio"},
     {k:"miturno",  ic:"🌙", t:"Mi turno"},
     {k:"calc",     ic:"🧮", t:"Cálculo"},
     {k:"ecg",      ic:"📈", t:"Electros"},
     {k:"rx",       ic:"🩻", t:"Rayos X"},
+    {k:"fuentes",  ic:"🏛️", t:"Fuentes"},
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function card(x){ return '<button class="nx-card" data-fire="'+x.k+'"><span class="ic">'+x.ic+'</span><b>'+esc(x.t)+'</b><small>'+esc(x.s)+'</small></button>'; }
   function recentHTML(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
     arr=(arr||[]).slice(0,5);
@@ -118,15 +109,68 @@
       +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>Enferix</h1><small>Apoyo clínico rápido</small></div></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
-      +   '<div class="nx-searchbar"><span class="nx-search-ico">🔎</span><input id="nxSearch" type="search" placeholder="Buscar en toda la app: protocolos, fármacos, procedimientos, algoritmos, escalas…" autocomplete="off"><button class="qmic nx-search-mic" id="nxSearchMic" title="Buscar por voz">🎙️</button><button class="nx-search-sos" id="nxSearchSos" title="SOS" data-fire="sos">🆘</button></div>'
       +   '<div class="nx-hero">'
-      +     '<button class="nx-javny-hero" data-javny="1" title="Hablar con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small><span class="nx-javny-hero-hint">Pregúntame un protocolo, fármaco o algoritmo</span><span class="nx-javny-hero-cta">💬 Hablar con Javny</span></button>'
+      +     '<div class="nx-javny-hero">'
+      +       '<button class="nx-javny-id" data-javny="1" title="Abrir la conversación con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small></button>'
+      +       '<div class="nx-javny-ask">'
+      +         '<textarea id="nxAsk" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>'
+      +         '<button class="qmic nx-ask-mic" id="nxAskMic" title="Dictar la pregunta">🎙️</button>'
+      +         '<button class="nx-ask-send" id="nxAskSend" title="Enviar a Javny" aria-label="Enviar a Javny">➤</button>'
+      +       '</div>'
+      +     '</div>'
       +   '</div>'
-      +   '<div class="nx-panel"><div class="nx-grid nx-main">'+MAIN.map(card).join("")+'</div></div>'
-      +   '<div class="nx-section">Accesos rápidos</div>'
-      +   '<div class="nx-panel"><div class="nx-grid nx-quick">'+QUICK.map(card).join("")+'</div></div>'
+      +   pharmaCard()
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
+  }
+  /* Bloque de Farmacología: buscador de medicamentos arriba (texto o voz) y,
+     debajo, los tres apartados del área como iconos. */
+  function pharmaCard(){
+    var tiles=[
+      {k:"farmaco",     cls:"vade",  t:"Vademécum",    d:"Fichas técnicas"},
+      {k:"interacciones",cls:"inter", t:"Interacciones",d:"Comprobador"},
+      {k:"perfusiones", cls:"perf",  t:"Perfusiones",  d:"Y diluciones"}
+    ];
+    return '<section class="nx-pharma">'
+      +  '<div class="nx-pharma-head">'
+      +    '<span class="nx-pharma-ico">'+pharmaIcon()+'</span>'
+      +    '<span class="nx-pharma-copy"><b>Farmacología</b><small>Busca en la base oficial CIMA-AEMPS</small></span>'
+      +  '</div>'
+      +  '<div class="nx-pharma-search">'
+      +    '<span class="nx-pharma-search-ic">🔎</span>'
+      +    '<input id="nxPharmaQ" type="search" autocomplete="off" placeholder="Medicamento…">'
+      +    '<button id="nxPharmaMic" class="nx-pharma-mic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button>'
+      +    '<button id="nxPharmaGo" class="nx-pharma-go" title="Buscar en CIMA-AEMPS">Buscar</button>'
+      +  '</div>'
+      + '</section>';
+  }
+  function pharmaIcon(){
+    return '<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">'
+      + '<defs><linearGradient id="nxPharmaGrad" x1="0" y1="0" x2="1" y2="1">'
+      +   '<stop stop-color="#F472B6"/><stop offset=".5" stop-color="#A855F7"/><stop offset="1" stop-color="#6366F1"/>'
+      + '</linearGradient></defs>'
+      + '<g transform="rotate(-45 24 24)">'
+      +   '<rect x="9" y="16" width="30" height="16" rx="8" fill="url(#nxPharmaGrad)"/>'
+      +   '<path d="M24 16h7a8 8 0 0 1 0 16h-7z" fill="#fff" opacity=".3"/>'
+      +   '<rect x="9" y="16" width="30" height="16" rx="8" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.5"/>'
+      +   '<path d="M24 16v16" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"/>'
+      + '</g>'
+      + '</svg>';
+  }
+  /* Lleva la pregunta escrita en el hero al chat de Javny: lo abre, rellena su
+     campo y lo envía, para que escribir arriba no obligue a repetir la pregunta. */
+  function askJavny(text){
+    text=String(text||"").trim(); if(!text) return;
+    try{ if(typeof window.openJavnyWithContext==='function'){ window.openJavnyWithContext(text); return; } }catch(e){}
+    clickId("ccFab");
+    var tries=0;
+    (function fill(){
+      var ta=document.getElementById("ccTa");
+      if(!ta){ if(tries++<25) setTimeout(fill,80); return; }
+      ta.value=text; ta.dispatchEvent(new Event("input",{bubbles:true})); ta.focus();
+      var send=document.getElementById("ccSend");
+      if(send) setTimeout(function(){ send.click(); },60);
+    })();
   }
   function forwardSearch(q){
     var nxInp=document.getElementById("nxSearch");
@@ -183,11 +227,46 @@
         return;
       }
     });
-    var inp=home.querySelector("#nxSearch");
-    if(inp){
-      inp.addEventListener("input",function(){ if(typeof window.showGlobalResults==='function') window.showGlobalResults(inp.value||''); });
-      inp.addEventListener("keydown",function(e){ if(e.key==="Enter"&&inp.value.trim()){ forwardSearch(inp.value.trim()); } });
+    var ask=home.querySelector("#nxAsk");
+    if(ask){
+      var sendAsk=function(){
+        var t=ask.value.trim(); if(!t) return;
+        askJavny(t); ask.value=""; ask.style.height="";
+      };
+      // Enter envía; Mayús+Enter deja escribir varias líneas.
+      ask.addEventListener("keydown",function(e){
+        if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendAsk(); }
+      });
+      // El campo crece con la pregunta en vez de recortarla.
+      ask.addEventListener("input",function(){
+        ask.style.height="auto";
+        ask.style.height=Math.min(ask.scrollHeight,132)+"px";
+      });
+      var sendBtn=home.querySelector("#nxAskSend");
+      if(sendBtn) sendBtn.addEventListener("click",sendAsk);
     }
+    wirePharmaSearch(home);
+  }
+  /* Buscador de medicamentos de la tarjeta de Farmacología: manda la consulta
+     al Vademécum CIMA, por texto o dictada. */
+  function wirePharmaSearch(home){
+    var q=home.querySelector("#nxPharmaQ"); if(!q) return;
+    function go(){
+      var t=(q.value||"").trim(); if(t.length<2) return;
+      if(window.EnferixCima&&window.EnferixCima.search){ window.EnferixCima.search(t,'name'); return; }
+      fire("farmaco");
+    }
+    q.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); go(); } });
+    var goBtn=home.querySelector("#nxPharmaGo");
+    if(goBtn) goBtn.addEventListener("click",go);
+    var mic=home.querySelector("#nxPharmaMic");
+    if(mic) mic.addEventListener("click",function(e){
+      e.preventDefault();
+      var V=window.EnferixVoiceManager;
+      if(!V||!V.start){ q.focus(); return; }
+      // Al cerrar el dictado se lanza la búsqueda sin tocar nada más.
+      V.start(mic,function(t){ q.value=t; },function(t){ q.value=t; go(); });
+    });
   }
   function build(){
     var home=document.getElementById("in50Home"); if(!home) return false;
