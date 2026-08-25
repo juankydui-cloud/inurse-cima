@@ -294,6 +294,19 @@
     var themeLabels={'light':'☀️ Modo claro','dark':'🌙 Modo oscuro','night':'🌚 Turno noche'};
     var themeNext={'light':'dark','dark':'night','night':'light'};
 
+    var P=window.EnferixPrefs||{};
+    var ESCALAS=[{v:1,t:'Normal'},{v:1.15,t:'Grande'},{v:1.3,t:'Mayor'},{v:1.5,t:'Máximo'}];
+    var IDIOMAS=P.IDIOMAS||[{id:'es-ES',label:'Español (España)'}];
+    var COMANDOS=['buscar sepsis','abre el vademécum','abre las calculadoras',
+      'abre la biblioteca','patologías','algoritmos','lee la pantalla',
+      'para de leer','modo claro','inicio','ayuda'];
+    var curScale=P.textScale?P.textScale():1;
+    var curLang=P.lang?P.lang():'es-ES';
+    var curRate=P.rate&&P.rate()?P.rate():1.05;
+    var curAutoVoice=P.autoVoice?P.autoVoice():false;
+    var curSpec=''; try{ curSpec=localStorage.getItem('inurse_myspec_v1')||''; }catch(e){}
+    var curSpecEmoji=(SPECS.find(function(s){return s.key===curSpec;})||{em:'🩺'}).em;
+
     var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
     ov.innerHTML=''
       +'<div class="nx-aj-panel" role="dialog" aria-modal="true" aria-label="Ajustes">'
@@ -309,6 +322,51 @@
       +'<div class="nx-aj-section-title"><span class="ic">🌗</span>Apariencia</div>'
       +'<div class="nx-aj-card">'
       +'<div class="nx-aj-row"><span id="nxThemeLabel">'+(themeLabels[curTheme]||themeLabels.dark)+'</span><button class="nx-aj-theme-btn" id="nxThemeCycle">Cambiar</button></div>'
+      +'<div class="nx-aj-field" style="margin-top:14px"><label>Tamaño del texto</label>'
+      +'<div class="nx-aj-scale" id="nxTextScale">'
+      +  ESCALAS.map(function(s){
+           return '<button type="button" data-scale="'+s.v+'"'+(curScale===s.v?' class="on"':'')+'>'
+             +'<span class="sz">Aa</span><span class="lb">'+esc(s.t)+'</span></button>';
+         }).join('')
+      +'</div></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">'+curSpecEmoji+'</span>Mi especialidad</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Al elegirla, las calculadoras y escalas de tu área se colocan las primeras y quedan resaltadas.</p>'
+      +'<div class="nx-aj-field"><label for="nxAjSpec">Especialidad</label><select id="nxAjSpec">'
+      +'<option value="">Sin especialidad</option>'
+      + SPECS.map(function(s){ return '<option value="'+s.key+'"'+(curSpec===s.key?' selected':'')+'>'+s.em+' '+esc(s.t)+'</option>'; }).join('')
+      +'</select></div>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🔊</span>Voz y lectura</div>'
+      +'<div class="nx-aj-card">'
+      +'<div class="nx-aj-row"><span>Que Javny lea sus respuestas en voz alta</span>'
+      +'<button class="nx-aj-theme-btn" id="nxAutoVoice">'+(curAutoVoice?'🔊 Activada':'🔇 Desactivada')+'</button></div>'
+      +'<div class="nx-aj-field" style="margin-top:14px"><label for="nxVoiceLang">Idioma y acento</label>'
+      +'<select id="nxVoiceLang">'
+      + IDIOMAS.map(function(l){ return '<option value="'+l.id+'"'+(curLang===l.id?' selected':'')+'>'+esc(l.label)+'</option>'; }).join('')
+      +'</select></div>'
+      +'<div class="nx-aj-field"><label for="nxVoicePick">Voz</label><select id="nxVoicePick"><option value="">Automática</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxVoiceRate">Velocidad</label>'
+      +'<div class="nx-aj-range"><input type="range" id="nxVoiceRate" min="0.6" max="1.6" step="0.05" value="'+curRate+'"><output id="nxVoiceRateOut">'+curRate+'×</output></div></div>'
+      +'<button class="nx-aj-btn" id="nxVoiceTest">▶︎ Probar la voz</button>'
+      +'</div>'
+      +'</div>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">🎙️</span>Control por voz</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">Puedes manejar la app hablando: abrir secciones, buscar, leer la pantalla o pedir ayuda. Usa el idioma que hayas elegido arriba.</p>'
+      +'<div class="nx-aj-cmds">'
+      + COMANDOS.map(function(c){ return '<span class="nx-aj-cmd">«'+esc(c)+'»</span>'; }).join('')
+      +'</div>'
+      +'<div class="nx-aj-row" style="margin-top:12px"><span>Manos libres: di «oye Javny»</span><button class="nx-aj-theme-btn" id="nxOpenDictado">🎙️ Abrir dictado</button></div>'
       +'</div>'
       +'</div>'
 
@@ -416,6 +474,90 @@
       document.getElementById('nxThemeLabel').textContent=themeLabels[curTheme];
       var tb=document.getElementById('themeBtn');
       if(tb){ tb.textContent=curTheme==='light'?'☀️':curTheme==='night'?'🌚':'🌙'; }
+    };
+
+    /* Tamaño de texto */
+    var scaleBox=document.getElementById('nxTextScale');
+    if(scaleBox) scaleBox.onclick=function(e){
+      var b=e.target.closest('[data-scale]'); if(!b) return;
+      var v=parseFloat(b.dataset.scale);
+      if(P.setTextScale) P.setTextScale(v);
+      scaleBox.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on',x===b); });
+    };
+
+    /* Especialidad: la misma clave que ya usan las calculadoras para
+       reordenarse, de modo que elegirla aquí surte efecto de verdad. */
+    var specSel=document.getElementById('nxAjSpec');
+    if(specSel) specSel.onchange=function(){
+      try{
+        if(specSel.value) localStorage.setItem('inurse_myspec_v1',specSel.value);
+        else localStorage.removeItem('inurse_myspec_v1');
+      }catch(e){}
+      // El panel del inicio muestra la misma preferencia; se repinta si está.
+      document.querySelectorAll('.nx-spec-btn').forEach(function(b){
+        b.classList.toggle('on', b.dataset.spec===specSel.value);
+      });
+      var act=document.getElementById('nxSpecActive');
+      if(act){
+        var s=SPECS.find(function(x){return x.key===specSel.value;});
+        act.textContent=s?s.t:''; act.classList.toggle('show',!!s);
+      }
+      if(typeof window.reorderCalcTabs==='function'){ try{ window.reorderCalcTabs(); }catch(e){} }
+    };
+
+    /* Voz y lectura */
+    var autoBtn=document.getElementById('nxAutoVoice');
+    if(autoBtn) autoBtn.onclick=function(){
+      curAutoVoice=!curAutoVoice;
+      if(P.setAutoVoice) P.setAutoVoice(curAutoVoice);
+      autoBtn.textContent=curAutoVoice?'🔊 Activada':'🔇 Desactivada';
+    };
+
+    var voicePick=document.getElementById('nxVoicePick');
+    function fillVoices(){
+      if(!voicePick||!P.voicesForLang) return;
+      var list=P.voicesForLang(curLang);
+      var actual=P.pickVoice?P.pickVoice(curLang):null;
+      voicePick.innerHTML='<option value="">Automática</option>'
+        + list.map(function(v){
+            return '<option value="'+esc(v.voiceURI)+'"'+((actual&&actual.voiceURI===v.voiceURI)?' selected':'')+'>'+esc(v.name)+'</option>';
+          }).join('');
+      if(!list.length) voicePick.innerHTML='<option value="">No hay voces instaladas para este idioma</option>';
+    }
+    fillVoices();
+    if(P.onVoicesReady) P.onVoicesReady(fillVoices);
+    if(voicePick) voicePick.onchange=function(){ if(P.setVoice) P.setVoice(voicePick.value); };
+
+    var langSel=document.getElementById('nxVoiceLang');
+    if(langSel) langSel.onchange=function(){
+      curLang=langSel.value;
+      if(P.setLang) P.setLang(curLang);
+      fillVoices();
+    };
+
+    var rateInput=document.getElementById('nxVoiceRate');
+    var rateOut=document.getElementById('nxVoiceRateOut');
+    if(rateInput) rateInput.oninput=function(){
+      curRate=parseFloat(rateInput.value);
+      if(rateOut) rateOut.textContent=curRate.toFixed(2)+'×';
+      if(P.setRate) P.setRate(curRate);
+    };
+
+    var testBtn=document.getElementById('nxVoiceTest');
+    if(testBtn) testBtn.onclick=function(){
+      try{
+        speechSynthesis.cancel();
+        // El módulo de preferencias fija idioma, voz y velocidad al hablar.
+        speechSynthesis.speak(new SpeechSynthesisUtterance('Hola, soy Javny. Así sonaré cuando te lea una respuesta.'));
+      }catch(e){}
+    };
+
+    var dictadoBtn=document.getElementById('nxOpenDictado');
+    if(dictadoBtn) dictadoBtn.onclick=function(){
+      closeAjustes();
+      var f=document.getElementById('recFab');
+      if(f){ f.click(); return; }
+      if(typeof window.openRec==='function') window.openRec();
     };
 
     var geoOpenBtn=document.getElementById('nxGeoOpen');
