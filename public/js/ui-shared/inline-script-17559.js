@@ -107,7 +107,7 @@
     return ''
       + '<div class="nx-wrap">'
       +   '<div class="nx-top">'
-      +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>Enferix</h1><small>Apoyo clínico rápido</small></div></div>'
+      +     '<div class="nx-brand"><img class="nx-logo" src="/icon-512-v2.png" alt=""><h1>Enferix</h1></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
       +   '<div class="nx-hero">'
