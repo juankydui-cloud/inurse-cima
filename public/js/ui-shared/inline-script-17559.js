@@ -80,6 +80,56 @@
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  /* Resumen del turno en el inicio: si hay un turno en marcha, es
+     probablemente lo más relevante que puede haber en esta pantalla. Solo
+     aparece cuando Mi turno se ha usado alguna vez; si no, el inicio se queda
+     limpio. */
+  function turnoSection(){
+    var meta=null;
+    try{ meta=JSON.parse(localStorage.getItem("inurse_turno_meta_v1")||"null"); }catch(e){}
+    if(!meta || !meta.startedAt) return "";
+
+    function leer(k,def){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?def:v; }catch(e){ return def; } }
+    var rooms=leer("inurse_turno_rooms_v1",[]) || [];
+    var rem=leer("inurse_turno_rem_v1",[]) || [];
+    var check=leer("inurse_turno_checklist_v1",null);
+
+    var horas=Number(meta.hours)||8;
+    var transcurrido=Date.now()-Number(meta.startedAt);
+    var restante=Math.max(0, horas*3600000 - transcurrido);
+    var h=Math.floor(restante/3600000), m=Math.floor((restante%3600000)/60000);
+    var quedan = restante>0 ? (h+"h "+String(m).padStart(2,"0")+"min") : "turno cumplido";
+    var avance = Math.max(0, Math.min(100, Math.round(transcurrido/(horas*3600000)*100)));
+
+    var pendientes=rem.filter(function(r){ return r && !r.done; }).length;
+    var tareas=[];
+    if(check){ tareas=(check.start||[]).concat(check.end||[]); }
+    var sinHacer=tareas.filter(function(t){ return t && !t.done; }).length;
+
+    var datos=[];
+    if(rooms.length) datos.push(rooms.length+(rooms.length===1?" paciente":" pacientes"));
+    if(pendientes)   datos.push(pendientes+(pendientes===1?" recordatorio":" recordatorios"));
+    if(sinHacer)     datos.push(sinHacer+" de checklist");
+
+    return '<section class="nx-turno">'
+      + '<button type="button" class="nx-turno-card" data-fire="miturno">'
+      +   '<div class="nx-turno-head">'
+      +     '<span class="nx-turno-ico">'+turnoIcon()+'</span>'
+      +     '<span class="nx-turno-copy"><b>Mi turno</b>'
+      +       '<small>'+esc(quedan)+(restante>0?' restantes':'')+'</small></span>'
+      +     '<span class="nx-turno-pct">'+avance+'%</span>'
+      +   '</div>'
+      +   '<div class="nx-turno-barra"><i style="width:'+avance+'%"></i></div>'
+      +   '<div class="nx-turno-datos">'+(datos.length?esc(datos.join(' · ')):'Sin pendientes anotados')+'</div>'
+      + '</button></section>';
+  }
+  function turnoIcon(){
+    return '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
+      + '<circle cx="16" cy="17" r="11" fill="none" stroke="currentColor" stroke-width="2.2"/>'
+      + '<path d="M16 11v6.4l4.2 2.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+      + '<path d="M11 3.6 6.4 6.9M21 3.6l4.6 3.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
+      + '</svg>';
+  }
   function recentSection(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
     if(!arr || !arr.length) return "";
@@ -141,6 +191,7 @@
       +     '</div>'
       +   '</div>'
       +   pharmaCard()
+      +   turnoSection()
       +   recentSection()
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
