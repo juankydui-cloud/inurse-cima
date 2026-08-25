@@ -10,8 +10,11 @@
    El color se reserva para la acción, como en el inicio. */
 
 .turno-modal{
-  /* De alto fijo a alto según contenido: escueto al abrir, amplio al usarlo. */
+  /* De alto fijo a alto según contenido: escueto al abrir, amplio al usarlo.
+     El min-height es un suelo de seguridad: si algún navegador calcula mal el
+     alto del contenido, el panel nunca puede quedarse en nada. */
   height:auto;
+  min-height:min(360px,70vh);
   max-height:92vh;
   background:var(--card-solid,#111827);
   border:1px solid var(--border,#1E293B);
@@ -39,7 +42,13 @@
   border-color:transparent;
 }
 
-.turno-body{ padding:14px 16px }
+/* .turno-body venía con flex:1, que es flex-basis:0. Dentro de un contenedor
+   en columna con height:auto, un hijo con base 0 aporta cero al alto
+   intrínseco: Chromium lo resuelve usando el tamaño del contenido, pero Safari
+   lo colapsa y el panel se queda sin cuerpo. Con flex:0 1 auto el cuerpo se
+   dimensiona por su contenido, sigue encogiendo al llegar al techo y sigue
+   teniendo su propio scroll. */
+.turno-body{ flex:0 1 auto;padding:14px 16px }
 
 /* Los campos abrían muy altos y estiraban el panel sin necesidad; crecen al
    escribir en su lugar. */
