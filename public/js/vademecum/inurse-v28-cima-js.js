@@ -14,7 +14,6 @@ let mode='name';
 let lastResults=[];
 let current=null;
 let activeTab='summary';
-let pathologyExpanded=false;
 let pathologyIndex=null;
 let recognition=null;
 
@@ -190,27 +189,6 @@ function buildPathologyIndex(){
   }catch(e){console.warn(e)}
   pathologyIndex=out;
   return out;
-}
-function commonPathologies(){
-  const preferred=[
-    'Sepsis','Choque séptico','Anafilaxia','Asma','EPOC','Neumonía','Hipertensión',
-    'Insuficiencia cardíaca','Síndrome coronario agudo','Arritmias','Ictus',
-    'Epilepsia','Diabetes','Cetoacidosis diabética','Insuficiencia renal','Dolor'
-  ];
-  const index=buildPathologyIndex();
-  const found=[];
-  preferred.forEach(p=>{
-    const match=index.find(x=>norm(x.title).includes(norm(p)));
-    if(match&&!found.some(x=>x.id===match.id))found.push(match);
-  });
-  index.slice(0,20).forEach(x=>{if(!found.some(y=>y.id===x.id))found.push(x)});
-  return found.slice(0,30);
-}
-function renderPathologyChips(){
-  const rows=commonPathologies();
-  $('#v28PathologyChips').innerHTML=rows.map(x=>
-    `<button type="button" class="v28-pathology-chip" data-pathology="${esc(x.title)}">${esc(x.title)}</button>`
-  ).join('');
 }
 function relatedPathologies(){
   const medicine=current?.medicine||{};
@@ -492,17 +470,11 @@ $('#v28DrugFavorite').onclick=toggleFavorite;
 $('#v28AskJavny').onclick=askJavny;
 $('#v28OpenTechnical').onclick=()=>openOfficial(1);
 $('#v28OpenProspectus').onclick=()=>openOfficial(2);
-$('#v28MorePathologies').onclick=()=>{
-  pathologyExpanded=!pathologyExpanded;
-  $('#v28PathologyChips').classList.toggle('expanded',pathologyExpanded);
-  $('#v28MorePathologies').textContent=pathologyExpanded?'Ver menos':'Ver más';
+$('#v28OpenInteracciones').onclick=()=>{
+  if(window.EnferixInteracciones&&window.EnferixInteracciones.open)window.EnferixInteracciones.open();
 };
 $('#v28SearchModes').onclick=e=>{
   const b=e.target.closest('[data-mode]');if(b)setMode(b.dataset.mode);
-};
-$('#v28PathologyChips').onclick=e=>{
-  const b=e.target.closest('[data-pathology]');if(!b)return;
-  setMode('pathology');queryInput.value=b.dataset.pathology;searchCima();
 };
 resultsBox.onclick=e=>{
   const local=e.target.closest('[data-open-local]');if(local){openLocal();return}
@@ -529,6 +501,5 @@ window.EnferixCima={
   openMedicine
 };
 
-renderPathologyChips();
 setMode('name');
 })();

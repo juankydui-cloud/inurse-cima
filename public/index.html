@@ -1204,12 +1204,19 @@
         </div>
       </section>
 
-      <section class="v28-pathology-section">
-        <div class="v28-section-title">
-          <div><b>Patologías de Enferix</b><small>Selecciona una para buscar medicamentos cuya indicación oficial la menciona.</small></div>
-          <button type="button" id="v28MorePathologies">Ver más</button>
-        </div>
-        <div id="v28PathologyChips" class="v28-pathology-chips"></div>
+      <section class="v28-tools-section">
+        <button type="button" class="v28-tool-card" id="v28OpenInteracciones">
+          <span class="v28-tool-ico">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <g transform="rotate(-40 16 16)"><rect x="4" y="12" width="24" height="8" rx="4" fill="currentColor"/><path d="M16 12v8" stroke="#1a1205" stroke-opacity=".45" stroke-width="1.4"/></g>
+              <g transform="rotate(40 16 16)"><rect x="4" y="12" width="24" height="8" rx="4" fill="currentColor" opacity=".55"/><path d="M16 12v8" stroke="#1a1205" stroke-opacity=".35" stroke-width="1.4"/></g>
+            </svg>
+          </span>
+          <span class="v28-tool-copy">
+            <b>Comprobador de interacciones</b>
+            <small>Cruza la sección 4.5 de las fichas técnicas oficiales</small>
+          </span>
+        </button>
       </section>
 
       <section class="v28-cima-results-section">
@@ -1364,6 +1371,9 @@
 <link rel="stylesheet" href="/css/ui-shared/a11y-css.css">
 
 <link rel="stylesheet" href="/css/ui-shared/v44-home-redesign-css.css">
+
+<link rel="stylesheet" href="/css/vademecum/inurse-interacciones-css.css">
+<script id="inurse-interacciones-js" src="/js/vademecum/inurse-interacciones-js.js"></script>
 
 </body>
 </html>
