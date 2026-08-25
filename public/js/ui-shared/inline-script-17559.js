@@ -24,6 +24,7 @@
       case "sos":        if(typeof window.openSos==='function'){ window.openSos(); return; } return;
       case "proyectos":  if(window.EnferixProjects&&window.EnferixProjects.open){ window.EnferixProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "fuentes":    if(typeof window.EnferixOpenOfficialRepo==='function'){ window.EnferixOpenOfficialRepo(''); return; } return;
+      case "interacciones": if(window.EnferixInteracciones&&window.EnferixInteracciones.open){ window.EnferixInteracciones.open(); return; } return;
       case "perfusiones":if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
       case "dosisped":   if(typeof window.openCalcs==='function'){ window.openCalcs('dosisPed'); return; } openIC("calc"); return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
@@ -106,17 +107,22 @@
     return ''
       + '<div class="nx-wrap">'
       +   '<div class="nx-top">'
-      +     '<div class="nx-brand"><div class="nx-logo">🩺</div><div><h1>Enferix</h1><small>Apoyo clínico rápido</small></div></div>'
+      +     '<div class="nx-brand"><img class="nx-logo" src="/icon-512-v2.png" alt=""><h1>Enferix</h1></div>'
       +     '<nav class="nx-nav">'+NAV.map(function(n,i){return '<button data-fire="'+n.k+'"'+(i===0?' class="on"':'')+'><span class="ic">'+n.ic+'</span>'+n.t+'</button>';}).join("")+'</nav>'
       +   '</div>'
       +   '<div class="nx-hero">'
       +     '<div class="nx-javny-hero">'
-      +       '<button class="nx-javny-id" data-javny="1" title="Abrir la conversación con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small></button>'
+      +       '<div class="nx-hero-brand">'
+      +         '<img class="nx-hero-mark" src="/icon-512-v2.png" alt="">'
+      +         '<span class="nx-hero-word">ENFERIX</span>'
+      +       '</div>'
+      +       '<p class="nx-hero-tag">Asistente clínico</p>'
       +       '<div class="nx-javny-ask">'
       +         '<textarea id="nxAsk" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>'
       +         '<button class="qmic nx-ask-mic" id="nxAskMic" title="Dictar la pregunta">🎙️</button>'
       +         '<button class="nx-ask-send" id="nxAskSend" title="Enviar a Javny" aria-label="Enviar a Javny">➤</button>'
       +       '</div>'
+      +       '<p class="nx-hero-fuentes">Responde apoyándose en el vademécum CIMA-AEMPS, las guías clínicas y la biblioteca de la app.</p>'
       +     '</div>'
       +   '</div>'
       +   pharmaCard()
@@ -141,6 +147,10 @@
       +    '<input id="nxPharmaQ" type="search" autocomplete="off" placeholder="Medicamento…">'
       +    '<button id="nxPharmaMic" class="nx-pharma-mic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button>'
       +    '<button id="nxPharmaGo" class="nx-pharma-go" title="Buscar en CIMA-AEMPS">Buscar</button>'
+      +  '</div>'
+      +  '<div class="nx-pharma-quick">'
+      +    '<button type="button" data-fire="perfusiones">💉 Dosis y perfusión</button>'
+      +    '<button type="button" data-fire="interacciones">⚠️ Interacciones</button>'
       +  '</div>'
       + '</section>';
   }
@@ -244,6 +254,7 @@
       });
       var sendBtn=home.querySelector("#nxAskSend");
       if(sendBtn) sendBtn.addEventListener("click",sendAsk);
+
     }
     wirePharmaSearch(home);
   }
