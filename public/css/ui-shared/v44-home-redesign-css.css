@@ -292,3 +292,32 @@ body:has(.ix-overlay.on) .v29vl-fab{
   .nx-turno-ico svg{ width:24px;height:24px }
   .nx-turno-copy b{ font-size:15px }
 }
+
+/* ══ Franjas bajas, apiladas ══
+   Las dos columnas dejaban los bloques desalineados por abajo: Farmacología
+   lleva buscador y atajos, y Mi turno solo texto, así que nunca miden igual.
+   Apilados y bajos el problema desaparece —no compiten en altura— y se leen
+   igual en móvil que en tablet. En pantalla ancha se ensanchan en lugar de
+   quedarse encajonados en una columna estrecha con los lados vacíos.
+
+   Las franjas se aplican de 620px para arriba: por debajo no cabe cabecera y
+   buscador en la misma fila, y el inicio de móvil ya estaba bien como estaba. */
+@media (min-width:620px){
+  .nx-pharma,.nx-turno,.nx-recent{ max-width:720px }
+  .nx-javny-ask{ max-width:600px }
+
+  /* Farmacología: cabecera y buscador comparten fila, así baja de tres filas
+     a dos. Los atajos ocupan la fila entera debajo. */
+  .nx-pharma{ display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px }
+  .nx-pharma-head{ margin-bottom:0;flex:0 0 auto }
+  .nx-pharma-search{ flex:1 1 240px;min-width:0 }
+  .nx-pharma-quick{ flex:1 1 100%;margin-top:0 }
+
+  /* Mi turno: misma altura de franja; identidad y avance arriba, resumen
+     debajo, sin aire de sobra. */
+  .nx-turno-card{ padding:14px 16px }
+  .nx-turno-barra{ margin:10px 0 7px }
+  /* El resumen arrancaba pegado al borde y el título no: la franja quedaba
+     con dos márgenes distintos. Se sangra hasta la columna del texto. */
+  .nx-turno-barra,.nx-turno-datos{ margin-left:54px }
+}

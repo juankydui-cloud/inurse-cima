@@ -81,13 +81,26 @@
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   /* Resumen del turno en el inicio: si hay un turno en marcha, es
-     probablemente lo más relevante que puede haber en esta pantalla. Solo
-     aparece cuando Mi turno se ha usado alguna vez; si no, el inicio se queda
-     limpio. */
+     probablemente lo más relevante que puede haber en esta pantalla. */
   function turnoSection(){
     var meta=null;
     try{ meta=JSON.parse(localStorage.getItem("inurse_turno_meta_v1")||"null"); }catch(e){}
-    if(!meta || !meta.startedAt) return "";
+
+    /* Antes esta tarjeta solo salía si Mi turno se había usado en ESE
+       dispositivo, porque el turno vive en localStorage y no se comparte entre
+       el ordenador y la tablet. En la práctica eso confunde: la app parece
+       distinta en cada aparato. Ahora sale siempre, invitando a empezar. */
+    if(!meta || !meta.startedAt){
+      return '<section class="nx-turno">'
+        + '<button type="button" class="nx-turno-card" data-fire="miturno">'
+        +   '<div class="nx-turno-head">'
+        +     '<span class="nx-turno-ico">'+turnoIcon()+'</span>'
+        +     '<span class="nx-turno-copy"><b>Mi turno</b>'
+        +       '<small>Sin turno iniciado en este dispositivo</small></span>'
+        +   '</div>'
+        +   '<div class="nx-turno-datos">Notas, pacientes, recordatorios y relevo. Ábrelo para empezar.</div>'
+        + '</button></section>';
+    }
 
     function leer(k,def){ try{ var v=JSON.parse(localStorage.getItem(k)); return v==null?def:v; }catch(e){ return def; } }
     var rooms=leer("inurse_turno_rooms_v1",[]) || [];
