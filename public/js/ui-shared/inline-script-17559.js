@@ -78,6 +78,13 @@
     {k:"fuentes",  ic:"🏛️", t:"Fuentes"},
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
+  /* Atajos del hero: rellenan el campo en vez de enviar solos, para que
+     puedas completar el caso antes de preguntar. */
+  var SUGERENCIAS = [
+    {t:'Dosis y perfusión', q:'Dosis y preparación de la perfusión de '},
+    {t:'Protocolo',         q:'Protocolo de actuación ante '},
+    {t:'Interacciones',     q:'Interacciones a vigilar entre '}
+  ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function recentHTML(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
@@ -111,12 +118,22 @@
       +   '</div>'
       +   '<div class="nx-hero">'
       +     '<div class="nx-javny-hero">'
-      +       '<button class="nx-javny-id" data-javny="1" title="Abrir la conversación con Javny">'+javnyAvatar()+'<b>Javny</b><small>Tu asistente clínico</small></button>'
+      +       '<div class="nx-hero-brand">'
+      +         '<img class="nx-hero-mark" src="/icon-512-v2.png" alt="">'
+      +         '<span class="nx-hero-word">ENFERIX</span>'
+      +       '</div>'
+      +       '<p class="nx-hero-tag">Asistente clínico de enfermería</p>'
       +       '<div class="nx-javny-ask">'
       +         '<textarea id="nxAsk" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>'
       +         '<button class="qmic nx-ask-mic" id="nxAskMic" title="Dictar la pregunta">🎙️</button>'
       +         '<button class="nx-ask-send" id="nxAskSend" title="Enviar a Javny" aria-label="Enviar a Javny">➤</button>'
       +       '</div>'
+      +       '<div class="nx-ask-sugs" id="nxAskSugs">'
+      +         SUGERENCIAS.map(function(s){
+                   return '<button type="button" class="nx-ask-sug" data-sug="'+esc(s.q)+'">'+esc(s.t)+'</button>';
+                 }).join('')
+      +       '</div>'
+      +       '<p class="nx-hero-fuentes">Responde apoyándose en el vademécum CIMA-AEMPS, las guías clínicas y la biblioteca de la app.</p>'
       +     '</div>'
       +   '</div>'
       +   pharmaCard()
@@ -244,6 +261,16 @@
       });
       var sendBtn=home.querySelector("#nxAskSend");
       if(sendBtn) sendBtn.addEventListener("click",sendAsk);
+
+      var sugs=home.querySelector("#nxAskSugs");
+      if(sugs) sugs.addEventListener("click",function(e){
+        var b=e.target.closest("[data-sug]"); if(!b) return;
+        ask.value=b.dataset.sug;
+        ask.focus();
+        // El cursor al final, para seguir escribiendo el caso sin recolocarlo.
+        try{ ask.setSelectionRange(ask.value.length,ask.value.length); }catch(err){}
+        ask.dispatchEvent(new Event("input",{bubbles:true}));
+      });
     }
     wirePharmaSearch(home);
   }

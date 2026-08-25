@@ -19,72 +19,111 @@
   box-shadow:0 0 0 4px color-mix(in srgb,#ef4444 30%,transparent),0 4px 14px rgba(239,68,68,.45) !important;
 }
 
-/* ══ Hero de Javny: de tarjeta-botón a campo donde se escribe directamente ══
+/* ══ Hero de Javny: presentación sobria ══
+   Se retira el gradiente violeta con brillo —lenguaje de app de consumo— a
+   favor de una superficie lisa y mucho aire. En una herramienta clínica la
+   contención transmite más autoridad que el color: un solo acento, y el peso
+   visual puesto en la pregunta, que es lo que se viene a hacer aquí.
+
    La tarjeta ya no es clicable entera (dentro vive un campo de texto), así que
    se anula el hover que la levantaba y se reserva el gesto de abrir el chat
    para el bloque de identidad (foto + nombre). */
-.nx-javny-hero{ cursor:default !important; padding:20px 20px 18px !important; gap:3px !important; }
-.nx-javny-hero:hover{ transform:none !important; }
-.nx-javny-hero .av{ width:74px !important; height:74px !important; margin-bottom:2px !important; }
-
-.nx-javny-id{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  background:none;border:none;padding:0;color:inherit;font:inherit;cursor:pointer;
-  transition:opacity .15s ease;
+.nx-javny-hero{
+  cursor:default !important;
+  padding:34px 24px 26px !important;
+  gap:0 !important;
+  border-radius:20px !important;
+  background:var(--card-solid,#111827) !important;
+  border:1px solid var(--border,#1E293B) !important;
+  box-shadow:none !important;
 }
-.nx-javny-id:hover{ opacity:.85 }
-.nx-javny-id b{ font-size:24px;font-weight:800;line-height:1.1 }
-.nx-javny-id small{ color:#c8bbff;font-size:13px;font-weight:600 }
+.nx-javny-hero:hover{ transform:none !important; border-color:var(--border,#1E293B) !important; }
+.nx-javny-hero .av{
+  width:60px !important; height:60px !important; margin-bottom:12px !important;
+  border:1px solid var(--border,#1E293B) !important;
+  box-shadow:none !important;
+}
+
+/* Marca de la app presidiendo el hero: el icono hace de marca y la palabra
+   va en texto, para que se lea nítida a cualquier tamaño (el icono lleva el
+   nombre incrustado, pero a este tamaño no sería legible). */
+.nx-hero-brand{ display:flex;align-items:center;justify-content:center;gap:13px }
+.nx-hero-mark{
+  width:46px;height:46px;border-radius:12px;display:block;object-fit:cover;
+  border:1px solid var(--border,#1E293B);
+}
+.nx-hero-word{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:36px;font-weight:400;line-height:1;letter-spacing:.02em;
+  color:var(--text,#f1f5f9);
+}
+.nx-hero-tag{
+  margin:11px 0 0;font-size:10.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.16em;
+  color:var(--text-dim,#94a3b8);
+}
 
 .nx-javny-ask{
-  width:100%;margin-top:13px;
+  width:100%;max-width:520px;margin:26px auto 0;
   display:flex;align-items:flex-end;gap:8px;
-  padding:6px 6px 6px 14px;border-radius:18px;
-  background:rgba(10,12,28,.55);
-  border:1px solid rgba(150,120,255,.35);
-  transition:border-color .15s ease,box-shadow .15s ease;
+  padding:5px 5px 5px 16px;border-radius:999px;
+  background:var(--bg,#070A12);
+  border:1px solid var(--border,#1E293B);
+  transition:border-color .15s ease;
 }
-.nx-javny-ask:focus-within{
-  border-color:rgba(180,150,255,.8);
-  box-shadow:0 0 0 3px rgba(139,92,246,.22);
-}
+.nx-javny-ask:focus-within{ border-color:color-mix(in srgb,var(--resp,#22D3EE) 60%,transparent) }
 .nx-javny-ask textarea{
   flex:1;min-width:0;resize:none;overflow-y:auto;max-height:132px;
   background:transparent;border:none;outline:none;
-  color:#e7ecff;font:inherit;font-size:14.5px;line-height:1.4;
-  padding:10px 2px;
+  color:var(--text,#f1f5f9);font:inherit;font-size:15px;line-height:1.4;
+  padding:11px 2px;
 }
-.nx-javny-ask textarea::placeholder{ color:#8aa0c8;opacity:.9 }
+.nx-javny-ask textarea::placeholder{ color:var(--text-dim,#94a3b8) }
 
 .nx-ask-mic,.nx-ask-send{
   /* .qmic (compartida con los modales) es position:absolute; aquí el micro va
      en la fila, junto al botón de enviar. */
   position:static !important;
-  flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+  flex:0 0 auto;width:38px;height:38px;border-radius:999px;
   display:flex;align-items:center;justify-content:center;
-  border:none;cursor:pointer;font-size:16px;line-height:1;
-  transition:transform .15s ease,filter .15s ease;
+  border:none;cursor:pointer;font-size:15px;line-height:1;
+  transition:filter .15s ease,transform .15s ease;
 }
-.nx-ask-mic{ background:rgba(255,255,255,.09);color:#cfd8f5 }
-.nx-ask-mic:hover{ filter:brightness(1.25) }
+.nx-ask-mic{ background:transparent;color:var(--text-dim,#94a3b8) }
+.nx-ask-mic:hover{ color:var(--text,#f1f5f9) }
 .nx-ask-mic.listening{ background:#ef4444;color:#fff;animation:nxAskPulse 1.1s ease-in-out infinite }
 @keyframes nxAskPulse{ 50%{ box-shadow:0 0 0 6px rgba(239,68,68,.22) } }
 .nx-ask-send{
-  background:linear-gradient(135deg,#0EA5E9,#8B5CF6);color:#fff;font-weight:800;
-  box-shadow:0 8px 20px rgba(56,120,240,.42);
+  background:var(--resp,#22D3EE);color:#04121a;font-weight:800;
 }
 .nx-ask-send:active{ transform:scale(.94) }
 
-[data-theme="light"] .nx-javny-ask{ background:rgba(255,255,255,.72);border-color:rgba(15,23,42,.14) }
-[data-theme="light"] .nx-javny-ask textarea{ color:#0f172a }
-[data-theme="light"] .nx-javny-ask textarea::placeholder{ color:#64748b }
-[data-theme="light"] .nx-ask-mic{ background:rgba(15,23,42,.07);color:#334155 }
+/* Atajos: rellenan la pregunta, no la envían. */
+.nx-ask-sugs{ display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:16px }
+.nx-ask-sug{
+  padding:8px 14px;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:600;
+  color:var(--text-dim,#94a3b8);
+  background:transparent;border:1px solid var(--border,#1E293B);
+  transition:color .15s ease,border-color .15s ease;
+}
+.nx-ask-sug:hover{ color:var(--text,#f1f5f9);border-color:color-mix(in srgb,var(--resp,#22D3EE) 50%,transparent) }
+
+/* Sin sellos ni certificaciones: solo de dónde sale lo que responde. */
+.nx-hero-fuentes{
+  margin:18px auto 0;max-width:430px;text-align:center;
+  font-size:11px;line-height:1.5;color:var(--text-dim,#94a3b8);opacity:.85;
+}
+
+[data-theme="light"] .nx-javny-ask{ background:#fff }
+[data-theme="light"] .nx-ask-send{ color:#03252f }
 
 @media(max-width:620px){
-  .nx-javny-hero{ padding:17px 16px 15px !important; }
-  .nx-javny-hero .av{ width:64px !important; height:64px !important; }
-  .nx-javny-id b{ font-size:21px }
-  .nx-javny-ask{ margin-top:11px }
+  .nx-javny-hero{ padding:26px 16px 20px !important }
+  .nx-javny-hero .av{ width:52px !important;height:52px !important }
+  .nx-javny-id b{ font-size:30px }
+  .nx-javny-ask{ margin-top:20px }
+  .nx-hero-fuentes{ margin-top:15px }
 }
 
 /* ══ Bloque de Farmacología ══
