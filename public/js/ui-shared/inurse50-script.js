@@ -36,7 +36,24 @@
   function isFav(id){return favs().indexOf(id)>=0}
   function toggleFav(id){var a=favs(); var i=a.indexOf(id); if(i>=0){a.splice(i,1);toast('Eliminado de favoritos')}else{a.unshift(id);toast('Añadido a favoritos')} setFavs(a); renderHomeLists(); if(typeof render==='function')render()}
   function openDocId(id){window.__INURSE_HOME=false; if(typeof query!=='undefined') query=''; var s=document.getElementById('search'); if(s)s.value=''; if(typeof activeCat!=='undefined') activeCat='all'; if(typeof render==='function')render(); setTimeout(function(){var el=document.getElementById('card-'+id); if(el){ if(typeof toggle==='function'&&!el.classList.contains('open'))toggle(id); el.scrollIntoView({behavior:'smooth',block:'center'}); addRecent({type:'doc',id:id,title:(docs().find(function(d){return d.id===id})||{}).title||id,em:'📄'});} },90)}
-  function openDrugId(id){var btn=document.getElementById('vadeBtn'); if(btn)btn.click(); setTimeout(function(){var inp=document.getElementById('vadeSearch'); if(inp){var d=vadem().find(function(x){return x.id===id}); inp.value=d?d.name:id; inp.dispatchEvent(new Event('input',{bubbles:true})); addRecent({type:'drug',id:id,title:(d&&d.name)||id,em:'💊'});} },180)}
+  function openDrugId(id){
+    var d=vadem().find(function(x){return x.id===id});
+    var name=(d&&d.name)||id;
+    addRecent({type:'drug',id:id,title:name,em:'💊'});
+    // El botón del vademécum abre hoy el panel de CIMA, pero esta función
+    // seguía rellenando #vadeSearch, el campo del vademécum antiguo que ya no
+    // se muestra: el fármaco se abría en blanco. Se busca en CIMA, que es
+    // donde vive ahora, y solo si no está disponible se usa el camino viejo.
+    if(window.EnferixCima&&typeof window.EnferixCima.search==='function'){
+      window.EnferixCima.search(name,'name');
+      return;
+    }
+    var btn=document.getElementById('vadeBtn'); if(btn)btn.click();
+    setTimeout(function(){
+      var inp=document.getElementById('vadeSearch')||document.getElementById('v28CimaQuery');
+      if(inp){ inp.value=name; inp.dispatchEvent(new Event('input',{bubbles:true})); }
+    },180);
+  }
   function searchAll(raw){var q=norm(raw).trim(); var terms=q.split(/\s+/).filter(Boolean); if(!q)return []; var res=[]; docs().forEach(function(d){var st=score(docText(d),terms); if(st)res.push({type:'doc',id:d.id,title:d.title,summary:d.summary||d.source||'',em:iconForDoc(d),tag:'Protocolo',color:colorForDoc(d),score:st})}); vadem().forEach(function(d){var st=score(drugText(d),terms); if(st)res.push({type:'drug',id:d.id,title:d.name||d.title,summary:d.accion||d.indicacion||d.dosis||'',em:'💊',tag:'Fármaco',color:'#EC4899',score:st})}); SCALES.forEach(function(s){var st=score(norm([s.title,s.tags,s.summary].join(' ')),terms); if(st)res.push({type:'scale',id:s.id,title:s.title,summary:s.summary,em:s.em,tag:'Escala',color:'#0EA5E9',score:st})});
     // Algoritmos de actuación (biblioteca interna de Javny)
     try{ if(window.EnferixAlgLib&&window.EnferixAlgLib.search){ window.EnferixAlgLib.search(raw,12).forEach(function(a){ res.push({type:'alg',id:a.name,title:a.name,summary:'Algoritmo de actuación · '+(a.cat||'')+(a.src?' · '+a.src:''),em:'🧩',tag:'Algoritmo',color:'#22D3EE',score:a.score*4}); }); } }catch(e){}
@@ -105,5 +122,7 @@
   function patchDock(){var stack=document.querySelector('.fab-stack'); if(!stack)return; function mk(id,em,lbl,cb,color){var b=document.getElementById(id); if(!b){b=document.createElement('button');b.id=id;stack.appendChild(b)} b.classList.add('in50-dock-btn'); b.style.setProperty('--dk',color); b.innerHTML='<span class="dk-em">'+em+'</span><span class="dk-lbl">'+lbl+'</span>'; b.onclick=cb; return b} mk('in50HomeDock','🏠','Inicio',showHome,'#22D3EE'); var calc=document.getElementById('calcFab'); if(calc){calc.style.setProperty('--dk','#0EA5E9'); calc.classList.add('in50-dock-btn')} var rx=document.getElementById('rxFab'); if(rx){rx.style.setProperty('--dk','#8B5CF6'); rx.classList.add('in50-dock-btn')} var ecg=document.getElementById('ecgFab'); if(ecg){ecg.style.setProperty('--dk','#14B8A6'); ecg.classList.add('in50-dock-btn')} mk('in50SettingsDock','⚙️','Config',showSettings,'#F59E0B'); ['in50HomeDock','calcFab','rxFab','ecgFab','in50SettingsDock'].forEach(function(id){var el=document.getElementById(id); if(el)stack.appendChild(el)}); var javny=document.getElementById('javnyFab'); if(javny)javny.style.display='none'; }
   function patchManifest(){var old=document.querySelector('link[rel="manifest"]'); if(!old){var l=document.createElement('link'); l.rel='manifest'; l.href='/manifest.json'; document.head.appendChild(l);} else {old.href='/manifest.json';} var m=document.querySelector('meta[name="apple-mobile-web-app-title"]')||document.createElement('meta'); m.name='apple-mobile-web-app-title'; m.content='Enferix'; document.head.appendChild(m)}
   window.showGlobalResults=showResults;
+  // Abrir un elemento del historial desde el inicio sin repetir esta lógica.
+  window.EnferixOpenResult=openResult;
   ready(function(){document.body.classList.add('in50-ready'); patchManifest(); buildHome(); buildSettings(); patchSearch(); patchStars(); patchDock(); renderHomeLists(); var oldHome=document.getElementById('javnyHero'); if(oldHome)oldHome.style.display='none'; setTimeout(function(){var h=document.getElementById('in50Home'); if(h)h.style.display='block'; var c=document.getElementById('content'); if(c&&window.__INURSE_HOME)c.innerHTML='';},500); });
 })();

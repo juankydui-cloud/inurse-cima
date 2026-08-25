@@ -80,6 +80,21 @@
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function recentSection(){
+    var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
+    if(!arr || !arr.length) return "";
+    return '<section class="nx-recent">'
+      + '<h3>Última consulta</h3>'
+      + '<div class="nx-recent-list">'
+      +   arr.slice(0,4).map(function(x){
+            var lab = x.type==="drug" ? "Fármaco" : x.type==="scale" ? "Escala" : "Protocolo";
+            return '<button type="button" class="nx-recent-item" data-q="'+esc(x.title)+'" data-item="'+esc(JSON.stringify(x))+'">'
+              + '<span class="em">'+(x.em||'📄')+'</span>'
+              + '<span class="tx"><b>'+esc(x.title)+'</b><small>'+lab+'</small></span>'
+              + '</button>';
+          }).join('')
+      + '</div></section>';
+  }
   function recentHTML(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
     arr=(arr||[]).slice(0,5);
@@ -126,6 +141,7 @@
       +     '</div>'
       +   '</div>'
       +   pharmaCard()
+      +   recentSection()
       + '</div>'
       + '<div class="in60-shell" style="display:none"></div>';
   }
@@ -212,7 +228,13 @@
       // Click fuera del menú lo cierra
       if(!e.target.closest("#nxHomeMenu")) closeHomeMenu();
       var v=e.target.closest("[data-javny]"); if(v){ clickId("ccFab"); return; }
-      var r=e.target.closest(".nx-recent-item"); if(r){ forwardSearch(r.getAttribute("data-q")); return; }
+      var r=e.target.closest(".nx-recent-item"); if(r){
+        // Abre el elemento directamente; si no se puede, cae a buscarlo.
+        var raw=r.getAttribute("data-item");
+        if(raw && typeof window.EnferixOpenResult==='function'){
+          try{ window.EnferixOpenResult(JSON.parse(raw)); return; }catch(err){}
+        }
+        forwardSearch(r.getAttribute("data-q")); return; }
       var sb=e.target.closest(".nx-spec-btn"); if(sb){
         var spec=sb.dataset.spec;
         home.querySelectorAll(".nx-spec-btn").forEach(function(b){ b.classList.toggle("on", b===sb); });
