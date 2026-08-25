@@ -24,6 +24,7 @@
       case "sos":        if(typeof window.openSos==='function'){ window.openSos(); return; } return;
       case "proyectos":  if(window.EnferixProjects&&window.EnferixProjects.open){ window.EnferixProjects.open(); return; } { var b=document.querySelector("#in63HomeWrap .in63-home-card"); if(b) b.click(); } return;
       case "fuentes":    if(typeof window.EnferixOpenOfficialRepo==='function'){ window.EnferixOpenOfficialRepo(''); return; } return;
+      case "interacciones": if(window.EnferixInteracciones&&window.EnferixInteracciones.open){ window.EnferixInteracciones.open(); return; } return;
       case "perfusiones":if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
       case "dosisped":   if(typeof window.openCalcs==='function'){ window.openCalcs('dosisPed'); return; } openIC("calc"); return;
       case "inicio":     window.scrollTo({top:0,behavior:"smooth"}); return;
@@ -78,13 +79,6 @@
     {k:"fuentes",  ic:"🏛️", t:"Fuentes"},
     {k:"ajustes",  ic:"⚙️", t:"Ajustes"}
   ];
-  /* Atajos del hero: rellenan el campo en vez de enviar solos, para que
-     puedas completar el caso antes de preguntar. */
-  var SUGERENCIAS = [
-    {t:'Dosis y perfusión', q:'Dosis y preparación de la perfusión de '},
-    {t:'Protocolo',         q:'Protocolo de actuación ante '},
-    {t:'Interacciones',     q:'Interacciones a vigilar entre '}
-  ];
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function recentHTML(){
     var arr=[]; try{ arr=JSON.parse(localStorage.getItem("inurse_recent_v5")||"[]"); }catch(e){}
@@ -122,16 +116,11 @@
       +         '<img class="nx-hero-mark" src="/icon-512-v2.png" alt="">'
       +         '<span class="nx-hero-word">ENFERIX</span>'
       +       '</div>'
-      +       '<p class="nx-hero-tag">Asistente clínico de enfermería</p>'
+      +       '<p class="nx-hero-tag">Asistente clínico</p>'
       +       '<div class="nx-javny-ask">'
       +         '<textarea id="nxAsk" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>'
       +         '<button class="qmic nx-ask-mic" id="nxAskMic" title="Dictar la pregunta">🎙️</button>'
       +         '<button class="nx-ask-send" id="nxAskSend" title="Enviar a Javny" aria-label="Enviar a Javny">➤</button>'
-      +       '</div>'
-      +       '<div class="nx-ask-sugs" id="nxAskSugs">'
-      +         SUGERENCIAS.map(function(s){
-                   return '<button type="button" class="nx-ask-sug" data-sug="'+esc(s.q)+'">'+esc(s.t)+'</button>';
-                 }).join('')
       +       '</div>'
       +       '<p class="nx-hero-fuentes">Responde apoyándose en el vademécum CIMA-AEMPS, las guías clínicas y la biblioteca de la app.</p>'
       +     '</div>'
@@ -158,6 +147,10 @@
       +    '<input id="nxPharmaQ" type="search" autocomplete="off" placeholder="Medicamento…">'
       +    '<button id="nxPharmaMic" class="nx-pharma-mic" title="Buscar por voz" aria-label="Buscar por voz">🎙️</button>'
       +    '<button id="nxPharmaGo" class="nx-pharma-go" title="Buscar en CIMA-AEMPS">Buscar</button>'
+      +  '</div>'
+      +  '<div class="nx-pharma-quick">'
+      +    '<button type="button" data-fire="perfusiones">💉 Dosis y perfusión</button>'
+      +    '<button type="button" data-fire="interacciones">⚠️ Interacciones</button>'
       +  '</div>'
       + '</section>';
   }
@@ -262,15 +255,6 @@
       var sendBtn=home.querySelector("#nxAskSend");
       if(sendBtn) sendBtn.addEventListener("click",sendAsk);
 
-      var sugs=home.querySelector("#nxAskSugs");
-      if(sugs) sugs.addEventListener("click",function(e){
-        var b=e.target.closest("[data-sug]"); if(!b) return;
-        ask.value=b.dataset.sug;
-        ask.focus();
-        // El cursor al final, para seguir escribiendo el caso sin recolocarlo.
-        try{ ask.setSelectionRange(ask.value.length,ask.value.length); }catch(err){}
-        ask.dispatchEvent(new Event("input",{bubbles:true}));
-      });
     }
     wirePharmaSearch(home);
   }
