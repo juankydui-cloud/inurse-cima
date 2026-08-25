@@ -131,6 +131,83 @@ if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', function(){ applyTextScale(); });
 }
 
+/* ── Datos guardados en este dispositivo ────────────────────────────────── */
+/* La app guarda en el navegador el perfil, los turnos, los favoritos, el
+   historial, los proyectos y la clave de Gemini, y hasta ahora no había forma
+   de verlo, sacarlo ni borrarlo desde la interfaz. */
+
+/* Claves donde puede acabar la clave de API, sueltas o dentro de un JSON. */
+var CLAVES_API = ['guiaHJ23_apikey','gemini_api_key','inurse_gemini_api_key_v1',
+                  'in51_gemini_key','inurse52_gemini_api_key'];
+var JSON_CON_CLAVE = ['inurse_vivi_config_v1','inurse52_javny_config'];
+
+function todasLasClaves(){
+  var out = [];
+  try{ for(var i=0; i<localStorage.length; i++) out.push(localStorage.key(i)); }catch(e){}
+  return out;
+}
+
+function resumen(){
+  var claves = todasLasClaves(), bytes = 0;
+  claves.forEach(function(k){
+    try{ bytes += (k.length + String(localStorage.getItem(k)||'').length); }catch(e){}
+  });
+  var tieneClave = CLAVES_API.some(function(k){ return !!ls(k,''); }) ||
+    JSON_CON_CLAVE.some(function(k){
+      try{ return !!(JSON.parse(ls(k,'{}')||'{}').apiKey); }catch(e){ return false; }
+    });
+  return { claves: claves.length, kb: Math.max(1, Math.round(bytes/1024)), tieneClaveApi: tieneClave };
+}
+
+/* incluirClave=false (por defecto) deja fuera la clave de Gemini: el fichero
+   acaba en Descargas y puede terminar compartido sin pensarlo. */
+function exportar(incluirClave){
+  var datos = {};
+  todasLasClaves().forEach(function(k){
+    if(!incluirClave && CLAVES_API.indexOf(k) >= 0) return;
+    var v = ls(k, null);
+    if(v == null) return;
+    if(!incluirClave && JSON_CON_CLAVE.indexOf(k) >= 0){
+      try{ var o = JSON.parse(v); delete o.apiKey; v = JSON.stringify(o); }catch(e){}
+    }
+    datos[k] = v;
+  });
+  return {
+    app: 'Enferix',
+    version: 1,
+    exportadoEl: new Date().toISOString(),
+    incluyeClaveApi: !!incluirClave,
+    datos: datos
+  };
+}
+
+/* Restaura sumando, sin vaciar antes: así una copia antigua no se lleva por
+   delante lo que hayas hecho después y no esté en el fichero. */
+function importar(texto){
+  var obj;
+  try{ obj = JSON.parse(texto); }
+  catch(e){ throw new Error('El fichero no es un JSON válido.'); }
+  if(!obj || obj.app !== 'Enferix' || !obj.datos || typeof obj.datos !== 'object'){
+    throw new Error('Este fichero no es una copia de Enferix.');
+  }
+  var n = 0;
+  Object.keys(obj.datos).forEach(function(k){
+    var v = obj.datos[k];
+    if(typeof v !== 'string') return;
+    try{ localStorage.setItem(k, v); n++; }catch(e){}
+  });
+  return n;
+}
+
+function borrar(){
+  var n = 0;
+  todasLasClaves().forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} });
+  try{ sessionStorage.clear(); }catch(e){}
+  return n;
+}
+
+window.EnferixData = { resumen: resumen, exportar: exportar, importar: importar, borrar: borrar };
+
 /* ── API pública ────────────────────────────────────────────────────────── */
 window.EnferixPrefs = {
   IDIOMAS: IDIOMAS,

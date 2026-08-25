@@ -307,12 +307,38 @@
     var curSpec=''; try{ curSpec=localStorage.getItem('inurse_myspec_v1')||''; }catch(e){}
     var curSpecEmoji=(SPECS.find(function(s){return s.key===curSpec;})||{em:'🩺'}).em;
 
+    // Los mismos modelos que la app ya usa como cadena de reserva.
+    var MODELOS=[
+      {id:'gemini-3.5-flash',           t:'Equilibrado (por defecto)'},
+      {id:'gemini-3.1-flash-lite',      t:'Más ligero y rápido'},
+      {id:'gemini-3.1-pro-preview',     t:'Más capaz, más lento'}
+    ];
+    var curModel='gemini-3.5-flash';
+    try{ curModel=localStorage.getItem('inurse_gemini_model_v1')||curModel; }catch(e){}
+    var curDatos=(window.EnferixData&&window.EnferixData.resumen)?window.EnferixData.resumen():{claves:0,kb:0,tieneClaveApi:false};
+
     var ov=document.createElement('div'); ov.id='nxAjustesOverlay'; ov.className='nx-aj-overlay';
     ov.innerHTML=''
       +'<div class="nx-aj-panel" role="dialog" aria-modal="true" aria-label="Ajustes">'
       +'<div class="nx-aj-header"><h2>Ajustes</h2><button class="nx-aj-close" id="nxAjClose" aria-label="Cerrar ajustes">✕</button></div>'
       +'<div class="nx-aj-body">'
 
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
+      +'<div class="nx-aj-card nx-aj-profile">'
+      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
+      +'<div class="nx-aj-profile-fields">'
+      +'<div class="nx-aj-field"><label for="nxProfileName">Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSurname">Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileEmail">Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileHospital">Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
+      +'<div class="nx-aj-field"><label for="nxProfileSpec">Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
+      +'</div>'
+      +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
+      +'</div>'
+      +'</div>'
+
+      +'</div>'
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">☁️</span>Cuenta y sincronización</div>'
       +'<div class="nx-aj-card" id="nxAccountBox"><div class="nx-aj-row"><span>Comprobando sesión…</span></div></div>'
@@ -392,23 +418,38 @@
       +'<div class="nx-aj-field"><label for="nxJavnyName">Nombre del asistente</label><input type="text" id="nxJavnyName" value="'+esc(javnySaved.name||'Javny')+'" placeholder="Javny"></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyDetail">Nivel de detalle</label><select id="nxJavnyDetail"><option value="breve"'+(javnySaved.detail==='breve'?' selected':'')+'>Breve</option><option value="normal"'+(javnySaved.detail==='normal'||!javnySaved.detail?' selected':'')+'>Normal</option><option value="detallado"'+(javnySaved.detail==='detallado'?' selected':'')+'>Detallado</option></select></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyLang">Idioma de respuesta</label><select id="nxJavnyLang"><option value="es"'+((javnySaved.lang||'es')==='es'?' selected':'')+'>Español</option><option value="en"'+(javnySaved.lang==='en'?' selected':'')+'>English</option><option value="pt"'+(javnySaved.lang==='pt'?' selected':'')+'>Português</option></select></div>'
+      +'<div class="nx-aj-field"><label for="nxJavnyModel">Modelo</label><select id="nxJavnyModel">'
+      + MODELOS.map(function(m){ return '<option value="'+m.id+'"'+(curModel===m.id?' selected':'')+'>'+esc(m.t)+'</option>'; }).join('')
+      +'</select></div>'
       +'<div class="nx-aj-field"><label for="nxJavnyKey">Clave API Gemini</label><input type="password" id="nxJavnyKey" value="'+esc(javnySaved.apiKey||'')+'" placeholder="AIza..."></div>'
       +'<button class="nx-aj-btn" id="nxJavnySave">Guardar configuración de Javny</button>'
       +'</div>'
       +'</div>'
 
-      +'<div class="nx-aj-section">'
-      +'<div class="nx-aj-section-title"><span class="ic">👤</span>Mi perfil</div>'
-      +'<div class="nx-aj-card nx-aj-profile">'
-      +'<div class="nx-aj-avatar-wrap"><div class="nx-aj-avatar" id="nxProfileAvatar">'+(saved.photo?'<img src="'+esc(saved.photo)+'" alt="Foto">':'<span class="nx-aj-avatar-placeholder">👤</span>')+'</div><button type="button" class="nx-aj-avatar-edit" id="nxPhotoBtn">📷 Cambiar foto</button><input type="file" id="nxPhotoInput" accept="image/*" style="display:none"></div>'
-      +'<div class="nx-aj-profile-fields">'
-      +'<div class="nx-aj-field"><label for="nxProfileName">Nombre</label><input type="text" id="nxProfileName" value="'+esc(saved.name||'')+'" placeholder="Tu nombre"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileSurname">Apellidos</label><input type="text" id="nxProfileSurname" value="'+esc(saved.surname||'')+'" placeholder="Tus apellidos"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileEmail">Email</label><input type="email" id="nxProfileEmail" value="'+esc(saved.email||'')+'" placeholder="tu@email.com"></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileHospital">Hospital / Centro</label><input type="text" id="nxProfileHospital" value="'+esc(saved.hospital||'')+'" placeholder="Hospital..."></div>'
-      +'<div class="nx-aj-field"><label for="nxProfileSpec">Especialidad</label><input type="text" id="nxProfileSpec" value="'+esc(saved.spec||'')+'" placeholder="UCI, Urgencias, Pediatría..."></div>'
       +'</div>'
-      +'<button class="nx-aj-btn" id="nxProfileSave">Guardar perfil</button>'
+
+      +'<div class="nx-aj-section">'
+      +'<div class="nx-aj-section-title"><span class="ic">💾</span>Datos de este dispositivo</div>'
+      +'<div class="nx-aj-card">'
+      +'<p style="font-size:12.5px;color:var(--text-dim,#94a3b8);line-height:1.5;margin:0 0 10px">'
+      +  'Tu perfil, turnos, favoritos, historial y proyectos se guardan en este dispositivo'
+      +  (curDatos.tieneClaveApi?', junto con tu clave de Gemini':'')
+      +  '. Ahora mismo hay <b>'+curDatos.claves+'</b> elementos guardados (~'+curDatos.kb+' KB).</p>'
+      +'<label class="nx-aj-check"><input type="checkbox" id="nxExpKey"><span>Incluir la clave de Gemini en la copia</span></label>'
+      +'<div class="nx-aj-row" style="gap:10px;margin-top:10px">'
+      +'<button class="nx-aj-btn" id="nxExportBtn" style="flex:1;margin:0">⬇︎ Exportar copia</button>'
+      +'<button class="nx-aj-btn" id="nxImportBtn" style="flex:1;margin:0;background:rgba(120,150,220,.15)">⬆︎ Restaurar copia</button>'
+      +'</div>'
+      +'<input type="file" id="nxImportInput" accept="application/json,.json" style="display:none">'
+      +'<div id="nxDataMsg" style="font-size:12px;color:#8aa0c8;margin-top:8px"></div>'
+      +'<hr style="border:none;border-top:1px solid var(--border,#1E293B);margin:15px 0">'
+      +'<div class="nx-aj-row"><span style="font-size:12.5px;line-height:1.4">Borrar todo lo guardado en este dispositivo</span>'
+      +'<button class="nx-aj-theme-btn" id="nxWipeBtn" style="background:linear-gradient(135deg,#DC2626,#EF4444)">Borrar</button></div>'
+      +'<div id="nxWipeConfirm" style="display:none;margin-top:10px">'
+      +'<p style="font-size:12px;color:#FCA5A5;line-height:1.5;margin:0 0 9px">Se borrará todo de <b>este</b> dispositivo y no se puede deshacer. Si tienes cuenta, lo que ya esté sincronizado seguirá en la nube. Si no, exporta una copia antes.</p>'
+      +'<div class="nx-aj-row" style="gap:10px"><button class="nx-aj-btn" id="nxWipeCancel" style="flex:1;margin:0;background:rgba(120,150,220,.15)">Cancelar</button>'
+      +'<button class="nx-aj-btn" id="nxWipeYes" style="flex:1;margin:0;background:linear-gradient(135deg,#DC2626,#EF4444)">Sí, borrar todo</button></div>'
+      +'</div>'
       +'</div>'
       +'</div>'
 
@@ -559,6 +600,77 @@
       if(f){ f.click(); return; }
       if(typeof window.openRec==='function') window.openRec();
     };
+
+    /* Modelo de Javny: se escriben las dos claves a la vez, igual que hace el
+       propio reintento del chat, para que no queden desincronizadas. */
+    var modelSel=document.getElementById('nxJavnyModel');
+    if(modelSel) modelSel.onchange=function(){
+      var m=modelSel.value;
+      try{
+        localStorage.setItem('inurse_gemini_model_v1',m);
+        var raw=localStorage.getItem('inurse52_javny_config');
+        if(raw){ var o=JSON.parse(raw); o.model=m; localStorage.setItem('inurse52_javny_config',JSON.stringify(o)); }
+      }catch(e){}
+    };
+
+    /* Datos de este dispositivo */
+    var dataMsg=document.getElementById('nxDataMsg');
+    function decir(txt,color){ if(dataMsg){ dataMsg.textContent=txt; dataMsg.style.color=color||'#8aa0c8'; } }
+
+    var exportBtn=document.getElementById('nxExportBtn');
+    if(exportBtn) exportBtn.onclick=function(){
+      try{
+        var conClave=!!(document.getElementById('nxExpKey')||{}).checked;
+        var copia=window.EnferixData.exportar(conClave);
+        var blob=new Blob([JSON.stringify(copia,null,2)],{type:'application/json'});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a');
+        a.href=url;
+        a.download='enferix-copia-'+new Date().toISOString().slice(0,10)+'.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); },2000);
+        decir(conClave
+          ? '✓ Copia descargada. Contiene tu clave de Gemini: no la compartas.'
+          : '✓ Copia descargada, sin la clave de Gemini.','#4ade80');
+      }catch(e){ decir('No se pudo exportar: '+e.message,'#f87171'); }
+    };
+
+    var importBtn=document.getElementById('nxImportBtn');
+    var importInput=document.getElementById('nxImportInput');
+    if(importBtn&&importInput){
+      importBtn.onclick=function(){ importInput.click(); };
+      importInput.onchange=function(){
+        var f=importInput.files&&importInput.files[0]; if(!f) return;
+        var fr=new FileReader();
+        fr.onload=function(){
+          try{
+            var n=window.EnferixData.importar(String(fr.result||''));
+            decir('✓ Restaurados '+n+' elementos. Recargando…','#4ade80');
+            setTimeout(function(){ location.reload(); },900);
+          }catch(e){ decir(e.message,'#f87171'); }
+        };
+        fr.onerror=function(){ decir('No se pudo leer el fichero.','#f87171'); };
+        fr.readAsText(f);
+        importInput.value='';
+      };
+    }
+
+    // Borrado en dos pasos: es irreversible y no debe dispararse de un roce.
+    var wipeBtn=document.getElementById('nxWipeBtn');
+    var wipeBox=document.getElementById('nxWipeConfirm');
+    if(wipeBtn&&wipeBox){
+      wipeBtn.onclick=function(){ wipeBox.style.display=wipeBox.style.display==='none'?'block':'none'; };
+      var cancel=document.getElementById('nxWipeCancel');
+      if(cancel) cancel.onclick=function(){ wipeBox.style.display='none'; };
+      var yes=document.getElementById('nxWipeYes');
+      if(yes) yes.onclick=function(){
+        try{
+          var n=window.EnferixData.borrar();
+          decir('✓ Borrados '+n+' elementos. Recargando…','#4ade80');
+        }catch(e){}
+        setTimeout(function(){ location.reload(); },900);
+      };
+    }
 
     var geoOpenBtn=document.getElementById('nxGeoOpen');
     if(geoOpenBtn)geoOpenBtn.onclick=function(){
