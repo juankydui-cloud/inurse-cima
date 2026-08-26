@@ -607,7 +607,6 @@ function renderNearbyResults(data){
           '<div class="info"><b>'+esc(x.name)+'</b><br><span class="nearby-type-tag '+x.kind+'">'+esc(nearbyTypeLabel(x.kind))+'</span>'+
           (x.address?'<small>'+esc(x.address)+'</small>':'')+
           (x.phone?'<small>☎ '+esc(x.phone)+'</small>':'')+
-          (x.openNow===true?'<small class="nearby-open">🟢 Abierto ahora</small>':x.openNow===false?'<small class="nearby-shut">🔴 Cerrado ahora</small>':'')+
           '<div class="actions"><span class="nearby-go">🗺️ Toca para abrir la ruta</span></div></div>'+
           '<span class="dist">'+x.distanceKm+' km</span></div>';
       }).join('')+'</div>'

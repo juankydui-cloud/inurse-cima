@@ -15,7 +15,11 @@ const PLACES_URL = process.env.GOOGLE_PLACES_URL ||
   "https://places.googleapis.com/v1/places:searchNearby";
 
 // Solo se piden los campos que la app muestra. El coste de Places se factura
-// por campos solicitados, así que pedir de más se paga de más.
+// por campos solicitados, así que pedir de más se paga de más — y no de forma
+// lineal: pedir el horario de apertura reclasifica la llamada al tramo caro,
+// que trae 1.000 llamadas gratis al mes en vez de 5.000. Por un dato que en un
+// hospital no dice nada (urgencias está siempre abierto) no compensa, así que
+// currentOpeningHours se queda fuera a propósito.
 const FIELD_MASK = [
   "places.id",
   "places.displayName",
@@ -24,8 +28,7 @@ const FIELD_MASK = [
   "places.nationalPhoneNumber",
   "places.internationalPhoneNumber",
   "places.googleMapsUri",
-  "places.primaryType",
-  "places.currentOpeningHours.openNow"
+  "places.primaryType"
 ].join(",");
 
 export function googleKey() {
@@ -97,7 +100,6 @@ export async function searchHospitals(lat, lon, { radius = 5000, language = "es"
       address: p.formattedAddress || "",
       phone: p.nationalPhoneNumber || p.internationalPhoneNumber || "",
       emergency: true,
-      openNow: typeof p.currentOpeningHours?.openNow === "boolean" ? p.currentOpeningHours.openNow : null,
       distanceKm: Math.round(haversineKm(lat, lon, c.latitude, c.longitude) * 10) / 10,
       // Se prefiere el enlace canónico de Google al lugar; el de direcciones
       // como respaldo cuando Places no lo devuelve.
