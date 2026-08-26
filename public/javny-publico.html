@@ -523,7 +523,7 @@
   </div>
 
   <footer class="foot wrap">
-    Javny — misma base que Enferix · <span class="src">CIMA-AEMPS · PubMed · NICE · OMS · OpenStreetMap</span>
+    Javny — misma base que Enferix · <span class="src">CIMA-AEMPS · PubMed · NICE · OMS · Google Maps · OpenStreetMap</span>
   </footer>
 </div>
 
@@ -740,7 +740,7 @@
           .then(function (data) {
             var item = (data.items || [])[0];
             if (!item) {
-              hrName.textContent = 'No he encontrado ' + (kind === 'aed' ? 'ningún DEA' : 'ningún hospital') + ' cerca en OpenStreetMap.';
+              hrName.textContent = 'No he encontrado ' + (kind === 'aed' ? 'ningún DEA' : 'ningún hospital') + ' cerca.';
               hrAddr.textContent = 'Prueba a ampliar la búsqueda o llama al 112.';
               hrKm.textContent = '—';
               return;
@@ -753,7 +753,7 @@
             hrKm.parentElement.style.cursor = 'pointer';
           })
           .catch(function (err) {
-            hrName.textContent = 'No he podido consultar OpenStreetMap.';
+            hrName.textContent = 'No he podido consultar los mapas.';
             hrAddr.textContent = err.message;
             hrKm.textContent = '—';
           });
