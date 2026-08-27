@@ -1,10 +1,12 @@
 /* =========================================================================
    Enferix · Índices y escalas clínicas
-   190 calculadoras de Anestesiología (46), Cardiología (69), Medicina
-   Intensiva (131) y Farmacia (24); muchas escalas se comparten entre
-   especialidades, por eso las cifras suman más que el total. Incluye
-   fórmulas, notas clínicas, referencias bibliográficas y las advertencias
-   de seguridad de cada escala.
+   263 calculadoras en 40 categorías y 10 especialidades: Anestesiología (46),
+   Cardiología (69), Medicina Intensiva (142), Farmacia (24), Pediatría (12),
+   Cuidados Críticos Neonatales (12), Neurología crítica (11), Emergencias (18),
+   Medicina Familiar (19) y Cirugía Cardiotorácica (13). Muchas escalas se
+   comparten entre especialidades, por eso las cifras suman más que el total.
+   Incluye fórmulas, notas clínicas, referencias bibliográficas y las
+   advertencias de seguridad de cada escala.
    Portado del proyecto React+TypeScript juankydue-dev/inurse (rama main)
    a JavaScript plano con esbuild; define
    window.ENFERIX_ESCALAS_DATA = { CATEGORIES, SPECIALTIES, CALCULATORS }.
@@ -12,14 +14,14 @@
    /js/calculadoras/inurse-escalas-clinicas-js.js.
    ========================================================================= */
 (() => {
-  // inurse-main/src/engine/types.ts
+  // inurse-m2/src/engine/types.ts
   var sum = (v, ids) => ids.reduce((acc, id) => {
     var _a;
     return acc + ((_a = v[id]) != null ? _a : 0);
   }, 0);
   var fmt = (n, dec = 0) => n.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: dec });
 
-  // inurse-main/src/calculators/riesgo.ts
+  // inurse-m2/src/calculators/riesgo.ts
   var CAT = "Riesgo perioperatorio";
   var ANES = ["Anestesiología"];
   var riesgo = [
@@ -677,7 +679,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/dolor.ts
+  // inurse-m2/src/calculators/dolor.ts
   var CAT2 = "Dolor";
   var ANES2 = ["Anestesiología"];
   var dolor = [
@@ -1202,7 +1204,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/viaaerea.ts
+  // inurse-m2/src/calculators/viaaerea.ts
   var CAT3 = "Vía aérea";
   var ANES3 = ["Anestesiología"];
   var viaAerea = [
@@ -1396,7 +1398,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/respiratorio.ts
+  // inurse-m2/src/calculators/respiratorio.ts
   var CAT4 = "Respiratorio y ventilación";
   var ANES4 = ["Anestesiología"];
   var respiratorio = [
@@ -1537,7 +1539,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/hemodinamica.ts
+  // inurse-m2/src/calculators/hemodinamica.ts
   var CAT5 = "Hemodinámica y fluidos";
   var ANES5 = ["Anestesiología"];
   var hemodinamica = [
@@ -1764,7 +1766,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/neuro.ts
+  // inurse-m2/src/calculators/neuro.ts
   var CAT6 = "Neurológico, sedación y gravedad";
   var ANES6 = ["Anestesiología"];
   var neuro = [
@@ -1953,7 +1955,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/alcohol.ts
+  // inurse-m2/src/calculators/alcohol.ts
   var CAT7 = "Alcohol y abstinencia";
   var ANES7 = ["Anestesiología"];
   var escala07 = (anchors) => Array.from({ length: 8 }, (_, i) => ({
@@ -2272,7 +2274,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/infecciones.ts
+  // inurse-m2/src/calculators/infecciones.ts
   var CAT8 = "Infecciones";
   var ANES8 = ["Anestesiología"];
   var infecciones = [
@@ -2373,7 +2375,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/farmacologia.ts
+  // inurse-m2/src/calculators/farmacologia.ts
   var CAT9 = "Farmacología y dosificación";
   var ANES9 = ["Anestesiología"];
   var ANESTESICOS = [
@@ -2499,7 +2501,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/cardio-fa.ts
+  // inurse-m2/src/calculators/cardio-fa.ts
   var CAT10 = "Fibrilación auricular y anticoagulación";
   var CARD = ["Cardiología"];
   var cardioFA = [
@@ -2804,7 +2806,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/cardio-sca.ts
+  // inurse-m2/src/calculators/cardio-sca.ts
   var CAT11 = "Síndrome coronario agudo y dolor torácico";
   var CARD2 = ["Cardiología"];
   var cardioSCA = [
@@ -3267,7 +3269,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/cardio-tev.ts
+  // inurse-m2/src/calculators/cardio-tev.ts
   var CAT12 = "Tromboembolismo venoso";
   var CARD3 = ["Cardiología"];
   var cardioTEV = [
@@ -3722,7 +3724,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/cardio-ic-sincope.ts
+  // inurse-m2/src/calculators/cardio-ic-sincope.ts
   var CAT_IC = "Insuficiencia cardíaca";
   var CAT_SINCOPE = "Síncope";
   var CARD4 = ["Cardiología"];
@@ -4029,7 +4031,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/cardio-varios.ts
+  // inurse-m2/src/calculators/cardio-varios.ts
   var CAT_DX = "Criterios diagnósticos";
   var CAT_GRAV = "Gravedad y pronóstico";
   var CARD5 = ["Cardiología"];
@@ -4478,7 +4480,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/formulas.ts
+  // inurse-m2/src/calculators/formulas.ts
   var CAT13 = "Fórmulas y cálculos clínicos";
   var CARD6 = ["Cardiología"];
   var formulas = [
@@ -5005,7 +5007,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/neurocritico.ts
+  // inurse-m2/src/calculators/neurocritico.ts
   var CAT14 = "Neurocrítico e ictus";
   var UCI = ["Medicina Intensiva"];
   var escala = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -5804,7 +5806,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/uci-gravedad.ts
+  // inurse-m2/src/calculators/uci-gravedad.ts
   var CAT15 = "Gravedad en UCI y sepsis";
   var UCI2 = ["Medicina Intensiva"];
   var escala2 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -6679,7 +6681,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/respiratorio-critico.ts
+  // inurse-m2/src/calculators/respiratorio-critico.ts
   var CAT16 = "Respiratorio crítico y ventilación";
   var UCI3 = ["Medicina Intensiva"];
   var escala3 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -7308,7 +7310,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/renal-metabolico.ts
+  // inurse-m2/src/calculators/renal-metabolico.ts
   var CAT17 = "Renal, iones y equilibrio ácido-base";
   var UCI4 = ["Medicina Intensiva"];
   var renalMetabolico = [
@@ -7712,7 +7714,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/hepato-digestivo.ts
+  // inurse-m2/src/calculators/hepato-digestivo.ts
   var CAT18 = "Hepatología y digestivo";
   var UCI5 = ["Medicina Intensiva"];
   var escala4 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -8310,7 +8312,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/hemato-trauma.ts
+  // inurse-m2/src/calculators/hemato-trauma.ts
   var CAT_HEM = "Hematología y oncología";
   var CAT_TRAUMA = "Trauma y quemados";
   var UCI6 = ["Medicina Intensiva"];
@@ -9197,7 +9199,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/antropometria.ts
+  // inurse-m2/src/calculators/antropometria.ts
   var CAT19 = "Antropometría y metabolismo";
   var CAT_ENDO = "Endocrino y tóxicos";
   var UCI7 = ["Medicina Intensiva"];
@@ -9659,7 +9661,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/farmacia-formulas.ts
+  // inurse-m2/src/calculators/farmacia-formulas.ts
   var CAT_RENAL = "Función renal y ajuste de dosis";
   var CAT_FLUIDOS = "Fluidos, electrolitos e infusiones";
   var CAT_FARMACO = "Farmacología y dosificación";
@@ -10079,7 +10081,7 @@
     }
   ];
 
-  // inurse-main/src/calculators/farmacia-opioides.ts
+  // inurse-m2/src/calculators/farmacia-opioides.ts
   var CAT20 = "Opioides, benzodiacepinas y controlados";
   var FARM2 = ["Farmacia"];
   var MME_FACTORS = [
@@ -10402,7 +10404,4025 @@
     }
   ];
 
-  // inurse-main/src/calculators/index.ts
+  // inurse-m2/src/calculators/pediatria.ts
+  var CAT21 = "Neonatología y pediatría";
+  var PED = ["Cuidados Críticos Neonatales", "Pediatría"];
+  var escala6 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
+  var pediatria = [
+    {
+      id: "apgar",
+      name: "Puntuación de Apgar del recién nacido",
+      shortName: "Apgar",
+      description: "Evalúa la adaptación del recién nacido al minuto 1, 5 (y si procede al 10) de vida.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "aspecto",
+          type: "select",
+          label: "Aspecto (color)",
+          dropdown: true,
+          options: escala6([
+            [0, "Azul o pálido"],
+            [1, "Cuerpo rosado, extremidades azules (acrocianosis)"],
+            [2, "Rosado en todo el cuerpo"]
+          ])
+        },
+        {
+          id: "pulso",
+          type: "select",
+          label: "Pulso (frecuencia cardíaca)",
+          dropdown: true,
+          options: escala6([
+            [0, "Ausente"],
+            [1, "< 100 lpm"],
+            [2, "≥ 100 lpm"]
+          ])
+        },
+        {
+          id: "gesto",
+          type: "select",
+          label: "Gesto (respuesta al estímulo)",
+          dropdown: true,
+          options: escala6([
+            [0, "Sin respuesta"],
+            [1, "Muecas"],
+            [2, "Llora vigorosamente, tose o estornuda"]
+          ])
+        },
+        {
+          id: "actividad",
+          type: "select",
+          label: "Actividad (tono muscular)",
+          dropdown: true,
+          options: escala6([
+            [0, "Flácido"],
+            [1, "Cierta flexión de extremidades"],
+            [2, "Movimientos activos, buena flexión"]
+          ])
+        },
+        {
+          id: "respiracion",
+          type: "select",
+          label: "Respiración",
+          dropdown: true,
+          options: escala6([
+            [0, "Ausente"],
+            [1, "Débil, irregular o boqueo"],
+            [2, "Buena, llanto vigoroso"]
+          ])
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["aspecto", "pulso", "gesto", "actividad", "respiracion"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–10)",
+          interpretation: score >= 7 ? "Adaptación adecuada (7–10). Cuidados habituales." : score >= 4 ? "Adaptación moderadamente deprimida (4–6): reevaluar y valorar apoyo respiratorio." : "Adaptación gravemente deprimida (0–3): iniciar reanimación neonatal.",
+          level: score >= 7 ? "ok" : score >= 4 ? "warn" : "danger"
+        };
+      },
+      notes: [
+        "Se registra al minuto 1 y a los 5 minutos; si a los 5 minutos es < 7, repetir cada 5 minutos hasta 20 minutos.",
+        "La Academia Americana de Pediatría desaconseja usar el Apgar como único criterio para diagnóstico de asfixia perinatal o para decisiones sobre reanimación (que debe iniciarse ya en el minuto 0 según necesidad)."
+      ],
+      references: [
+        "Apgar V. A proposal for a new method of evaluation of the newborn infant. Curr Res Anesth Analg. 1953;32(4):260-7.",
+        "American Academy of Pediatrics; ACOG. The Apgar Score. Pediatrics. 2015;136(4):819-22."
+      ]
+    },
+    {
+      id: "finnegan",
+      name: "Puntuación de Finnegan modificada para abstinencia neonatal (NAS)",
+      shortName: "Finnegan (NAS)",
+      description: "Cuantifica la gravedad del síndrome de abstinencia neonatal por opioides y guía el tratamiento farmacológico.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "llanto",
+          type: "select",
+          label: "Llanto",
+          dropdown: true,
+          options: escala6([
+            [0, "Normal"],
+            [2, "Agudo, excesivo"],
+            [3, "Agudo continuo"]
+          ])
+        },
+        {
+          id: "sueno",
+          type: "select",
+          label: "Sueño tras la toma",
+          dropdown: true,
+          options: escala6([
+            [0, "Duerme > 3 h"],
+            [1, "Duerme < 3 h"],
+            [2, "Duerme < 2 h"],
+            [3, "Duerme < 1 h"]
+          ])
+        },
+        {
+          id: "moro",
+          type: "select",
+          label: "Reflejo de Moro",
+          dropdown: true,
+          options: escala6([
+            [0, "Normal"],
+            [2, "Hiperactivo"],
+            [3, "Muy hiperactivo"]
+          ])
+        },
+        {
+          id: "temblor",
+          type: "select",
+          label: "Temblor",
+          dropdown: true,
+          options: escala6([
+            [0, "Ausente"],
+            [1, "Leve al estímulo"],
+            [2, "Moderado-intenso al estímulo"],
+            [3, "Moderado-intenso en reposo"],
+            [4, "Intenso continuo en reposo"]
+          ])
+        },
+        { id: "tono", type: "boolean", label: "Aumento del tono muscular", points: 2 },
+        { id: "erosiones", type: "boolean", label: "Erosiones/excoriaciones cutáneas", points: 1 },
+        { id: "mioclonias", type: "boolean", label: "Mioclonías", points: 3 },
+        { id: "convulsiones", type: "boolean", label: "Convulsiones generalizadas", points: 5 },
+        {
+          id: "sudoracion",
+          type: "boolean",
+          label: "Sudoración"
+        },
+        {
+          id: "temperatura",
+          type: "select",
+          label: "Temperatura",
+          dropdown: true,
+          options: escala6([
+            [0, "Normal"],
+            [1, "37,2–38,3 °C"],
+            [2, "> 38,3 °C"]
+          ])
+        },
+        { id: "bostezos", type: "boolean", label: "Bostezos frecuentes (> 3–4 en el intervalo)" },
+        { id: "aleteo", type: "boolean", label: "Aleteo nasal", points: 2 },
+        {
+          id: "estornudos",
+          type: "boolean",
+          label: "Estornudos frecuentes (> 3–4 en el intervalo)"
+        },
+        {
+          id: "respiracion",
+          type: "select",
+          label: "Frecuencia respiratoria",
+          dropdown: true,
+          options: escala6([
+            [0, "< 60 rpm"],
+            [1, "> 60 rpm"],
+            [2, "> 60 rpm con tiraje"]
+          ])
+        },
+        { id: "succion", type: "boolean", label: "Succión excesiva o desorganizada" },
+        { id: "alimentacion", type: "boolean", label: "Toma deficiente (< 15 min o toma escasa)", points: 2 },
+        { id: "regurgitacion", type: "boolean", label: "Regurgitación / vómitos en escopetazo", points: 2 },
+        {
+          id: "deposiciones",
+          type: "select",
+          label: "Deposiciones",
+          dropdown: true,
+          options: escala6([
+            [0, "Normales"],
+            [2, "Blandas"],
+            [3, "Líquidas o explosivas"]
+          ])
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, [
+          "llanto",
+          "sueno",
+          "moro",
+          "temblor",
+          "tono",
+          "erosiones",
+          "mioclonias",
+          "convulsiones",
+          "sudoracion",
+          "temperatura",
+          "bostezos",
+          "aleteo",
+          "estornudos",
+          "respiracion",
+          "succion",
+          "alimentacion",
+          "regurgitacion",
+          "deposiciones"
+        ]);
+        return {
+          main: String(score),
+          mainUnit: "puntos",
+          interpretation: score < 8 ? "Abstinencia leve: continuar cuidados no farmacológicos (contacto piel con piel, lactancia materna, ambiente tranquilo, agrupación de cuidados)." : score <= 11 ? "Abstinencia moderada: si se repite ≥ 8 en dos evaluaciones consecutivas (o ≥ 12 en una), iniciar tratamiento farmacológico (morfina oral 0,04 mg/kg/dosis cada 3–4 h suele ser el fármaco de primera línea)." : "Abstinencia intensa: tratamiento farmacológico y valoración por neonatología. Ajustar dosis según puntuación cada 3–4 h.",
+          level: score < 8 ? "ok" : score <= 11 ? "warn" : "danger"
+        };
+      },
+      notes: [
+        "Evaluar cada 3–4 h coincidiendo con las tomas; nunca despertar al niño para valorar.",
+        "La AAP recomienda desde 2020 priorizar los cuidados no farmacológicos y usar herramientas más simples como Eat-Sleep-Console cuando sea posible; Finnegan sigue vigente donde no se haya adoptado el nuevo enfoque.",
+        "Un umbral de tratamiento farmacológico habitual es puntuación ≥ 8 en dos evaluaciones consecutivas o ≥ 12 en una."
+      ],
+      references: [
+        "Finnegan LP, et al. Neonatal abstinence syndrome: assessment and management. Addict Dis. 1975;2(1-2):141-58."
+      ]
+    },
+    {
+      id: "esc",
+      name: "Enfoque «Eat, Sleep, Console» (ESC) para el síndrome de abstinencia neonatal",
+      shortName: "ESC",
+      description: "Guía funcional para el manejo del síndrome de abstinencia neonatal: alimentación, sueño y consolabilidad.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "comer",
+          type: "select",
+          label: "Alimentación (Eat)",
+          options: [
+            { label: "Toma ≥ 1 oz (30 mL) o al pecho ≥ 10 min sin dificultad", value: 0 },
+            { label: "Toma comprometida por síntomas de abstinencia", value: 1 }
+          ]
+        },
+        {
+          id: "dormir",
+          type: "select",
+          label: "Sueño (Sleep)",
+          options: [
+            { label: "Duerme ≥ 1 hora seguida sin ser molestado", value: 0 },
+            { label: "Sueño limitado a menos de 1 hora por síntomas", value: 1 }
+          ]
+        },
+        {
+          id: "consolar",
+          type: "select",
+          label: "Consolabilidad (Console)",
+          options: [
+            { label: "Se consuela en ≤ 10 minutos con intervención de los cuidadores", value: 0 },
+            { label: "No se consuela en 10 minutos con intervenciones adecuadas", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const puntos = sum(v, ["comer", "dormir", "consolar"]);
+        return {
+          main: puntos === 0 ? "Manejo no farmacológico" : `${puntos}/3 dominios afectados`,
+          interpretation: puntos === 0 ? "El neonato come, duerme y se consuela adecuadamente: continuar con cuidados no farmacológicos (contacto piel con piel, agrupación de cuidados, lactancia materna, ambiente tranquilo, alojamiento conjunto)." : "Uno o más dominios afectados: optimizar los cuidados no farmacológicos y reevaluar tras 30–60 minutos con intervenciones. Si persiste el fallo, valorar iniciar/aumentar tratamiento farmacológico.",
+          level: puntos === 0 ? "ok" : puntos === 1 ? "warn" : "danger"
+        };
+      },
+      notes: [
+        "ESC no sustituye a Finnegan: es un enfoque funcional distinto que ha demostrado reducir la duración de la hospitalización y la exposición a opioides en el neonato.",
+        "Los padres son coprotagonistas del cuidado: el alojamiento conjunto y su implicación son parte esencial del abordaje."
+      ],
+      references: [
+        "Grossman MR, et al. An Initiative to Improve the Quality of Care of Infants With Neonatal Abstinence Syndrome. Pediatrics. 2017;139(6):e20163360.",
+        "Young LW, et al. Eat, Sleep, Console Approach or Usual Care for Neonatal Opioid Withdrawal. N Engl J Med. 2023;388(25):2326-37."
+      ]
+    },
+    {
+      id: "bhutani",
+      name: "Nomograma de Bhutani para el riesgo de hiperbilirrubinemia",
+      shortName: "Bhutani",
+      description: "Clasifica el riesgo de hiperbilirrubinemia significativa en recién nacidos ≥ 35 semanas a partir de la bilirrubina por horas de vida.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        { id: "horas", type: "number", label: "Edad postnatal", unit: "horas", min: 12, max: 168, step: 1 },
+        { id: "bilirrubina", type: "number", label: "Bilirrubina total sérica", unit: "mg/dL", min: 0, max: 40, step: 0.1 }
+      ],
+      compute: (v) => {
+        const h = v.horas;
+        const p40 = h < 24 ? 4 + h / 24 * 1.5 : h < 48 ? 5.5 + (h - 24) / 24 * 2 : h < 72 ? 7.5 + (h - 48) / 24 * 1.5 : h < 96 ? 9 + (h - 72) / 24 * 0.5 : 9.5;
+        const p75 = h < 24 ? 5 + h / 24 * 2 : h < 48 ? 7 + (h - 24) / 24 * 2.5 : h < 72 ? 9.5 + (h - 48) / 24 * 1.5 : h < 96 ? 11 + (h - 72) / 24 * 0.5 : 11.5;
+        const p95 = h < 24 ? 6 + h / 24 * 2 : h < 48 ? 8 + (h - 24) / 24 * 3 : h < 72 ? 11 + (h - 48) / 24 * 2 : h < 96 ? 13 + (h - 72) / 24 * 1 : 14;
+        const b = v.bilirrubina;
+        let zona, level;
+        if (b < p40) {
+          zona = "Riesgo bajo (bajo percentil 40)";
+          level = "ok";
+        } else if (b < p75) {
+          zona = "Riesgo intermedio-bajo (percentil 40–75)";
+          level = "info";
+        } else if (b < p95) {
+          zona = "Riesgo intermedio-alto (percentil 75–95)";
+          level = "warn";
+        } else {
+          zona = "Riesgo alto (≥ percentil 95)";
+          level = "danger";
+        }
+        return {
+          main: fmt(b, 1),
+          mainUnit: "mg/dL",
+          secondary: zona,
+          interpretation: level === "ok" ? "Riesgo bajo de hiperbilirrubinemia significativa: seguimiento clínico habitual." : level === "info" ? "Riesgo intermedio-bajo: nueva medición en 24–48 h según juicio clínico y factores de riesgo." : level === "warn" ? "Riesgo intermedio-alto: repetir bilirrubina en 12–24 h y valorar factores de riesgo." : "Riesgo alto: bilirrubina cercana o superior al percentil 95; comparar con el umbral de fototerapia según horas de vida, edad gestacional y factores de riesgo (guía AAP 2022) y actuar sin demora.",
+          level,
+          details: [
+            `Percentiles aproximados a las ${h} h: P40 ≈ ${fmt(p40, 1)}, P75 ≈ ${fmt(p75, 1)}, P95 ≈ ${fmt(p95, 1)} mg/dL.`,
+            "La decisión de fototerapia se toma con el nomograma AAP 2022 según edad gestacional y factores de riesgo, no solo con el percentil de Bhutani."
+          ]
+        };
+      },
+      notes: [
+        "Aplicable a recién nacidos de ≥ 35 semanas de edad gestacional, sanos, sin enfermedad hemolítica.",
+        "Los percentiles mostrados son una aproximación del nomograma original.",
+        "Factores de riesgo adicionales: edad gestacional < 38 semanas, ictericia en las primeras 24 h, incompatibilidad ABO/Rh, hermano con fototerapia, lactancia materna exclusiva mal establecida, cefalohematoma, sexo masculino."
+      ],
+      references: [
+        "Bhutani VK, et al. Predictive ability of a predischarge hour-specific serum bilirubin for subsequent significant hyperbilirubinemia. Pediatrics. 1999;103(1):6-14.",
+        "AAP. Clinical Practice Guideline Revision: Management of Hyperbilirubinemia in the Newborn Infant 35 or More Weeks of Gestation. Pediatrics. 2022;150(3):e2022058859."
+      ]
+    },
+    {
+      id: "rochester",
+      name: "Criterios de Rochester para lactantes febriles",
+      shortName: "Rochester",
+      description: "Identifica a los lactantes ≤ 60 días con fiebre que tienen bajo riesgo de infección bacteriana grave.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        { id: "aspecto", type: "boolean", label: "Aspecto clínico bueno" },
+        { id: "termino", type: "boolean", label: "Recién nacido a término, sin complicaciones perinatales" },
+        { id: "antibioticos", type: "boolean", label: "Sin antibioterapia perinatal ni actual" },
+        { id: "hospital", type: "boolean", label: "Sin hospitalizaciones previas ni enfermedad crónica" },
+        { id: "foco", type: "boolean", label: "Sin foco infeccioso al examen físico (piel, tejidos blandos, huesos, oídos)" },
+        { id: "leucos", type: "boolean", label: "Leucocitos 5.000–15.000/mm³" },
+        { id: "cayados", type: "boolean", label: "Cayados < 1.500/mm³" },
+        { id: "orina", type: "boolean", label: "Sedimento urinario < 10 leucocitos/campo o tira de orina negativa" },
+        { id: "heces", type: "boolean", label: "Si hay diarrea: < 5 leucocitos/campo en heces" }
+      ],
+      compute: (v) => {
+        const ids = ["aspecto", "termino", "antibioticos", "hospital", "foco", "leucos", "cayados", "orina", "heces"];
+        const cumplidos = sum(v, ids);
+        const bajoRiesgo = cumplidos === ids.length;
+        return {
+          main: bajoRiesgo ? "Bajo riesgo" : "No cumple criterios",
+          secondary: `${cumplidos}/${ids.length}`,
+          secondaryLabel: "criterios positivos",
+          interpretation: bajoRiesgo ? "Todos los criterios cumplidos: riesgo bajo de infección bacteriana grave (VPN ≈ 98,9 %). Puede plantearse manejo ambulatorio con seguimiento en 24 h, según protocolo local." : "No cumple todos los criterios: no puede clasificarse como bajo riesgo; completar estudio de sepsis y valorar ingreso con antibioterapia empírica.",
+          level: bajoRiesgo ? "ok" : "danger"
+        };
+      },
+      notes: [
+        "Aplicable a lactantes ≤ 60 días con temperatura rectal ≥ 38 °C.",
+        "Las guías actuales (AAP 2021, Step-by-Step europeo, PECARN 2019) han refinado el abordaje: usar la escala que cada centro tenga protocolizada."
+      ],
+      references: [
+        "Jaskiewicz JA, et al. Febrile infants at low risk for serious bacterial infection: an appraisal of the Rochester criteria. Pediatrics. 1994;94(3):390-6."
+      ]
+    },
+    {
+      id: "step-by-step",
+      name: "Enfoque paso a paso (Step-by-step) para lactantes febriles",
+      shortName: "Step-by-step",
+      description: "Algoritmo europeo secuencial para identificar lactantes ≤ 90 días con fiebre y bajo riesgo de infección bacteriana grave.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        { id: "malAspecto", type: "boolean", label: "¿Mal aspecto clínico?", noPoints: true },
+        { id: "menor21", type: "boolean", label: "¿Edad ≤ 21 días?", noPoints: true },
+        { id: "orinaAlt", type: "boolean", label: "¿Tira reactiva de orina alterada?", description: "Leucocituria o nitritos positivos.", noPoints: true },
+        { id: "pct", type: "boolean", label: "¿Procalcitonina ≥ 0,5 ng/mL?", noPoints: true },
+        { id: "pcr", type: "boolean", label: "¿PCR > 20 mg/L?", noPoints: true },
+        { id: "nan", type: "boolean", label: "¿Neutrófilos absolutos > 10.000/mm³?", noPoints: true }
+      ],
+      compute: (v) => {
+        if (v.malAspecto === 1)
+          return {
+            main: "Alto riesgo",
+            interpretation: "Mal aspecto clínico: ingreso, estudio completo (hemocultivo, urocultivo, LCR) y antibioterapia empírica.",
+            level: "danger"
+          };
+        if (v.menor21 === 1)
+          return {
+            main: "Alto riesgo",
+            interpretation: "Edad ≤ 21 días: por edad, se recomienda ingreso, estudio completo (incluida punción lumbar) y antibioterapia empírica independientemente del resto de parámetros.",
+            level: "danger"
+          };
+        if (v.orinaAlt === 1)
+          return {
+            main: "Riesgo intermedio",
+            interpretation: "Tira de orina alterada: probable infección urinaria. Sedimento y urocultivo; ingreso o manejo ambulatorio según protocolo local.",
+            level: "warn"
+          };
+        if (v.pct === 1)
+          return {
+            main: "Alto riesgo",
+            interpretation: "Procalcitonina ≥ 0,5 ng/mL: riesgo elevado de infección bacteriana invasiva; estudio completo, ingreso y antibioterapia empírica.",
+            level: "danger"
+          };
+        if (v.pcr === 1 || v.nan === 1)
+          return {
+            main: "Riesgo intermedio",
+            interpretation: "PCR > 20 mg/L o neutrófilos > 10.000/mm³ con procalcitonina normal: observación hospitalaria durante 24 h; individualizar necesidad de antibioterapia.",
+            level: "warn"
+          };
+        return {
+          main: "Bajo riesgo",
+          interpretation: "Bien aspecto, > 21 días, tira de orina normal, procalcitonina < 0,5, PCR ≤ 20 y neutrófilos ≤ 10.000: bajo riesgo de infección bacteriana invasiva (VPN ≈ 99,3 %). Puede considerarse manejo ambulatorio en > 21 días con adecuado seguimiento, según protocolo local.",
+          level: "ok"
+        };
+      },
+      notes: [
+        "Aplicable a lactantes ≤ 90 días con fiebre sin foco.",
+        "Rendimiento superior a Rochester y Filadelfia para detectar meningitis bacteriana en menores de 90 días."
+      ],
+      references: [
+        'Gómez B, et al. Validation of the "Step-by-Step" approach in the management of young febrile infants. Pediatrics. 2016;138(2):e20154381.'
+      ]
+    },
+    {
+      id: "pecarn-lactantes",
+      name: "PECARN para lactantes febriles de 8–60 días",
+      shortName: "PECARN 8–60 d",
+      description: "Regla de decisión para identificar lactantes de 8 a 60 días con fiebre y bajo riesgo de infección bacteriana grave.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "orinaAlt",
+          type: "boolean",
+          label: "¿Análisis de orina alterado?",
+          description: "Cualquiera: leucoesterasa positiva, nitritos positivos o > 5 leucocitos por campo.",
+          noPoints: true
+        },
+        { id: "nan", type: "boolean", label: "¿Neutrófilos absolutos > 4.090/mm³?", noPoints: true },
+        { id: "pct", type: "boolean", label: "¿Procalcitonina > 1,71 ng/mL?", noPoints: true }
+      ],
+      compute: (v) => {
+        const bajo = v.orinaAlt === 0 && v.nan === 0 && v.pct === 0;
+        return {
+          main: bajo ? "Bajo riesgo" : "No bajo riesgo",
+          interpretation: bajo ? "Los tres marcadores dentro de rango: sensibilidad 97,7 % para infección bacteriana grave y 100 % para infección bacteriana invasiva. Puede considerarse manejo sin punción lumbar y observación (individualizar según edad y protocolo local)." : "Al menos un marcador alterado: no se cumple la regla de bajo riesgo. Ampliar estudio (incluida punción lumbar en < 28 días o si otros signos) e iniciar antibioterapia empírica según protocolo.",
+          level: bajo ? "ok" : "danger"
+        };
+      },
+      notes: [
+        "Aplicable a lactantes de 29 a 60 días con fiebre ≥ 38 °C y buen aspecto. En menores de 28 días se recomienda estudio completo y antibioterapia empírica independientemente de la regla.",
+        "La procalcitonina puede no estar disponible en todos los centros; su ausencia limita la aplicabilidad de la regla."
+      ],
+      references: [
+        "Kuppermann N, et al. A Clinical Prediction Rule to Identify Febrile Infants 60 Days and Younger at Low Risk for Serious Bacterial Infections. JAMA Pediatr. 2019;173(4):342-51."
+      ]
+    },
+    {
+      id: "sirs-pediatrico",
+      name: "SIRS pediátrico (criterios de Goldstein)",
+      shortName: "SIRS pediátrico",
+      description: "Criterios del International Pediatric Sepsis Consensus para el síndrome de respuesta inflamatoria sistémica en niños.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "temp",
+          type: "boolean",
+          label: "Temperatura central > 38,5 °C o < 36 °C"
+        },
+        {
+          id: "leucos",
+          type: "boolean",
+          label: "Leucocitos alterados para la edad o > 10 % de cayados"
+        },
+        {
+          id: "fc",
+          type: "boolean",
+          label: "Taquicardia (> 2 DE sobre la media para la edad) o bradicardia (< 1 año)"
+        },
+        {
+          id: "fr",
+          type: "boolean",
+          label: "Taquipnea (> 2 DE sobre la media) o necesidad de ventilación mecánica"
+        },
+        {
+          id: "infeccion",
+          type: "boolean",
+          label: "Infección confirmada o sospechada",
+          noPoints: true
+        },
+        {
+          id: "disfuncion",
+          type: "boolean",
+          label: "Disfunción cardiovascular o respiratoria aguda, o ≥ 2 disfunciones orgánicas",
+          noPoints: true
+        }
+      ],
+      compute: (v) => {
+        const criteriosSIRS = sum(v, ["temp", "leucos", "fc", "fr"]);
+        const cumpleSIRS = criteriosSIRS >= 2 && (v.temp === 1 || v.leucos === 1);
+        const sepsis = cumpleSIRS && v.infeccion === 1;
+        const grave = sepsis && v.disfuncion === 1;
+        return {
+          main: grave ? "Sepsis grave o shock séptico" : sepsis ? "Sepsis" : cumpleSIRS ? "SIRS" : "No cumple SIRS",
+          secondary: `${criteriosSIRS}/4 criterios`,
+          interpretation: grave ? "Sepsis grave / shock séptico: reanimación con fluidos, antibioterapia precoz (idealmente en la primera hora) y valoración por cuidados intensivos pediátricos." : sepsis ? "Sepsis pediátrica: activar bundle de sepsis (identificación, cultivos, antibioterapia empírica en la primera hora, reanimación con fluidos)." : cumpleSIRS ? "SIRS sin infección demostrada: buscar causa (traumatismo, quemados, cirugía, pancreatitis…)." : "No cumple criterios de SIRS: reevaluar la clínica y las tendencias.",
+          level: grave ? "danger" : sepsis ? "danger" : cumpleSIRS ? "warn" : "ok",
+          details: [
+            "SIRS = ≥ 2 de los 4 criterios, siendo obligatorio uno de ellos temperatura o leucocitos alterados."
+          ]
+        };
+      },
+      notes: [
+        "Los umbrales de FC, FR y leucocitos varían por edad; usar los valores de referencia pediátricos del centro.",
+        "La consensuada Phoenix Sepsis Score (2024) sustituye progresivamente a los criterios de Goldstein para la definición de sepsis pediátrica."
+      ],
+      references: [
+        "Goldstein B, et al. International pediatric sepsis consensus conference: Definitions for sepsis and organ dysfunction in pediatrics. Pediatr Crit Care Med. 2005;6(1):2-8."
+      ]
+    },
+    {
+      id: "phoenix-sepsis",
+      name: "Puntuación de sepsis Phoenix (2024)",
+      shortName: "Phoenix Sepsis",
+      description: "Definición actualizada de sepsis pediátrica: identifica disfunción orgánica en niños con sospecha de infección.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "respiratorio",
+          type: "select",
+          label: "Respiratorio",
+          dropdown: true,
+          options: [
+            { label: "PaO₂/FiO₂ ≥ 400 o SpO₂/FiO₂ ≥ 292", value: 0 },
+            { label: "PaO₂/FiO₂ < 400 o SpO₂/FiO₂ < 292 con oxígeno", value: 1 },
+            { label: "PaO₂/FiO₂ 100–200 con soporte respiratorio invasivo, o 148–220 con ventilación no invasiva", value: 2 },
+            { label: "PaO₂/FiO₂ < 100 con soporte respiratorio invasivo, o SpO₂/FiO₂ < 148 con soporte", value: 3 }
+          ]
+        },
+        {
+          id: "cardiovascular",
+          type: "select",
+          label: "Cardiovascular — vasoactivos",
+          dropdown: true,
+          options: [
+            { label: "Sin vasoactivos", value: 0 },
+            { label: "1 vasoactivo", value: 1 },
+            { label: "2 o más vasoactivos", value: 2 }
+          ]
+        },
+        {
+          id: "lactato",
+          type: "select",
+          label: "Cardiovascular — lactato",
+          dropdown: true,
+          options: [
+            { label: "< 5 mmol/L", value: 0 },
+            { label: "5–10,9 mmol/L", value: 1 },
+            { label: "≥ 11 mmol/L", value: 2 }
+          ]
+        },
+        {
+          id: "pam",
+          type: "select",
+          label: "Cardiovascular — PAM por edad",
+          dropdown: true,
+          options: [
+            { label: "PAM en rango normal para la edad", value: 0 },
+            { label: "PAM entre 1 y 2 DE por debajo de lo normal", value: 1 },
+            { label: "PAM > 2 DE por debajo de lo normal", value: 2 }
+          ]
+        },
+        {
+          id: "coagulacion",
+          type: "select",
+          label: "Coagulación",
+          dropdown: true,
+          options: [
+            { label: "Sin alteraciones", value: 0 },
+            { label: "Una alteración: plaquetas < 100.000, INR > 1,3, D-dímero > 2 mg/L o fibrinógeno < 100 mg/dL", value: 1 },
+            { label: "Dos o más alteraciones", value: 2 }
+          ]
+        },
+        {
+          id: "neurologico",
+          type: "select",
+          label: "Neurológico",
+          dropdown: true,
+          options: [
+            { label: "GCS > 10 y pupilas reactivas", value: 0 },
+            { label: "GCS ≤ 10", value: 1 },
+            { label: "Pupilas fijas bilateralmente", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a, _b, _c;
+        const score = sum(v, ["respiratorio", "cardiovascular", "lactato", "pam", "coagulacion", "neurologico"]);
+        const sepsis = score >= 2;
+        const shock = ((_a = v.cardiovascular) != null ? _a : 0) + ((_b = v.lactato) != null ? _b : 0) + ((_c = v.pam) != null ? _c : 0) >= 1 && sepsis;
+        return {
+          main: String(score),
+          mainUnit: "puntos",
+          secondary: shock ? "Shock séptico" : sepsis ? "Sepsis" : "Sin sepsis",
+          interpretation: shock ? "Sepsis pediátrica con disfunción cardiovascular: shock séptico. Reanimación con fluidos, vasoactivos precoces, antibioterapia empírica en la primera hora y traslado a cuidados intensivos." : sepsis ? "Sepsis pediátrica según criterios Phoenix (≥ 2 puntos con sospecha de infección). Activar bundle de sepsis pediátrica." : "No cumple criterios Phoenix de sepsis: reevaluar y considerar otras causas.",
+          level: shock ? "danger" : sepsis ? "warn" : "ok"
+        };
+      },
+      notes: [
+        "La sepsis pediátrica se define por sospecha de infección + Phoenix ≥ 2.",
+        "El shock séptico requiere además ≥ 1 punto en el dominio cardiovascular.",
+        "Los umbrales de PAM por edad y de FR/FC deben tomarse de las tablas de referencia pediátricas."
+      ],
+      references: [
+        "Schlapbach LJ, et al. International Consensus Criteria for Pediatric Sepsis and Septic Shock. JAMA. 2024;331(8):665-74."
+      ]
+    },
+    {
+      id: "fluidos-pediatricos",
+      name: "Fluidos de mantenimiento pediátricos (regla 4-2-1)",
+      shortName: "Fluidos pediátricos",
+      description: "Calcula las necesidades diarias de fluidos y el ritmo horario en pacientes pediátricos.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 1, max: 100, step: 0.1 }
+      ],
+      compute: (v) => {
+        const w = v.peso;
+        const ritmo = w <= 10 ? 4 * w : w <= 20 ? 40 + 2 * (w - 10) : 60 + (w - 20);
+        const dia = ritmo * 24;
+        return {
+          main: fmt(ritmo, 1),
+          mainUnit: "mL/h de mantenimiento",
+          secondary: fmt(dia, 0),
+          secondaryLabel: "mL en 24 h",
+          interpretation: "Ritmo de mantenimiento habitual (regla 4-2-1). Añadir a este cálculo el déficit por deshidratación y las pérdidas continuas si las hay.",
+          level: "info",
+          details: [
+            "4 mL/kg/h para los primeros 10 kg + 2 mL/kg/h para los kg 11–20 + 1 mL/kg/h para el resto.",
+            "Usar suero isotónico (0,9 % NaCl) con glucosa al 5 %: las guías desaconsejan el uso rutinario de hipotónicos por riesgo de hiponatremia hospitalaria."
+          ]
+        };
+      },
+      references: [
+        "Holliday MA, Segar WE. The maintenance need for water in parenteral fluid therapy. Pediatrics. 1957;19(5):823-32.",
+        "Feld LG, et al. Clinical Practice Guideline: Maintenance Intravenous Fluids in Children. Pediatrics. 2018;142(6):e20183083."
+      ]
+    },
+    {
+      id: "tet-pediatrico",
+      name: "Tamaño del tubo endotraqueal pediátrico",
+      shortName: "TET pediátrico",
+      description: "Estima el diámetro interno y la profundidad de fijación del tubo endotraqueal según la edad.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        { id: "edad", type: "number", label: "Edad", unit: "años", min: 0, max: 18, step: 0.1 },
+        {
+          id: "balon",
+          type: "select",
+          label: "Tubo con o sin balón",
+          noPoints: true,
+          options: [
+            { label: "Sin balón (cuffed = no)", value: 0 },
+            { label: "Con balón (cuffed = sí)", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const edad = v.edad;
+        let diametro, profundidad;
+        if (edad < 1) {
+          diametro = v.balon === 1 ? 3 : 3.5;
+          profundidad = edad < 0.08 ? 6 : 7;
+        } else {
+          diametro = v.balon === 1 ? 3.5 + edad / 4 : 4 + edad / 4;
+          profundidad = 3 * diametro;
+        }
+        return {
+          main: fmt(diametro, 1),
+          mainUnit: "mm (diámetro interno)",
+          secondary: fmt(profundidad, 1),
+          secondaryLabel: "cm de profundidad en la comisura labial",
+          interpretation: "Estimación orientativa. Confirmar la posición del tubo con auscultación bilateral, capnografía y radiografía de tórax (punta 1–2 cm sobre la carina).",
+          level: "info",
+          details: [
+            `Fórmulas: sin balón → diámetro = 4 + edad/4; con balón → diámetro = 3,5 + edad/4.`,
+            `Profundidad ≈ 3 × diámetro interno del tubo.`,
+            "En neonatos usar el peso al nacer: < 1 kg → TET 2,5; 1–2 kg → 3,0; 2–3 kg → 3,0–3,5; > 3 kg → 3,5.",
+            "Preparar también un tubo 0,5 mm más grande y otro más pequeño."
+          ]
+        };
+      },
+      references: [
+        "Khine HH, et al. Comparison of cuffed and uncuffed endotracheal tubes in young children during general anesthesia. Anesthesiology. 1997;86(3):627-31."
+      ]
+    },
+    {
+      id: "rebote-bilirrubina",
+      name: "Riesgo de hiperbilirrubinemia de rebote tras fototerapia",
+      shortName: "Rebote bilirrubina",
+      description: "Estima el riesgo de que la bilirrubina vuelva a elevarse por encima del umbral de fototerapia tras suspenderla.",
+      category: CAT21,
+      specialty: PED,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad gestacional",
+          options: [
+            { label: "≥ 38 semanas", value: 0 },
+            { label: "< 38 semanas", value: 1 }
+          ]
+        },
+        {
+          id: "inicio",
+          type: "select",
+          label: "Edad al inicio de la fototerapia",
+          options: [
+            { label: "≥ 72 horas de vida", value: 0 },
+            { label: "< 72 horas de vida", value: 1 }
+          ]
+        },
+        {
+          id: "diferencia",
+          type: "number",
+          label: "Diferencia entre umbral de fototerapia y bilirrubina al suspenderla",
+          unit: "mg/dL",
+          min: -5,
+          max: 15,
+          step: 0.1
+        }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const puntos = ((_a = v.edad) != null ? _a : 0) * 3 + ((_b = v.inicio) != null ? _b : 0) * 4 + Math.max(0, 8 - v.diferencia) * 0.4;
+        const banda = puntos < 3 ? "bajo (< 5 %)" : puntos < 5 ? "intermedio (≈ 15 %)" : "alto (≈ 40 %)";
+        return {
+          main: fmt(puntos, 1),
+          mainUnit: "puntos orientativos",
+          secondary: banda,
+          secondaryLabel: "riesgo de rebote",
+          interpretation: puntos < 3 ? "Bajo riesgo de rebote: control clínico habitual sin necesidad de bilirrubina de control precoz." : puntos < 5 ? "Riesgo intermedio: repetir bilirrubina a las 24 h de suspender la fototerapia." : "Alto riesgo de rebote: mantener fototerapia hasta un margen mayor bajo el umbral, o repetir bilirrubina en 12–24 h tras suspenderla.",
+          level: puntos < 3 ? "ok" : puntos < 5 ? "warn" : "danger",
+          details: [
+            "Estimación orientativa basada en Chang 2017; la decisión final se toma con la clínica y el nomograma AAP 2022 vigente."
+          ]
+        };
+      },
+      notes: [
+        "Los factores que más aumentan el riesgo de rebote son: edad gestacional < 38 semanas, inicio de fototerapia < 72 h de vida, y bilirrubina al suspender cercana al umbral."
+      ],
+      references: [
+        "Chang PW, et al. A Clinical Prediction Rule for Rebound Hyperbilirubinemia Following Inpatient Phototherapy. Pediatrics. 2017;139(3):e20162896."
+      ]
+    }
+  ];
+
+  // inurse-m2/src/calculators/neuro-critica.ts
+  var CAT22 = "Neurología crítica e ictus";
+  var NEURO = ["Neurología crítica", "Medicina Intensiva"];
+  var escala7 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
+  var neuroCritica = [
+    {
+      id: "rass",
+      name: "Escala de agitación-sedación de Richmond (RASS)",
+      shortName: "RASS",
+      description: "Cuantifica de forma objetiva el nivel de agitación o sedación del paciente crítico.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "nivel",
+          type: "select",
+          label: "Nivel de agitación / sedación",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "+4 — Combativo: violento, peligro inmediato para el personal", value: 4 },
+            { label: "+3 — Muy agitado: tira o retira tubos y catéteres, agresivo", value: 3 },
+            { label: "+2 — Agitado: movimientos frecuentes sin propósito, lucha con el ventilador", value: 2 },
+            { label: "+1 — Inquieto: ansioso pero sin movimientos agresivos", value: 1 },
+            { label: "0 — Alerta y tranquilo", value: 0 },
+            { label: "−1 — Somnoliento: no plenamente alerta pero mantiene los ojos abiertos > 10 s al hablar", value: -1 },
+            { label: "−2 — Sedación ligera: abre los ojos brevemente al hablar (< 10 s)", value: -2 },
+            { label: "−3 — Sedación moderada: mueve los ojos o los abre al hablar (sin contacto visual)", value: -3 },
+            { label: "−4 — Sedación profunda: sin respuesta a la voz, responde al estímulo físico", value: -4 },
+            { label: "−5 — No despertable: sin respuesta a la voz ni al estímulo físico", value: -5 }
+          ],
+          default: 0
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const n = (_a = v.nivel) != null ? _a : 0;
+        let interp, level;
+        if (n === 0) {
+          interp = "Nivel deseable en la mayoría de los pacientes críticos despiertos.";
+          level = "ok";
+        } else if (n > 0) {
+          interp = n === 1 ? "Agitación leve: valorar causas (dolor, delirio, ansiedad, retirada de sedación, hipoxia, retención urinaria) antes de sedar." : n <= 2 ? "Agitación moderada: buscar y tratar la causa; valorar apoyo farmacológico si es necesario." : "Agitación grave: riesgo inmediato de autoextubación y de daño; sedación de rescate y tratamiento etiológico.";
+          level = n === 1 ? "warn" : "danger";
+        } else {
+          interp = n >= -2 ? "Sedación ligera: nivel adecuado para la mayoría de pacientes en ventilación mecánica según la campaña de sedación ligera (PADIS)." : n === -3 ? "Sedación moderada: valorar si es necesaria esta profundidad; sedación diaria intermitente favorece el destete." : n === -4 ? "Sedación profunda: reservada a situaciones específicas (hipertensión intracraneal, SDRA grave con bloqueo neuromuscular, estatus refractario)." : "No despertable: valorar profundidad excesiva o causa neurológica; despertar diario si no está contraindicado.";
+          level = n >= -2 ? "ok" : n === -3 ? "warn" : "danger";
+        }
+        return {
+          main: (n > 0 ? "+" : "") + String(n),
+          mainUnit: "RASS",
+          interpretation: interp,
+          level
+        };
+      },
+      notes: [
+        "Objetivo habitual del paciente crítico en ventilación mecánica: RASS entre 0 y −2.",
+        "Con RASS ≥ +2 o ≤ −4, evaluar delirio con CAM-ICU no es fiable: reevaluar cuando la sedación mejore."
+      ],
+      references: [
+        "Sessler CN, et al. The Richmond Agitation-Sedation Scale: validity and reliability in adult intensive care unit patients. Am J Respir Crit Care Med. 2002;166(10):1338-44."
+      ]
+    },
+    {
+      id: "aspects",
+      name: "ASPECTS — Alberta Stroke Program Early CT Score",
+      shortName: "ASPECTS",
+      description: "Cuantifica la extensión de la isquemia precoz en la arteria cerebral media en la tomografía sin contraste.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        { id: "c", type: "boolean", label: "Caudado afectado", labels: ["Normal", "Isquemia"] },
+        { id: "l", type: "boolean", label: "Núcleo lenticular afectado", labels: ["Normal", "Isquemia"] },
+        { id: "i", type: "boolean", label: "Cápsula interna afectada", labels: ["Normal", "Isquemia"] },
+        { id: "ic", type: "boolean", label: "Cinta insular afectada", labels: ["Normal", "Isquemia"] },
+        { id: "m1", type: "boolean", label: "M1 (corteza anterior de la ACM) afectada", labels: ["Normal", "Isquemia"] },
+        { id: "m2", type: "boolean", label: "M2 (corteza lateral al ribete insular) afectada", labels: ["Normal", "Isquemia"] },
+        { id: "m3", type: "boolean", label: "M3 (corteza posterior de la ACM) afectada", labels: ["Normal", "Isquemia"] },
+        { id: "m4", type: "boolean", label: "M4 (territorio ACM anterior superior) afectado", labels: ["Normal", "Isquemia"] },
+        { id: "m5", type: "boolean", label: "M5 (territorio ACM lateral superior) afectado", labels: ["Normal", "Isquemia"] },
+        { id: "m6", type: "boolean", label: "M6 (territorio ACM posterior superior) afectado", labels: ["Normal", "Isquemia"] }
+      ],
+      compute: (v) => {
+        const afectados = sum(v, ["c", "l", "i", "ic", "m1", "m2", "m3", "m4", "m5", "m6"]);
+        const score = 10 - afectados;
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–10)",
+          interpretation: score >= 7 ? "ASPECTS ≥ 7: rango en el que la trombectomía mecánica es especialmente beneficiosa (junto con NIHSS ≥ 6 y ventana temporal apropiada)." : score >= 4 ? "ASPECTS 4–6: valorar de forma individualizada la trombectomía; los estudios SELECT2 y ANGEL-ASPECT muestran beneficio en ictus con núcleo más amplio." : "ASPECTS < 4: infarto extenso ya establecido; el beneficio de reperfusión es menor y el riesgo hemorrágico es mayor.",
+          level: score >= 7 ? "ok" : score >= 4 ? "warn" : "danger",
+          details: ["Se resta un punto por cada una de las 10 regiones ASPECTS con signos de isquemia precoz."]
+        };
+      },
+      references: [
+        "Barber PA, et al. Validity and reliability of a quantitative computed tomography score in predicting outcome of hyperacute stroke. Lancet. 2000;355(9216):1670-4."
+      ]
+    },
+    {
+      id: "ottawa-sah",
+      name: "Regla de Ottawa para la hemorragia subaracnoidea",
+      shortName: "Ottawa HSA",
+      description: "Descarta la hemorragia subaracnoidea en pacientes con cefalea aguda de máxima intensidad.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        { id: "edad", type: "boolean", label: "Edad ≥ 40 años" },
+        { id: "rigidez", type: "boolean", label: "Rigidez de nuca" },
+        { id: "conciencia", type: "boolean", label: "Alteración testificada del nivel de conciencia" },
+        { id: "esfuerzo", type: "boolean", label: "Inicio durante el esfuerzo" },
+        { id: "trueno", type: "boolean", label: "Cefalea explosiva («en trueno», máxima en segundos)" },
+        { id: "limitacion", type: "boolean", label: "Limitación a la flexión cervical" }
+      ],
+      compute: (v) => {
+        const criterios = sum(v, ["edad", "rigidez", "conciencia", "esfuerzo", "trueno", "limitacion"]);
+        return {
+          main: criterios === 0 ? "HSA razonablemente descartada" : "No se puede descartar HSA",
+          secondary: String(criterios),
+          secondaryLabel: "criterios positivos",
+          interpretation: criterios === 0 ? "Regla negativa: sensibilidad ≈ 100 % para HSA en pacientes con cefalea de nueva aparición que alcanzó su intensidad máxima en menos de 1 h y sin déficits focales. No se requieren estudios adicionales por sospecha de HSA (siempre juicio clínico)." : "Al menos un criterio positivo: no puede descartarse HSA por la regla. Estudio con tomografía sin contraste; si es negativa dentro de 6 h del inicio, valor predictivo negativo muy alto en el paciente neurológicamente intacto.",
+          level: criterios === 0 ? "ok" : "danger"
+        };
+      },
+      notes: [
+        "Solo aplicable a pacientes ≥ 15 años con cefalea de nueva aparición no traumática, no déficits focales y no antecedente de aneurisma, HSA previa, tumor cerebral o cefaleas similares recurrentes."
+      ],
+      references: [
+        "Perry JJ, et al. Clinical decision rules to rule out subarachnoid hemorrhage for acute headache. JAMA. 2013;310(12):1248-55."
+      ]
+    },
+    {
+      id: "mbig",
+      name: "Brain Injury Guidelines modificado (mBIG)",
+      shortName: "mBIG",
+      description: "Estratifica el traumatismo craneoencefálico leve con hallazgos en tomografía para orientar el manejo.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "gcs",
+          type: "select",
+          label: "GCS al ingreso",
+          options: [
+            { label: "15", value: 0 },
+            { label: "13–14", value: 1 },
+            { label: "≤ 12", value: 2 }
+          ]
+        },
+        { id: "anticoagulacion", type: "boolean", label: "Anticoagulación o antiagregación (excepto AAS profiláctica)" },
+        { id: "intoxicacion", type: "boolean", label: "Intoxicación evidente" },
+        { id: "focal", type: "boolean", label: "Déficit neurológico focal" },
+        { id: "fracturaDesplazada", type: "boolean", label: "Fractura craneal desplazada o abierta" },
+        {
+          id: "sdh",
+          type: "select",
+          label: "Hematoma subdural (SDH)",
+          dropdown: true,
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "≤ 4 mm", value: 1 },
+            { label: "5–7 mm", value: 2 },
+            { label: "> 7 mm", value: 3 }
+          ]
+        },
+        {
+          id: "edh",
+          type: "select",
+          label: "Hematoma epidural (EDH)",
+          dropdown: true,
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "≤ 4 mm", value: 1 },
+            { label: "5–7 mm", value: 2 },
+            { label: "> 7 mm", value: 3 }
+          ]
+        },
+        {
+          id: "contusion",
+          type: "select",
+          label: "Contusión intraparenquimatosa",
+          dropdown: true,
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "≤ 4 mm, única", value: 1 },
+            { label: "5–7 mm o múltiple", value: 2 },
+            { label: "> 7 mm", value: 3 }
+          ]
+        },
+        { id: "hemoventricular", type: "boolean", label: "Hemorragia intraventricular o subaracnoidea" }
+      ],
+      compute: (v) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+        const grave = v.anticoagulacion === 1 || v.intoxicacion === 1 || v.focal === 1 || v.fracturaDesplazada === 1 || ((_a = v.gcs) != null ? _a : 0) === 2 || ((_b = v.sdh) != null ? _b : 0) === 3 || ((_c = v.edh) != null ? _c : 0) === 3 || ((_d = v.contusion) != null ? _d : 0) === 3 || v.hemoventricular === 1;
+        const intermedio = !grave && (((_e = v.gcs) != null ? _e : 0) === 1 || ((_f = v.sdh) != null ? _f : 0) === 2 || ((_g = v.edh) != null ? _g : 0) === 2 || ((_h = v.contusion) != null ? _h : 0) === 2);
+        const leve = !grave && !intermedio && (((_i = v.sdh) != null ? _i : 0) === 1 || ((_j = v.edh) != null ? _j : 0) === 1 || ((_k = v.contusion) != null ? _k : 0) === 1);
+        const categoria = grave ? "mBIG 3" : intermedio ? "mBIG 2" : leve ? "mBIG 1" : "Sin criterios";
+        return {
+          main: categoria,
+          interpretation: grave ? "mBIG 3: manejo hospitalario con neurocirugía, tomografía de control, ingreso (a menudo en cuidados intermedios/UCI) y valoración quirúrgica." : intermedio ? "mBIG 2: observación hospitalaria, tomografía de control en 6 h, valoración neuroquirúrgica; puede evitarse ingreso en UCI si la evolución es favorable." : leve ? "mBIG 1: puede manejarse en observación sin tomografía de control ni ingreso en cuidados intensivos, si el paciente está estable y hay red de apoyo." : "No se cumplen criterios de lesión: si el TC es normal y el paciente está estable, alta con recomendaciones.",
+          level: grave ? "danger" : intermedio ? "warn" : leve ? "info" : "ok"
+        };
+      },
+      notes: [
+        "Aplicable a traumatismos craneoencefálicos leves con GCS 13–15 y hallazgos en tomografía.",
+        "Requiere disponibilidad rápida de neurocirugía; validaciones locales antes de aplicar de forma sistemática."
+      ],
+      references: [
+        "Joseph B, et al. The BIG (Brain Injury Guidelines) project: defining the management of TBI by acute care surgeons. J Trauma Acute Care Surg. 2014;76(4):965-9."
+      ]
+    },
+    {
+      id: "fisher-modificado",
+      name: "Escala de Fisher modificada para el vasoespasmo",
+      shortName: "Fisher modificado",
+      description: "Predice el riesgo de vasoespasmo en la hemorragia subaracnoidea aneurismática según la tomografía inicial.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "grado",
+          type: "select",
+          label: "Hallazgos en la tomografía",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "Grado 0 — Sin sangre en cisternas ni hemorragia intraventricular", value: 0 },
+            { label: "Grado 1 — Sangre subaracnoidea fina sin hemorragia intraventricular", value: 1 },
+            { label: "Grado 2 — Sangre subaracnoidea fina con hemorragia intraventricular", value: 2 },
+            { label: "Grado 3 — Sangre subaracnoidea gruesa (> 1 mm) sin hemorragia intraventricular", value: 3 },
+            { label: "Grado 4 — Sangre subaracnoidea gruesa con hemorragia intraventricular", value: 4 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const g = (_a = v.grado) != null ? _a : 0;
+        const riesgo2 = ["0 %", "24 %", "33 %", "33 %", "40 %"][g];
+        return {
+          main: `Grado ${g}`,
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de vasoespasmo sintomático",
+          interpretation: g <= 1 ? "Riesgo bajo de vasoespasmo sintomático." : g <= 2 ? "Riesgo moderado: vigilancia con Doppler transcraneal y clínica." : "Riesgo alto: profilaxis con nimodipino, mantener euvolemia y normotensión, y vigilancia estrecha (Doppler transcraneal, exploraciones neurológicas frecuentes).",
+          level: g <= 1 ? "ok" : g <= 2 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Frontera JA, et al. Prediction of symptomatic vasospasm after subarachnoid hemorrhage: the modified Fisher scale. Neurosurgery. 2006;59(1):21-7."
+      ]
+    },
+    {
+      id: "func",
+      name: "Puntuación FUNC para hemorragia intracerebral",
+      shortName: "FUNC",
+      description: "Predice la probabilidad de independencia funcional a los 90 días tras una hemorragia intracerebral espontánea.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "volumen",
+          type: "select",
+          label: "Volumen del hematoma",
+          options: [
+            { label: "< 30 cm³", value: 4 },
+            { label: "30–60 cm³", value: 2 },
+            { label: "> 60 cm³", value: 0 }
+          ]
+        },
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "< 70 años", value: 2 },
+            { label: "70–79 años", value: 1 },
+            { label: "≥ 80 años", value: 0 }
+          ]
+        },
+        {
+          id: "localizacion",
+          type: "select",
+          label: "Localización",
+          options: [
+            { label: "Lobar", value: 2 },
+            { label: "Profunda (ganglios basales, tálamo)", value: 1 },
+            { label: "Infratentorial", value: 0 }
+          ]
+        },
+        {
+          id: "gcs",
+          type: "select",
+          label: "GCS al ingreso",
+          options: [
+            { label: "≥ 9", value: 2 },
+            { label: "≤ 8", value: 0 }
+          ]
+        },
+        {
+          id: "deterioro",
+          type: "select",
+          label: "Deterioro cognitivo previo",
+          options: [
+            { label: "Ausente", value: 1 },
+            { label: "Presente", value: 0 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["volumen", "edad", "localizacion", "gcs", "deterioro"]);
+        const funcional = ["0 %", "0 %", "0 %", "13 %", "20 %", "42 %", "66 %", "82 %", "82 %", "95 %", "95 %", "95 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–11)",
+          secondary: funcional,
+          secondaryLabel: "independencia funcional a 90 días",
+          interpretation: score >= 8 ? "Alta probabilidad de recuperación funcional: apostar por un manejo agresivo y rehabilitación precoz." : score >= 5 ? "Probabilidad intermedia: manejo activo con reevaluación clínica y de imagen." : "Probabilidad baja de independencia funcional. No usar la puntuación como único criterio para limitar el esfuerzo terapéutico en las primeras 24–48 h.",
+          level: score >= 8 ? "ok" : score >= 5 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Rost NS, et al. Prediction of functional outcome in patients with primary intracerebral hemorrhage: the FUNC score. Stroke. 2008;39(8):2304-9."
+      ]
+    },
+    {
+      id: "hat",
+      name: "Puntuación HAT — riesgo de hemorragia tras tPA",
+      shortName: "HAT",
+      description: "Estima el riesgo de hemorragia intracraneal sintomática tras la administración de trombolítico en el ictus isquémico.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "diabetes",
+          type: "select",
+          label: "Diabetes o glucemia > 200 mg/dL al ingreso",
+          options: [
+            { label: "No", value: 0 },
+            { label: "Sí", value: 1 }
+          ]
+        },
+        {
+          id: "nihss",
+          type: "select",
+          label: "NIHSS pretratamiento",
+          options: [
+            { label: "< 15", value: 0 },
+            { label: "15–20", value: 1 },
+            { label: "≥ 20", value: 2 }
+          ]
+        },
+        {
+          id: "tc",
+          type: "select",
+          label: "Hipodensidad en la tomografía",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "< 1/3 del territorio ACM", value: 1 },
+            { label: "≥ 1/3 del territorio ACM", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["diabetes", "nihss", "tc"]);
+        const total = ["2 %", "5 %", "10 %", "15 %", "44 %", "44 %"][score];
+        const sintom = ["6 %", "16 %", "23 %", "36 %", "78 %", "78 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–5)",
+          secondary: sintom,
+          secondaryLabel: "riesgo de hemorragia sintomática",
+          interpretation: score <= 1 ? "Riesgo bajo de hemorragia intracraneal sintomática." : score <= 2 ? "Riesgo moderado." : "Riesgo alto: individualizar la decisión y vigilancia neurológica estrecha tras el tratamiento.",
+          level: score <= 1 ? "ok" : score <= 2 ? "warn" : "danger",
+          details: [`Riesgo de cualquier hemorragia intracraneal en la TC de control: ${total}.`]
+        };
+      },
+      references: [
+        "Lou M, et al. The HAT score: a simple grading scale for predicting hemorrhage after thrombolysis. Neurology. 2008;71(18):1417-23."
+      ]
+    },
+    {
+      id: "sedan",
+      name: "Puntuación SEDAN — hemorragia sintomática tras tPA",
+      shortName: "SEDAN",
+      description: "Predice el riesgo de hemorragia intracerebral sintomática tras trombolisis intravenosa en el ictus isquémico.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "glucemia",
+          type: "select",
+          label: "Glucemia sérica al ingreso",
+          options: [
+            { label: "< 144 mg/dL", value: 0 },
+            { label: "145–216 mg/dL", value: 1 },
+            { label: "> 216 mg/dL", value: 2 }
+          ]
+        },
+        {
+          id: "aspects",
+          type: "select",
+          label: "ASPECTS pretratamiento",
+          options: [
+            { label: "≥ 10", value: 0 },
+            { label: "< 10", value: 1 }
+          ]
+        },
+        {
+          id: "hiperdensidad",
+          type: "select",
+          label: "Signo hiperdenso de la arteria cerebral en la TC",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Presente", value: 1 }
+          ]
+        },
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "≤ 75 años", value: 0 },
+            { label: "> 75 años", value: 1 }
+          ]
+        },
+        {
+          id: "nihss",
+          type: "select",
+          label: "NIHSS al ingreso",
+          options: [
+            { label: "≤ 9", value: 0 },
+            { label: "≥ 10", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["glucemia", "aspects", "hiperdensidad", "edad", "nihss"]);
+        const riesgo2 = ["1,6 %", "2,4 %", "3,5 %", "4,8 %", "9,3 %", "16,9 %", "27,8 %"][Math.min(score, 6)];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–6)",
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de hemorragia intracraneal sintomática",
+          interpretation: score <= 1 ? "Riesgo bajo." : score <= 3 ? "Riesgo moderado." : "Riesgo alto: valorar de forma individualizada el balance riesgo-beneficio del tratamiento y la vigilancia postratamiento.",
+          level: score <= 1 ? "ok" : score <= 3 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Strbian D, et al. Symptomatic intracranial hemorrhage after stroke thrombolysis: the SEDAN score. Ann Neurol. 2012;71(5):634-41."
+      ]
+    },
+    {
+      id: "thrive",
+      name: "Puntuación THRIVE tras el ictus",
+      shortName: "THRIVE",
+      description: "Estima la probabilidad de resultado funcional y de mortalidad tras un ictus isquémico agudo tratado.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "nihss",
+          type: "select",
+          label: "NIHSS al ingreso",
+          options: [
+            { label: "≤ 10", value: 0 },
+            { label: "11–20", value: 2 },
+            { label: "≥ 21", value: 4 }
+          ]
+        },
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "≤ 59 años", value: 0 },
+            { label: "60–79 años", value: 1 },
+            { label: "≥ 80 años", value: 2 }
+          ]
+        },
+        { id: "hta", type: "boolean", label: "Hipertensión" },
+        { id: "dm", type: "boolean", label: "Diabetes mellitus" },
+        { id: "fa", type: "boolean", label: "Fibrilación auricular" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["nihss", "edad", "hta", "dm", "fa"]);
+        const bueno = ["65 %", "58 %", "52 %", "42 %", "35 %", "27 %", "20 %", "14 %", "10 %", "10 %"][score];
+        const mort = ["12 %", "14 %", "16 %", "22 %", "28 %", "35 %", "42 %", "50 %", "58 %", "58 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–9)",
+          secondary: bueno,
+          secondaryLabel: "probabilidad de buen resultado (mRS 0–2) a 90 días",
+          interpretation: `Mortalidad estimada a 90 días: ${mort}. Herramienta pronóstica; no debe usarse aisladamente para negar la reperfusión.`,
+          level: score <= 3 ? "ok" : score <= 5 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Flint AC, et al. THRIVE score predicts ischemic stroke outcomes and thrombolytic hemorrhage risk in VISTA. Stroke. 2013;44(12):3365-9."
+      ]
+    },
+    {
+      id: "lams",
+      name: "LAMS — Los Angeles Motor Scale",
+      shortName: "LAMS",
+      description: "Escala prehospitalaria de tres ítems para identificar rápidamente ictus por oclusión de gran vaso.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "facial",
+          type: "select",
+          label: "Paresia facial",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Presente", value: 1 }
+          ]
+        },
+        {
+          id: "brazo",
+          type: "select",
+          label: "Debilidad del brazo",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Deriva", value: 1 },
+            { label: "Cae", value: 2 }
+          ]
+        },
+        {
+          id: "mano",
+          type: "select",
+          label: "Fuerza de la mano",
+          options: [
+            { label: "Normal", value: 0 },
+            { label: "Debilidad de la prensión", value: 1 },
+            { label: "Sin prensión", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["facial", "brazo", "mano"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–5)",
+          interpretation: score >= 4 ? "LAMS ≥ 4: alta probabilidad de oclusión de gran vaso. Considerar traslado directo a centro con capacidad de trombectomía mecánica." : "LAMS < 4: menor probabilidad de oclusión de gran vaso; traslado según protocolo habitual de ictus.",
+          level: score >= 4 ? "danger" : "warn"
+        };
+      },
+      references: [
+        "Nazliel B, et al. A brief prehospital stroke severity scale identifies ischemic stroke patients harboring persisting large arterial occlusions. Stroke. 2008;39(8):2264-7."
+      ]
+    },
+    {
+      id: "barthel",
+      name: "Índice de Barthel",
+      shortName: "Barthel",
+      description: "Mide el grado de independencia en las actividades básicas de la vida diaria.",
+      category: CAT22,
+      specialty: NEURO,
+      inputs: [
+        {
+          id: "comer",
+          type: "select",
+          label: "Comer",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Necesita ayuda"],
+            [10, "Independiente"]
+          ])
+        },
+        {
+          id: "lavarse",
+          type: "select",
+          label: "Lavarse (baño/ducha)",
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Independiente"]
+          ])
+        },
+        {
+          id: "vestirse",
+          type: "select",
+          label: "Vestirse",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Necesita ayuda"],
+            [10, "Independiente"]
+          ])
+        },
+        {
+          id: "arreglarse",
+          type: "select",
+          label: "Arreglarse (aseo personal)",
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Independiente"]
+          ])
+        },
+        {
+          id: "deposicion",
+          type: "select",
+          label: "Deposición",
+          dropdown: true,
+          options: escala7([
+            [0, "Incontinente"],
+            [5, "Accidente ocasional"],
+            [10, "Continente"]
+          ])
+        },
+        {
+          id: "miccion",
+          type: "select",
+          label: "Micción",
+          dropdown: true,
+          options: escala7([
+            [0, "Incontinente o sondado"],
+            [5, "Accidente ocasional"],
+            [10, "Continente"]
+          ])
+        },
+        {
+          id: "wc",
+          type: "select",
+          label: "Uso del retrete",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Necesita ayuda"],
+            [10, "Independiente"]
+          ])
+        },
+        {
+          id: "traslado",
+          type: "select",
+          label: "Traslado (cama–sillón)",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Gran ayuda (una persona)"],
+            [10, "Mínima ayuda"],
+            [15, "Independiente"]
+          ])
+        },
+        {
+          id: "deambulacion",
+          type: "select",
+          label: "Deambulación",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Independiente en silla de ruedas"],
+            [10, "Camina con ayuda"],
+            [15, "Independiente"]
+          ])
+        },
+        {
+          id: "escaleras",
+          type: "select",
+          label: "Subir y bajar escaleras",
+          dropdown: true,
+          options: escala7([
+            [0, "Dependiente"],
+            [5, "Necesita ayuda"],
+            [10, "Independiente"]
+          ])
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["comer", "lavarse", "vestirse", "arreglarse", "deposicion", "miccion", "wc", "traslado", "deambulacion", "escaleras"]);
+        const banda = score < 20 ? "total" : score < 60 ? "grave" : score < 90 ? "moderada" : score < 100 ? "leve" : "independiente";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–100)",
+          secondary: `Dependencia ${banda}`,
+          interpretation: score === 100 ? "Independencia total para las actividades básicas de la vida diaria." : score >= 60 ? "Dependencia leve o moderada: valorar apoyos y rehabilitación." : "Dependencia grave o total: planificar cuidados, ayudas técnicas y apoyo sociosanitario.",
+          level: score >= 90 ? "ok" : score >= 60 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Mahoney FI, Barthel DW. Functional evaluation: the Barthel Index. Md State Med J. 1965;14:61-5."
+      ]
+    }
+  ];
+
+  // inurse-m2/src/calculators/urgencias.ts
+  var CAT_URG = "Urgencias y decisión clínica";
+  var CAT_TOX = "Endocrino y tóxicos";
+  var URG = ["Emergencias"];
+  var urgencias = [
+    {
+      id: "alvarado",
+      name: "Puntuación de Alvarado para la apendicitis",
+      shortName: "Alvarado",
+      description: "Estima la probabilidad de apendicitis aguda en pacientes con dolor abdominal.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "migracion", type: "boolean", label: "Migración del dolor a fosa ilíaca derecha" },
+        { id: "anorexia", type: "boolean", label: "Anorexia" },
+        { id: "nauseas", type: "boolean", label: "Náuseas o vómitos" },
+        { id: "sensibilidad", type: "boolean", label: "Dolor a la palpación en fosa ilíaca derecha", points: 2 },
+        { id: "rebote", type: "boolean", label: "Signo de rebote (Blumberg)" },
+        { id: "fiebre", type: "boolean", label: "Temperatura > 37,3 °C" },
+        { id: "leucocitosis", type: "boolean", label: "Leucocitos > 10.000/mm³", points: 2 },
+        { id: "neutrofilia", type: "boolean", label: "Desviación izquierda (>75 % neutrófilos)" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["migracion", "anorexia", "nauseas", "sensibilidad", "rebote", "fiebre", "leucocitosis", "neutrofilia"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–10)",
+          interpretation: score <= 3 ? "Baja probabilidad de apendicitis: valorar alta con reevaluación." : score <= 6 ? "Probabilidad intermedia: observación y prueba de imagen (ecografía o TC)." : "Alta probabilidad de apendicitis: valoración quirúrgica.",
+          level: score <= 3 ? "ok" : score <= 6 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Alvarado A. A practical score for the early diagnosis of acute appendicitis. Ann Emerg Med. 1986;15(5):557-64."
+      ]
+    },
+    {
+      id: "air",
+      name: "Puntuación AIR (Appendicitis Inflammatory Response)",
+      shortName: "AIR",
+      description: "Alternativa a Alvarado con mayor peso a los reactantes de fase aguda.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "vomitos", type: "boolean", label: "Vómitos" },
+        { id: "fid", type: "boolean", label: "Dolor en fosa ilíaca derecha" },
+        { id: "rebote", type: "boolean", label: "Defensa/rebote leve" },
+        {
+          id: "reboteM",
+          type: "select",
+          label: "Defensa/rebote — intensidad",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Leve", value: 1 },
+            { label: "Moderado", value: 2 },
+            { label: "Intenso", value: 3 }
+          ]
+        },
+        {
+          id: "temp",
+          type: "select",
+          label: "Temperatura",
+          options: [
+            { label: "< 38,5 °C", value: 0 },
+            { label: "≥ 38,5 °C", value: 1 }
+          ]
+        },
+        {
+          id: "neutro",
+          type: "select",
+          label: "Polimorfonucleares (%)",
+          options: [
+            { label: "< 70", value: 0 },
+            { label: "70–84", value: 1 },
+            { label: "≥ 85", value: 2 }
+          ]
+        },
+        {
+          id: "leucos",
+          type: "select",
+          label: "Leucocitos (×10⁹/L)",
+          options: [
+            { label: "< 10", value: 0 },
+            { label: "10–14,9", value: 1 },
+            { label: "≥ 15", value: 2 }
+          ]
+        },
+        {
+          id: "pcr",
+          type: "select",
+          label: "Proteína C reactiva (mg/L)",
+          options: [
+            { label: "< 10", value: 0 },
+            { label: "10–49", value: 1 },
+            { label: "≥ 50", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["vomitos", "fid", "rebote", "reboteM", "temp", "neutro", "leucos", "pcr"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–12)",
+          interpretation: score <= 4 ? "Baja probabilidad: apendicitis poco probable; valorar alta con reevaluación." : score <= 8 ? "Probabilidad intermedia: observación e imagen; usar AIR para reducir imágenes innecesarias en adultos y niños." : "Alta probabilidad: valoración quirúrgica; puede evitarse imagen si la clínica es clara.",
+          level: score <= 4 ? "ok" : score <= 8 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Andersson M, Andersson RE. The appendicitis inflammatory response score: a tool for the diagnosis of acute appendicitis. World J Surg. 2008;32(8):1843-9."
+      ]
+    },
+    {
+      id: "centor-mcisaac",
+      name: "Puntuación Centor / McIsaac para faringitis estreptocócica",
+      shortName: "Centor-McIsaac",
+      description: "Estima la probabilidad de faringitis por estreptococo del grupo A y guía la decisión de test rápido o antibiótico.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "3–14 años", value: 1 },
+            { label: "15–44 años", value: 0 },
+            { label: "≥ 45 años", value: -1 }
+          ]
+        },
+        { id: "exudado", type: "boolean", label: "Exudado o hipertrofia amigdalar" },
+        { id: "adenopatia", type: "boolean", label: "Adenopatía cervical anterior dolorosa" },
+        { id: "fiebre", type: "boolean", label: "Fiebre > 38 °C" },
+        { id: "tos", type: "boolean", label: "Ausencia de tos" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["edad", "exudado", "adenopatia", "fiebre", "tos"]);
+        const prob = score <= 0 ? "1–2 %" : score === 1 ? "5–10 %" : score === 2 ? "11–17 %" : score === 3 ? "28–35 %" : "51–53 %";
+        return {
+          main: String(score),
+          mainUnit: "puntos",
+          secondary: prob,
+          secondaryLabel: "probabilidad de estreptococo",
+          interpretation: score <= 0 ? "Muy baja probabilidad: no test, no antibiótico." : score <= 1 ? "Baja: no test ni antibiótico rutinarios." : score <= 3 ? "Intermedia: test rápido o cultivo. Tratar solo si resulta positivo." : "Alta: puede plantearse tratamiento empírico, aunque las guías actuales recomiendan confirmar con test rápido para evitar antibioterapia innecesaria.",
+          level: score <= 1 ? "ok" : score <= 3 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "McIsaac WJ, et al. A clinical score to reduce unnecessary antibiotic use in patients with sore throat. CMAJ. 1998;158(1):75-83."
+      ]
+    },
+    {
+      id: "feverpain",
+      name: "Puntuación FeverPAIN para faringitis",
+      shortName: "FeverPAIN",
+      description: "Alternativa británica a Centor para orientar el uso de antibióticos en la faringitis aguda.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "fiebre", type: "boolean", label: "Fiebre en las últimas 24 h" },
+        { id: "exudado", type: "boolean", label: "Exudado purulento amigdalar" },
+        { id: "rapido", type: "boolean", label: "Consulta rápida (≤ 3 días desde el inicio)" },
+        { id: "inflamacion", type: "boolean", label: "Amígdalas muy inflamadas" },
+        { id: "noTos", type: "boolean", label: "Ausencia de tos y de coriza" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["fiebre", "exudado", "rapido", "inflamacion", "noTos"]);
+        const prob = ["13–18 %", "13–18 %", "30–35 %", "30–35 %", "45–65 %", "62–65 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–5)",
+          secondary: prob,
+          secondaryLabel: "probabilidad de estreptococo",
+          interpretation: score <= 1 ? "Baja probabilidad: manejo sintomático." : score <= 3 ? "Probabilidad intermedia: valorar «wait and see» (prescripción diferida a las 48 h si no mejora)." : "Alta probabilidad: valorar antibiótico o test rápido.",
+          level: score <= 1 ? "ok" : score <= 3 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Little P, et al. Clinical score and rapid antigen detection test to guide antibiotic use for sore throats (PRISM). BMJ. 2013;347:f5806."
+      ]
+    },
+    {
+      id: "kocher",
+      name: "Criterios de Kocher para artritis séptica de cadera pediátrica",
+      shortName: "Kocher",
+      description: "Ayuda a diferenciar la artritis séptica de la sinovitis transitoria en niños con cadera dolorosa.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "noPeso", type: "boolean", label: "No apoya el peso sobre la pierna afectada" },
+        { id: "fiebre", type: "boolean", label: "Fiebre > 38,5 °C" },
+        { id: "leucos", type: "boolean", label: "Leucocitos > 12.000/mm³" },
+        { id: "esr", type: "boolean", label: "VSG > 40 mm/h" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["noPeso", "fiebre", "leucos", "esr"]);
+        const prob = ["0,2 %", "3 %", "40 %", "93 %", "99 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "criterios (0–4)",
+          secondary: prob,
+          secondaryLabel: "probabilidad de artritis séptica",
+          interpretation: score <= 1 ? "Baja probabilidad: sugiere sinovitis transitoria; valorar seguimiento." : score <= 2 ? "Probabilidad intermedia: valorar artrocentesis diagnóstica." : "Alta probabilidad de artritis séptica: valoración por traumatología pediátrica, artrocentesis y antibioterapia empírica.",
+          level: score <= 1 ? "ok" : score <= 2 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Kocher MS, et al. Differentiating between septic arthritis and transient synovitis of the hip in children: an evidence-based clinical prediction algorithm. J Bone Joint Surg Am. 1999;81(12):1662-70."
+      ]
+    },
+    {
+      id: "meningitis-bacteriana",
+      name: "Escala de meningitis bacteriana pediátrica (Nigrovic)",
+      shortName: "BMS pediátrica",
+      description: "Estima el riesgo de meningitis bacteriana en niños con pleocitosis en el líquido cefalorraquídeo.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "tincion", type: "boolean", label: "Tinción de Gram del LCR positiva" },
+        { id: "convulsion", type: "boolean", label: "Convulsión al inicio o antes de la consulta" },
+        { id: "proteinas", type: "boolean", label: "Proteínas en LCR ≥ 80 mg/dL" },
+        { id: "neutrofilosLCR", type: "boolean", label: "Neutrófilos absolutos en LCR ≥ 1.000/mm³" },
+        { id: "neutrofilosSangre", type: "boolean", label: "Neutrófilos absolutos en sangre ≥ 10.000/mm³" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["tincion", "convulsion", "proteinas", "neutrofilosLCR", "neutrofilosSangre"]);
+        return {
+          main: String(score),
+          mainUnit: "criterios (0–5)",
+          interpretation: score === 0 ? "Riesgo muy bajo de meningitis bacteriana: en niños de 29 días a 19 años con LCR pleocitario, un puntaje 0 tiene sensibilidad ≈ 100 % y valor predictivo negativo próximo al 100 %. Puede plantearse observación sin antibioterapia empírica." : "Al menos un criterio positivo: iniciar antibioterapia empírica y considerar ingreso.",
+          level: score === 0 ? "ok" : "danger"
+        };
+      },
+      notes: [
+        "Solo aplicable a niños ≥ 29 días con al menos 10 leucocitos/mm³ en LCR y buen aspecto.",
+        "No aplicable si el paciente ha recibido antibióticos previos, tiene inmunodepresión, ha sido sometido a neurocirugía reciente o presenta un shunt del sistema nervioso central."
+      ],
+      references: [
+        "Nigrovic LE, et al. Clinical prediction rule for identifying children with cerebrospinal fluid pleocytosis at very low risk of bacterial meningitis. JAMA. 2007;297(1):52-60."
+      ]
+    },
+    {
+      id: "ottawa-tobillo",
+      name: "Reglas de Ottawa para tobillo y pie",
+      shortName: "Ottawa tobillo/pie",
+      description: "Identifica qué pacientes con lesión aguda de tobillo necesitan radiografía.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "malolar", type: "boolean", label: "Dolor a la palpación en los últimos 6 cm del maléolo lateral o medial" },
+        { id: "quinto", type: "boolean", label: "Dolor a la palpación en la base del 5.º metatarsiano" },
+        { id: "navicular", type: "boolean", label: "Dolor a la palpación en el hueso navicular" },
+        { id: "apoyo", type: "boolean", label: "Incapacidad para dar 4 pasos (dos con cada pie) al llegar y en urgencias" }
+      ],
+      compute: (v) => {
+        const tobillo = v.malolar === 1 || v.apoyo === 1;
+        const pie = v.quinto === 1 || v.navicular === 1 || v.apoyo === 1;
+        const rx = tobillo || pie;
+        return {
+          main: rx ? "Radiografía indicada" : "Radiografía no necesaria",
+          interpretation: rx ? `Indicada radiografía de ${tobillo ? "tobillo" : ""}${tobillo && pie ? " y " : ""}${pie ? "pie" : ""}.` : "Ningún criterio positivo: puede omitirse la radiografía con seguridad razonable (sensibilidad ≈ 100 % para fractura clínicamente significativa).",
+          level: rx ? "warn" : "ok"
+        };
+      },
+      references: [
+        "Stiell IG, et al. Implementation of the Ottawa ankle rules. JAMA. 1994;271(11):827-32."
+      ]
+    },
+    {
+      id: "ottawa-rodilla",
+      name: "Regla de Ottawa para rodilla",
+      shortName: "Ottawa rodilla",
+      description: "Identifica qué pacientes con traumatismo agudo de rodilla necesitan radiografía.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "edad", type: "boolean", label: "Edad ≥ 55 años" },
+        { id: "peronea", type: "boolean", label: "Dolor a la palpación en la cabeza del peroné" },
+        { id: "rotula", type: "boolean", label: "Dolor aislado a la palpación de la rótula" },
+        { id: "flexion", type: "boolean", label: "Incapacidad para flexionar 90°" },
+        { id: "apoyo", type: "boolean", label: "Incapacidad para caminar 4 pasos inmediatamente y en urgencias" }
+      ],
+      compute: (v) => {
+        const rx = sum(v, ["edad", "peronea", "rotula", "flexion", "apoyo"]) >= 1;
+        return {
+          main: rx ? "Radiografía indicada" : "Radiografía no necesaria",
+          interpretation: rx ? "Al menos un criterio positivo: indicada radiografía de rodilla." : "Ningún criterio positivo: puede omitirse la radiografía (sensibilidad ≈ 98–100 %).",
+          level: rx ? "warn" : "ok"
+        };
+      },
+      references: [
+        "Stiell IG, et al. Prospective validation of a decision rule for the use of radiography in acute knee injuries. JAMA. 1996;275(8):611-5."
+      ]
+    },
+    {
+      id: "ccr",
+      name: "Regla canadiense de la columna cervical (CCR)",
+      shortName: "CCR",
+      description: "Regla de decisión para indicar imagen cervical en pacientes traumatizados alerta y estables.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "altoRiesgo",
+          type: "boolean",
+          label: "Factor de alto riesgo",
+          description: "≥ 65 años, mecanismo peligroso (caída ≥ 1 m/5 escalones, carga axial, colisión de alta energía, vuelco, atropello, deportes con impacto), o parestesias en extremidades.",
+          noPoints: true
+        },
+        {
+          id: "bajoRiesgo",
+          type: "boolean",
+          label: "¿Cumple algún factor de bajo riesgo que permita valorar la movilidad?",
+          description: "Colisión posterior simple, sedestación en urgencias, deambulación en cualquier momento, dolor cervical de inicio diferido o ausencia de dolor a la palpación línea media.",
+          noPoints: true
+        },
+        {
+          id: "rotacion",
+          type: "boolean",
+          label: "¿Puede rotar activamente el cuello 45° a cada lado?",
+          noPoints: true
+        }
+      ],
+      compute: (v) => {
+        if (v.altoRiesgo === 1)
+          return {
+            main: "Imagen indicada",
+            interpretation: "Factor de alto riesgo presente: imagen cervical (TC preferente).",
+            level: "danger"
+          };
+        if (v.bajoRiesgo !== 1)
+          return {
+            main: "Imagen indicada",
+            interpretation: "Sin factor de bajo riesgo que permita valorar la movilidad: imagen cervical.",
+            level: "danger"
+          };
+        if (v.rotacion !== 1)
+          return {
+            main: "Imagen indicada",
+            interpretation: "No puede rotar activamente 45° a cada lado: imagen cervical.",
+            level: "danger"
+          };
+        return {
+          main: "Imagen no necesaria",
+          interpretation: "Sin factores de alto riesgo, con al menos un factor de bajo riesgo y rotación cervical 45° a cada lado: puede retirarse la inmovilización cervical con seguridad (sensibilidad ≈ 100 %).",
+          level: "ok"
+        };
+      },
+      notes: ["Aplicable a pacientes ≥ 16 años, alerta (GCS 15), estables y no intoxicados, con traumatismo cervical cerrado en las últimas 48 h."],
+      references: [
+        "Stiell IG, et al. The Canadian C-Spine Rule for radiography in alert and stable trauma patients. JAMA. 2001;286(15):1841-8."
+      ]
+    },
+    {
+      id: "cchr",
+      name: "Canadian CT Head Rule (CCHR)",
+      shortName: "CCHR",
+      description: "Regla para indicar tomografía craneal en el traumatismo craneoencefálico leve.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "gcs2h", type: "boolean", label: "GCS < 15 a las 2 h del traumatismo", noPoints: true },
+        { id: "fracturaAbierta", type: "boolean", label: "Sospecha de fractura craneal abierta o deprimida", noPoints: true },
+        { id: "baseCraneo", type: "boolean", label: "Signos de fractura de base de cráneo (hemotímpano, ojos de mapache, otorrea/rinorrea de LCR, signo de Battle)", noPoints: true },
+        { id: "vomitos", type: "boolean", label: "≥ 2 episodios de vómitos", noPoints: true },
+        { id: "edad65", type: "boolean", label: "Edad ≥ 65 años", noPoints: true },
+        { id: "amnesia", type: "boolean", label: "Amnesia retrógrada > 30 min", noPoints: true },
+        { id: "peligroso", type: "boolean", label: "Mecanismo peligroso (peatón atropellado, salir despedido de un vehículo, caída > 1 m / 5 escalones)", noPoints: true }
+      ],
+      compute: (v) => {
+        const alto = v.gcs2h === 1 || v.fracturaAbierta === 1 || v.baseCraneo === 1 || v.vomitos === 1 || v.edad65 === 1;
+        const medio = !alto && (v.amnesia === 1 || v.peligroso === 1);
+        return {
+          main: alto ? "TC obligada" : medio ? "TC recomendada" : "TC no necesaria",
+          interpretation: alto ? "Al menos un factor de alto riesgo: tomografía craneal obligada." : medio ? "Factor de riesgo medio: tomografía craneal recomendada para descartar lesión clínicamente significativa." : "Ningún factor: puede evitarse la tomografía (regla con sensibilidad ≈ 100 % para lesión que requiera intervención neuroquirúrgica).",
+          level: alto ? "danger" : medio ? "warn" : "ok"
+        };
+      },
+      notes: ["Aplicable a traumatismo craneoencefálico cerrado con GCS 13–15 y pérdida de conciencia testificada, amnesia o desorientación tras el traumatismo."],
+      references: [
+        "Stiell IG, et al. The Canadian CT Head Rule for patients with minor head injury. Lancet. 2001;357(9266):1391-6."
+      ]
+    },
+    {
+      id: "rosier",
+      name: "Escala ROSIER (Recognition of Stroke in the Emergency Room)",
+      shortName: "ROSIER",
+      description: "Reconocimiento del ictus agudo en urgencias.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        { id: "sincope", type: "boolean", label: "Pérdida de conciencia o síncope", points: -1 },
+        { id: "convulsion", type: "boolean", label: "Actividad convulsiva", points: -1 },
+        { id: "facial", type: "boolean", label: "Debilidad facial de nueva aparición" },
+        { id: "brazo", type: "boolean", label: "Debilidad asimétrica del brazo de nueva aparición" },
+        { id: "pierna", type: "boolean", label: "Debilidad asimétrica de la pierna de nueva aparición" },
+        { id: "habla", type: "boolean", label: "Alteración del habla de nueva aparición" },
+        { id: "visual", type: "boolean", label: "Defecto de campo visual de nueva aparición" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["sincope", "convulsion", "facial", "brazo", "pierna", "habla", "visual"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (−2 a +5)",
+          interpretation: score > 0 ? "ROSIER > 0: alta probabilidad de ictus. Activar código ictus y traslado a centro adecuado." : "ROSIER ≤ 0: ictus poco probable. Considerar diagnósticos alternativos (hipoglucemia, migraña, síncope, convulsión, mareo periférico).",
+          level: score > 0 ? "danger" : "ok"
+        };
+      },
+      notes: ["Descartar previamente hipoglucemia (glucemia capilar)."],
+      references: [
+        "Nor AM, et al. The Recognition of Stroke in the Emergency Room (ROSIER) scale. Lancet Neurol. 2005;4(11):727-34."
+      ]
+    },
+    {
+      id: "rems",
+      name: "Puntuación REMS (Rapid Emergency Medicine Score)",
+      shortName: "REMS",
+      description: "Predice la mortalidad intrahospitalaria en pacientes que acuden a urgencias.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          dropdown: true,
+          options: [
+            { label: "< 45 años", value: 0 },
+            { label: "45–54", value: 2 },
+            { label: "55–64", value: 3 },
+            { label: "65–74", value: 5 },
+            { label: "≥ 75", value: 6 }
+          ]
+        },
+        {
+          id: "pam",
+          type: "select",
+          label: "Presión arterial media (mmHg)",
+          dropdown: true,
+          options: [
+            { label: "70–109", value: 0 },
+            { label: "50–69 o 110–129", value: 2 },
+            { label: "≥ 160", value: 3 },
+            { label: "130–159", value: 3.0001 },
+            { label: "< 50", value: 4 }
+          ]
+        },
+        {
+          id: "fc",
+          type: "select",
+          label: "Frecuencia cardíaca",
+          dropdown: true,
+          options: [
+            { label: "70–109 lpm", value: 0 },
+            { label: "110–139 o 55–69", value: 2 },
+            { label: "140–179 o 40–54", value: 3 },
+            { label: "≥ 180 o ≤ 39", value: 4 }
+          ]
+        },
+        {
+          id: "fr",
+          type: "select",
+          label: "Frecuencia respiratoria",
+          dropdown: true,
+          options: [
+            { label: "12–24 rpm", value: 0 },
+            { label: "10–11 o 25–34", value: 1 },
+            { label: "6–9", value: 2 },
+            { label: "35–49", value: 3 },
+            { label: "≥ 50 o ≤ 5", value: 4 }
+          ]
+        },
+        {
+          id: "spo2",
+          type: "select",
+          label: "SpO₂",
+          dropdown: true,
+          options: [
+            { label: "> 89 %", value: 0 },
+            { label: "86–89 %", value: 1 },
+            { label: "75–85 %", value: 3 },
+            { label: "< 75 %", value: 4 }
+          ]
+        },
+        {
+          id: "gcs",
+          type: "select",
+          label: "Escala de coma de Glasgow",
+          dropdown: true,
+          options: [
+            { label: "> 13", value: 0 },
+            { label: "11–13", value: 1 },
+            { label: "8–10", value: 2 },
+            { label: "5–7", value: 3 },
+            { label: "< 5", value: 4 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = Math.round(sum(v, ["edad", "pam", "fc", "fr", "spo2", "gcs"]));
+        const mort = score <= 2 ? "0,3 %" : score <= 5 ? "2 %" : score <= 9 ? "9 %" : score <= 11 ? "17 %" : score <= 15 ? "38 %" : "75 %";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–26)",
+          secondary: mort,
+          secondaryLabel: "mortalidad intrahospitalaria",
+          interpretation: score <= 5 ? "Riesgo bajo de mortalidad." : score <= 11 ? "Riesgo intermedio: vigilancia estrecha." : "Riesgo alto: ingreso en cuidados intermedios o intensivos.",
+          level: score <= 5 ? "ok" : score <= 11 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Olsson T, et al. Rapid Emergency Medicine Score: a new prognostic tool for in-hospital mortality in nonsurgical emergency department patients. J Intern Med. 2004;255(5):579-87."
+      ]
+    },
+    {
+      id: "cows",
+      name: "Escala COWS (Clinical Opiate Withdrawal Scale)",
+      shortName: "COWS",
+      description: "Cuantifica la gravedad del síndrome de abstinencia de opioides.",
+      category: "Alcohol y abstinencia",
+      specialty: URG,
+      inputs: [
+        { id: "fc", type: "select", label: "Frecuencia cardíaca (lpm)", options: [
+          { label: "≤ 80", value: 0 },
+          { label: "81–100", value: 1 },
+          { label: "101–120", value: 2 },
+          { label: "> 120", value: 4 }
+        ] },
+        { id: "sudoracion", type: "select", label: "Sudoración", options: [
+          { label: "Ausente", value: 0 },
+          { label: "Escalofríos o rubor", value: 1 },
+          { label: "Sudor visible en cara", value: 2 },
+          { label: "Sudor corriendo por la cara", value: 3 },
+          { label: "Sudor empapando la ropa", value: 4 }
+        ] },
+        { id: "inquietud", type: "select", label: "Inquietud", options: [
+          { label: "Puede estarse quieto", value: 0 },
+          { label: "Movimientos ocasionales", value: 1 },
+          { label: "Cambia de postura frecuentemente", value: 3 },
+          { label: "Incapaz de estarse quieto", value: 5 }
+        ] },
+        { id: "pupilas", type: "select", label: "Pupilas", options: [
+          { label: "Normales o mióticas", value: 0 },
+          { label: "Posiblemente mayores de lo normal", value: 1 },
+          { label: "Moderadamente dilatadas", value: 2 },
+          { label: "Muy dilatadas", value: 5 }
+        ] },
+        { id: "huesos", type: "select", label: "Dolor óseo o articular", options: [
+          { label: "Ausente", value: 0 },
+          { label: "Molestia leve", value: 1 },
+          { label: "Dolor difuso", value: 2 },
+          { label: "Frota articulaciones, no soporta el dolor", value: 4 }
+        ] },
+        { id: "rinorrea", type: "select", label: "Rinorrea o lagrimeo", options: [
+          { label: "Ausente", value: 0 },
+          { label: "Congestión nasal o lagrimeo leve", value: 1 },
+          { label: "Rinorrea o lagrimeo", value: 2 },
+          { label: "Rinorrea y lagrimeo continuos", value: 4 }
+        ] },
+        { id: "gi", type: "select", label: "Molestias gastrointestinales", options: [
+          { label: "Sin síntomas", value: 0 },
+          { label: "Retortijones", value: 1 },
+          { label: "Náuseas o heces blandas", value: 2 },
+          { label: "Vómitos o diarrea", value: 3 },
+          { label: "Vómitos y diarrea múltiples", value: 5 }
+        ] },
+        { id: "temblor", type: "select", label: "Temblor (manos extendidas)", options: [
+          { label: "Sin temblor", value: 0 },
+          { label: "Palpable, no visible", value: 1 },
+          { label: "Fasciculaciones leves visibles", value: 2 },
+          { label: "Temblor grueso extenso", value: 4 }
+        ] },
+        { id: "bostezos", type: "select", label: "Bostezos", options: [
+          { label: "Ausentes", value: 0 },
+          { label: "1–2 veces durante la evaluación", value: 1 },
+          { label: "≥ 3 veces", value: 2 },
+          { label: "≥ 3 veces por minuto", value: 4 }
+        ] },
+        { id: "ansiedad", type: "select", label: "Ansiedad o irritabilidad", options: [
+          { label: "Ausente", value: 0 },
+          { label: "Levemente ansioso", value: 1 },
+          { label: "Moderadamente ansioso", value: 2 },
+          { label: "Tan ansioso que dificulta la evaluación", value: 4 }
+        ] },
+        { id: "piloereccion", type: "select", label: "Piloerección", options: [
+          { label: "Piel lisa", value: 0 },
+          { label: "Cutis anserina en brazos", value: 3 },
+          { label: "Piloerección evidente", value: 5 }
+        ] }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["fc", "sudoracion", "inquietud", "pupilas", "huesos", "rinorrea", "gi", "temblor", "bostezos", "ansiedad", "piloereccion"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–48)",
+          interpretation: score < 5 ? "Sin abstinencia significativa." : score < 13 ? "Abstinencia leve (5–12): valorar iniciar tratamiento con buprenorfina si procede." : score < 25 ? "Abstinencia moderada (13–24): apto para iniciar buprenorfina." : score < 37 ? "Abstinencia moderadamente intensa (25–36): tratamiento activo." : "Abstinencia intensa (≥ 37): tratamiento activo y vigilancia estrecha.",
+          level: score < 5 ? "ok" : score < 13 ? "info" : score < 25 ? "warn" : "danger"
+        };
+      },
+      notes: ["Un COWS ≥ 8 indica abstinencia objetiva mínima suficiente para iniciar la inducción con buprenorfina de forma segura."],
+      references: [
+        "Wesson DR, Ling W. The Clinical Opiate Withdrawal Scale (COWS). J Psychoactive Drugs. 2003;35(2):253-9."
+      ]
+    },
+    {
+      id: "mcmahon",
+      name: "Puntuación de McMahon para la rabdomiólisis",
+      shortName: "McMahon",
+      description: "Predice la mortalidad o la necesidad de terapia renal sustitutiva en la rabdomiólisis.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "< 51 años", value: 0 },
+            { label: "51–70 años", value: 1.5 },
+            { label: "71–80 años", value: 2.5 },
+            { label: "> 80 años", value: 3 }
+          ]
+        },
+        {
+          id: "sexo",
+          type: "select",
+          label: "Sexo",
+          options: [
+            { label: "Varón", value: 0 },
+            { label: "Mujer", value: 1 }
+          ]
+        },
+        {
+          id: "etiologia",
+          type: "boolean",
+          label: "Etiología distinta de convulsión, síncope, ejercicio, estatinas o mioaflibrada",
+          points: 3
+        },
+        { id: "creatinina", type: "boolean", label: "Creatinina > 1,4 mg/dL", points: 1.5 },
+        { id: "calcio", type: "boolean", label: "Calcio inicial < 7,5 mg/dL", points: 2 },
+        { id: "ck", type: "boolean", label: "CK inicial > 40.000 U/L", points: 2 },
+        { id: "fosfato", type: "boolean", label: "Fósforo inicial > 4,0 mg/dL", points: 1.5 },
+        { id: "bicarbonato", type: "boolean", label: "Bicarbonato < 19 mmol/L", points: 2 }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["edad", "sexo", "etiologia", "creatinina", "calcio", "ck", "fosfato", "bicarbonato"]);
+        return {
+          main: fmt(score, 1),
+          mainUnit: "puntos",
+          interpretation: score < 5 ? "Riesgo bajo (probabilidad de diálisis o muerte ≈ 3 %): puede manejarse fuera de cuidados intensivos con hidratación y vigilancia." : score <= 10 ? "Riesgo intermedio (≈ 20 %): vigilancia estrecha y valoración por nefrología." : "Riesgo alto (> 50 %): considerar ingreso en cuidados intermedios o intensivos y preparación para terapia renal sustitutiva.",
+          level: score < 5 ? "ok" : score <= 10 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "McMahon GM, et al. A risk prediction score for kidney failure or mortality in rhabdomyolysis. JAMA Intern Med. 2013;173(19):1821-8."
+      ]
+    },
+    {
+      id: "bishop",
+      name: "Puntuación de Bishop para la maduración cervical",
+      shortName: "Bishop",
+      description: "Estima la favorabilidad del cuello uterino para la inducción del parto.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "dilatacion",
+          type: "select",
+          label: "Dilatación",
+          options: [
+            { label: "0 cm", value: 0 },
+            { label: "1–2 cm", value: 1 },
+            { label: "3–4 cm", value: 2 },
+            { label: "≥ 5 cm", value: 3 }
+          ]
+        },
+        {
+          id: "borramiento",
+          type: "select",
+          label: "Borramiento",
+          options: [
+            { label: "0–30 %", value: 0 },
+            { label: "40–50 %", value: 1 },
+            { label: "60–70 %", value: 2 },
+            { label: "≥ 80 %", value: 3 }
+          ]
+        },
+        {
+          id: "estacion",
+          type: "select",
+          label: "Estación (planos de Hodge)",
+          options: [
+            { label: "−3", value: 0 },
+            { label: "−2", value: 1 },
+            { label: "−1 / 0", value: 2 },
+            { label: "+1 / +2", value: 3 }
+          ]
+        },
+        {
+          id: "consistencia",
+          type: "select",
+          label: "Consistencia",
+          options: [
+            { label: "Firme", value: 0 },
+            { label: "Intermedia", value: 1 },
+            { label: "Blanda", value: 2 }
+          ]
+        },
+        {
+          id: "posicion",
+          type: "select",
+          label: "Posición del cuello",
+          options: [
+            { label: "Posterior", value: 0 },
+            { label: "Intermedia", value: 1 },
+            { label: "Anterior", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["dilatacion", "borramiento", "estacion", "consistencia", "posicion"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–13)",
+          interpretation: score <= 5 ? "Cuello desfavorable: la inducción probablemente requerirá maduración cervical previa (prostaglandinas o balón)." : score <= 8 ? "Favorabilidad intermedia: valorar inducción con oxitocina y amniotomía según protocolo." : "Cuello favorable (≥ 9): la inducción con oxitocina tiene alta probabilidad de éxito.",
+          level: score <= 5 ? "warn" : score <= 8 ? "info" : "ok"
+        };
+      },
+      references: [
+        "Bishop EH. Pelvic scoring for elective induction. Obstet Gynecol. 1964;24:266-8."
+      ]
+    },
+    {
+      id: "homa-ir",
+      name: "HOMA-IR (resistencia a la insulina)",
+      shortName: "HOMA-IR",
+      description: "Estima la resistencia a la insulina en ayunas.",
+      category: CAT_TOX,
+      specialty: URG,
+      inputs: [
+        { id: "glucemia", type: "number", label: "Glucemia en ayunas", unit: "mg/dL", min: 30, max: 500, step: 1 },
+        { id: "insulina", type: "number", label: "Insulina en ayunas", unit: "µU/mL", min: 0, max: 500, step: 0.1 }
+      ],
+      compute: (v) => {
+        const glucoseMmol = v.glucemia / 18;
+        const homa = v.insulina * glucoseMmol / 22.5;
+        return {
+          main: fmt(homa, 2),
+          mainUnit: "HOMA-IR",
+          interpretation: homa < 2.5 ? "HOMA-IR < 2,5: sensibilidad a la insulina en rango habitual." : homa < 3.8 ? "Resistencia leve-moderada: valorar estilo de vida y factores de riesgo cardiometabólico." : "Resistencia significativa: alto riesgo de diabetes tipo 2 y síndrome metabólico. Intervención sobre estilo de vida y valoración de tratamiento.",
+          level: homa < 2.5 ? "ok" : homa < 3.8 ? "warn" : "danger",
+          details: ["Fórmula: HOMA-IR = insulina × glucosa (mmol/L) / 22,5."]
+        };
+      },
+      notes: ["Los puntos de corte varían por población; usar los del laboratorio de referencia."],
+      references: [
+        "Matthews DR, et al. Homeostasis model assessment: insulin resistance and beta-cell function from fasting plasma glucose and insulin concentrations in man. Diabetologia. 1985;28(7):412-9."
+      ]
+    },
+    {
+      id: "hba1c-glucosa",
+      name: "Glucosa promedio estimada a partir de la HbA1c",
+      shortName: "eAG",
+      description: "Convierte la hemoglobina glucosilada en glucemia media estimada.",
+      category: CAT_TOX,
+      specialty: URG,
+      inputs: [
+        { id: "hba1c", type: "number", label: "HbA1c", unit: "%", min: 4, max: 20, step: 0.1 }
+      ],
+      compute: (v) => {
+        const eag = 28.7 * v.hba1c - 46.7;
+        return {
+          main: fmt(eag, 0),
+          mainUnit: "mg/dL (glucosa media estimada)",
+          interpretation: v.hba1c < 5.7 ? "HbA1c normal (< 5,7 %)." : v.hba1c < 6.5 ? "Prediabetes (5,7–6,4 %): recomendar cambios de estilo de vida." : "Rango de diabetes (≥ 6,5 %): valorar objetivos individualizados de control (habitualmente HbA1c < 7 %, más estricto o menos según el paciente).",
+          level: v.hba1c < 5.7 ? "ok" : v.hba1c < 6.5 ? "warn" : "danger",
+          details: ["Fórmula: eAG (mg/dL) = 28,7 × HbA1c − 46,7 (Nathan 2008)."]
+        };
+      },
+      references: [
+        "Nathan DM, et al. Translating the A1C assay into estimated average glucose values. Diabetes Care. 2008;31(8):1473-8."
+      ]
+    },
+    {
+      id: "forrest",
+      name: "Clasificación de Forrest para la hemorragia digestiva alta",
+      shortName: "Forrest",
+      description: "Estratifica el riesgo de resangrado y mortalidad en la úlcera péptica sangrante según los hallazgos endoscópicos.",
+      category: CAT_URG,
+      specialty: URG,
+      inputs: [
+        {
+          id: "grado",
+          type: "select",
+          label: "Hallazgo endoscópico",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "Ia — Sangrado arterial pulsátil", value: 1 },
+            { label: "Ib — Sangrado en sábana (venoso)", value: 2 },
+            { label: "IIa — Vaso visible no sangrante", value: 3 },
+            { label: "IIb — Coágulo adherido", value: 4 },
+            { label: "IIc — Mancha plana pigmentada (hematina)", value: 5 },
+            { label: "III — Base limpia sin estigmas", value: 6 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const g = (_a = v.grado) != null ? _a : 6;
+        const info = [
+          "",
+          { r: "55 %", m: "11 %", a: "Alto riesgo — tratamiento endoscópico obligado", level: "danger" },
+          { r: "55 %", m: "11 %", a: "Alto riesgo — tratamiento endoscópico obligado", level: "danger" },
+          { r: "43 %", m: "11 %", a: "Alto riesgo — tratamiento endoscópico", level: "danger" },
+          { r: "22 %", m: "7 %", a: "Riesgo intermedio — tratamiento endoscópico", level: "warn" },
+          { r: "10 %", m: "3 %", a: "Riesgo bajo — no requiere terapia endoscópica", level: "ok" },
+          { r: "5 %", m: "2 %", a: "Riesgo muy bajo — alta precoz posible", level: "ok" }
+        ][g];
+        const labels = ["", "Ia", "Ib", "IIa", "IIb", "IIc", "III"];
+        return {
+          main: `Forrest ${labels[g]}`,
+          secondary: info.r,
+          secondaryLabel: "riesgo de resangrado",
+          interpretation: `${info.a}. Mortalidad ≈ ${info.m}. En Forrest I y IIa se recomienda tratamiento endoscópico (inyección + método térmico o clip) e IBP intravenoso en perfusión.`,
+          level: info.level
+        };
+      },
+      references: [
+        "Forrest JA, et al. Endoscopy in gastrointestinal bleeding. Lancet. 1974;2(7877):394-7."
+      ]
+    }
+  ];
+
+  // inurse-m2/src/calculators/medicina-familia.ts
+  var CAT_GENERAL = "Medicina interna y familiar";
+  var CAT_GERIA = "Geriatría, fragilidad y salud mental";
+  var CAT_DIABETES = "Endocrino, obesidad y diabetes";
+  var CAT_GASTRO = "Hepato-digestivo y nutrición";
+  var CAT_HEMATO = "Hematología y oncología";
+  var CAT_CARDIO = "Síndrome coronario agudo y dolor torácico";
+  var CAT_TEV = "Tromboembolismo venoso";
+  var CAT_RESPI = "Respiratorio crítico y ventilación";
+  var FAM = ["Medicina Familiar"];
+  var escala8 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
+  var medicinaFamilia = [
+    {
+      id: "bristol",
+      name: "Escala de heces de Bristol",
+      shortName: "Bristol",
+      description: "Clasifica la consistencia de las heces en siete tipos; útil en estreñimiento, diarrea y síndrome del intestino irritable.",
+      category: CAT_GASTRO,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "tipo",
+          type: "select",
+          label: "Tipo de heces",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "Tipo 1 — Bolas duras separadas, como nueces", value: 1 },
+            { label: "Tipo 2 — Salchicha compuesta de fragmentos", value: 2 },
+            { label: "Tipo 3 — Salchicha con grietas en la superficie", value: 3 },
+            { label: "Tipo 4 — Salchicha lisa y blanda", value: 4 },
+            { label: "Tipo 5 — Fragmentos blandos con bordes definidos", value: 5 },
+            { label: "Tipo 6 — Fragmentos blandos y esponjosos", value: 6 },
+            { label: "Tipo 7 — Líquido sin fragmentos sólidos", value: 7 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const t = (_a = v.tipo) != null ? _a : 4;
+        const banda = t <= 2 ? "Estreñimiento" : t <= 5 ? "Normal" : "Diarrea";
+        const detalle = t <= 2 ? "Sugiere estreñimiento: aumentar fibra, líquidos y actividad física; valorar laxantes si es persistente." : t <= 4 ? "Tránsito y consistencia normales." : t === 5 ? "Blandas: puede indicar tránsito ligeramente acelerado; valorar dieta." : t === 6 ? "Sugiere diarrea: valorar hidratación, dieta y factores desencadenantes." : "Diarrea líquida: reposición hidroelectrolítica; buscar causa infecciosa, medicamentosa o funcional.";
+        return {
+          main: `Tipo ${t}`,
+          secondary: banda,
+          interpretation: detalle,
+          level: t <= 2 ? "warn" : t <= 5 ? "ok" : t === 6 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Lewis SJ, Heaton KW. Stool form scale as a useful guide to intestinal transit time. Scand J Gastroenterol. 1997;32(9):920-4."
+      ]
+    },
+    {
+      id: "clinical-frailty",
+      name: "Escala de fragilidad clínica (Rockwood CFS)",
+      shortName: "Rockwood CFS",
+      description: "Cuantifica el grado de fragilidad clínica en pacientes ≥ 65 años.",
+      category: CAT_GERIA,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "nivel",
+          type: "select",
+          label: "Grado de fragilidad",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "1 — Muy en forma: robusto, activo, motivado", value: 1 },
+            { label: "2 — En forma: sin enfermedad activa; ejercicio ocasional", value: 2 },
+            { label: "3 — Se mantiene bien: enfermedades controladas; no realiza ejercicio regular", value: 3 },
+            { label: "4 — Vulnerable: no depende de otros, pero los síntomas limitan la actividad", value: 4 },
+            { label: "5 — Fragilidad leve: dependencia parcial en actividades instrumentales", value: 5 },
+            { label: "6 — Fragilidad moderada: necesita ayuda en actividades exteriores y algunas del hogar", value: 6 },
+            { label: "7 — Fragilidad grave: dependencia total para el autocuidado; estable", value: 7 },
+            { label: "8 — Fragilidad muy grave: dependencia total; enfermedad terminal probable en < 6 meses", value: 8 },
+            { label: "9 — Enfermedad terminal: expectativa de vida < 6 meses", value: 9 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const n = (_a = v.nivel) != null ? _a : 1;
+        return {
+          main: `CFS ${n}`,
+          interpretation: n <= 3 ? "No frágil: buen pronóstico funcional; expectativa de recuperación tras enfermedad aguda." : n === 4 ? "Vulnerable: mayor riesgo de deterioro con enfermedad aguda; anticipar apoyo." : n <= 6 ? "Fragilidad leve-moderada: mayor riesgo de deterioro funcional, delirium y mortalidad. Valorar intensidad del tratamiento y objetivos con el paciente y la familia." : n <= 8 ? "Fragilidad grave o muy grave: enfoque paliativo y confortable; los tratamientos invasivos ofrecen escaso beneficio." : "Enfermedad terminal: cuidados paliativos y planificación del final de vida.",
+          level: n <= 3 ? "ok" : n <= 5 ? "warn" : "danger"
+        };
+      },
+      notes: [
+        "Aplicable a pacientes ≥ 65 años; el juicio clínico prevalece.",
+        "Muy usada durante la pandemia COVID-19 para orientar la toma de decisiones sobre soporte vital avanzado."
+      ],
+      references: [
+        "Rockwood K, et al. A global clinical measure of fitness and frailty in elderly people. CMAJ. 2005;173(5):489-95."
+      ]
+    },
+    {
+      id: "cdr",
+      name: "Escala clínica de demencia (CDR)",
+      shortName: "CDR",
+      description: "Estadifica la gravedad clínica de la demencia mediante seis dominios.",
+      category: CAT_GERIA,
+      specialty: FAM,
+      inputs: [
+        ...[
+          ["memoria", "Memoria"],
+          ["orientacion", "Orientación"],
+          ["juicio", "Juicio y resolución de problemas"],
+          ["asuntos", "Asuntos comunitarios"],
+          ["hogar", "Hogar y aficiones"],
+          ["cuidado", "Cuidado personal"]
+        ].map(([id, label]) => ({
+          id,
+          type: "select",
+          label,
+          dropdown: true,
+          options: [
+            { label: "0 — Sin alteración", value: 0 },
+            { label: "0,5 — Cuestionable", value: 0.5 },
+            { label: "1 — Leve", value: 1 },
+            { label: "2 — Moderada", value: 2 },
+            { label: "3 — Grave", value: 3 }
+          ]
+        }))
+      ],
+      compute: (v) => {
+        var _a;
+        const memoria = (_a = v.memoria) != null ? _a : 0;
+        const secundarios = ["orientacion", "juicio", "asuntos", "hogar", "cuidado"].map((k) => {
+          var _a2;
+          return (_a2 = v[k]) != null ? _a2 : 0;
+        });
+        const cdr = memoria;
+        const acuerdo = secundarios.filter((x) => x === memoria).length;
+        const global = acuerdo >= 3 ? cdr : (memoria + secundarios.reduce((a, b) => a + b, 0)) / 6;
+        const round = (x) => {
+          if (x <= 0.25) return 0;
+          if (x <= 0.75) return 0.5;
+          if (x <= 1.5) return 1;
+          if (x <= 2.5) return 2;
+          return 3;
+        };
+        const g = round(global);
+        const etiqueta = { 0: "Sin demencia", 0.5: "Deterioro cognitivo cuestionable", 1: "Demencia leve", 2: "Demencia moderada", 3: "Demencia grave" }[g];
+        return {
+          main: `CDR ${g}`,
+          secondary: etiqueta,
+          interpretation: g === 0 ? "Sin demencia clínica." : g === 0.5 ? "Deterioro cognitivo leve o cuestionable: seguimiento y evaluación neuropsicológica." : g === 1 ? "Demencia leve: apoyo a la persona y a la familia, valoración de tratamiento específico." : g === 2 ? "Demencia moderada: dependencia creciente; planificar cuidados y decisiones anticipadas." : "Demencia grave: cuidados de apoyo intensivos; valorar cuidados paliativos.",
+          level: g === 0 ? "ok" : g <= 1 ? "warn" : "danger"
+        };
+      },
+      notes: [
+        "Se usa el algoritmo estándar: la memoria es el dominio principal; si 3 o más secundarios coinciden con el valor de memoria, el CDR global es ese valor."
+      ],
+      references: [
+        "Morris JC. The Clinical Dementia Rating (CDR): current version and scoring rules. Neurology. 1993;43(11):2412-4."
+      ]
+    },
+    {
+      id: "gds-15",
+      name: "Escala de depresión geriátrica de Yesavage (GDS-15)",
+      shortName: "GDS-15",
+      description: "Cribado de depresión en personas mayores mediante 15 preguntas de respuesta sí/no.",
+      category: CAT_GERIA,
+      specialty: FAM,
+      inputs: [
+        { id: "q1", type: "boolean", label: "¿Está satisfecho/a con su vida?", labels: ["Sí", "No"] },
+        { id: "q2", type: "boolean", label: "¿Ha renunciado a muchas actividades e intereses?", labels: ["No", "Sí"] },
+        { id: "q3", type: "boolean", label: "¿Siente que su vida está vacía?", labels: ["No", "Sí"] },
+        { id: "q4", type: "boolean", label: "¿Se aburre a menudo?", labels: ["No", "Sí"] },
+        { id: "q5", type: "boolean", label: "¿Está de buen humor la mayor parte del tiempo?", labels: ["Sí", "No"] },
+        { id: "q6", type: "boolean", label: "¿Tiene miedo de que le suceda algo malo?", labels: ["No", "Sí"] },
+        { id: "q7", type: "boolean", label: "¿Se siente feliz la mayor parte del tiempo?", labels: ["Sí", "No"] },
+        { id: "q8", type: "boolean", label: "¿Se siente a menudo indefenso/a?", labels: ["No", "Sí"] },
+        { id: "q9", type: "boolean", label: "¿Prefiere quedarse en casa a salir a hacer cosas nuevas?", labels: ["No", "Sí"] },
+        { id: "q10", type: "boolean", label: "¿Cree que tiene más problemas de memoria que los demás?", labels: ["No", "Sí"] },
+        { id: "q11", type: "boolean", label: "¿Cree que es maravilloso estar vivo/a?", labels: ["Sí", "No"] },
+        { id: "q12", type: "boolean", label: "¿Se siente inútil tal como está ahora?", labels: ["No", "Sí"] },
+        { id: "q13", type: "boolean", label: "¿Se siente lleno/a de energía?", labels: ["Sí", "No"] },
+        { id: "q14", type: "boolean", label: "¿Cree que su situación es desesperada?", labels: ["No", "Sí"] },
+        { id: "q15", type: "boolean", label: "¿Cree que la mayoría de la gente está mejor que usted?", labels: ["No", "Sí"] }
+      ],
+      compute: (v) => {
+        const score = sum(v, Array.from({ length: 15 }, (_, i) => `q${i + 1}`));
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–15)",
+          interpretation: score <= 4 ? "Sin depresión: puntuación en rango normal." : score <= 8 ? "Depresión leve o probable: valorar entrevista clínica estructurada y seguimiento." : score <= 11 ? "Depresión moderada: evaluación diagnóstica y valorar tratamiento." : "Depresión grave: iniciar tratamiento y valorar riesgo autolítico.",
+          level: score <= 4 ? "ok" : score <= 8 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Sheikh JI, Yesavage JA. Geriatric Depression Scale (GDS): recent evidence and development of a shorter version. Clin Gerontol. 1986;5:165-73."
+      ]
+    },
+    {
+      id: "ham-a",
+      name: "Escala de ansiedad de Hamilton (HAM-A)",
+      shortName: "HAM-A",
+      description: "Cuantifica la gravedad de los síntomas de ansiedad mediante 14 dimensiones.",
+      category: CAT_GERIA,
+      specialty: FAM,
+      inputs: [
+        "Estado de ánimo ansioso",
+        "Tensión",
+        "Miedos",
+        "Insomnio",
+        "Función intelectual (concentración)",
+        "Ánimo depresivo",
+        "Síntomas somáticos musculares",
+        "Síntomas somáticos sensoriales",
+        "Síntomas cardiovasculares",
+        "Síntomas respiratorios",
+        "Síntomas gastrointestinales",
+        "Síntomas genitourinarios",
+        "Síntomas autonómicos",
+        "Comportamiento en la entrevista"
+      ].map((label, i) => ({
+        id: `d${i + 1}`,
+        type: "select",
+        label,
+        dropdown: true,
+        options: escala8([
+          [0, "Ausente"],
+          [1, "Leve"],
+          [2, "Moderado"],
+          [3, "Grave"],
+          [4, "Muy grave / incapacitante"]
+        ])
+      })),
+      compute: (v) => {
+        const score = sum(v, Array.from({ length: 14 }, (_, i) => `d${i + 1}`));
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–56)",
+          interpretation: score < 8 ? "Sin ansiedad clínicamente significativa." : score <= 14 ? "Ansiedad leve." : score <= 23 ? "Ansiedad moderada." : "Ansiedad grave: valorar tratamiento farmacológico y derivación.",
+          level: score < 8 ? "ok" : score <= 14 ? "info" : score <= 23 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Hamilton M. The assessment of anxiety states by rating. Br J Med Psychol. 1959;32(1):50-5."
+      ]
+    },
+    {
+      id: "bri",
+      name: "Índice de redondez corporal (BRI)",
+      shortName: "BRI",
+      description: "Estima el porcentaje de grasa corporal y grasa visceral a partir del perímetro abdominal y la talla.",
+      category: CAT_DIABETES,
+      specialty: FAM,
+      inputs: [
+        { id: "talla", type: "number", label: "Talla", unit: "cm", min: 100, max: 220, step: 0.5 },
+        { id: "cintura", type: "number", label: "Perímetro abdominal (a la altura del ombligo)", unit: "cm", min: 40, max: 200, step: 0.5 }
+      ],
+      compute: (v) => {
+        const talla_m = v.talla / 100;
+        const cintura_m = v.cintura / 100;
+        const excentricidad2 = 1 - Math.pow(cintura_m / (2 * Math.PI * (talla_m / 2)), 2);
+        const bri = 364.2 - 365.5 * Math.sqrt(Math.max(0, excentricidad2));
+        const banda = bri < 3.41 ? "muy bajo" : bri < 4.45 ? "bajo" : bri < 5.46 ? "medio" : bri < 6.91 ? "alto" : "muy alto";
+        return {
+          main: fmt(bri, 2),
+          mainUnit: "BRI",
+          secondary: banda,
+          secondaryLabel: "quintil de riesgo cardiometabólico",
+          interpretation: banda === "muy bajo" || banda === "bajo" ? "Riesgo cardiometabólico bajo según distribución corporal." : banda === "medio" ? "Riesgo cardiometabólico intermedio." : "Distribución corporal asociada a mayor riesgo cardiometabólico: valorar intervención sobre hábitos.",
+          level: banda === "muy bajo" || banda === "bajo" ? "ok" : banda === "medio" ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Thomas DM, et al. Relationships between body roundness with body fat and visceral adipose tissue emerging from a new geometrical model. Obesity (Silver Spring). 2013;21(11):2264-71."
+      ]
+    },
+    {
+      id: "findrisc",
+      name: "FINDRISC — Riesgo de diabetes tipo 2 a 10 años",
+      shortName: "FINDRISC",
+      description: "Cribado del riesgo de diabetes tipo 2 en 10 años basado en factores clínicos.",
+      category: CAT_DIABETES,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "< 45 años", value: 0 },
+            { label: "45–54 años", value: 2 },
+            { label: "55–64 años", value: 3 },
+            { label: "> 64 años", value: 4 }
+          ]
+        },
+        {
+          id: "imc",
+          type: "select",
+          label: "Índice de masa corporal",
+          options: [
+            { label: "< 25 kg/m²", value: 0 },
+            { label: "25–30 kg/m²", value: 1 },
+            { label: "> 30 kg/m²", value: 3 }
+          ]
+        },
+        {
+          id: "cintura",
+          type: "select",
+          label: "Perímetro abdominal",
+          dropdown: true,
+          options: [
+            { label: "Varón < 94 cm o mujer < 80 cm", value: 0 },
+            { label: "Varón 94–102 cm o mujer 80–88 cm", value: 3 },
+            { label: "Varón > 102 cm o mujer > 88 cm", value: 4 }
+          ]
+        },
+        { id: "actividad", type: "boolean", label: "Actividad física < 30 min al día", points: 2 },
+        {
+          id: "dieta",
+          type: "select",
+          label: "Consumo diario de verduras, frutas u hortalizas",
+          options: [
+            { label: "Todos los días", value: 0 },
+            { label: "No todos los días", value: 1 }
+          ]
+        },
+        { id: "medicacion", type: "boolean", label: "Toma medicación para la hipertensión", points: 2 },
+        { id: "glucemia", type: "boolean", label: "Antecedente de glucemia alta (embarazo, chequeo, enfermedad)", points: 5 },
+        {
+          id: "familia",
+          type: "select",
+          label: "Familiares con diabetes",
+          options: [
+            { label: "No", value: 0 },
+            { label: "Abuelos, tíos o primos", value: 3 },
+            { label: "Padres, hermanos o hijos", value: 5 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["edad", "imc", "cintura", "actividad", "dieta", "medicacion", "glucemia", "familia"]);
+        const riesgo2 = score < 7 ? "bajo (≈ 1 %)" : score < 12 ? "ligeramente elevado (≈ 4 %)" : score < 15 ? "moderado (≈ 17 %)" : score < 21 ? "alto (≈ 33 %)" : "muy alto (≈ 50 %)";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–26)",
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de diabetes en 10 años",
+          interpretation: score < 12 ? "Riesgo bajo o ligeramente elevado: mantener estilo de vida saludable y reevaluar en 3–5 años." : score < 15 ? "Riesgo moderado: intervención sobre estilo de vida y valorar glucemia basal." : "Riesgo alto o muy alto: glucemia basal y/o HbA1c, intervención intensiva sobre estilo de vida.",
+          level: score < 12 ? "ok" : score < 15 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Lindström J, Tuomilehto J. The diabetes risk score. Diabetes Care. 2003;26(3):725-31."
+      ]
+    },
+    {
+      id: "fli",
+      name: "Fatty Liver Index (FLI)",
+      shortName: "FLI",
+      description: "Predice la presencia de esteatosis hepática por criterios ecográficos.",
+      category: CAT_GASTRO,
+      specialty: FAM,
+      inputs: [
+        { id: "tg", type: "number", label: "Triglicéridos", unit: "mg/dL", min: 30, max: 1e3, step: 1 },
+        { id: "imc", type: "number", label: "IMC", unit: "kg/m²", min: 15, max: 60, step: 0.1 },
+        { id: "ggt", type: "number", label: "GGT", unit: "U/L", min: 5, max: 1500, step: 1 },
+        { id: "cintura", type: "number", label: "Perímetro abdominal", unit: "cm", min: 40, max: 200, step: 0.5 }
+      ],
+      compute: (v) => {
+        const L = 0.953 * Math.log(v.tg) + 0.139 * v.imc + 0.718 * Math.log(v.ggt) + 0.053 * v.cintura - 15.745;
+        const fli = Math.exp(L) / (1 + Math.exp(L)) * 100;
+        return {
+          main: fmt(fli, 0),
+          mainUnit: "FLI (0–100)",
+          interpretation: fli < 30 ? "FLI < 30: hígado graso razonablemente descartado (sensibilidad ≈ 87 %)." : fli < 60 ? "FLI 30–59: no concluyente; interpretar con la clínica y los factores de riesgo metabólicos." : "FLI ≥ 60: esteatosis hepática altamente probable (especificidad ≈ 86 %). Valorar estudio adicional (elastografía, control metabólico).",
+          level: fli < 30 ? "ok" : fli < 60 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Bedogni G, et al. The Fatty Liver Index: a simple and accurate predictor of hepatic steatosis in the general population. BMC Gastroenterol. 2006;6:33."
+      ]
+    },
+    {
+      id: "cdai",
+      name: "CDAI — Índice de actividad de la enfermedad de Crohn",
+      shortName: "CDAI",
+      description: "Cuantifica la actividad de la enfermedad de Crohn.",
+      category: CAT_GASTRO,
+      specialty: FAM,
+      inputs: [
+        { id: "deposiciones", type: "number", label: "Número de deposiciones líquidas o pastosas en 7 días", min: 0, max: 200, step: 1 },
+        {
+          id: "dolor",
+          type: "number",
+          label: "Dolor abdominal (suma diaria 0–3, 7 días)",
+          description: "0 ninguno · 1 leve · 2 moderado · 3 grave",
+          min: 0,
+          max: 21,
+          step: 1
+        },
+        {
+          id: "bienestar",
+          type: "number",
+          label: "Bienestar general (suma diaria 0–4, 7 días)",
+          description: "0 bien · 1 regular · 2 mal · 3 muy mal · 4 terrible",
+          min: 0,
+          max: 28,
+          step: 1
+        },
+        {
+          id: "complicaciones",
+          type: "number",
+          label: "Número de complicaciones (artritis, iritis/uveítis, eritema/aftas, fisura/fístula, fiebre)",
+          min: 0,
+          max: 6,
+          step: 1
+        },
+        { id: "antidiarreicos", type: "boolean", label: "Uso de antidiarreicos" },
+        {
+          id: "masa",
+          type: "select",
+          label: "Masa abdominal",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Dudosa", value: 2 },
+            { label: "Presente", value: 5 }
+          ]
+        },
+        { id: "hto", type: "number", label: "Diferencia del hematocrito respecto al esperado", unit: "puntos %", min: -20, max: 20, step: 1 },
+        { id: "pesoDif", type: "number", label: "Porcentaje de desviación del peso respecto al estándar", unit: "%", min: -50, max: 50, step: 1 }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const score = 2 * v.deposiciones + 5 * v.dolor + 7 * v.bienestar + 20 * v.complicaciones + 30 * ((_a = v.antidiarreicos) != null ? _a : 0) + 10 * ((_b = v.masa) != null ? _b : 0) + 6 * v.hto + v.pesoDif;
+        return {
+          main: fmt(score, 0),
+          mainUnit: "CDAI",
+          interpretation: score < 150 ? "Enfermedad en remisión (< 150)." : score < 220 ? "Actividad leve (150–219)." : score < 450 ? "Actividad moderada (220–449)." : "Actividad grave (≥ 450): valorar hospitalización.",
+          level: score < 150 ? "ok" : score < 220 ? "info" : score < 450 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Best WR, et al. Development of a Crohn's disease activity index. Gastroenterology. 1976;70(3):439-44."
+      ]
+    },
+    {
+      id: "ecog",
+      name: "Estado funcional ECOG",
+      shortName: "ECOG",
+      description: "Cuantifica el estado funcional del paciente oncológico; guía la tolerancia a tratamientos.",
+      category: CAT_HEMATO,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "grado",
+          type: "select",
+          label: "Grado ECOG",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "0 — Totalmente activo, sin restricciones", value: 0 },
+            { label: "1 — Restringido para actividad física extenuante, ambulatorio", value: 1 },
+            { label: "2 — Ambulatorio, autocuidado; no puede trabajar; en pie > 50 % del día", value: 2 },
+            { label: "3 — Autocuidado limitado; encamado o en silla > 50 % del día", value: 3 },
+            { label: "4 — Completamente incapacitado; encamado o en silla", value: 4 },
+            { label: "5 — Fallecido", value: 5 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const g = (_a = v.grado) != null ? _a : 0;
+        return {
+          main: `ECOG ${g}`,
+          interpretation: g <= 1 ? "Estado funcional preservado: apto para tratamientos oncológicos habituales." : g === 2 ? "Estado funcional intermedio: valorar caso a caso la intensidad del tratamiento." : g === 3 ? "Estado funcional muy limitado: en general no se toleran los tratamientos oncológicos activos; priorizar control sintomático." : g === 4 ? "Encamado: tratamiento paliativo y confortable." : "Fallecido.",
+          level: g <= 1 ? "ok" : g === 2 ? "warn" : "danger"
+        };
+      },
+      notes: ["Equivalencias aproximadas con Karnofsky: ECOG 0 ≈ KPS 100, 1 ≈ 80–90, 2 ≈ 60–70, 3 ≈ 40–50, 4 ≈ 10–30."],
+      references: [
+        "Oken MM, et al. Toxicity and response criteria of the Eastern Cooperative Oncology Group. Am J Clin Oncol. 1982;5(6):649-55."
+      ]
+    },
+    {
+      id: "ganzoni",
+      name: "Ecuación de Ganzoni para el déficit de hierro",
+      shortName: "Ganzoni",
+      description: "Calcula el déficit total de hierro para reposición intravenosa en la anemia ferropénica.",
+      category: CAT_HEMATO,
+      specialty: FAM,
+      inputs: [
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 5, max: 250, step: 0.5 },
+        { id: "hbActual", type: "number", label: "Hemoglobina actual", unit: "g/dL", min: 3, max: 18, step: 0.1 },
+        { id: "hbObjetivo", type: "number", label: "Hemoglobina objetivo", unit: "g/dL", min: 8, max: 16, step: 0.1 },
+        {
+          id: "reservas",
+          type: "number",
+          label: "Hierro para reservas",
+          unit: "mg",
+          description: "≥ 35 kg: 500 mg. 5–34 kg: 15 mg/kg.",
+          min: 0,
+          max: 1e3,
+          step: 10
+        }
+      ],
+      compute: (v) => {
+        if (v.hbObjetivo <= v.hbActual)
+          return {
+            main: "—",
+            interpretation: "La hemoglobina objetivo debe ser mayor que la actual.",
+            level: "warn"
+          };
+        const deficit = 2.4 * v.peso * (v.hbObjetivo - v.hbActual) + v.reservas;
+        return {
+          main: fmt(deficit, 0),
+          mainUnit: "mg de hierro",
+          interpretation: "Dosis total a reponer por vía intravenosa. Repartir según la preparación (carboximaltosa férrica hasta 1.000 mg por sesión; hierro sacarosa 100–200 mg por sesión).",
+          level: "info",
+          details: [
+            "Fórmula: déficit (mg) = 2,4 × peso (kg) × (Hb objetivo − Hb actual) + hierro para reservas.",
+            "En pacientes con peso ≥ 35 kg y hemoglobina objetivo 15 g/dL, reservas = 500 mg. En menor peso, 15 mg/kg."
+          ]
+        };
+      },
+      references: [
+        "Ganzoni AM. Intravenous iron-dextran: therapeutic and experimental possibilities. Schweiz Med Wochenschr. 1970;100(7):301-3."
+      ]
+    },
+    {
+      id: "bova",
+      name: "Puntuación de Bova para embolia pulmonar hemodinámicamente estable",
+      shortName: "Bova",
+      description: "Estratifica el riesgo de complicaciones a 30 días en pacientes normotensos con embolia pulmonar aguda.",
+      category: CAT_TEV,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "pas",
+          type: "select",
+          label: "PA sistólica",
+          options: [
+            { label: "≥ 110 mmHg", value: 0 },
+            { label: "90–109 mmHg", value: 2 }
+          ]
+        },
+        { id: "fc", type: "boolean", label: "Frecuencia cardíaca ≥ 110 lpm" },
+        { id: "troponina", type: "boolean", label: "Troponina elevada", points: 2 },
+        { id: "disfuncionVD", type: "boolean", label: "Disfunción del ventrículo derecho", points: 2 }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["pas", "fc", "troponina", "disfuncionVD"]);
+        const stage = score <= 2 ? "I" : score <= 4 ? "II" : "III";
+        const riesgo2 = score <= 2 ? "< 5 %" : score <= 4 ? "≈ 18 %" : "≈ 42 %";
+        return {
+          main: `Estadio ${stage}`,
+          secondary: riesgo2,
+          secondaryLabel: "complicaciones a 30 días",
+          interpretation: stage === "I" ? "Riesgo bajo: manejo habitual con anticoagulación." : stage === "II" ? "Riesgo intermedio: vigilancia estrecha, considerar ingreso en cuidados intermedios." : "Riesgo alto: vigilancia en cuidados intensivos; monitorización de la evolución hemodinámica y considerar reperfusión si aparece inestabilidad.",
+          level: stage === "I" ? "ok" : stage === "II" ? "warn" : "danger"
+        };
+      },
+      notes: ["Solo aplicable a pacientes con embolia pulmonar aguda y presión arterial sistólica ≥ 90 mmHg al ingreso."],
+      references: [
+        "Bova C, et al. Identification of intermediate-risk patients with acute symptomatic pulmonary embolism. Eur Respir J. 2014;44(3):694-703."
+      ]
+    },
+    {
+      id: "cpis",
+      name: "CPIS — Escala clínica de infección pulmonar (Pugin)",
+      shortName: "CPIS",
+      description: "Ayuda a diagnosticar la neumonía asociada a la ventilación mecánica.",
+      category: CAT_RESPI,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "temperatura",
+          type: "select",
+          label: "Temperatura",
+          options: [
+            { label: "36,5–38,4 °C", value: 0 },
+            { label: "38,5–38,9 °C", value: 1 },
+            { label: "≥ 39 o ≤ 36 °C", value: 2 }
+          ]
+        },
+        {
+          id: "leucos",
+          type: "select",
+          label: "Leucocitos (×10³/mm³)",
+          options: [
+            { label: "4–11", value: 0 },
+            { label: "< 4 o > 11", value: 1 },
+            { label: "< 4 o > 11 con ≥ 50 % cayados", value: 2 }
+          ]
+        },
+        {
+          id: "secreciones",
+          type: "select",
+          label: "Secreciones traqueales",
+          options: [
+            { label: "Ausentes o escasas", value: 0 },
+            { label: "Abundantes no purulentas", value: 1 },
+            { label: "Abundantes purulentas", value: 2 }
+          ]
+        },
+        {
+          id: "pf",
+          type: "select",
+          label: "Oxigenación (PaO₂/FiO₂)",
+          options: [
+            { label: "> 240 o SDRA presente", value: 0 },
+            { label: "≤ 240 sin SDRA", value: 2 }
+          ]
+        },
+        {
+          id: "radiografia",
+          type: "select",
+          label: "Radiografía de tórax",
+          options: [
+            { label: "Sin infiltrados", value: 0 },
+            { label: "Infiltrado difuso o parcheado", value: 1 },
+            { label: "Infiltrado localizado", value: 2 }
+          ]
+        },
+        {
+          id: "progresion",
+          type: "select",
+          label: "Progresión del infiltrado",
+          options: [
+            { label: "Sin progresión", value: 0 },
+            { label: "Progresión radiológica (excluidos SDRA e ICC)", value: 2 }
+          ]
+        },
+        {
+          id: "cultivo",
+          type: "select",
+          label: "Cultivo de aspirado traqueal",
+          options: [
+            { label: "Sin crecimiento significativo", value: 0 },
+            { label: "Crecimiento significativo (positivo)", value: 1 },
+            { label: "Mismo patógeno en tinción de Gram", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["temperatura", "leucos", "secreciones", "pf", "radiografia", "progresion", "cultivo"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–12)",
+          interpretation: score > 6 ? "CPIS > 6: alta probabilidad de neumonía asociada a la ventilación mecánica. Iniciar o mantener antibioterapia empírica y ajustar según cultivos." : "CPIS ≤ 6: baja probabilidad de neumonía asociada a la ventilación mecánica; reevaluar en 48–72 h.",
+          level: score > 6 ? "danger" : "ok"
+        };
+      },
+      references: [
+        'Pugin J, et al. Diagnosis of ventilator-associated pneumonia by bacteriologic analysis of bronchoscopic and nonbronchoscopic "blind" bronchoalveolar lavage fluid. Am Rev Respir Dis. 1991;143(5):1121-9.'
+      ]
+    },
+    {
+      id: "caspar",
+      name: "Criterios CASPAR para artritis psoriásica",
+      shortName: "CASPAR",
+      description: "Clasifica la artritis psoriásica en pacientes con enfermedad inflamatoria articular.",
+      category: CAT_GENERAL,
+      specialty: FAM,
+      inputs: [
+        { id: "enfermedad", type: "boolean", label: "¿Presenta enfermedad articular inflamatoria confirmada?", noPoints: true },
+        {
+          id: "psoriasis",
+          type: "select",
+          label: "Psoriasis",
+          options: [
+            { label: "Ausente", value: 0 },
+            { label: "Antecedente personal o familiar (primer o segundo grado)", value: 1 },
+            { label: "Actual", value: 2 }
+          ]
+        },
+        { id: "ungueal", type: "boolean", label: "Alteración ungueal (onicólisis, pitting, hiperqueratosis)" },
+        { id: "fr", type: "boolean", label: "Factor reumatoide negativo" },
+        { id: "dactilitis", type: "boolean", label: "Dactilitis actual o pasada" },
+        { id: "radiologico", type: "boolean", label: "Neoformación ósea yuxtaarticular en la radiografía" }
+      ],
+      compute: (v) => {
+        if (v.enfermedad !== 1)
+          return {
+            main: "No aplicable",
+            interpretation: "CASPAR se aplica solo en pacientes con enfermedad articular inflamatoria establecida.",
+            level: "warn"
+          };
+        const score = sum(v, ["psoriasis", "ungueal", "fr", "dactilitis", "radiologico"]);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–6)",
+          interpretation: score >= 3 ? "Cumple criterios CASPAR (≥ 3 puntos): clasifica como artritis psoriásica (sensibilidad ≈ 91 %, especificidad ≈ 99 %)." : "No cumple criterios CASPAR: valorar otros diagnósticos.",
+          level: score >= 3 ? "danger" : "ok"
+        };
+      },
+      references: [
+        "Taylor W, et al. Classification criteria for psoriatic arthritis: development of new criteria from a large international study (CASPAR). Arthritis Rheum. 2006;54(8):2665-73."
+      ]
+    },
+    {
+      id: "dlcn",
+      name: "Criterios holandeses (DLCN) de hipercolesterolemia familiar",
+      shortName: "DLCN",
+      description: "Diagnostica clínicamente la hipercolesterolemia familiar heterocigota.",
+      category: CAT_CARDIO,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "familia",
+          type: "select",
+          label: "Historia familiar",
+          dropdown: true,
+          options: [
+            { label: "Sin datos relevantes", value: 0 },
+            { label: "Familiar de primer grado con enfermedad coronaria o vascular precoz (< 55 años en varones, < 60 en mujeres) o LDL > 210 mg/dL en adultos, o presencia de xantomas o arco corneal en < 45 años", value: 1 },
+            { label: "Familiar de primer grado < 18 años con LDL > 155 mg/dL", value: 2 }
+          ]
+        },
+        {
+          id: "personal",
+          type: "select",
+          label: "Historia personal",
+          options: [
+            { label: "Sin datos relevantes", value: 0 },
+            { label: "Enfermedad coronaria prematura", value: 2 },
+            { label: "Enfermedad vascular prematura (cerebral o periférica)", value: 1 }
+          ]
+        },
+        {
+          id: "examen",
+          type: "select",
+          label: "Exploración física",
+          options: [
+            { label: "Sin hallazgos", value: 0 },
+            { label: "Arco corneal < 45 años", value: 4 },
+            { label: "Xantomas tendinosos", value: 6 }
+          ]
+        },
+        {
+          id: "ldl",
+          type: "select",
+          label: "LDL colesterol",
+          dropdown: true,
+          options: [
+            { label: "< 155 mg/dL", value: 0 },
+            { label: "155–189 mg/dL", value: 1 },
+            { label: "190–249 mg/dL", value: 3 },
+            { label: "250–329 mg/dL", value: 5 },
+            { label: "≥ 330 mg/dL", value: 8 }
+          ]
+        },
+        { id: "genetico", type: "boolean", label: "Mutación funcional confirmada (LDLR, APOB, PCSK9)", points: 8 }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["familia", "personal", "examen", "ldl", "genetico"]);
+        const dx = score < 3 ? "improbable" : score <= 5 ? "posible" : score <= 8 ? "probable" : "definitiva";
+        return {
+          main: String(score),
+          mainUnit: "puntos",
+          secondary: `Hipercolesterolemia familiar ${dx}`,
+          interpretation: dx === "improbable" ? "Hipercolesterolemia familiar improbable: control lipídico habitual." : dx === "posible" ? "Hipercolesterolemia familiar posible: valorar estudio genético y cribado familiar." : "Diagnóstico probable o definitivo: iniciar estatinas de alta potencia (objetivo LDL < 100 mg/dL o < 70 con enfermedad cardiovascular), estudio genético y cribado familiar en cascada.",
+          level: dx === "improbable" ? "ok" : dx === "posible" ? "warn" : "danger"
+        };
+      },
+      references: [
+        "World Health Organization. Familial hypercholesterolemia: report of a WHO consultation. Ginebra, 1999."
+      ]
+    },
+    {
+      id: "fleischner",
+      name: "Guías de Fleischner para nódulos pulmonares sólidos (2017)",
+      shortName: "Fleischner",
+      description: "Recomienda el seguimiento de nódulos pulmonares sólidos hallados incidentalmente en tomografía.",
+      category: CAT_RESPI,
+      specialty: FAM,
+      inputs: [
+        {
+          id: "riesgo",
+          type: "select",
+          label: "Riesgo del paciente",
+          noPoints: true,
+          options: [
+            { label: "Bajo (no fumador, sin factores)", value: 0 },
+            { label: "Alto (fumador, EPOC, exposición asbesto, historia familiar)", value: 1 }
+          ]
+        },
+        {
+          id: "numero",
+          type: "select",
+          label: "Número de nódulos",
+          noPoints: true,
+          options: [
+            { label: "Único", value: 0 },
+            { label: "Múltiples", value: 1 }
+          ]
+        },
+        { id: "tamano", type: "number", label: "Tamaño del nódulo mayor", unit: "mm", min: 1, max: 30, step: 0.1 }
+      ],
+      compute: (v) => {
+        const alto = v.riesgo === 1;
+        const multi = v.numero === 1;
+        const t = v.tamano;
+        let rec;
+        if (t < 6) {
+          rec = alto ? "Nódulo < 6 mm en paciente de alto riesgo: TC de control opcional a los 12 meses." : "Nódulo < 6 mm en paciente de bajo riesgo: no se recomienda seguimiento rutinario.";
+        } else if (t <= 8) {
+          rec = alto ? "Nódulo 6–8 mm en paciente de alto riesgo: TC de control a los 6–12 meses y considerar a los 18–24 meses." : "Nódulo 6–8 mm en paciente de bajo riesgo: TC de control a los 6–12 meses y considerar a los 18–24 meses.";
+        } else {
+          rec = "Nódulo > 8 mm: considerar TC de control a los 3 meses, PET-TC o biopsia según sospecha clínica.";
+        }
+        if (multi) rec += " (Nódulos múltiples: usar el nódulo más sospechoso para orientar el seguimiento.)";
+        const level = t < 6 ? "ok" : t <= 8 ? "warn" : "danger";
+        return {
+          main: `${fmt(t, 1)} mm`,
+          interpretation: rec,
+          level
+        };
+      },
+      notes: [
+        "Solo para nódulos sólidos ≥ 6 mm de forma sistemática; los subsólidos tienen su propio algoritmo.",
+        "No aplicable a pacientes < 35 años ni a pacientes inmunodeprimidos u oncológicos, en los que la conducta es individualizada."
+      ],
+      references: [
+        "MacMahon H, et al. Guidelines for Management of Incidental Pulmonary Nodules Detected on CT Images: From the Fleischner Society 2017. Radiology. 2017;284(1):228-43."
+      ]
+    },
+    {
+      id: "ottawa-tia",
+      name: "Ottawa TIA — Riesgo de ictus tras AIT",
+      shortName: "Ottawa TIA",
+      description: "Regla canadiense de decisión para estimar el riesgo de ictus a 7 días tras un AIT.",
+      category: "Neurología crítica e ictus",
+      specialty: FAM,
+      inputs: [
+        { id: "primer", type: "boolean", label: "Primer episodio de AIT en la vida", points: 2 },
+        { id: "sintomas", type: "boolean", label: "Síntomas > 10 minutos", points: 2 },
+        { id: "aterotrombosis", type: "boolean", label: "Antecedente de arteriopatía carotídea", points: 2 },
+        { id: "antiagregante", type: "boolean", label: "Ya recibía antiagregante en el momento del AIT", points: 3 },
+        { id: "debilidad", type: "boolean", label: "Debilidad focal", points: 2 },
+        { id: "lenguaje", type: "boolean", label: "Alteración del lenguaje", points: 1 },
+        {
+          id: "duracion",
+          type: "select",
+          label: "Duración de los síntomas",
+          options: [
+            { label: "< 10 min", value: 0 },
+            { label: "10–59 min", value: 1 },
+            { label: "≥ 60 min", value: 2 }
+          ]
+        },
+        { id: "fa", type: "boolean", label: "Fibrilación auricular en el ECG", points: 2 },
+        { id: "isquemia", type: "boolean", label: "Signos de isquemia en el ECG", points: 2 },
+        {
+          id: "glucosa",
+          type: "boolean",
+          label: "Glucemia ≥ 265 mg/dL",
+          points: 3
+        },
+        { id: "plaquetas", type: "boolean", label: "Plaquetas ≥ 400 ×10⁹/L", points: 2 },
+        { id: "leucocitos", type: "boolean", label: "Leucocitos ≥ 10 ×10⁹/L", points: 2 }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["primer", "sintomas", "aterotrombosis", "antiagregante", "debilidad", "lenguaje", "duracion", "fa", "isquemia", "glucosa", "plaquetas", "leucocitos"]);
+        const riesgo2 = score <= 3 ? "bajo (< 1 %)" : score <= 8 ? "intermedio (≈ 4 %)" : "alto (≈ 10 %)";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–23)",
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de ictus a 7 días",
+          interpretation: score <= 3 ? "Riesgo bajo: estudio ambulatorio urgente en las primeras 48 h con neuroimagen, estudio vascular, ECG y ecocardiograma según protocolo." : score <= 8 ? "Riesgo intermedio: valoración rápida; algunos centros ingresan para estudio si no hay unidad ambulatorio urgente." : "Riesgo alto: ingreso hospitalario para estudio completo y tratamiento antiagregante precoz.",
+          level: score <= 3 ? "ok" : score <= 8 ? "warn" : "danger"
+        };
+      },
+      notes: ["Todos los pacientes con AIT deben iniciar antiagregación (AAS o clopidogrel) y prevención secundaria intensiva."],
+      references: [
+        "Perry JJ, et al. A prospective cohort study of patients with transient ischemic attack to identify high-risk clinical characteristics. Stroke. 2014;45(1):92-100."
+      ]
+    },
+    {
+      id: "peptido-c",
+      name: "Cociente péptido C / glucosa",
+      shortName: "Péptido C / glucosa",
+      description: "Evalúa la función residual de las células beta pancreáticas; útil para diferenciar diabetes tipo 1 de tipo 2.",
+      category: CAT_DIABETES,
+      specialty: FAM,
+      inputs: [
+        { id: "peptido", type: "number", label: "Péptido C sérico", unit: "ng/mL", min: 0, max: 20, step: 0.01 },
+        { id: "glucemia", type: "number", label: "Glucemia simultánea", unit: "mg/dL", min: 30, max: 800, step: 1 }
+      ],
+      compute: (v) => {
+        const glucoseMmol = v.glucemia / 18;
+        const peptidoNmol = v.peptido * 0.331;
+        const cociente = peptidoNmol / glucoseMmol;
+        return {
+          main: fmt(cociente, 3),
+          mainUnit: "nmol/mmol",
+          interpretation: cociente < 0.2 ? "Función beta muy reducida (< 0,2): compatible con diabetes tipo 1 o insulinodependencia establecida." : cociente < 0.6 ? "Función beta intermedia (0,2–0,6): posible LADA o diabetes tipo 2 avanzada." : "Función beta preservada (≥ 0,6): sugiere diabetes tipo 2, MODY o alteración de la sensibilidad a la insulina.",
+          level: cociente < 0.2 ? "danger" : cociente < 0.6 ? "warn" : "ok",
+          details: ["Conversión: péptido C 1 ng/mL ≈ 0,331 nmol/L; glucemia 1 mmol/L = 18 mg/dL."]
+        };
+      },
+      notes: ["Ideal en muestra postprandial o tras estímulo con comida mixta; los valores en ayunas pueden infraestimar la reserva beta."],
+      references: [
+        "Jones AG, Hattersley AT. The clinical utility of C-peptide measurement in the care of patients with diabetes. Diabet Med. 2013;30(7):803-17."
+      ]
+    },
+    {
+      id: "delta-p",
+      name: "Puntuación DELTA-P para Lambert-Eaton",
+      shortName: "DELTA-P",
+      description: "Estima el riesgo de cáncer de pulmón microcítico en pacientes con síndrome miasténico de Lambert-Eaton.",
+      category: CAT_HEMATO,
+      specialty: FAM,
+      inputs: [
+        { id: "perdidaPeso", type: "boolean", label: "Pérdida de peso reciente" },
+        { id: "edad", type: "boolean", label: "Edad ≥ 50 años al inicio de los síntomas" },
+        { id: "tabaco", type: "boolean", label: "Tabaquismo (activo o significativo previo)" },
+        { id: "disfuncion", type: "boolean", label: "Disfunción bulbar" },
+        { id: "ereccion", type: "boolean", label: "Disfunción eréctil (en varones)" },
+        { id: "karnofsky", type: "boolean", label: "Karnofsky < 70 al inicio" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["perdidaPeso", "edad", "tabaco", "disfuncion", "ereccion", "karnofsky"]);
+        const riesgo2 = ["2,6 %", "4,7 %", "8,3 %", "18,2 %", "46,1 %", "83,9 %", "96,6 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–6)",
+          secondary: riesgo2,
+          secondaryLabel: "probabilidad de carcinoma microcítico",
+          interpretation: score <= 1 ? "Riesgo bajo: seguimiento habitual con tomografía de tórax." : score <= 3 ? "Riesgo intermedio: intensificar el cribado (TC y PET-TC)." : "Riesgo alto: cribado oncológico intensivo (PET-TC) y repetir en 3–6 meses si es negativo.",
+          level: score <= 1 ? "ok" : score <= 3 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Titulaer MJ, et al. Screening for tumours in paraneoplastic syndromes: report of an EFNS task force. Eur J Neurol. 2011;18(1):19-e3."
+      ]
+    }
+  ];
+
+  // inurse-m2/src/calculators/cardiotoracica.ts
+  var CAT_CT = "Cirugía cardiotorácica y perioperatorio";
+  var CAT_TEV2 = "Tromboembolismo venoso";
+  var CAT_PLE = "Enfermedad pleural";
+  var CAT_ECMO = "Soporte extracorpóreo";
+  var CAT_AORTA = "Aorta y grandes vasos";
+  var CT = ["Cirugía Cardiotorácica"];
+  var escala9 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
+  var cardiotoracica = [
+    {
+      id: "caprini",
+      name: "Puntuación Caprini para riesgo de TEV en el paciente quirúrgico",
+      shortName: "Caprini",
+      description: "Estratifica el riesgo de tromboembolismo venoso y orienta la profilaxis en pacientes quirúrgicos.",
+      category: CAT_TEV2,
+      specialty: CT,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "< 41 años", value: 0 },
+            { label: "41–60 años", value: 1 },
+            { label: "61–74 años", value: 2 },
+            { label: "≥ 75 años", value: 3 }
+          ]
+        },
+        {
+          id: "cirugia",
+          type: "select",
+          label: "Tipo de cirugía",
+          options: [
+            { label: "Menor (< 45 min)", value: 1 },
+            { label: "Laparoscópica (> 45 min)", value: 2 },
+            { label: "Mayor abierta o electiva de artroplastia (> 45 min)", value: 2.0001 },
+            { label: "Ninguna cirugía", value: 0 }
+          ]
+        },
+        { id: "imc", type: "boolean", label: "IMC > 25 kg/m²" },
+        { id: "edema", type: "boolean", label: "Edema en miembros inferiores" },
+        { id: "varices", type: "boolean", label: "Varices" },
+        { id: "sepsis", type: "boolean", label: "Sepsis (en el último mes)" },
+        { id: "pulmonar", type: "boolean", label: "Enfermedad pulmonar grave (neumonía < 1 mes)" },
+        { id: "epoc", type: "boolean", label: "Función pulmonar anormal (EPOC)" },
+        { id: "iam", type: "boolean", label: "Infarto de miocardio (agudo)" },
+        { id: "iccPuntos", type: "boolean", label: "Insuficiencia cardíaca congestiva" },
+        { id: "confinamiento", type: "boolean", label: "Confinamiento en cama > 72 h" },
+        { id: "yeso", type: "boolean", label: "Inmovilización con yeso" },
+        { id: "catetercentral", type: "boolean", label: "Acceso venoso central" },
+        { id: "anticonceptivos", type: "boolean", label: "Anticonceptivos orales o terapia hormonal" },
+        { id: "embarazoPuerperio", type: "boolean", label: "Embarazo o puerperio (< 1 mes)" },
+        { id: "historia", type: "boolean", label: "Antecedente de abortos de repetición o pérdidas fetales" },
+        { id: "edadAvanzada", type: "boolean", label: "Edad > 75 años" },
+        { id: "artroplastia", type: "boolean", label: "Artroplastia de cadera o rodilla", points: 5 },
+        { id: "fracturaGrande", type: "boolean", label: "Fractura de cadera, pelvis o pierna en < 1 mes", points: 5 },
+        { id: "ictusRec", type: "boolean", label: "Ictus en el último mes", points: 5 },
+        { id: "medular", type: "boolean", label: "Lesión medular aguda (parálisis) en el último mes", points: 5 },
+        { id: "multiTrauma", type: "boolean", label: "Politraumatismo en el último mes", points: 5 },
+        { id: "tevPrevio", type: "boolean", label: "Antecedente personal de TVP o EP", points: 3 },
+        { id: "familiarTev", type: "boolean", label: "Antecedente familiar de TEV", points: 3 },
+        { id: "trombofilia", type: "boolean", label: "Trombofilia (factor V Leiden, protrombina, anticardiolipina...)", points: 3 },
+        { id: "trombopeniaHIT", type: "boolean", label: "Trombopenia inducida por heparina previa", points: 3 },
+        { id: "cancer", type: "boolean", label: "Neoplasia activa o previa", points: 2 }
+      ],
+      compute: (v) => {
+        const score = Math.round(
+          sum(v, [
+            "edad",
+            "cirugia",
+            "imc",
+            "edema",
+            "varices",
+            "sepsis",
+            "pulmonar",
+            "epoc",
+            "iam",
+            "iccPuntos",
+            "confinamiento",
+            "yeso",
+            "catetercentral",
+            "anticonceptivos",
+            "embarazoPuerperio",
+            "historia",
+            "edadAvanzada",
+            "artroplastia",
+            "fracturaGrande",
+            "ictusRec",
+            "medular",
+            "multiTrauma",
+            "tevPrevio",
+            "familiarTev",
+            "trombofilia",
+            "trombopeniaHIT",
+            "cancer"
+          ])
+        );
+        const banda = score === 0 ? "muy bajo" : score <= 1 ? "bajo" : score <= 4 ? "moderado" : "alto";
+        const rec = banda === "muy bajo" ? "Deambulación temprana; sin profilaxis específica." : banda === "bajo" ? "Medidas mecánicas (compresión neumática intermitente)." : banda === "moderado" ? "Profilaxis farmacológica (HBPM o heparina no fraccionada) o mecánica si contraindicación." : "Profilaxis farmacológica y mecánica combinadas; prolongar hasta 30 días en cirugía oncológica abdominopélvica.";
+        return {
+          main: String(score),
+          mainUnit: "puntos",
+          secondary: `Riesgo ${banda}`,
+          interpretation: rec,
+          level: banda === "muy bajo" || banda === "bajo" ? "ok" : banda === "moderado" ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Caprini JA. Thrombosis risk assessment as a guide to quality patient care. Dis Mon. 2005;51(2-3):70-8.",
+        "Gould MK, et al. Prevention of VTE in Nonorthopedic Surgical Patients (ACCP CHEST 2012). Chest. 2012;141(2 Suppl):e227S-e277S."
+      ]
+    },
+    {
+      id: "add-rs",
+      name: "ADD-RS (Aortic Dissection Detection Risk Score)",
+      shortName: "ADD-RS",
+      description: "Estratifica la probabilidad clínica de disección aórtica aguda.",
+      category: CAT_AORTA,
+      specialty: CT,
+      inputs: [
+        {
+          id: "marfan",
+          type: "boolean",
+          label: "Condiciones predisponentes",
+          description: "Marfan u otra enfermedad del tejido conectivo, antecedente familiar de aneurisma/disección aórtica, valvulopatía aórtica, manipulación aórtica reciente, aneurisma aórtico torácico conocido."
+        },
+        {
+          id: "dolor",
+          type: "boolean",
+          label: "Características del dolor",
+          description: "Dolor de aparición súbita, intenso, o descrito como desgarrador/lacerante en tórax, espalda o abdomen."
+        },
+        {
+          id: "examen",
+          type: "boolean",
+          label: "Hallazgos en la exploración",
+          description: "Déficit de pulsos, asimetría de tensiones sistólicas > 20 mmHg, déficit neurológico focal con dolor o soplo diastólico de nueva aparición con dolor y/o hipotensión/shock."
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["marfan", "dolor", "examen"]);
+        const banda = score === 0 ? "muy bajo" : score === 1 ? "bajo" : "alto";
+        return {
+          main: String(score),
+          mainUnit: "de 3 categorías",
+          secondary: `Riesgo ${banda}`,
+          interpretation: score === 0 ? "Riesgo muy bajo: si D-dímero < 500 ng/mL, la disección aórtica queda razonablemente descartada." : score === 1 ? "Riesgo bajo-intermedio: combinar con D-dímero para descartar; si es positivo o dudoso, angio-TC." : "Riesgo alto (≥ 2 categorías): angio-TC toracoabdominal urgente.",
+          level: score === 0 ? "ok" : score === 1 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Rogers AM, et al. Sensitivity of the aortic dissection detection risk score, a novel guideline-based tool. Circulation. 2011;123(20):2213-8."
+      ]
+    },
+    {
+      id: "acef2",
+      name: "Puntuación ACEF II para cirugía cardíaca",
+      shortName: "ACEF II",
+      description: "Predice la mortalidad a 30 días tras cirugía cardíaca electiva o urgente.",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        { id: "edad", type: "number", label: "Edad", unit: "años", min: 18, max: 100 },
+        { id: "fevi", type: "number", label: "Fracción de eyección del VI", unit: "%", min: 10, max: 80, step: 1 },
+        { id: "creatinina", type: "number", label: "Creatinina sérica", unit: "mg/dL", min: 0.3, max: 15, step: 0.01 },
+        { id: "urgente", type: "boolean", label: "Cirugía de urgencia" },
+        { id: "anemia", type: "boolean", label: "Hematocrito < 36 %" }
+      ],
+      compute: (v) => {
+        const base = v.edad / v.fevi + (v.creatinina > 2 ? 2 : 0) + (v.urgente === 1 ? 3 : 0) + (v.anemia === 1 ? 0.2 * (36 - Math.max(20, 36 - 10)) : 0);
+        const banda = base < 1 ? "bajo" : base < 2 ? "intermedio" : "alto";
+        const mort = base < 1 ? "< 1 %" : base < 2 ? "≈ 3 %" : "≥ 8 %";
+        return {
+          main: fmt(base, 2),
+          mainUnit: "puntos ACEF II",
+          secondary: mort,
+          secondaryLabel: "mortalidad a 30 días",
+          interpretation: `Riesgo ${banda} de mortalidad tras la cirugía cardíaca.`,
+          level: banda === "bajo" ? "ok" : banda === "intermedio" ? "warn" : "danger",
+          details: [
+            "Fórmula ACEF II = edad/FEVI + 2 (si creatinina > 2 mg/dL) + 3 (si urgencia) + 0,2 × (36 − hematocrito) si Hto < 36 %.",
+            "Como no pedimos el hematocrito exacto, la penalización por anemia se calcula solo por presencia/ausencia como aproximación (compruebe el valor real para casos límite)."
+          ]
+        };
+      },
+      references: [
+        "Ranucci M, et al. The multicenter external validation of ACEF II. J Thorac Cardiovasc Surg. 2018;155(4):1461-9."
+      ]
+    },
+    {
+      id: "aub-has2",
+      name: "AUB-HAS2 — Riesgo cardiovascular perioperatorio no cardíaco",
+      shortName: "AUB-HAS2",
+      description: "Estratifica el riesgo cardiovascular perioperatorio en cirugía no cardíaca (alternativa simplificada a RCRI).",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        { id: "hta", type: "boolean", label: "Historia de hipertensión (H)" },
+        { id: "angina", type: "boolean", label: "Historia de angina (A)" },
+        { id: "edad", type: "boolean", label: "Edad ≥ 75 años (A)" },
+        { id: "sintomas", type: "boolean", label: "Síntomas de insuficiencia cardíaca o disnea (S)" },
+        { id: "quirurgico", type: "boolean", label: "Tipo de cirugía de alto riesgo (S)" }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["hta", "angina", "edad", "sintomas", "quirurgico"]);
+        const eventos = ["0,3 %", "0,3 %", "1,5 %", "4,4 %", "8 %", "13 %"][score];
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–5)",
+          secondary: eventos,
+          secondaryLabel: "eventos cardiovasculares graves a 30 días",
+          interpretation: score <= 1 ? "Riesgo bajo." : score <= 2 ? "Riesgo intermedio: optimización preoperatoria y vigilancia postoperatoria." : "Riesgo alto: consulta cardiológica preoperatoria y considerar monitorización de troponina postoperatoria.",
+          level: score <= 1 ? "ok" : score <= 2 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Dakik HA, et al. AUB-HAS2 Cardiovascular Risk Index: Performance in Surgical Subpopulations and Comparison to the Revised Cardiac Risk Index. J Am Heart Assoc. 2019;8(9):e011477."
+      ]
+    },
+    {
+      id: "euromacs-rhf",
+      name: "EUROMACS-RHF — Riesgo de insuficiencia cardíaca derecha tras LVAD",
+      shortName: "EUROMACS-RHF",
+      description: "Estima el riesgo de fallo del ventrículo derecho tras el implante de un dispositivo de asistencia ventricular izquierda.",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        { id: "intermacs", type: "boolean", label: "Perfil INTERMACS 1–3", points: 2 },
+        { id: "multiInotrop", type: "boolean", label: "Uso de ≥ 3 inotrópicos preoperatorios", points: 2.5 },
+        { id: "gradiente", type: "boolean", label: "RA/PCWP > 0,54", points: 2 },
+        { id: "hemoglobina", type: "boolean", label: "Hemoglobina ≤ 10 g/dL", points: 1 },
+        { id: "disfuncionVD", type: "boolean", label: "Disfunción moderada-grave del ventrículo derecho en ecocardiograma", points: 2 }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["intermacs", "multiInotrop", "gradiente", "hemoglobina", "disfuncionVD"]);
+        const riesgo2 = score <= 2 ? "bajo (11 %)" : score <= 4 ? "intermedio (37 %)" : "alto (43–58 %)";
+        return {
+          main: fmt(score, 1),
+          mainUnit: "puntos (0–9,5)",
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de insuficiencia cardíaca derecha post-LVAD",
+          interpretation: score <= 2 ? "Riesgo bajo de insuficiencia cardíaca derecha tras el implante." : score <= 4 ? "Riesgo intermedio: valorar biventricular temporal, vigilancia estrecha." : "Riesgo alto: considerar soporte biventricular o trasplante como estrategia alternativa.",
+          level: score <= 2 ? "ok" : score <= 4 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Soliman OII, et al. Derivation and Validation of a Novel Right-Sided Heart Failure Model After Implantation of Continuous Flow LVADs. Circulation. 2018;137(9):891-906."
+      ]
+    },
+    {
+      id: "thakar",
+      name: "Puntuación de Thakar para lesión renal aguda tras cirugía cardíaca",
+      shortName: "Thakar",
+      description: "Predice el riesgo de insuficiencia renal aguda que requiere diálisis tras cirugía cardíaca.",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        { id: "mujer", type: "boolean", label: "Sexo femenino" },
+        { id: "icc", type: "boolean", label: "Insuficiencia cardíaca congestiva" },
+        { id: "fevi", type: "boolean", label: "FEVI < 35 %" },
+        { id: "biac", type: "boolean", label: "Balón de contrapulsación intraaórtico preoperatorio", points: 2 },
+        { id: "epoc", type: "boolean", label: "EPOC" },
+        { id: "diabetesInsul", type: "boolean", label: "Diabetes en tratamiento con insulina" },
+        { id: "cardiacaPrevia", type: "boolean", label: "Cirugía cardíaca previa" },
+        { id: "urgencia", type: "boolean", label: "Cirugía urgente", points: 2 },
+        {
+          id: "tipo",
+          type: "select",
+          label: "Tipo de cirugía",
+          options: [
+            { label: "Solo revascularización coronaria", value: 0 },
+            { label: "Solo valvular", value: 1 },
+            { label: "Combinada (revascularización + valvular u otra)", value: 2 }
+          ]
+        },
+        {
+          id: "creatinina",
+          type: "select",
+          label: "Creatinina preoperatoria (mg/dL)",
+          options: [
+            { label: "< 1,2", value: 0 },
+            { label: "1,2–2,1", value: 2 },
+            { label: "> 2,1", value: 5 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["mujer", "icc", "fevi", "biac", "epoc", "diabetesInsul", "cardiacaPrevia", "urgencia", "tipo", "creatinina"]);
+        const riesgo2 = score <= 2 ? "0,5 %" : score <= 5 ? "1,8 %" : score <= 8 ? "7,7 %" : "21 %";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–17)",
+          secondary: riesgo2,
+          secondaryLabel: "riesgo de diálisis post-cirugía",
+          interpretation: score <= 2 ? "Riesgo bajo." : score <= 5 ? "Riesgo intermedio." : score <= 8 ? "Riesgo alto." : "Riesgo muy alto: intensificar profilaxis renal (evitar nefrotóxicos, mantener perfusión, ajustar contraste, valoración por nefrología).",
+          level: score <= 2 ? "ok" : score <= 5 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Thakar CV, et al. A clinical score to predict acute renal failure after cardiac surgery. J Am Soc Nephrol. 2005;16(1):162-8."
+      ]
+    },
+    {
+      id: "lent",
+      name: "Puntuación LENT para derrame pleural maligno",
+      shortName: "LENT",
+      description: "Estima la supervivencia en pacientes con derrame pleural maligno.",
+      category: CAT_PLE,
+      specialty: CT,
+      inputs: [
+        {
+          id: "ldh",
+          type: "select",
+          label: "LDH del líquido pleural",
+          options: [
+            { label: "< 1.500 U/L", value: 0 },
+            { label: "≥ 1.500 U/L", value: 1 }
+          ]
+        },
+        {
+          id: "ecog",
+          type: "select",
+          label: "ECOG performance status",
+          options: [
+            { label: "0", value: 0 },
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3–4", value: 3 }
+          ]
+        },
+        {
+          id: "nlr",
+          type: "select",
+          label: "Cociente neutrófilos/linfocitos",
+          options: [
+            { label: "< 9", value: 0 },
+            { label: "≥ 9", value: 1 }
+          ]
+        },
+        {
+          id: "tumor",
+          type: "select",
+          label: "Tipo de tumor",
+          dropdown: true,
+          options: [
+            { label: "Mesotelioma / hematológico", value: 0 },
+            { label: "Mama / ginecológico / renal", value: 1 },
+            { label: "Pulmón / otros", value: 2 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["ldh", "ecog", "nlr", "tumor"]);
+        const riesgo2 = score <= 1 ? "bajo" : score <= 4 ? "moderado" : "alto";
+        const superv = score <= 1 ? "319 días" : score <= 4 ? "130 días" : "44 días";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–7)",
+          secondary: superv,
+          secondaryLabel: "mediana de supervivencia",
+          interpretation: `Riesgo ${riesgo2} de mortalidad. Ayuda a decidir entre pleurodesis o catéter pleural tunelizado.`,
+          level: riesgo2 === "bajo" ? "ok" : riesgo2 === "moderado" ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Clive AO, et al. Predicting survival in malignant pleural effusion: development and validation of the LENT prognostic score. Thorax. 2014;69(12):1098-104."
+      ]
+    },
+    {
+      id: "rapid-pleural",
+      name: "Puntuación RAPID para infección pleural",
+      shortName: "RAPID (pleural)",
+      description: "Estima la mortalidad a 3 meses en pacientes con infección pleural.",
+      category: CAT_PLE,
+      specialty: CT,
+      inputs: [
+        {
+          id: "urea",
+          type: "select",
+          label: "Urea sérica (BUN)",
+          options: [
+            { label: "< 14 mg/dL", value: 0 },
+            { label: "14–22 mg/dL", value: 1 },
+            { label: "> 22 mg/dL", value: 2 }
+          ]
+        },
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          options: [
+            { label: "< 50 años", value: 0 },
+            { label: "50–70 años", value: 1 },
+            { label: "> 70 años", value: 2 }
+          ]
+        },
+        {
+          id: "pus",
+          type: "select",
+          label: "Aspecto del líquido pleural",
+          options: [
+            { label: "No purulento", value: 0 },
+            { label: "Purulento", value: 1 }
+          ]
+        },
+        {
+          id: "infeccion",
+          type: "select",
+          label: "Origen de la infección",
+          options: [
+            { label: "Comunitario", value: 0 },
+            { label: "Nosocomial", value: 1 }
+          ]
+        },
+        {
+          id: "albumina",
+          type: "select",
+          label: "Albúmina sérica",
+          options: [
+            { label: "≥ 2,7 g/dL", value: 0 },
+            { label: "< 2,7 g/dL", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["urea", "edad", "pus", "infeccion", "albumina"]);
+        const banda = score <= 2 ? "bajo (< 5 %)" : score <= 4 ? "intermedio (17 %)" : "alto (48 %)";
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–7)",
+          secondary: banda,
+          secondaryLabel: "mortalidad a 3 meses",
+          interpretation: score <= 2 ? "Riesgo bajo: buen pronóstico con tratamiento convencional (drenaje + antibioterapia)." : score <= 4 ? "Riesgo intermedio: vigilancia estrecha; considerar activación de vía quirúrgica temprana." : "Riesgo alto: mortalidad significativa; valoración por cirugía torácica precoz y cuidados intermedios.",
+          level: score <= 2 ? "ok" : score <= 4 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Rahman NM, et al. A clinical score (RAPID) to identify those at risk for poor outcome at presentation with pleural infection. Chest. 2014;145(4):848-55."
+      ]
+    },
+    {
+      id: "save",
+      name: "Puntuación SAVE para supervivencia tras ECMO venoarterial",
+      shortName: "SAVE",
+      description: "Predice la supervivencia intrahospitalaria en adultos con shock cardiogénico refractario tratados con ECMO VA.",
+      category: CAT_ECMO,
+      specialty: CT,
+      inputs: [
+        {
+          id: "diagnostico",
+          type: "select",
+          label: "Grupo diagnóstico",
+          dropdown: true,
+          options: [
+            { label: "Miocarditis", value: 3 },
+            { label: "Rechazo de trasplante refractario", value: 3.0001 },
+            { label: "FV/TV refractaria", value: 2 },
+            { label: "Post-trasplante cardíaco / pulmonar", value: 3.0002 },
+            { label: "Miocardiopatía congénita", value: -3 },
+            { label: "Otros", value: 0 }
+          ]
+        },
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          dropdown: true,
+          options: [
+            { label: "18–38", value: 7 },
+            { label: "39–52", value: 4 },
+            { label: "53–62", value: 3 },
+            { label: "≥ 63", value: 0 }
+          ]
+        },
+        {
+          id: "peso",
+          type: "select",
+          label: "Peso",
+          options: [
+            { label: "≤ 65 kg", value: 1 },
+            { label: "65–89 kg", value: 2 },
+            { label: "> 89 kg", value: 0 }
+          ]
+        },
+        {
+          id: "organos",
+          type: "select",
+          label: "Fallo orgánico agudo previo a la ECMO",
+          options: [
+            { label: "Renal (creatinina > 1,5 o diálisis)", value: -3 },
+            { label: "Hepático (bilirrubina > 2 o transaminasas > 70)", value: -3.0001 },
+            { label: "Neurológico", value: -3.0002 },
+            { label: "Sin fallo orgánico", value: 0 }
+          ]
+        },
+        { id: "ventilacion", type: "boolean", label: "Ventilación mecánica > 10 días", points: -1 },
+        { id: "presionInspiratoria", type: "boolean", label: "Presión inspiratoria pico ≥ 20 cmH₂O", points: -3 },
+        { id: "pcr", type: "boolean", label: "Parada cardíaca antes de la ECMO", points: -2 },
+        { id: "pas", type: "boolean", label: "PA sistólica ≤ 90 mmHg pre-ECMO", points: -2 },
+        { id: "ph", type: "boolean", label: "pH < 7,25 pre-ECMO", points: -3 }
+      ],
+      compute: (v) => {
+        const score = Math.round(
+          sum(v, ["diagnostico", "edad", "peso", "organos", "ventilacion", "presionInspiratoria", "pcr", "pas", "ph"]) + 6
+        );
+        const banda = score > 5 ? "I (75 %)" : score >= 1 ? "II (58 %)" : score >= -4 ? "III (42 %)" : score >= -9 ? "IV (30 %)" : "V (18 %)";
+        return {
+          main: String(score),
+          mainUnit: "puntos SAVE",
+          secondary: `Clase ${banda}`,
+          secondaryLabel: "supervivencia hospitalaria",
+          interpretation: "Herramienta de apoyo para decidir sobre la indicación de ECMO VA y las expectativas realistas. La decisión final integra el juicio clínico y la disponibilidad de recursos.",
+          level: score >= 1 ? "ok" : score >= -4 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Schmidt M, et al. Predicting survival after ECMO for refractory cardiogenic shock: the SAVE-score. Eur Heart J. 2015;36(33):2246-56."
+      ]
+    },
+    {
+      id: "resp",
+      name: "Puntuación RESP para supervivencia tras ECMO respiratoria",
+      shortName: "RESP",
+      description: "Predice la supervivencia hospitalaria en pacientes con insuficiencia respiratoria aguda tratados con ECMO.",
+      category: CAT_ECMO,
+      specialty: CT,
+      inputs: [
+        {
+          id: "edad",
+          type: "select",
+          label: "Edad",
+          dropdown: true,
+          options: [
+            { label: "18–49 años", value: 0 },
+            { label: "50–59 años", value: -2 },
+            { label: "≥ 60 años", value: -3 }
+          ]
+        },
+        {
+          id: "inmunocomp",
+          type: "select",
+          label: "Inmunodepresión",
+          options: [
+            { label: "No", value: 0 },
+            { label: "Sí (tumor sólido, hematológico, cirrosis, VIH…)", value: -2 }
+          ]
+        },
+        {
+          id: "ventilacion",
+          type: "select",
+          label: "Duración de la ventilación mecánica antes de la ECMO",
+          dropdown: true,
+          options: [
+            { label: "< 48 h", value: 3 },
+            { label: "48 h – 7 días", value: 1 },
+            { label: "> 7 días", value: 0 }
+          ]
+        },
+        {
+          id: "diagnostico",
+          type: "select",
+          label: "Diagnóstico agudo",
+          dropdown: true,
+          options: [
+            { label: "Neumonía viral", value: 3 },
+            { label: "Neumonía bacteriana", value: 3.0001 },
+            { label: "Asma", value: 11 },
+            { label: "Traumatismo o quemadura", value: 3.0002 },
+            { label: "Aspiración", value: 5 },
+            { label: "Otras causas", value: 1 }
+          ]
+        },
+        { id: "snc", type: "boolean", label: "Disfunción del sistema nervioso central", points: -7 },
+        { id: "infeccion", type: "boolean", label: "Infección bacteriana aguda no pulmonar", points: -3 },
+        { id: "bnm", type: "boolean", label: "Uso de bloqueantes neuromusculares" },
+        { id: "no", type: "boolean", label: "Uso de óxido nítrico inhalado", points: -1 },
+        { id: "bicarbonato", type: "boolean", label: "Uso de bicarbonato", points: -2 },
+        { id: "pcr", type: "boolean", label: "Parada cardíaca previa a la ECMO", points: -2 },
+        {
+          id: "paco2",
+          type: "select",
+          label: "PaCO₂",
+          options: [
+            { label: "< 75 mmHg", value: 0 },
+            { label: "≥ 75 mmHg", value: -1 }
+          ]
+        },
+        {
+          id: "presion",
+          type: "select",
+          label: "Presión pico inspiratoria",
+          options: [
+            { label: "< 42 cmH₂O", value: 0 },
+            { label: "≥ 42 cmH₂O", value: -1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const score = Math.round(sum(v, ["edad", "inmunocomp", "ventilacion", "diagnostico", "snc", "infeccion", "bnm", "no", "bicarbonato", "pcr", "paco2", "presion"]));
+        const banda = score >= 6 ? "I (92 %)" : score >= 3 ? "II (76 %)" : score >= -1 ? "III (57 %)" : score >= -5 ? "IV (33 %)" : "V (18 %)";
+        return {
+          main: String(score),
+          mainUnit: "puntos RESP",
+          secondary: `Clase ${banda}`,
+          secondaryLabel: "supervivencia hospitalaria",
+          interpretation: "Herramienta de apoyo para decidir sobre la indicación de ECMO respiratoria y anticipar expectativas.",
+          level: score >= 3 ? "ok" : score >= -1 ? "warn" : "danger"
+        };
+      },
+      references: [
+        "Schmidt M, et al. Predicting survival after ECMO for severe acute respiratory failure. The Respiratory ECMO Survival Prediction (RESP) score. Am J Respir Crit Care Med. 2014;189(11):1374-82."
+      ]
+    },
+    {
+      id: "pons",
+      name: "PONS — Perioperative Nutrition Screen",
+      shortName: "PONS",
+      description: "Cribado nutricional preoperatorio en cirugía electiva; identifica pacientes que se beneficiarán de optimización nutricional.",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        {
+          id: "imc",
+          type: "boolean",
+          label: "IMC < 18,5 (o < 20 si ≥ 65 años)"
+        },
+        {
+          id: "perdida",
+          type: "boolean",
+          label: "Pérdida de peso no intencionada > 10 % en 6 meses"
+        },
+        {
+          id: "ingesta",
+          type: "boolean",
+          label: "Ingesta oral reducida en la última semana"
+        },
+        {
+          id: "albumina",
+          type: "boolean",
+          label: "Albúmina preoperatoria < 3,0 g/dL"
+        }
+      ],
+      compute: (v) => {
+        const score = sum(v, ["imc", "perdida", "ingesta", "albumina"]);
+        return {
+          main: String(score),
+          mainUnit: "criterios (0–4)",
+          interpretation: score === 0 ? "Riesgo nutricional bajo: no requiere intervención específica preoperatoria." : "Al menos un criterio positivo: derivar a nutrición para optimización preoperatoria (suplementos orales, retraso de cirugía electiva si es posible 7–14 días).",
+          level: score === 0 ? "ok" : "warn"
+        };
+      },
+      references: [
+        "Wischmeyer PE, et al. American Society for Enhanced Recovery and Perioperative Quality Initiative Joint Consensus Statement on Nutrition Screening. Anesth Analg. 2018;126(6):1883-95."
+      ]
+    },
+    {
+      id: "bridge-anticoagulacion",
+      name: "Algoritmo de puentes de anticoagulación perioperatoria",
+      shortName: "Puente anticoagulación",
+      description: "Orienta la necesidad de puente con HBPM durante la suspensión perioperatoria de la anticoagulación oral.",
+      category: CAT_CT,
+      specialty: CT,
+      inputs: [
+        {
+          id: "indicacion",
+          type: "select",
+          label: "Motivo de la anticoagulación",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "Prótesis valvular mecánica", value: 1 },
+            { label: "Fibrilación auricular", value: 2 },
+            { label: "Tromboembolismo venoso", value: 3 }
+          ],
+          default: 2
+        },
+        {
+          id: "riesgo",
+          type: "select",
+          label: "Riesgo tromboembólico específico",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { label: "Alto — prótesis mitral, prótesis aórtica antigua, CHA₂DS₂-VASc ≥ 7, ictus/AIT en los últimos 3 meses, TEV en los últimos 3 meses, trombofilia grave", value: "alto" },
+            { label: "Intermedio — prótesis aórtica bicúspide moderna con factores de riesgo, CHA₂DS₂-VASc 5–6, TEV en los últimos 3–12 meses, trombofilia leve o TEV recurrente", value: "intermedio" },
+            { label: "Bajo — prótesis aórtica bicúspide moderna sin factores, CHA₂DS₂-VASc 1–4 sin ictus previo, TEV único > 12 meses", value: "bajo" }
+          ],
+          default: "intermedio"
+        },
+        {
+          id: "sangrado",
+          type: "select",
+          label: "Riesgo hemorrágico del procedimiento",
+          noPoints: true,
+          options: [
+            { label: "Bajo (cataratas, endoscopia diagnóstica, extracción dental)", value: "bajo" },
+            { label: "Intermedio (mayoría de cirugías generales)", value: "intermedio" },
+            { label: "Alto (neurocirugía, cardíaca mayor, resecciones oncológicas)", value: "alto" }
+          ],
+          default: "intermedio"
+        }
+      ],
+      compute: (v) => {
+        const r = v.riesgo;
+        const s = v.sangrado;
+        const puente = r === "alto" || r === "intermedio" && s !== "alto";
+        const guiaAcod = r === "alto" ? "Alto riesgo tromboembólico: se recomienda puente con HBPM a dosis terapéutica." : r === "intermedio" ? "Riesgo intermedio: valorar puente individualizando; en fibrilación auricular sin ictus previo el ensayo BRIDGE mostró que la mayoría no se benefician." : "Riesgo bajo: en general no se recomienda puente.";
+        return {
+          main: puente ? "Puente indicado" : "Puente no recomendado",
+          interpretation: `${guiaAcod} ${s === "alto" ? "Sangrado alto: reanudar anticoagulación a las 48–72 h; en pacientes con riesgo tromboembólico muy alto, priorizar el control de la hemorragia." : s === "intermedio" ? "Sangrado intermedio: reanudar anticoagulación en 24 h si hemostasia adecuada." : "Sangrado bajo: puede no ser necesario suspender la anticoagulación (procedimientos menores)."}`,
+          level: puente ? "warn" : "ok",
+          details: [
+            "En pacientes con anticoagulantes orales directos, en general NO se hace puente: se suspenden 24–48 h antes según función renal.",
+            "La warfarina se suspende 5 días antes; el INR debe ser < 1,5 el día de la cirugía.",
+            "Reanudar la HBPM 24 h después de la cirugía de bajo-intermedio riesgo o 48–72 h si el riesgo hemorrágico es alto."
+          ]
+        };
+      },
+      notes: [
+        "El ensayo BRIDGE (NEJM 2015) demostró que no hacer puente en fibrilación auricular sin ictus previo es no inferior en tromboembolismo y reduce las hemorragias."
+      ],
+      references: [
+        "Douketis JD, et al. Perioperative Management of Antithrombotic Therapy: An American College of Chest Physicians Clinical Practice Guideline. Chest. 2022;162(5):e207-e243."
+      ]
+    },
+    {
+      id: "duke-iscvid-2023",
+      name: "Criterios Duke-ISCVID 2023 para endocarditis infecciosa",
+      shortName: "Duke-ISCVID 2023",
+      description: "Criterios diagnósticos actualizados de endocarditis infecciosa (Sociedad Internacional de ISCVID, 2023).",
+      category: "Criterios diagnósticos",
+      specialty: CT,
+      inputs: [
+        {
+          id: "mayores",
+          type: "select",
+          label: "Criterios mayores presentes",
+          dropdown: true,
+          options: escala9([
+            [0, "0"],
+            [1, "1"],
+            [2, "2"]
+          ])
+        },
+        {
+          id: "menores",
+          type: "select",
+          label: "Criterios menores presentes",
+          dropdown: true,
+          options: escala9([
+            [0, "0"],
+            [1, "1"],
+            [2, "2"],
+            [3, "3"],
+            [4, "4"],
+            [5, "5"]
+          ])
+        },
+        { id: "confirmadaAP", type: "boolean", label: "Endocarditis confirmada por anatomía patológica o cultivo de válvula/vegetación", noPoints: true }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        if (v.confirmadaAP === 1)
+          return {
+            main: "Endocarditis definitiva",
+            interpretation: "Criterio anatomopatológico: la demostración de microorganismos o inflamación activa en válvula o vegetación establece el diagnóstico definitivo.",
+            level: "danger"
+          };
+        const mayor = (_a = v.mayores) != null ? _a : 0;
+        const menor = (_b = v.menores) != null ? _b : 0;
+        let categoria;
+        if (mayor >= 2 || mayor === 1 && menor >= 3 || menor >= 5) categoria = "Definitiva";
+        else if (mayor === 1 && menor >= 1 || menor >= 3) categoria = "Posible";
+        else categoria = "Rechazada";
+        return {
+          main: `Endocarditis ${categoria.toLowerCase()}`,
+          interpretation: categoria === "Definitiva" ? "Diagnóstico definitivo por criterios clínicos: iniciar antibioterapia dirigida y valoración por equipo multidisciplinar de endocarditis." : categoria === "Posible" ? "Diagnóstico posible: completar estudio (hemocultivos seriados, ecocardiograma transesofágico, imagen avanzada: PET-TC en prótesis, angio-TC)." : "Diagnóstico rechazado: buscar diagnósticos alternativos.",
+          level: categoria === "Definitiva" ? "danger" : categoria === "Posible" ? "warn" : "ok",
+          details: [
+            "Los criterios mayores incluyen ahora hemocultivos con nuevos microorganismos típicos, PCR positiva en tejido/serología, y hallazgos en PET-TC.",
+            "Los criterios menores incluyen fenómenos vasculares/inmunológicos, catéter venoso central, drogadicción intravenosa reciente, y hallazgos ecográficos sugestivos."
+          ]
+        };
+      },
+      notes: [
+        "Los criterios ISCVID 2023 amplían y actualizan los Duke modificados clásicos, integrando técnicas de imagen (PET-TC, angio-TC cardíaca) y microbiología molecular."
+      ],
+      references: [
+        "Fowler VG, et al. The 2023 Duke-International Society for Cardiovascular Infectious Diseases Criteria for Infective Endocarditis. Clin Infect Dis. 2023;77(4):518-26."
+      ]
+    }
+  ];
+
+  // inurse-m2/src/calculators/index.ts
   var CATEGORIES = [
     "Gravedad en UCI y sepsis",
     "Neurocrítico e ictus",
@@ -10431,10 +14451,32 @@
     "Función renal y ajuste de dosis",
     "Fluidos, electrolitos e infusiones",
     "Opioides, benzodiacepinas y controlados",
+    "Neonatología y pediatría",
+    "Neurología crítica e ictus",
+    "Urgencias y decisión clínica",
+    "Medicina interna y familiar",
+    "Geriatría, fragilidad y salud mental",
+    "Endocrino, obesidad y diabetes",
+    "Hepato-digestivo y nutrición",
+    "Cirugía cardiotorácica y perioperatorio",
+    "Enfermedad pleural",
+    "Soporte extracorpóreo",
+    "Aorta y grandes vasos",
     "Farmacología y dosificación",
     "Fórmulas y cálculos clínicos"
   ];
-  var SPECIALTIES = ["Anestesiología", "Cardiología", "Medicina Intensiva", "Farmacia"];
+  var SPECIALTIES = [
+    "Anestesiología",
+    "Cardiología",
+    "Medicina Intensiva",
+    "Farmacia",
+    "Pediatría",
+    "Cuidados Críticos Neonatales",
+    "Neurología crítica",
+    "Emergencias",
+    "Medicina Familiar",
+    "Cirugía Cardiotorácica"
+  ];
   var EXTRA_SPECIALTIES = {
     // Anestesiología ↔ Cardiología
     pam: ["Cardiología", "Medicina Intensiva"],
@@ -10533,6 +14575,11 @@
     ...farmacologia,
     ...farmaciaFormulas,
     ...farmaciaOpioides,
+    ...pediatria,
+    ...neuroCritica,
+    ...urgencias,
+    ...medicinaFamilia,
+    ...cardiotoracica,
     ...formulas
   ];
   var CALCULATORS = ALL.map((c) => {
@@ -10540,6 +14587,6 @@
     return extra ? { ...c, specialty: [.../* @__PURE__ */ new Set([...c.specialty, ...extra])] } : c;
   });
 
-  // entry2.ts
+  // entry3.ts
   window.ENFERIX_ESCALAS_DATA = { CATEGORIES, SPECIALTIES, CALCULATORS };
 })();

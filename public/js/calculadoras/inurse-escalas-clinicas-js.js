@@ -76,7 +76,14 @@ var legadoCache=null;
 function escalasLegado(){
   if(legadoCache)return legadoCache;
   if(!calcsGlobal())return [];
-  legadoCache=Object.keys(LEGADO).map(adaptarLegado).filter(Boolean);
+  var cat=window.ENFERIX_ESCALAS_DATA;
+  /* Si el catálogo importado ya trae la escala con el mismo identificador
+     (Barthel y RASS, por ejemplo), se usa esa y no la copia de «Cálculo»:
+     así la sección nunca muestra la misma escala dos veces. */
+  var yaEsta={};
+  if(cat)cat.CALCULATORS.forEach(function(c){yaEsta[c.id]=true;});
+  legadoCache=Object.keys(LEGADO).filter(function(id){return !yaEsta[id];})
+    .map(adaptarLegado).filter(Boolean);
   return legadoCache;
 }
 
@@ -135,7 +142,7 @@ function buildOverlay(){
       // todo <header>, que en tema claro dejaría el texto ilegible.
       '<div class="esc35-head">'+
         '<div class="esc35-mark">📐</div>'+
-        '<div class="esc35-title"><h2>Índices y escalas</h2><p>Anestesiología · Cardiología · Medicina Intensiva</p></div>'+
+        '<div class="esc35-title"><h2>Índices y escalas</h2><p id="esc35Sub">Escalas e índices clínicos con interpretación</p></div>'+
         '<button type="button" id="esc35Home" title="Volver al catálogo">⌂</button>'+
         '<button type="button" id="esc35Close" title="Cerrar">✕</button>'+
       '</div>'+
@@ -199,9 +206,10 @@ function showCatalog(){
     }).join('');
   body.innerHTML=
     '<section class="esc35-hero">'+
-      '<div><span class="esc35-eyebrow">Anestesiología · Cardiología · Medicina Intensiva</span>'+
+      '<div><span class="esc35-eyebrow">'+esc(d.SPECIALTIES.slice(0,3).join(' · '))+
+      (d.SPECIALTIES.length>3?' · +'+(d.SPECIALTIES.length-3)+' más':'')+'</span>'+
       '<h3>Índices y escalas clínicas listos para usar</h3>'+
-      '<p>Gravedad en UCI, neurocrítico, ventilación, riesgo perioperatorio, arritmias, cardiopatía isquémica, tromboembolismo, dolor, infecciones y farmacología. Cada escala muestra su puntuación, el riesgo estimado y la interpretación en vivo.</p></div>'+
+      '<p>Gravedad en UCI, neurocrítico, ventilación, riesgo perioperatorio, arritmias, tromboembolismo, pediatría y neonatología, urgencias, medicina familiar, cirugía cardiotorácica, dolor, infecciones y farmacología. Cada escala muestra su puntuación, el riesgo estimado y la interpretación en vivo.</p></div>'+
       '<div class="esc35-stats"><div><b>'+d.CALCULATORS.length+'</b><span>escalas</span></div><div><b>'+d.SPECIALTIES.length+'</b><span>especialidades</span></div><div><b>100%</b><span>sin conexión</span></div></div>'+
     '</section>'+
     '<div class="esc35-specs" id="esc35Specs">'+specs+'</div>'+
@@ -241,6 +249,11 @@ function showCatalog(){
   renderGroups();
 }
 
+function tarjeta(c){
+  return '<button type="button" class="esc35-card" data-esc35-id="'+esc(c.id)+'">'+
+    '<b>'+esc(c.name)+'</b><small>'+esc(c.description)+'</small></button>';
+}
+
 /* Escalas de la especialidad activa, sin aplicar buscador ni categoría. */
 function bySpecialty(){
   var d=data();
@@ -271,14 +284,31 @@ function renderGroups(){
     var texto=[c.name,c.shortName||'',c.description,c.category,c.id].join(' ');
     return norm(texto).indexOf(q)>=0||(qc&&compact(texto).indexOf(qc)>=0);
   });
+
+  /* Con más de 250 escalas, buscar un nombre concreto tiene que devolverlo
+     primero: al buscar se muestra una lista única ordenada por relevancia,
+     en lugar de la agrupación por categorías. */
+  if(q){
+    var puntuar=function(c){
+      var nombre=norm(c.name+' '+(c.shortName||''));
+      var nc=compact(c.name+' '+(c.shortName||''));
+      if(nombre.indexOf(q)===0||nc.indexOf(qc)===0||norm(c.id).indexOf(q)===0)return 0;
+      if(nombre.indexOf(q)>=0||(qc&&nc.indexOf(qc)>=0))return 1;
+      return 2;
+    };
+    var ordenada=list.map(function(c,i){return {c:c,p:puntuar(c),i:i};})
+      .sort(function(a,b){return a.p-b.p||a.i-b.i;}).map(function(x){return x.c;});
+    document.getElementById('esc35Groups').innerHTML=ordenada.length
+      ? '<section class="esc35-cat"><h4>Resultados <small>'+ordenada.length+'</small></h4>'+
+        '<div class="esc35-grid">'+ordenada.map(tarjeta).join('')+'</div></section>'
+      : '<p class="esc35-empty">No se encontraron escalas para «'+esc(state.query)+'».</p>';
+    return;
+  }
   var html=d.CATEGORIES.map(function(cat){
     var items=list.filter(function(c){return c.category===cat;});
     if(!items.length)return '';
     return '<section class="esc35-cat"><h4>'+esc(cat)+' <small>'+items.length+'</small></h4>'+
-      '<div class="esc35-grid">'+items.map(function(c){
-        return '<button type="button" class="esc35-card" data-esc35-id="'+esc(c.id)+'">'+
-          '<b>'+esc(c.name)+'</b><small>'+esc(c.description)+'</small></button>';
-      }).join('')+'</div></section>';
+      '<div class="esc35-grid">'+items.map(tarjeta).join('')+'</div></section>';
   }).join('');
   document.getElementById('esc35Groups').innerHTML=
     html||'<p class="esc35-empty">No se encontraron escalas para «'+esc(state.query)+'».</p>';
