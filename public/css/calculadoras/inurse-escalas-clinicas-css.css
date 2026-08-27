@@ -63,6 +63,29 @@ body.esc35-lock{overflow:hidden}
 .esc35-stats b{display:block;font-size:19px}
 .esc35-stats span{font-size:11px;color:var(--text-dim)}
 
+/* Estado de carga del catálogo (se carga de forma diferida) */
+.esc35-loading{
+  padding:40px 16px;text-align:center;font-size:13.5px;color:var(--text-dim);
+}
+
+/* Selector de especialidad */
+.esc35-specs{display:flex;gap:8px;flex-wrap:wrap}
+.esc35-spec{
+  display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:12px;
+  font-size:12.5px;font-weight:650;cursor:pointer;font-family:inherit;
+  background:var(--card);border:1px solid var(--border);color:var(--text-dim);
+}
+.esc35-spec i{
+  font-style:normal;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:7px;
+  background:var(--bg2);border:1px solid var(--border);
+}
+.esc35-spec.on{
+  color:var(--text);
+  border-color:color-mix(in srgb,var(--resp) 60%,var(--border));
+  background:color-mix(in srgb,var(--resp) 16%,var(--card-solid));
+}
+.esc35-spec.on i{color:var(--resp);border-color:color-mix(in srgb,var(--resp) 40%,var(--border))}
+
 /* Buscador y filtros */
 .esc35-tools{display:flex;flex-direction:column;gap:10px}
 .esc35-search{
@@ -78,10 +101,12 @@ body.esc35-lock{overflow:hidden}
 }
 .esc35-filters{display:flex;gap:8px;flex-wrap:wrap}
 .esc35-chip{
+  display:inline-flex;align-items:center;gap:6px;
   padding:7px 13px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;
   background:var(--card);border:1px solid var(--border);color:var(--text-dim);
   font-family:inherit;
 }
+.esc35-chip i{font-style:normal;font-size:10px;font-weight:800;opacity:.75}
 .esc35-chip.on{
   color:var(--text);border-color:color-mix(in srgb,var(--ictus) 55%,var(--border));
   background:color-mix(in srgb,var(--ictus) 18%,var(--card-solid));

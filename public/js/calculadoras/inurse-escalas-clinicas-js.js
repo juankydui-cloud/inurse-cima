@@ -10,12 +10,40 @@
 'use strict';
 
 var LEVEL_LABEL={ok:'Bajo',info:'Leve',warn:'Intermedio',danger:'Alto'};
-var state={view:'catalog',calcId:null,values:{},query:'',cat:'all'};
-var overlay=null;
+var DATA_SRC='/data/escalas-clinicas.js';
+var state={view:'catalog',calcId:null,values:{},query:'',cat:'all',spec:'all'};
+var overlay=null,dataPromise=null;
 
-function data(){return window.ENFERIX_ESCALAS_DATA||{CATEGORIES:[],CALCULATORS:[]};}
+function data(){return window.ENFERIX_ESCALAS_DATA||{CATEGORIES:[],SPECIALTIES:[],CALCULATORS:[]};}
+
+/* El catálogo pesa varios cientos de KB: se carga la primera vez que se abre
+   el módulo, para no penalizar el arranque de la aplicación. */
+function ensureData(){
+  if(window.ENFERIX_ESCALAS_DATA)return Promise.resolve();
+  if(dataPromise)return dataPromise;
+  dataPromise=new Promise(function(resolve,reject){
+    var s=document.createElement('script');
+    s.src=DATA_SRC;
+    s.onload=function(){resolve();};
+    s.onerror=function(){dataPromise=null;reject(new Error('No se pudo cargar '+DATA_SRC));};
+    document.head.appendChild(s);
+  });
+  return dataPromise;
+}
 function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
-function norm(s){return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
+/* Varias escalas llevan subíndices o superíndices en el nombre (CHA₂DS₂-VASc,
+   CHADS₂, PaO₂/FiO₂, ABCD²…) que nadie escribe con el teclado: se equiparan a
+   sus dígitos normales antes de buscar. */
+var DIGITOS={'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9',
+             '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+function norm(s){
+  return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[⁰-₉¹²³]/g,function(ch){return DIGITOS[ch]||ch;})
+    .toLowerCase();
+}
+/* Forma compacta (solo letras y números) para que «cha2ds2vasc» encuentre
+   «CHA₂DS₂-VASc» y «pao2fio2» encuentre «PaO₂/FiO₂». */
+function compact(s){return norm(s).replace(/[^a-z0-9]/g,'');}
 function fmtNum(n,dec){return n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:dec==null?2:dec});}
 function badge(p){return p>0?'+'+fmtNum(p):fmtNum(p);}
 
@@ -32,7 +60,7 @@ function buildOverlay(){
       // todo <header>, que en tema claro dejaría el texto ilegible.
       '<div class="esc35-head">'+
         '<div class="esc35-mark">📐</div>'+
-        '<div class="esc35-title"><h2>Índices y escalas</h2><p>Anestesiología · calculadoras clínicas con interpretación</p></div>'+
+        '<div class="esc35-title"><h2>Índices y escalas</h2><p>Anestesiología · Cardiología · Medicina Intensiva</p></div>'+
         '<button type="button" id="esc35Home" title="Volver al catálogo">⌂</button>'+
         '<button type="button" id="esc35Close" title="Cerrar">✕</button>'+
       '</div>'+
@@ -54,7 +82,20 @@ function open(){
   overlay.classList.add('on');
   overlay.setAttribute('aria-hidden','false');
   document.body.classList.add('esc35-lock');
-  if(state.view==='calc'&&state.calcId)renderCalc();else showCatalog();
+  if(window.ENFERIX_ESCALAS_DATA){
+    if(state.view==='calc'&&state.calcId)renderCalc();else showCatalog();
+    return;
+  }
+  document.getElementById('esc35Body').innerHTML=
+    '<div class="esc35-loading">Cargando el catálogo de escalas…</div>';
+  ensureData().then(function(){
+    if(state.view==='calc'&&state.calcId)renderCalc();else showCatalog();
+  }).catch(function(err){
+    document.getElementById('esc35Body').innerHTML=
+      '<div class="esc35-loading">No se pudo cargar el catálogo de escalas. '+
+      'Comprueba la conexión y vuelve a intentarlo.</div>';
+    console.error(err);
+  });
 }
 function close(){
   if(!overlay)return;
@@ -64,10 +105,11 @@ function close(){
 }
 function openCalc(id){
   buildOverlay();
-  var c=data().CALCULATORS.find(function(x){return x.id===id;});
-  if(!c){open();return;}
-  state.view='calc';state.calcId=id;state.values=initialValues(c);
-  open();
+  ensureData().then(function(){
+    var c=data().CALCULATORS.find(function(x){return x.id===id;});
+    if(c){state.view='calc';state.calcId=id;state.values=initialValues(c);}
+    open();
+  }).catch(function(){open();});
 }
 
 /* ── Catálogo ── */
@@ -75,22 +117,24 @@ function showCatalog(){
   state.view='catalog';state.calcId=null;
   var d=data();
   var body=document.getElementById('esc35Body');
-  var chips='<button type="button" class="esc35-chip'+(state.cat==='all'?' on':'')+'" data-cat="all">Todas</button>'+
-    d.CATEGORIES.map(function(c){
-      return '<button type="button" class="esc35-chip'+(state.cat===c?' on':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>';
+  var specs='<button type="button" class="esc35-spec'+(state.spec==='all'?' on':'')+'" data-spec="all">Todas las especialidades</button>'+
+    d.SPECIALTIES.map(function(s){
+      var n=d.CALCULATORS.filter(function(c){return c.specialty.indexOf(s)>=0;}).length;
+      return '<button type="button" class="esc35-spec'+(state.spec===s?' on':'')+'" data-spec="'+esc(s)+'">'+esc(s)+' <i>'+n+'</i></button>';
     }).join('');
   body.innerHTML=
     '<section class="esc35-hero">'+
-      '<div><span class="esc35-eyebrow">Especialidad · Anestesiología</span>'+
+      '<div><span class="esc35-eyebrow">Anestesiología · Cardiología · Medicina Intensiva</span>'+
       '<h3>Índices y escalas clínicas listos para usar</h3>'+
-      '<p>Riesgo perioperatorio, dolor, vía aérea, ventilación, hemodinámica, sedación, abstinencia, infecciones y farmacología. Cada escala muestra su puntuación, el riesgo estimado y la interpretación en vivo.</p></div>'+
-      '<div class="esc35-stats"><div><b>'+d.CALCULATORS.length+'</b><span>escalas</span></div><div><b>'+d.CATEGORIES.length+'</b><span>categorías</span></div><div><b>100%</b><span>sin conexión</span></div></div>'+
+      '<p>Gravedad en UCI, neurocrítico, ventilación, riesgo perioperatorio, arritmias, cardiopatía isquémica, tromboembolismo, dolor, infecciones y farmacología. Cada escala muestra su puntuación, el riesgo estimado y la interpretación en vivo.</p></div>'+
+      '<div class="esc35-stats"><div><b>'+d.CALCULATORS.length+'</b><span>escalas</span></div><div><b>'+d.SPECIALTIES.length+'</b><span>especialidades</span></div><div><b>100%</b><span>sin conexión</span></div></div>'+
     '</section>'+
+    '<div class="esc35-specs" id="esc35Specs">'+specs+'</div>'+
     '<div class="esc35-tools">'+
       '<label class="esc35-search"><span>🔎</span>'+
-      '<input id="esc35Search" type="search" placeholder="Buscar RCRI, SOFA, CIWA, Mallampati…" autocomplete="off">'+
+      '<input id="esc35Search" type="search" placeholder="Buscar RCRI, SOFA, CHA₂DS₂-VASc, CIWA…" autocomplete="off">'+
       '<button type="button" id="esc35Clear" aria-label="Borrar búsqueda">✕</button></label>'+
-      '<div class="esc35-filters" id="esc35Filters">'+chips+'</div>'+
+      '<div class="esc35-filters" id="esc35Filters"></div>'+
     '</div>'+
     '<div id="esc35Groups"></div>'+
     '<aside class="esc35-note"><span>🛡️</span><div><b>Apoyo a la decisión clínica</b>'+
@@ -99,12 +143,19 @@ function showCatalog(){
   inp.value=state.query;
   inp.addEventListener('input',function(){state.query=inp.value;renderGroups();});
   document.getElementById('esc35Clear').addEventListener('click',function(){state.query='';inp.value='';inp.focus();renderGroups();});
+  document.getElementById('esc35Specs').addEventListener('click',function(e){
+    var b=e.target.closest('[data-spec]');if(!b)return;
+    state.spec=b.dataset.spec;state.cat='all';
+    document.querySelectorAll('#esc35Specs .esc35-spec').forEach(function(x){x.classList.toggle('on',x===b);});
+    renderCatChips();renderGroups();
+  });
   document.getElementById('esc35Filters').addEventListener('click',function(e){
     var b=e.target.closest('[data-cat]');if(!b)return;
     state.cat=b.dataset.cat;
     document.querySelectorAll('#esc35Filters .esc35-chip').forEach(function(x){x.classList.toggle('on',x===b);});
     renderGroups();
   });
+  renderCatChips();
   document.getElementById('esc35Groups').addEventListener('click',function(e){
     var card=e.target.closest('[data-esc35-id]');if(!card)return;
     state.view='calc';state.calcId=card.dataset.esc35Id;
@@ -115,14 +166,35 @@ function showCatalog(){
   renderGroups();
 }
 
+/* Escalas de la especialidad activa, sin aplicar buscador ni categoría. */
+function bySpecialty(){
+  var d=data();
+  if(state.spec==='all')return d.CALCULATORS;
+  return d.CALCULATORS.filter(function(c){return c.specialty.indexOf(state.spec)>=0;});
+}
+
+/* Solo se ofrecen las categorías que tienen escalas en la especialidad activa:
+   con 26 categorías, mostrarlas todas siempre resultaría inmanejable. */
+function renderCatChips(){
+  var d=data();
+  var present=bySpecialty().reduce(function(acc,c){acc[c.category]=(acc[c.category]||0)+1;return acc;},{});
+  var html='<button type="button" class="esc35-chip'+(state.cat==='all'?' on':'')+'" data-cat="all">Todas</button>';
+  html+=d.CATEGORIES.filter(function(c){return present[c];}).map(function(c){
+    return '<button type="button" class="esc35-chip'+(state.cat===c?' on':'')+'" data-cat="'+esc(c)+'">'+
+      esc(c)+' <i>'+present[c]+'</i></button>';
+  }).join('');
+  document.getElementById('esc35Filters').innerHTML=html;
+}
+
 function renderGroups(){
   var d=data();
   var q=norm(state.query.trim());
-  var list=d.CALCULATORS.filter(function(c){
+  var qc=compact(state.query);
+  var list=bySpecialty().filter(function(c){
     if(state.cat!=='all'&&c.category!==state.cat)return false;
     if(!q)return true;
-    return norm(c.name).indexOf(q)>=0||norm(c.shortName||'').indexOf(q)>=0||
-           norm(c.description).indexOf(q)>=0||norm(c.category).indexOf(q)>=0;
+    var texto=[c.name,c.shortName||'',c.description,c.category,c.id].join(' ');
+    return norm(texto).indexOf(q)>=0||(qc&&compact(texto).indexOf(qc)>=0);
   });
   var html=d.CATEGORIES.map(function(cat){
     var items=list.filter(function(c){return c.category===cat;});

@@ -101,7 +101,7 @@
     <button class="icon-btn v28-cima-header" id="vadeBtn" title="Vademécum CIMA-AEMPS">💊</button>
     <button class="icon-btn" id="library21Btn" title="Biblioteca virtual Enferix">📚</button>
     <button class="icon-btn v27-alg-header-btn" id="v27AlgorithmsBtn" title="Algoritmos clínicos integrados">🧩</button>
-    <button class="icon-btn" id="escalasBtn" title="Índices y escalas clínicas · Anestesiología">📐</button>
+    <button class="icon-btn" id="escalasBtn" title="Índices y escalas clínicas · Anestesiología, Cardiología y Medicina Intensiva">📐</button>
     <button class="icon-btn v26-live-header-btn" id="v26LiveHeaderBtn" title="Javny Live · conversación clínica continua">🔴</button>
     <button class="icon-btn header-fase3-btn" id="triageBtn" title="Triage con IA" onclick="openTriage()">🤖</button>
     <button class="icon-btn header-fase3-btn" id="trainBtn" title="Modo entrenamiento" onclick="openTrain()">🎓</button>
@@ -707,10 +707,12 @@
 <script id="inurse-rxecg-v04-js" src="/js/calculadoras/inurse-rxecg-v04-js.js"></script>
 
 
-<!-- ===== Enferix · Índices y escalas clínicas (Anestesiología) ===== -->
-<link rel="stylesheet" href="/css/calculadoras/inurse-escalas-anestesia-css.css">
-<script src="/data/escalas-anestesia.js"></script>
-<script id="inurse-escalas-anestesia-js" src="/js/calculadoras/inurse-escalas-anestesia-js.js"></script>
+<!-- ===== Enferix · Índices y escalas clínicas =====
+     Anestesiología, Cardiología y Medicina Intensiva. El catálogo de datos
+     (/data/escalas-clinicas.js) lo carga el propio módulo la primera vez que
+     se abre, para no penalizar el arranque de la aplicación. -->
+<link rel="stylesheet" href="/css/calculadoras/inurse-escalas-clinicas-css.css">
+<script id="inurse-escalas-clinicas-js" src="/js/calculadoras/inurse-escalas-clinicas-js.js"></script>
 
 
 <!-- ===== Enferix · Proyectos con Javny ===== -->
