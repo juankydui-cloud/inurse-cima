@@ -28,12 +28,14 @@ function buildOverlay(){
   overlay.setAttribute('aria-label','Índices y escalas clínicas');
   overlay.innerHTML=
     '<div class="esc35-shell" role="dialog" aria-modal="true">'+
-      '<header class="esc35-head">'+
+      // Cabecera como <div>: la app aplica un fondo oscuro con !important a
+      // todo <header>, que en tema claro dejaría el texto ilegible.
+      '<div class="esc35-head">'+
         '<div class="esc35-mark">📐</div>'+
         '<div class="esc35-title"><h2>Índices y escalas</h2><p>Anestesiología · calculadoras clínicas con interpretación</p></div>'+
         '<button type="button" id="esc35Home" title="Volver al catálogo">⌂</button>'+
         '<button type="button" id="esc35Close" title="Cerrar">✕</button>'+
-      '</header>'+
+      '</div>'+
       '<div class="esc35-body" id="esc35Body"></div>'+
     '</div>';
   document.body.appendChild(overlay);
