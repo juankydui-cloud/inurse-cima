@@ -675,12 +675,16 @@ function perfSave(){
 
 /* ---------- PANEL DE CALCULADORAS (modal) ---------- */
 function reorderCalcTabs(){
+  // Solo claves que siguen teniendo pestaña aquí. Las escalas se mudaron a su
+  // propia pantalla y allí se priorizan por especialidad igual que antes
+  // (ver js/escalas/inurse-escalas-js.js); dejarlas listadas aquí sería
+  // configuración muerta apuntando a pestañas que ya no existen.
   const SPEC_PRIORITY = {
-    cardio:    ['cha2ds2','hasbled','wellsTvp','wellsTep','pafi','gcs'],
-    intensiva: ['qsofa','sofa','pafi','gcs','perf'],
-    urgencias: ['qsofa','wellsTvp','wellsTep','gcs','pafi','perf'],
-    neuro:     ['gcs','nihss','qsofa'],
-    trauma:    ['gcs','parkland','qsofa','dosisPed']
+    cardio:    ['pafi'],
+    intensiva: ['pafi','perf'],
+    urgencias: ['pafi','perf'],
+    neuro:     [],
+    trauma:    ['parkland','dosisPed']
   };
   let spec=''; try{ spec=localStorage.getItem('inurse_myspec_v1')||''; }catch(e){}
   const container = document.querySelector('.calc-tabs');

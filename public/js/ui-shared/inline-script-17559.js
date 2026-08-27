@@ -16,6 +16,7 @@
       case "patologias": if(window.openPatoSistemas){ window.openPatoSistemas(); return; } if(window.Enferix21&&window.Enferix21.organize){ window.Enferix21.organize("pathology","all"); return; } { var pb=document.querySelector('[data-in192-organize="pathology"]'); if(pb){ pb.click(); return; } } clickId("v29MenuBtn"); return;
       case "farmaco":    if(window.EnferixCima&&window.EnferixCima.open){ window.EnferixCima.open(); return; } clickId("vadeBtn"); return;
       case "calc":       if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
+      case "escalas":    if(window.EnferixEscalas&&window.EnferixEscalas.open){ window.EnferixEscalas.open(); return; } if(typeof window.openCalcs==='function'){ window.openCalcs('norton'); return; } return;
       case "rx":         clickId("rxFab") || (window.openRx&&window.openRx()); return;
       case "ecg":        clickId("ecgFab") || (window.openEcg&&window.openEcg()); return;
       case "procedimientos": if(typeof window.openProc==='function'){ window.openProc(); return; } openIC("procedures"); return;
@@ -73,6 +74,7 @@
   var NAV = [
     {k:"inicio",   ic:"🏠", t:"Inicio"},
     {k:"miturno",  ic:"🌙", t:"Mi turno"},
+    {k:"escalas",  ic:"📊", t:"Escalas"},
     {k:"calc",     ic:"🧮", t:"Cálculo"},
     {k:"ecg",      ic:"📈", t:"Electros"},
     {k:"rx",       ic:"🩻", t:"Rayos X"},

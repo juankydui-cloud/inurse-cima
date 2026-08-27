@@ -242,7 +242,9 @@ body:has(.turno-overlay.on) .v29vl-fab,
 body:has(.overlay.show) .nx-search-fab,
 body:has(.overlay.show) .v29vl-fab,
 body:has(.ix-overlay.on) .nx-search-fab,
-body:has(.ix-overlay.on) .v29vl-fab{
+body:has(.ix-overlay.on) .v29vl-fab,
+body:has(.esc-overlay.on) .nx-search-fab,
+body:has(.esc-overlay.on) .v29vl-fab{
   display:none !important;
 }
 

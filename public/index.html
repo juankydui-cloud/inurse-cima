@@ -483,6 +483,22 @@
 <script src="/js/calculadoras/inline-script-6388.js"></script>
 
 
+<!-- Escalas clínicas: índice propio, agrupado por el motivo de consulta.
+     El cálculo lo sigue haciendo la calculadora de siempre. -->
+<div class="esc-overlay" id="escOverlay" aria-hidden="true">
+  <div class="esc-panel" id="escPanel" role="dialog" aria-modal="true" aria-label="Escalas clínicas">
+    <div class="esc-head">
+      <div class="esc-head-ico">📊</div>
+      <h2>Escalas clínicas<small>Valoración por áreas de cuidado</small></h2>
+      <button class="esc-close" id="escClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="esc-search">
+      <input type="search" id="escSearch" placeholder="Buscar escala…" autocomplete="off" aria-label="Buscar escala">
+    </div>
+    <div class="esc-body" id="escBody"></div>
+  </div>
+</div>
+
 <div class="calc-overlay" id="calcOverlay">
   <div class="calc-modal" role="dialog" aria-modal="true" aria-label="Calculadoras clínicas">
     <div class="calc-head">
@@ -490,28 +506,13 @@
       <h2>Calculadoras clínicas<small>Cálculos rápidos con historial local</small></h2>
       <button class="calc-close" onclick="closeCalcs()" aria-label="Cerrar">✕</button>
     </div>
+    <!-- Solo cálculos. Las escalas de valoración tienen su propia pantalla
+         (📊 Escalas): esta tira llegó a 22 pestañas y no se encontraba nada. -->
     <div class="calc-tabs">
       <button class="calc-tab active" data-c="perf" onclick="showCalc('perf')">💉 Perfusiones</button>
-      <button class="calc-tab" data-c="gcs" onclick="showCalc('gcs')">🧠 GCS</button>
-      <button class="calc-tab" data-c="nihss" onclick="showCalc('nihss')">🧠 NIHSS</button>
-      <button class="calc-tab" data-c="wellsTvp" onclick="showCalc('wellsTvp')">🦵 Wells TVP</button>
-      <button class="calc-tab" data-c="wellsTep" onclick="showCalc('wellsTep')">🫁 Wells TEP</button>
       <button class="calc-tab" data-c="parkland" onclick="showCalc('parkland')">🔥 Parkland</button>
       <button class="calc-tab" data-c="pafi" onclick="showCalc('pafi')">🫁 PaFi</button>
       <button class="calc-tab" data-c="dosisPed" onclick="showCalc('dosisPed')">👶 Dosis pediátricas</button>
-      <button class="calc-tab" data-c="qsofa" data-spec="intensiva urgencias" onclick="showCalc('qsofa')">🚨 qSOFA</button>
-      <button class="calc-tab" data-c="sofa" data-spec="intensiva" onclick="showCalc('sofa')">🏥 SOFA</button>
-      <button class="calc-tab" data-c="cha2ds2" data-spec="cardio" onclick="showCalc('cha2ds2')">❤️ CHA₂DS₂-VASc</button>
-      <button class="calc-tab" data-c="hasbled" data-spec="cardio" onclick="showCalc('hasbled')">💊 HAS-BLED</button>
-<button class="calc-tab" data-c="norton" onclick="showCalc('norton')">🛏️ Norton</button>
-<button class="calc-tab" data-c="braden" onclick="showCalc('braden')">🛏️ Braden</button>
-<button class="calc-tab" data-c="barthel" onclick="showCalc('barthel')">🚶 Barthel</button>
-<button class="calc-tab" data-c="aldrete" onclick="showCalc('aldrete')">🏥 Aldrete</button>
-<button class="calc-tab" data-c="mews" data-spec="intensiva urgencias" onclick="showCalc('mews')">📈 MEWS</button>
-<button class="calc-tab" data-c="news2" data-spec="intensiva urgencias" onclick="showCalc('news2')">📊 NEWS2</button>
-<button class="calc-tab" data-c="rass" data-spec="intensiva" onclick="showCalc('rass')">😴 RASS</button>
-<button class="calc-tab" data-c="morse" onclick="showCalc('morse')">⚠️ Morse</button>
-<button class="calc-tab" data-c="dolor" onclick="showCalc('dolor')">🤕 Dolor</button>
       <button class="calc-tab" data-c="nnn" onclick="showCalc('nnn')">📋 NANDA/NIC/NOC</button>
       <button class="calc-tab v27-calc-alg-tab" type="button" onclick="closeCalcs();window.EnferixAlgorithms.openHub()">🧩 Algoritmos</button>
     </div>
@@ -1380,6 +1381,8 @@
 <link rel="stylesheet" href="/css/mi-turno/inurse-turno-sobrio-css.css">
 <link rel="stylesheet" href="/css/mi-turno/inurse-turno-pruebas-css.css">
 <script id="inurse-turno-pruebas-js" src="/js/mi-turno/inurse-turno-pruebas-js.js"></script>
+<link rel="stylesheet" href="/css/escalas/inurse-escalas-css.css">
+<script id="inurse-escalas-js" src="/js/escalas/inurse-escalas-js.js"></script>
 <script id="inurse-prefs-js" src="/js/ui-shared/inurse-prefs-js.js"></script>
 
 </body>

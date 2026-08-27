@@ -124,5 +124,12 @@
   window.showGlobalResults=showResults;
   // Abrir un elemento del historial desde el inicio sin repetir esta lógica.
   window.EnferixOpenResult=openResult;
+  /* SCALES vivía solo dentro de esta IIFE, pero fuera ya había dos sitios
+     leyéndolo como si fuese global: el contexto del chat de Javny
+     (inurse-gemini-js.js) lo intentaba con typeof y llevaba tiempo recibiendo
+     siempre una lista vacía, sin fallar ni avisar. Se expone para que ese
+     código funcione de verdad y para que la pantalla de Escalas reutilice sus
+     sinónimos de búsqueda en vez de duplicarlos. */
+  window.SCALES=SCALES;
   ready(function(){document.body.classList.add('in50-ready'); patchManifest(); buildHome(); buildSettings(); patchSearch(); patchStars(); patchDock(); renderHomeLists(); var oldHome=document.getElementById('javnyHero'); if(oldHome)oldHome.style.display='none'; setTimeout(function(){var h=document.getElementById('in50Home'); if(h)h.style.display='block'; var c=document.getElementById('content'); if(c&&window.__INURSE_HOME)c.innerHTML='';},500); });
 })();
