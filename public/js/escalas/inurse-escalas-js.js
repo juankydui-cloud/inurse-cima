@@ -21,19 +21,31 @@
   var GRUPOS = [
     { t:"Riesgo en cuidados", ic:"🛏️",
       d:"Lo que se valora al ingreso y en cada turno",
-      escalas:["norton","braden","morse"] },
-    { t:"Neurología y sedación", ic:"🧠",
-      d:"Nivel de conciencia, sedación y déficit neurológico",
-      escalas:["gcs","rass","nihss"] },
+      escalas:["norton","braden","emina","bradenQ","morse","downton","tinetti"] },
+    { t:"Neurología, sedación y delirio", ic:"🧠",
+      d:"Conciencia, sedación, déficit neurológico y estado cognitivo",
+      escalas:["gcs","rass","ramsay","nihss","camicu","pfeiffer"] },
     { t:"Deterioro clínico y sepsis", ic:"📈",
       d:"Alerta precoz a partir de constantes",
-      escalas:["mews","news2","qsofa","sofa"] },
-    { t:"Trombosis y anticoagulación", ic:"🩸",
-      d:"Probabilidad de evento y riesgo de sangrado",
-      escalas:["wellsTvp","wellsTep","cha2ds2","hasbled"] },
-    { t:"Situación funcional y dolor", ic:"🚶",
-      d:"Autonomía, recuperación postanestésica y dolor",
-      escalas:["barthel","aldrete","dolor"] }
+      escalas:["mews","news2","qsofa","sofa","indiceShock"] },
+    { t:"Dolor", ic:"🤕",
+      d:"Con el paciente comunicativo y sin él",
+      escalas:["dolor","escid","campbell"] },
+    { t:"Anestesia y preoperatorio", ic:"💤",
+      d:"Estado físico, vía aérea y riesgo perioperatorio",
+      escalas:["asa","mallampati","cormack","stopbang","apfel","rcri","aldrete"] },
+    { t:"Cardiología", ic:"❤️",
+      d:"Clase funcional, síndrome coronario y anticoagulación",
+      escalas:["nyha","killip","heart","timiScasest","cha2ds2","hasbled"] },
+    { t:"Trombosis", ic:"🩸",
+      d:"Probabilidad de trombosis venosa y embolia pulmonar",
+      escalas:["wellsTvp","wellsTep"] },
+    { t:"Situación funcional", ic:"🚶",
+      d:"Autonomía en la vida diaria y estado general",
+      escalas:["barthel","lawton","karnofsky","ecog"] },
+    { t:"Nutrición y deglución", ic:"🍽️",
+      d:"Cribado de desnutrición y de disfagia",
+      escalas:["mnasf","must","eat10"] }
   ];
 
   // La tira de pestañas de Calculadoras adelantaba las escalas de la
@@ -42,15 +54,17 @@
   // escalas encabezan la pantalla. Solo escalas — las calculadoras (PaFi,
   // Parkland, perfusiones) siguen priorizándose en su propio panel.
   var POR_ESPECIALIDAD = {
-    cardio:    ["cha2ds2","hasbled","wellsTvp","wellsTep","gcs"],
-    intensiva: ["qsofa","sofa","rass","gcs","news2"],
-    urgencias: ["qsofa","wellsTvp","wellsTep","gcs","news2"],
-    neuro:     ["gcs","nihss","rass","qsofa"],
-    trauma:    ["gcs","morse","qsofa","dolor"]
+    cardio:    ["nyha","killip","heart","timiScasest","cha2ds2","hasbled"],
+    intensiva: ["sofa","qsofa","rass","camicu","escid","indiceShock"],
+    urgencias: ["qsofa","news2","heart","wellsTvp","wellsTep","indiceShock"],
+    neuro:     ["gcs","nihss","rass","camicu","pfeiffer"],
+    trauma:    ["gcs","indiceShock","dolor","morse","asa"],
+    anestesia: ["asa","mallampati","cormack","apfel","rcri","stopbang","aldrete"]
   };
   var NOMBRE_ESPECIALIDAD = {
     cardio:"Cardiología", intensiva:"Cuidados intensivos",
-    urgencias:"Urgencias", neuro:"Neurología", trauma:"Traumatología"
+    urgencias:"Urgencias", neuro:"Neurología", trauma:"Traumatología",
+    anestesia:"Anestesiología"
   };
   function especialidad(){
     try{ return localStorage.getItem("inurse_myspec_v1") || ""; }catch(e){ return ""; }
@@ -63,6 +77,32 @@
   var ALIAS = { glasgow:"gcs" };
   // Lo que ese indice no cubre.
   var SINONIMOS_EXTRA = {
+    emina:       "emina upp ulceras presion piel riesgo encamado",
+    bradenQ:     "braden q pediatrica niños upp ulceras presion piel pediatria",
+    downton:     "downton caidas riesgo caida seguridad ancianos medicacion",
+    tinetti:     "tinetti equilibrio marcha caidas poma deambulacion ancianos",
+    pfeiffer:    "pfeiffer spmsq cognitivo deterioro memoria demencia cribado orientacion",
+    camicu:      "camicu cam icu delirio confusion agitacion critico inatencion",
+    lawton:      "lawton brody aivd instrumentales actividades vida diaria autonomia dependencia",
+    karnofsky:   "karnofsky estado funcional oncologia paliativos actividad",
+    ecog:        "ecog performance status oncologia estado funcional paliativos",
+    mnasf:       "mna nutricional desnutricion cribado peso apetito ancianos nutricion",
+    must:        "must desnutricion nutricional cribado imc perdida de peso",
+    ramsay:      "ramsay sedacion nivel sedado uci critico",
+    escid:       "escid dolor no comunicativo ventilacion mecanica critico conductas",
+    campbell:    "campbell dolor no comunicativo demencia conductas",
+    eat10:       "eat10 eat 10 disfagia deglucion tragar atragantamiento cribado",
+    asa:         "asa estado fisico preanestesico anestesia riesgo quirofano preoperatorio",
+    mallampati:  "mallampati via aerea intubacion dificil anestesia laringoscopia boca",
+    cormack:     "cormack lehane laringoscopia glotis via aerea intubacion dificil",
+    stopbang:    "stopbang stop bang apnea sueño saos ronquido preoperatorio",
+    apfel:       "apfel nvpo nauseas vomitos postoperatorio profilaxis anestesia",
+    rcri:        "rcri lee riesgo cardiaco perioperatorio cirugia infarto anestesia",
+    nyha:        "nyha clase funcional insuficiencia cardiaca disnea cardiologia",
+    killip:      "killip kimball infarto iam insuficiencia cardiaca shock cardiogenico sca",
+    heart:       "heart dolor toracico urgencias troponina sca riesgo",
+    timiScasest: "timi scasest sca sin elevacion st angina inestable riesgo",
+    indiceShock: "indice de shock fc pas hipovolemia sangrado sepsis hemodinamico",
     qsofa:    "qsofa sepsis cribado shock septico infeccion confusion taquipnea",
     wellsTvp: "wells tvp trombosis venosa profunda pierna edema miembro inferior",
     wellsTep: "wells tep embolia pulmonar tromboembolismo disnea",

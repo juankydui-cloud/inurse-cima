@@ -69,6 +69,7 @@
     {key:'urgencias', em:'🚑', t:'Urgencias',         sc:'#FB923C'},
     {key:'neuro',     em:'🧠', t:'Neurología',        sc:'#A855F7'},
     {key:'trauma',    em:'🦴', t:'Trauma',            sc:'#DC2626'},
+    {key:'anestesia', em:'💤', t:'Anestesia',         sc:'#14B8A6'},
     {key:'otras',     em:'🩺', t:'Otras',             sc:'#0EA5E9'}
   ];
   var NAV = [
