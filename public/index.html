@@ -101,6 +101,7 @@
     <button class="icon-btn v28-cima-header" id="vadeBtn" title="Vademécum CIMA-AEMPS">💊</button>
     <button class="icon-btn" id="library21Btn" title="Biblioteca virtual Enferix">📚</button>
     <button class="icon-btn v27-alg-header-btn" id="v27AlgorithmsBtn" title="Algoritmos clínicos integrados">🧩</button>
+    <button class="icon-btn" id="escalasBtn" title="Índices y escalas clínicas · Anestesiología">📐</button>
     <button class="icon-btn v26-live-header-btn" id="v26LiveHeaderBtn" title="Javny Live · conversación clínica continua">🔴</button>
     <button class="icon-btn header-fase3-btn" id="triageBtn" title="Triage con IA" onclick="openTriage()">🤖</button>
     <button class="icon-btn header-fase3-btn" id="trainBtn" title="Modo entrenamiento" onclick="openTrain()">🎓</button>
@@ -514,6 +515,7 @@
 <button class="calc-tab" data-c="dolor" onclick="showCalc('dolor')">🤕 Dolor</button>
       <button class="calc-tab" data-c="nnn" onclick="showCalc('nnn')">📋 NANDA/NIC/NOC</button>
       <button class="calc-tab v27-calc-alg-tab" type="button" onclick="closeCalcs();window.EnferixAlgorithms.openHub()">🧩 Algoritmos</button>
+      <button class="calc-tab esc35-calc-tab" type="button" onclick="closeCalcs();window.EnferixEscalas&&window.EnferixEscalas.open()">📐 Índices y escalas</button>
     </div>
     <div class="calc-body">
       <div id="calcBody"></div>
@@ -703,6 +705,12 @@
 <link rel="stylesheet" href="/css/calculadoras/inurse-rxecg-v04-css.css">
 
 <script id="inurse-rxecg-v04-js" src="/js/calculadoras/inurse-rxecg-v04-js.js"></script>
+
+
+<!-- ===== Enferix · Índices y escalas clínicas (Anestesiología) ===== -->
+<link rel="stylesheet" href="/css/calculadoras/inurse-escalas-anestesia-css.css">
+<script src="/data/escalas-anestesia.js"></script>
+<script id="inurse-escalas-anestesia-js" src="/js/calculadoras/inurse-escalas-anestesia-js.js"></script>
 
 
 <!-- ===== Enferix · Proyectos con Javny ===== -->
