@@ -144,7 +144,10 @@
     <span>🕒</span><b>Mi turno</b>
   </button>
   <button type="button" class="in192-nav-btn" data-in192-view="tools">
-    <span>🧰</span><b>Herramientas</b>
+    <span>🧰</span><b>Cálculo</b>
+  </button>
+  <button type="button" class="in192-nav-btn" data-in192-view="escalas">
+    <span>📐</span><b>Escalas</b>
   </button>
   <button type="button" class="in192-nav-btn library" data-in192-view="library">
     <span>📚</span><b>Biblioteca</b>
@@ -491,31 +494,14 @@
       <h2>Calculadoras clínicas<small>Cálculos rápidos con historial local</small></h2>
       <button class="calc-close" onclick="closeCalcs()" aria-label="Cerrar">✕</button>
     </div>
+    <!-- Solo cálculos numéricos: las escalas e índices clínicos viven ahora en
+         la sección «Escalas» (📐 en la barra de navegación y en la cabecera). -->
     <div class="calc-tabs">
       <button class="calc-tab active" data-c="perf" onclick="showCalc('perf')">💉 Perfusiones</button>
-      <button class="calc-tab" data-c="gcs" onclick="showCalc('gcs')">🧠 GCS</button>
-      <button class="calc-tab" data-c="nihss" onclick="showCalc('nihss')">🧠 NIHSS</button>
-      <button class="calc-tab" data-c="wellsTvp" onclick="showCalc('wellsTvp')">🦵 Wells TVP</button>
-      <button class="calc-tab" data-c="wellsTep" onclick="showCalc('wellsTep')">🫁 Wells TEP</button>
       <button class="calc-tab" data-c="parkland" onclick="showCalc('parkland')">🔥 Parkland</button>
-      <button class="calc-tab" data-c="pafi" onclick="showCalc('pafi')">🫁 PaFi</button>
       <button class="calc-tab" data-c="dosisPed" onclick="showCalc('dosisPed')">👶 Dosis pediátricas</button>
-      <button class="calc-tab" data-c="qsofa" data-spec="intensiva urgencias" onclick="showCalc('qsofa')">🚨 qSOFA</button>
-      <button class="calc-tab" data-c="sofa" data-spec="intensiva" onclick="showCalc('sofa')">🏥 SOFA</button>
-      <button class="calc-tab" data-c="cha2ds2" data-spec="cardio" onclick="showCalc('cha2ds2')">❤️ CHA₂DS₂-VASc</button>
-      <button class="calc-tab" data-c="hasbled" data-spec="cardio" onclick="showCalc('hasbled')">💊 HAS-BLED</button>
-<button class="calc-tab" data-c="norton" onclick="showCalc('norton')">🛏️ Norton</button>
-<button class="calc-tab" data-c="braden" onclick="showCalc('braden')">🛏️ Braden</button>
-<button class="calc-tab" data-c="barthel" onclick="showCalc('barthel')">🚶 Barthel</button>
-<button class="calc-tab" data-c="aldrete" onclick="showCalc('aldrete')">🏥 Aldrete</button>
-<button class="calc-tab" data-c="mews" data-spec="intensiva urgencias" onclick="showCalc('mews')">📈 MEWS</button>
-<button class="calc-tab" data-c="news2" data-spec="intensiva urgencias" onclick="showCalc('news2')">📊 NEWS2</button>
-<button class="calc-tab" data-c="rass" data-spec="intensiva" onclick="showCalc('rass')">😴 RASS</button>
-<button class="calc-tab" data-c="morse" onclick="showCalc('morse')">⚠️ Morse</button>
-<button class="calc-tab" data-c="dolor" onclick="showCalc('dolor')">🤕 Dolor</button>
       <button class="calc-tab" data-c="nnn" onclick="showCalc('nnn')">📋 NANDA/NIC/NOC</button>
       <button class="calc-tab v27-calc-alg-tab" type="button" onclick="closeCalcs();window.EnferixAlgorithms.openHub()">🧩 Algoritmos</button>
-      <button class="calc-tab esc35-calc-tab" type="button" onclick="closeCalcs();window.EnferixEscalas&&window.EnferixEscalas.open()">📐 Índices y escalas</button>
     </div>
     <div class="calc-body">
       <div id="calcBody"></div>

@@ -16,6 +16,7 @@
       case "patologias": if(window.openPatoSistemas){ window.openPatoSistemas(); return; } if(window.Enferix21&&window.Enferix21.organize){ window.Enferix21.organize("pathology","all"); return; } { var pb=document.querySelector('[data-in192-organize="pathology"]'); if(pb){ pb.click(); return; } } clickId("v29MenuBtn"); return;
       case "farmaco":    if(window.EnferixCima&&window.EnferixCima.open){ window.EnferixCima.open(); return; } clickId("vadeBtn"); return;
       case "calc":       if(typeof window.openCalcs==='function'){ window.openCalcs('perf'); return; } openIC("calc"); return;
+      case "escalas":    if(window.EnferixEscalas&&window.EnferixEscalas.open){ window.EnferixEscalas.open(); return; } clickId("escalasBtn"); return;
       case "rx":         clickId("rxFab") || (window.openRx&&window.openRx()); return;
       case "ecg":        clickId("ecgFab") || (window.openEcg&&window.openEcg()); return;
       case "procedimientos": if(typeof window.openProc==='function'){ window.openProc(); return; } openIC("procedures"); return;
@@ -54,7 +55,8 @@
     {id:'evidencia',    t:'Evidencia',             em:'🔬', kw:'evidencia literatura pubmed pmc preprints estudios papers investigacion articulos ciencia'},
     {id:'patologias',   t:'Patologías',            em:'🫁', kw:'patologias enfermedades sistemas alertas tratamiento clinica'},
     {id:'farmaco',      t:'Farmacología',          em:'💊', kw:'farmacologia farmacos vademecum medicamentos cima posologia dosis interacciones pharmacology'},
-    {id:'calc',         t:'Calculadoras y cálculos',em:'🧮', kw:'calculadoras calculos escalas perfusiones dosis formulas'},
+    {id:'calc',         t:'Calculadoras y cálculos',em:'🧮', kw:'calculadoras calculos perfusiones dosis formulas goteo'},
+    {id:'escalas',      t:'Escalas clínicas',      em:'📐', kw:'escalas indices puntuaciones scores valoracion rcri sofa apache glasgow braden norton barthel morse rass wells cha2ds2 vasc has bled heart meld ciwa mme anestesiologia cardiologia intensiva farmacia'},
     {id:'rx',           t:'Rayos X y POCUS',       em:'🩻', kw:'rayos x radiografia imagen pocus ecografia radiologia'},
     {id:'ecg',          t:'Electro / ECG',         em:'📈', kw:'electro ecg electrocardiograma ritmo arritmia electros'},
     {id:'procedimientos',t:'Procedimientos',       em:'📝', kw:'procedimientos tecnicas enfermeria paso a paso material checklist'},
@@ -74,6 +76,7 @@
     {k:"inicio",   ic:"🏠", t:"Inicio"},
     {k:"miturno",  ic:"🌙", t:"Mi turno"},
     {k:"calc",     ic:"🧮", t:"Cálculo"},
+    {k:"escalas",  ic:"📐", t:"Escalas"},
     {k:"ecg",      ic:"📈", t:"Electros"},
     {k:"rx",       ic:"🩻", t:"Rayos X"},
     {k:"fuentes",  ic:"🏛️", t:"Fuentes"},

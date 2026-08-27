@@ -47,6 +47,11 @@ function showToolsView(){
   if(typeof window.openCalcs==='function'){window.openCalcs();return;}
   const btn=$('#calcFab');if(btn)btn.click();
 }
+function showEscalasView(){
+  hideLibraryLanding();setActive('escalas');
+  if(window.EnferixEscalas&&window.EnferixEscalas.open){window.EnferixEscalas.open();return;}
+  $('#escalasBtn')?.click();
+}
 function openLibrary(mode='all'){
   if(window.Enferix21&&typeof window.Enferix21.organize==='function'&&mode!=='all'){
     window.Enferix21.organize(mode,'all');return;
@@ -66,6 +71,7 @@ function install(){
       else if(view==='home')showHomeView();
       else if(view==='search')showSearchView();
       else if(view==='tools')showToolsView();
+      else if(view==='escalas')showEscalasView();
       else if(view==='guides')showGuidesView();
       else if(view==='library')showLibraryView();
       else if(view==='javny')showJavnyView();
@@ -91,6 +97,7 @@ function install(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 
 window.EnferixMainNavigation={
-  home:showHomeView,guides:showGuidesView,library:showLibraryView,javny:showJavnyView
+  home:showHomeView,guides:showGuidesView,library:showLibraryView,javny:showJavnyView,
+  escalas:showEscalasView
 };
 })();

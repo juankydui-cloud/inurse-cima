@@ -1,24 +1,25 @@
 /* =========================================================================
    Enferix · Índices y escalas clínicas
-   177 calculadoras de Anestesiología (46), Cardiología (69) y Medicina
-   Intensiva (131); varias escalas se comparten entre especialidades, por
-   eso las cifras suman más de 177. Incluye fórmulas, notas clínicas y
-   referencias bibliográficas de cada escala.
-   Portado del proyecto React+TypeScript juankydue-dev/inurse
-   (rama claude/indices-escalas-app-55c6g3) a JavaScript plano con esbuild;
-   define window.ENFERIX_ESCALAS_DATA = { CATEGORIES, SPECIALTIES, CALCULATORS }.
+   190 calculadoras de Anestesiología (46), Cardiología (69), Medicina
+   Intensiva (131) y Farmacia (24); muchas escalas se comparten entre
+   especialidades, por eso las cifras suman más que el total. Incluye
+   fórmulas, notas clínicas, referencias bibliográficas y las advertencias
+   de seguridad de cada escala.
+   Portado del proyecto React+TypeScript juankydue-dev/inurse (rama main)
+   a JavaScript plano con esbuild; define
+   window.ENFERIX_ESCALAS_DATA = { CATEGORIES, SPECIALTIES, CALCULATORS }.
    La interfaz que lo consume vive en
    /js/calculadoras/inurse-escalas-clinicas-js.js.
    ========================================================================= */
 (() => {
-  // inurse-src/src/engine/types.ts
+  // inurse-main/src/engine/types.ts
   var sum = (v, ids) => ids.reduce((acc, id) => {
     var _a;
     return acc + ((_a = v[id]) != null ? _a : 0);
   }, 0);
   var fmt = (n, dec = 0) => n.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: dec });
 
-  // inurse-src/src/calculators/riesgo.ts
+  // inurse-main/src/calculators/riesgo.ts
   var CAT = "Riesgo perioperatorio";
   var ANES = ["Anestesiología"];
   var riesgo = [
@@ -676,7 +677,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/dolor.ts
+  // inurse-main/src/calculators/dolor.ts
   var CAT2 = "Dolor";
   var ANES2 = ["Anestesiología"];
   var dolor = [
@@ -1201,7 +1202,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/viaaerea.ts
+  // inurse-main/src/calculators/viaaerea.ts
   var CAT3 = "Vía aérea";
   var ANES3 = ["Anestesiología"];
   var viaAerea = [
@@ -1395,7 +1396,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/respiratorio.ts
+  // inurse-main/src/calculators/respiratorio.ts
   var CAT4 = "Respiratorio y ventilación";
   var ANES4 = ["Anestesiología"];
   var respiratorio = [
@@ -1536,7 +1537,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/hemodinamica.ts
+  // inurse-main/src/calculators/hemodinamica.ts
   var CAT5 = "Hemodinámica y fluidos";
   var ANES5 = ["Anestesiología"];
   var hemodinamica = [
@@ -1763,7 +1764,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/neuro.ts
+  // inurse-main/src/calculators/neuro.ts
   var CAT6 = "Neurológico, sedación y gravedad";
   var ANES6 = ["Anestesiología"];
   var neuro = [
@@ -1952,7 +1953,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/alcohol.ts
+  // inurse-main/src/calculators/alcohol.ts
   var CAT7 = "Alcohol y abstinencia";
   var ANES7 = ["Anestesiología"];
   var escala07 = (anchors) => Array.from({ length: 8 }, (_, i) => ({
@@ -2271,7 +2272,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/infecciones.ts
+  // inurse-main/src/calculators/infecciones.ts
   var CAT8 = "Infecciones";
   var ANES8 = ["Anestesiología"];
   var infecciones = [
@@ -2372,7 +2373,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/farmacologia.ts
+  // inurse-main/src/calculators/farmacologia.ts
   var CAT9 = "Farmacología y dosificación";
   var ANES9 = ["Anestesiología"];
   var ANESTESICOS = [
@@ -2498,7 +2499,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/cardio-fa.ts
+  // inurse-main/src/calculators/cardio-fa.ts
   var CAT10 = "Fibrilación auricular y anticoagulación";
   var CARD = ["Cardiología"];
   var cardioFA = [
@@ -2803,7 +2804,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/cardio-sca.ts
+  // inurse-main/src/calculators/cardio-sca.ts
   var CAT11 = "Síndrome coronario agudo y dolor torácico";
   var CARD2 = ["Cardiología"];
   var cardioSCA = [
@@ -3266,7 +3267,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/cardio-tev.ts
+  // inurse-main/src/calculators/cardio-tev.ts
   var CAT12 = "Tromboembolismo venoso";
   var CARD3 = ["Cardiología"];
   var cardioTEV = [
@@ -3721,7 +3722,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/cardio-ic-sincope.ts
+  // inurse-main/src/calculators/cardio-ic-sincope.ts
   var CAT_IC = "Insuficiencia cardíaca";
   var CAT_SINCOPE = "Síncope";
   var CARD4 = ["Cardiología"];
@@ -4028,7 +4029,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/cardio-varios.ts
+  // inurse-main/src/calculators/cardio-varios.ts
   var CAT_DX = "Criterios diagnósticos";
   var CAT_GRAV = "Gravedad y pronóstico";
   var CARD5 = ["Cardiología"];
@@ -4477,7 +4478,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/formulas.ts
+  // inurse-main/src/calculators/formulas.ts
   var CAT13 = "Fórmulas y cálculos clínicos";
   var CARD6 = ["Cardiología"];
   var formulas = [
@@ -5004,7 +5005,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/neurocritico.ts
+  // inurse-main/src/calculators/neurocritico.ts
   var CAT14 = "Neurocrítico e ictus";
   var UCI = ["Medicina Intensiva"];
   var escala = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -5803,7 +5804,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/uci-gravedad.ts
+  // inurse-main/src/calculators/uci-gravedad.ts
   var CAT15 = "Gravedad en UCI y sepsis";
   var UCI2 = ["Medicina Intensiva"];
   var escala2 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -6678,7 +6679,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/respiratorio-critico.ts
+  // inurse-main/src/calculators/respiratorio-critico.ts
   var CAT16 = "Respiratorio crítico y ventilación";
   var UCI3 = ["Medicina Intensiva"];
   var escala3 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -7307,7 +7308,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/renal-metabolico.ts
+  // inurse-main/src/calculators/renal-metabolico.ts
   var CAT17 = "Renal, iones y equilibrio ácido-base";
   var UCI4 = ["Medicina Intensiva"];
   var renalMetabolico = [
@@ -7711,7 +7712,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/hepato-digestivo.ts
+  // inurse-main/src/calculators/hepato-digestivo.ts
   var CAT18 = "Hepatología y digestivo";
   var UCI5 = ["Medicina Intensiva"];
   var escala4 = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
@@ -8309,7 +8310,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/hemato-trauma.ts
+  // inurse-main/src/calculators/hemato-trauma.ts
   var CAT_HEM = "Hematología y oncología";
   var CAT_TRAUMA = "Trauma y quemados";
   var UCI6 = ["Medicina Intensiva"];
@@ -9196,7 +9197,7 @@
     }
   ];
 
-  // inurse-src/src/calculators/antropometria.ts
+  // inurse-main/src/calculators/antropometria.ts
   var CAT19 = "Antropometría y metabolismo";
   var CAT_ENDO = "Endocrino y tóxicos";
   var UCI7 = ["Medicina Intensiva"];
@@ -9658,7 +9659,750 @@
     }
   ];
 
-  // inurse-src/src/calculators/index.ts
+  // inurse-main/src/calculators/farmacia-formulas.ts
+  var CAT_RENAL = "Función renal y ajuste de dosis";
+  var CAT_FLUIDOS = "Fluidos, electrolitos e infusiones";
+  var CAT_FARMACO = "Farmacología y dosificación";
+  var FARM = ["Farmacia"];
+  var farmaciaFormulas = [
+    {
+      id: "ckd-epi",
+      name: "Ecuación CKD-EPI 2021 (sin raza)",
+      shortName: "CKD-EPI",
+      description: "Estima el filtrado glomerular en adultos mayores de 18 años; recomendada por las guías KDIGO actuales.",
+      category: CAT_RENAL,
+      specialty: FARM,
+      inputs: [
+        { id: "creatinina", type: "number", label: "Creatinina sérica", unit: "mg/dL", min: 0.1, max: 20, step: 0.01 },
+        { id: "edad", type: "number", label: "Edad", unit: "años", min: 18, max: 110 },
+        {
+          id: "sexo",
+          type: "select",
+          label: "Sexo",
+          noPoints: true,
+          options: [
+            { label: "Varón", value: 0 },
+            { label: "Mujer", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const mujer = v.sexo === 1;
+        const k = mujer ? 0.7 : 0.9;
+        const alpha = mujer ? -0.241 : -0.302;
+        const min = Math.min(v.creatinina / k, 1);
+        const max = Math.max(v.creatinina / k, 1);
+        const fge = 142 * Math.pow(min, alpha) * Math.pow(max, -1.2) * Math.pow(0.9938, v.edad) * (mujer ? 1.012 : 1);
+        const estadio = fge >= 90 ? "G1" : fge >= 60 ? "G2" : fge >= 45 ? "G3a" : fge >= 30 ? "G3b" : fge >= 15 ? "G4" : "G5";
+        return {
+          main: fmt(fge, 1),
+          mainUnit: "mL/min/1,73 m²",
+          secondary: estadio,
+          secondaryLabel: "estadio KDIGO",
+          interpretation: fge >= 60 ? "Filtrado conservado o levemente reducido. Solo hay enfermedad renal crónica si hay además daño renal (albuminuria, alteraciones estructurales) durante ≥ 3 meses." : fge >= 30 ? "Reducción moderada del filtrado: ajustar fármacos, evitar nefrotóxicos." : fge >= 15 ? "Reducción grave: seguimiento por nefrología y preparación del tratamiento sustitutivo." : "Fallo renal: valorar terapia renal sustitutiva.",
+          level: fge >= 60 ? "ok" : fge >= 30 ? "warn" : "danger",
+          details: [
+            "CKD-EPI 2021 sin coeficiente racial (recomendado por NKF y ASN desde 2021).",
+            "Para ajustar dosis de fármacos, muchas fichas técnicas todavía se basan en Cockcroft-Gault: verificar cada caso."
+          ]
+        };
+      },
+      notes: [
+        "La ecuación devuelve el filtrado indexado por 1,73 m² de superficie corporal. Para pesos extremos, usar la versión no indexada.",
+        "No aplicable en la insuficiencia renal aguda ni en el embarazo."
+      ],
+      references: [
+        "Inker LA, et al. New Creatinine- and Cystatin C-Based Equations to Estimate GFR without Race. N Engl J Med. 2021;385(19):1737-49."
+      ]
+    },
+    {
+      id: "schwartz-2009",
+      name: "Ecuación de Schwartz revisada pediátrica (2009)",
+      shortName: "Schwartz",
+      description: "Estima el filtrado glomerular en pacientes pediátricos.",
+      category: CAT_RENAL,
+      specialty: FARM,
+      inputs: [
+        { id: "talla", type: "number", label: "Talla", unit: "cm", min: 30, max: 200, step: 0.5 },
+        { id: "creatinina", type: "number", label: "Creatinina sérica", unit: "mg/dL", min: 0.05, max: 15, step: 0.01 }
+      ],
+      compute: (v) => {
+        const fge = 0.413 * v.talla / v.creatinina;
+        return {
+          main: fmt(fge, 1),
+          mainUnit: "mL/min/1,73 m²",
+          interpretation: fge >= 90 ? "Filtrado glomerular estimado normal para la edad pediátrica." : fge >= 60 ? "Reducción leve." : "Reducción significativa: valorar por nefrología pediátrica.",
+          level: fge >= 90 ? "ok" : fge >= 60 ? "warn" : "danger",
+          details: ["FGe = 0,413 × talla (cm) / creatinina (mg/dL)."]
+        };
+      },
+      notes: [
+        "Validada en niños y adolescentes con enfermedad renal crónica y filtrado 15–75 mL/min/1,73 m².",
+        "En neonatos, prematuros y lactantes pequeños la ecuación pierde exactitud."
+      ],
+      references: [
+        "Schwartz GJ, et al. New equations to estimate GFR in children with CKD. J Am Soc Nephrol. 2009;20(3):629-37."
+      ]
+    },
+    {
+      id: "fenitoina-corregida",
+      name: "Fenitoína corregida por albúmina e insuficiencia renal",
+      shortName: "Fenitoína corregida",
+      description: "Corrige la concentración total de fenitoína en pacientes con hipoalbuminemia o insuficiencia renal (fórmula de Sheiner-Tozer).",
+      category: CAT_RENAL,
+      specialty: FARM,
+      inputs: [
+        { id: "nivel", type: "number", label: "Fenitoína total medida", unit: "µg/mL", min: 0, max: 100, step: 0.1 },
+        { id: "albumina", type: "number", label: "Albúmina sérica", unit: "g/dL", min: 0.5, max: 6, step: 0.1 },
+        {
+          id: "renal",
+          type: "select",
+          label: "Función renal",
+          noPoints: true,
+          options: [
+            { label: "Conservada (aclaramiento ≥ 20 mL/min)", value: 0 },
+            { label: "Insuficiencia renal grave (aclaramiento < 20 mL/min)", value: 1 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const factor = v.renal === 1 ? 0.1 : 0.2;
+        const corregida = v.nivel / (factor * v.albumina + 0.1);
+        return {
+          main: fmt(corregida, 1),
+          mainUnit: "µg/mL corregida",
+          interpretation: corregida < 10 ? "Rango infraterapéutico: valorar aumento de dosis según la clínica." : corregida <= 20 ? "Rango terapéutico (10–20 µg/mL)." : "Rango tóxico (> 20 µg/mL): valorar suspender o reducir la dosis y buscar signos de toxicidad (nistagmo, ataxia, disartria, alteración del nivel de conciencia).",
+          level: corregida < 10 ? "warn" : corregida <= 20 ? "ok" : "danger",
+          details: [
+            `Fórmula: nivel medido / (${factor} × albúmina + 0,1).`,
+            v.renal === 1 ? "Usa la fórmula modificada para pacientes con insuficiencia renal grave (factor 0,1 en lugar de 0,2)." : "Factor 0,2 (fórmula estándar)."
+          ]
+        };
+      },
+      notes: [
+        "Si dispone de fenitoína libre, es preferible medirla directamente (rango terapéutico 1–2 µg/mL).",
+        "La fórmula estima; los rangos son orientativos y deben integrarse con la respuesta clínica."
+      ],
+      references: [
+        "Winter ME. Basic Clinical Pharmacokinetics. 5.ª ed. Lippincott, 2010."
+      ]
+    },
+    {
+      id: "gir",
+      name: "Tasa de infusión de glucosa (GIR)",
+      shortName: "GIR",
+      description: "Cuantifica la velocidad a la que se administra glucosa por vía intravenosa (útil en neonatología y pediatría).",
+      category: CAT_FLUIDOS,
+      specialty: FARM,
+      inputs: [
+        { id: "ritmo", type: "number", label: "Ritmo de infusión", unit: "mL/h", min: 0.1, max: 500, step: 0.1 },
+        { id: "concentracion", type: "number", label: "Concentración de glucosa", unit: "%", min: 1, max: 70, step: 0.5 },
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 0.3, max: 200, step: 0.1 }
+      ],
+      compute: (v) => {
+        const gir = v.ritmo * v.concentracion * 10 / (60 * v.peso);
+        return {
+          main: fmt(gir, 1),
+          mainUnit: "mg/kg/min",
+          interpretation: gir < 4 ? "GIR baja: puede ser insuficiente para prevenir la hipoglucemia en el neonato (objetivo habitual 4–8 mg/kg/min)." : gir <= 8 ? "GIR habitual de mantenimiento neonatal (4–8 mg/kg/min)." : gir <= 12 ? "GIR alta: vigilar hiperglucemia y la osmolaridad de la solución." : "GIR muy alta (> 12 mg/kg/min): riesgo de hiperglucemia y de esteatosis hepática; revisar la indicación y considerar insulina.",
+          level: gir < 4 ? "warn" : gir <= 8 ? "ok" : gir <= 12 ? "warn" : "danger",
+          details: [
+            "Fórmula: GIR = (mL/h × % glucosa × 10) / (60 × peso).",
+            `Aporte total de glucosa: ${fmt(v.ritmo * v.concentracion / 100 * 24, 1)} g/día.`,
+            "Con GIR > 6 mg/kg/min por vía periférica se recomienda vía central si la osmolaridad supera 900 mOsm/L."
+          ]
+        };
+      },
+      references: [
+        "Adamkin DH. Clinical Report—Postnatal Glucose Homeostasis in Late-Preterm and Term Infants. Pediatrics. 2011;127(3):575-9."
+      ]
+    },
+    {
+      id: "correccion-sodio",
+      name: "Tasa de corrección de sodio (Adrogué-Madias)",
+      shortName: "Corrección de sodio",
+      description: "Estima el cambio de sodio sérico que produce 1 litro de la solución elegida y el volumen necesario para alcanzar un objetivo.",
+      category: CAT_FLUIDOS,
+      specialty: FARM,
+      inputs: [
+        {
+          id: "poblacion",
+          type: "select",
+          label: "Grupo (fracción de agua corporal)",
+          noPoints: true,
+          dropdown: true,
+          options: [
+            { label: "Varón adulto (0,6)", value: 0.6 },
+            { label: "Mujer adulta (0,5)", value: 0.5 },
+            { label: "Varón anciano (0,5)", value: 0.5001 },
+            { label: "Mujer anciana (0,45)", value: 0.45 },
+            { label: "Niño (0,6)", value: 0.6002 }
+          ],
+          default: 0.6
+        },
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 3, max: 250, step: 0.5 },
+        { id: "naActual", type: "number", label: "Sodio sérico actual", unit: "mEq/L", min: 100, max: 180, step: 0.1 },
+        { id: "naObjetivo", type: "number", label: "Sodio sérico objetivo", unit: "mEq/L", min: 100, max: 180, step: 0.1 },
+        {
+          id: "solucion",
+          type: "select",
+          label: "Solución de infusión (Na⁺ infundido, mEq/L)",
+          noPoints: true,
+          dropdown: true,
+          options: [
+            { label: "Suero fisiológico 0,9 % (154)", value: 154 },
+            { label: "Ringer lactato (130)", value: 130 },
+            { label: "Suero salino hipertónico 3 % (513)", value: 513 },
+            { label: "Suero salino hipertónico 2 % (342)", value: 342 },
+            { label: "Suero salino 0,45 % (77)", value: 77 },
+            { label: "Suero glucosado 5 % (0)", value: 0 }
+          ],
+          default: 154
+        },
+        {
+          id: "horas",
+          type: "number",
+          label: "Tiempo previsto de corrección",
+          unit: "h",
+          min: 1,
+          max: 96,
+          step: 1
+        }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const acT = ((_a = v.poblacion) != null ? _a : 0.6) * v.peso;
+        const cambio = (((_b = v.solucion) != null ? _b : 154) - v.naActual) / (acT + 1);
+        const objetivo = v.naObjetivo - v.naActual;
+        const litros = cambio === 0 ? Infinity : objetivo / cambio;
+        const ritmo = litros === Infinity ? 0 : litros * 1e3 / v.horas;
+        const seguro = Math.abs(objetivo) / (v.horas / 24) <= (v.naActual < v.naObjetivo ? 10 : 10);
+        return {
+          main: fmt(cambio, 2),
+          mainUnit: "mEq/L por cada litro infundido",
+          secondary: litros === Infinity ? "—" : `${fmt(litros * 1e3, 0)} mL`,
+          secondaryLabel: "volumen total para alcanzar el objetivo",
+          interpretation: litros === Infinity ? "La solución elegida tiene la misma concentración que el sodio del paciente: no modificará la natremia." : (v.naActual < v.naObjetivo ? "Hiponatremia: no superar 10 mEq/L al día (8 mEq/L en pacientes con riesgo alto de mielinolisis: alcohólicos, malnutridos, hipopotasémicos, hepatopatía). En hiponatremia grave sintomática, aportar bolo de 100–150 mL de salino al 3 % y reevaluar." : "Hipernatremia: no bajar más de 10 mEq/L al día para evitar el edema cerebral.") + (seguro ? "" : " Atención: el ritmo previsto supera el límite recomendado."),
+          level: !seguro ? "danger" : "warn",
+          details: [
+            `Ritmo aproximado: ${fmt(ritmo, 0)} mL/h.`,
+            "Fórmula: ΔNa por litro = (Na infundido − Na sérico) / (agua corporal total + 1).",
+            "Reevaluar sodio cada 2–4 h; no basar decisiones únicamente en el cálculo."
+          ]
+        };
+      },
+      notes: [
+        "En la hiponatremia crónica, corregir de forma lenta (máx. 8–10 mEq/L en 24 h) para prevenir el síndrome de desmielinización osmótica.",
+        "En la hipernatremia crónica, corregir a razón máxima de 10 mEq/L al día.",
+        "Añadir el aporte de potasio de la solución al cálculo si es significativo."
+      ],
+      references: [
+        "Adrogué HJ, Madias NE. Hyponatremia. N Engl J Med. 2000;342(21):1581-9."
+      ]
+    },
+    {
+      id: "balance-fluidos",
+      name: "Balance de fluidos por entradas y salidas",
+      shortName: "Balance de fluidos",
+      description: "Calcula el balance hídrico diario y estima el sodio administrado y las pérdidas insensibles.",
+      category: CAT_FLUIDOS,
+      specialty: FARM,
+      inputs: [
+        { id: "iv", type: "number", label: "Fluidos intravenosos administrados", unit: "mL", min: 0, max: 2e4, step: 10 },
+        { id: "oral", type: "number", label: "Ingesta oral / enteral", unit: "mL", min: 0, max: 1e4, step: 10 },
+        { id: "diuresis", type: "number", label: "Diuresis", unit: "mL", min: 0, max: 2e4, step: 10 },
+        { id: "perdidas", type: "number", label: "Otras pérdidas (SNG, drenajes, heces líquidas)", unit: "mL", min: 0, max: 2e4, step: 10 },
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 1, max: 250, step: 0.5 },
+        { id: "temp", type: "number", label: "Temperatura máxima", unit: "°C", min: 34, max: 42, step: 0.1 },
+        { id: "horas", type: "number", label: "Horas del período", unit: "h", min: 1, max: 72, step: 1 }
+      ],
+      compute: (v) => {
+        const insensibles = 0.5 * v.peso * v.horas;
+        const extraFiebre = Math.max(0, v.temp - 37) * 0.5 * v.peso;
+        const salidas = v.diuresis + v.perdidas + insensibles + extraFiebre;
+        const balance = v.iv + v.oral - salidas;
+        return {
+          main: fmt(balance, 0),
+          mainUnit: "mL de balance",
+          secondary: fmt(salidas, 0),
+          secondaryLabel: "mL de salidas totales",
+          interpretation: balance > 500 ? "Balance positivo: valorar riesgo de sobrecarga (crepitantes, edema, presión venosa)." : balance < -500 ? "Balance negativo: valorar hipoperfusión y ajustar el aporte." : "Balance dentro de un rango habitual.",
+          level: balance > 1e3 || balance < -1e3 ? "warn" : "ok",
+          details: [
+            `Pérdidas insensibles estimadas: ${fmt(insensibles, 0)} mL (0,5 mL/kg/h).`,
+            `Pérdidas adicionales por fiebre: ${fmt(extraFiebre, 0)} mL (0,5 mL/kg por cada °C sobre 37).`,
+            "Sumar sudoración profusa y taquipnea marcadas si son significativas."
+          ]
+        };
+      }
+    },
+    {
+      id: "conversion-esteroides",
+      name: "Conversión de esteroides",
+      shortName: "Esteroides",
+      description: "Convierte dosis de corticoides sistémicos entre sí usando la potencia glucocorticoide relativa.",
+      category: CAT_FARMACO,
+      specialty: FARM,
+      inputs: [
+        {
+          id: "origen",
+          type: "select",
+          label: "Corticoide de partida",
+          noPoints: true,
+          dropdown: true,
+          options: [
+            { label: "Cortisona", value: 25 },
+            { label: "Hidrocortisona", value: 20 },
+            { label: "Prednisona", value: 5 },
+            { label: "Prednisolona", value: 5.0001 },
+            { label: "Metilprednisolona", value: 4 },
+            { label: "Triamcinolona", value: 4.0001 },
+            { label: "Deflazacort", value: 6 },
+            { label: "Dexametasona", value: 0.75 },
+            { label: "Betametasona", value: 0.6 }
+          ]
+        },
+        { id: "dosis", type: "number", label: "Dosis de partida", unit: "mg", min: 0.1, max: 2e3, step: 0.5 },
+        {
+          id: "destino",
+          type: "select",
+          label: "Corticoide equivalente",
+          noPoints: true,
+          dropdown: true,
+          options: [
+            { label: "Cortisona", value: 25 },
+            { label: "Hidrocortisona", value: 20 },
+            { label: "Prednisona", value: 5 },
+            { label: "Prednisolona", value: 5.0001 },
+            { label: "Metilprednisolona", value: 4 },
+            { label: "Triamcinolona", value: 4.0001 },
+            { label: "Deflazacort", value: 6 },
+            { label: "Dexametasona", value: 0.75 },
+            { label: "Betametasona", value: 0.6 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const equiv = v.dosis * ((_a = v.destino) != null ? _a : 4) / ((_b = v.origen) != null ? _b : 5);
+        return {
+          main: fmt(equiv, 2),
+          mainUnit: "mg equivalentes",
+          interpretation: "Equivalencia glucocorticoide orientativa. Los corticoides difieren también en potencia mineralocorticoide y duración de acción; adaptar la pauta al escenario clínico.",
+          level: "info",
+          details: [
+            "Potencia mineralocorticoide: cortisona e hidrocortisona alta; prednisona/prednisolona intermedia; metilprednisolona/triamcinolona baja; dexametasona/betametasona nula.",
+            "Duración de acción: cortisona/hidrocortisona corta (8–12 h); prednisona/prednisolona/metilprednisolona/triamcinolona/deflazacort intermedia (12–36 h); dexametasona/betametasona larga (36–72 h)."
+          ]
+        };
+      },
+      notes: [
+        "La conversión de fluticasona, budesonida u otros inhalados o tópicos no es equivalente a la sistémica: no usar esta calculadora para ellos.",
+        "En dosis > 40 mg/día de equivalentes de prednisona, valorar profilaxis gástrica y ósea, y cribado del riesgo cardiometabólico."
+      ],
+      references: [
+        "Liu D, et al. A practical guide to the monitoring and management of the complications of systemic corticosteroid therapy. Allergy Asthma Clin Immunol. 2013;9(1):30."
+      ]
+    },
+    {
+      id: "levotiroxina",
+      name: "Dosis inicial de levotiroxina para el hipotiroidismo",
+      shortName: "Levotiroxina",
+      description: "Estima la dosis diaria de levotiroxina en función del peso y del contexto clínico.",
+      category: CAT_FARMACO,
+      specialty: FARM,
+      inputs: [
+        { id: "peso", type: "number", label: "Peso", unit: "kg", min: 30, max: 200, step: 0.5 },
+        {
+          id: "contexto",
+          type: "select",
+          label: "Contexto clínico",
+          noPoints: true,
+          dropdown: true,
+          options: [
+            { label: "Hipotiroidismo primario en paciente joven sano (1,6 µg/kg/día)", value: 1.6 },
+            { label: "Anciano o cardiopatía (0,3–0,5 µg/kg/día, comenzar bajo)", value: 0.4 },
+            { label: "Post-tiroidectomía por cáncer (2,0 µg/kg/día)", value: 2 },
+            { label: "Post-tiroidectomía benigna (1,7 µg/kg/día)", value: 1.7 },
+            { label: "Embarazo (2,0–2,4 µg/kg/día)", value: 2.2 }
+          ],
+          default: 1.6
+        }
+      ],
+      compute: (v) => {
+        var _a;
+        const dosis = v.peso * ((_a = v.contexto) != null ? _a : 1.6);
+        const dosisRedondeada = Math.round(dosis / 12.5) * 12.5;
+        return {
+          main: fmt(dosisRedondeada, 1),
+          mainUnit: "µg/día",
+          secondary: fmt(dosis, 0),
+          secondaryLabel: "µg/día calculados sin redondear",
+          interpretation: "Administrar en ayunas, 30–60 min antes del desayuno. Reevaluar TSH a las 6–8 semanas y ajustar la dosis en incrementos de 12,5–25 µg. En ancianos y cardiópatas, iniciar con 12,5–25 µg/día e ir subiendo.",
+          level: "info",
+          details: ["Presentaciones habituales: 25, 50, 75, 88, 100, 112, 125, 137, 150, 175, 200 µg."]
+        };
+      },
+      references: [
+        "Jonklaas J, et al. Guidelines for the Treatment of Hypothyroidism (American Thyroid Association). Thyroid. 2014;24(12):1670-751."
+      ]
+    },
+    {
+      id: "hidroxicloroquina",
+      name: "Dosis máxima segura de hidroxicloroquina",
+      shortName: "Hidroxicloroquina",
+      description: "Calcula la dosis máxima diaria de hidroxicloroquina que minimiza el riesgo de retinopatía (guía AAO 2016).",
+      category: CAT_FARMACO,
+      specialty: FARM,
+      inputs: [
+        { id: "peso", type: "number", label: "Peso corporal real", unit: "kg", min: 30, max: 200, step: 0.5 }
+      ],
+      compute: (v) => {
+        const dosis = 5 * v.peso;
+        const dosisRedondeada = Math.min(Math.round(dosis / 100) * 100, 400);
+        return {
+          main: fmt(dosisRedondeada, 0),
+          mainUnit: "mg/día (máximo)",
+          secondary: fmt(dosis, 0),
+          secondaryLabel: "mg/día calculados",
+          interpretation: "Dosis diaria máxima: 5 mg/kg de peso real, sin superar 400 mg/día. Cribado oftalmológico basal y anual a partir del quinto año (antes si hay factores de riesgo).",
+          level: "info",
+          details: [
+            "La guía anterior (6,5 mg/kg de peso ideal) infraestimaba el riesgo en pacientes con sobrepeso.",
+            "Factores de riesgo de retinopatía: dosis > 5 mg/kg/día, duración > 5 años, insuficiencia renal, uso concomitante de tamoxifeno, patología macular preexistente."
+          ]
+        };
+      },
+      references: [
+        "Marmor MF, et al. Recommendations on Screening for Chloroquine and Hydroxychloroquine Retinopathy. Ophthalmology. 2016;123(6):1386-94."
+      ]
+    }
+  ];
+
+  // inurse-main/src/calculators/farmacia-opioides.ts
+  var CAT20 = "Opioides, benzodiacepinas y controlados";
+  var FARM2 = ["Farmacia"];
+  var MME_FACTORS = [
+    { label: "Morfina", via: "oral", factor: 1 },
+    { label: "Morfina", via: "IV o SC", factor: 3 },
+    { label: "Codeína", via: "oral", factor: 0.15 },
+    { label: "Tramadol", via: "oral", factor: 0.1 },
+    { label: "Hidrocodona", via: "oral", factor: 1 },
+    { label: "Oxicodona", via: "oral", factor: 1.5 },
+    { label: "Oxicodona", via: "IV", factor: 3 },
+    { label: "Hidromorfona", via: "oral", factor: 4 },
+    { label: "Hidromorfona", via: "IV o SC", factor: 20 },
+    { label: "Tapentadol", via: "oral", factor: 0.4 },
+    { label: "Fentanilo parche", via: "transdérmico (µg/h)", factor: 2.4, nota: "Multiplica los µg/h del parche por 2,4 para obtener MME/día" },
+    { label: "Meperidina (petidina)", via: "oral", factor: 0.1 },
+    { label: "Metadona", via: "oral (≤ 20 mg/día)", factor: 4 },
+    { label: "Metadona", via: "oral (21–40 mg/día)", factor: 8 },
+    { label: "Metadona", via: "oral (41–60 mg/día)", factor: 10 },
+    { label: "Metadona", via: "oral (> 60 mg/día)", factor: 12 },
+    { label: "Buprenorfina", via: "transdérmica (µg/h)", factor: 12.6, nota: "µg/h × 12,6 = MME/día (aproximación)" },
+    { label: "Buprenorfina", via: "sublingual (mg)", factor: 30, nota: "Aproximación; hay controversia sobre su MME por efecto techo" }
+  ];
+  var BENZO_EQUIV = [
+    { label: "Diazepam", factor: 10 },
+    { label: "Alprazolam", factor: 0.5 },
+    { label: "Lorazepam", factor: 1 },
+    { label: "Clonazepam", factor: 0.5 },
+    { label: "Midazolam (oral)", factor: 7.5 },
+    { label: "Oxazepam", factor: 20 },
+    { label: "Temazepam", factor: 20 },
+    { label: "Bromazepam", factor: 5 },
+    { label: "Clobazam", factor: 20 },
+    { label: "Cloracepato", factor: 15 },
+    { label: "Ketazolam", factor: 15 },
+    { label: "Flunitrazepam", factor: 1 }
+  ];
+  var farmaciaOpioides = [
+    {
+      id: "mme",
+      name: "Miligramos equivalentes de morfina al día (MME)",
+      shortName: "MME diario",
+      description: "Convierte una dosis diaria de opioide a miligramos equivalentes de morfina oral usando los factores de los CDC.",
+      category: CAT20,
+      specialty: FARM2,
+      inputs: [
+        {
+          id: "farmaco",
+          type: "select",
+          label: "Opioide y vía",
+          noPoints: true,
+          dropdown: true,
+          options: MME_FACTORS.map((m, i) => ({
+            label: `${m.label} (${m.via})`,
+            value: i
+          }))
+        },
+        { id: "dosis", type: "number", label: "Dosis diaria total", unit: "mg (o µg/h en parches)", min: 0, max: 5e3, step: 0.5 }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const m = MME_FACTORS[(_a = v.farmaco) != null ? _a : 0];
+        const mme = v.dosis * m.factor;
+        const banda = mme < 50 ? "baja" : mme < 90 ? "moderada" : mme < 200 ? "alta" : "muy alta";
+        const level = mme < 50 ? "ok" : mme < 90 ? "warn" : "danger";
+        return {
+          main: fmt(mme, 1),
+          mainUnit: "MME/día",
+          secondary: `Dosis ${banda}`,
+          interpretation: mme < 50 ? "Dosis diaria baja según los umbrales de los CDC." : mme < 90 ? "A partir de 50 MME/día, los CDC recomiendan reevaluar riesgos y beneficios, considerar naloxona domiciliaria y revisar comorbilidades." : mme < 200 ? "Dosis alta (≥ 90 MME/día): valorar consulta a unidad del dolor, evitar aumentos y aportar naloxona." : "Dosis muy alta (≥ 200 MME/día): riesgo significativo de sobredosis. Revisar indicación y estrategia de deshabituación.",
+          level,
+          details: [
+            `Factor de conversión: 1 mg de ${m.label} (${m.via}) = ${fmt(m.factor, 2)} MME.`,
+            (_b = m.nota) != null ? _b : "La conversión es solo orientativa: cada paciente puede tener sensibilidad muy distinta.",
+            "La metadona no es lineal: usar la tabla por tramo de dosis y ajustar con especial precaución."
+          ]
+        };
+      },
+      notes: [
+        "Estos factores no son dosis clínicamente equivalentes ni deben usarse para rotar un opioide a otro sin reducir la dosis calculada al menos un 25–50 % por tolerancia cruzada incompleta.",
+        "Los CDC recomiendan revaluar cuidadosamente cualquier paciente con ≥ 50 MME/día y evitar en general los ≥ 90 MME/día para dolor crónico no oncológico.",
+        "La buprenorfina tiene efecto techo y su conversión a MME es controvertida; interprétala solo como orientación."
+      ],
+      references: [
+        "Dowell D, et al. CDC Clinical Practice Guideline for Prescribing Opioids for Pain — United States, 2022. MMWR Recomm Rep. 2022;71(3):1-95."
+      ]
+    },
+    {
+      id: "rotacion-opioides",
+      name: "Rotación de opioides",
+      shortName: "Rotación de opioides",
+      description: "Convierte una dosis de un opioide a otro usando los factores de MME y aplica una reducción de seguridad por tolerancia cruzada incompleta.",
+      category: CAT20,
+      specialty: FARM2,
+      inputs: [
+        {
+          id: "origen",
+          type: "select",
+          label: "Opioide y vía de partida",
+          noPoints: true,
+          dropdown: true,
+          options: MME_FACTORS.map((m, i) => ({
+            label: `${m.label} (${m.via})`,
+            value: i
+          }))
+        },
+        { id: "dosis", type: "number", label: "Dosis diaria de partida", unit: "mg (o µg/h)", min: 0, max: 5e3, step: 0.5 },
+        {
+          id: "destino",
+          type: "select",
+          label: "Opioide y vía de destino",
+          noPoints: true,
+          dropdown: true,
+          options: MME_FACTORS.map((m, i) => ({
+            label: `${m.label} (${m.via})`,
+            value: i
+          }))
+        },
+        {
+          id: "reduccion",
+          type: "select",
+          label: "Reducción de seguridad por tolerancia cruzada",
+          noPoints: true,
+          options: [
+            { label: "25 % (dolor bien controlado, paciente estable)", value: 0.75 },
+            { label: "33 % (habitual)", value: 0.67 },
+            { label: "50 % (rotación a metadona, ancianos, comorbilidad)", value: 0.5 },
+            { label: "Sin reducción", value: 1 }
+          ],
+          default: 0.67
+        }
+      ],
+      compute: (v) => {
+        var _a, _b, _c;
+        const o = MME_FACTORS[(_a = v.origen) != null ? _a : 0];
+        const d = MME_FACTORS[(_b = v.destino) != null ? _b : 0];
+        if (!d.factor)
+          return { main: "—", interpretation: "El opioide de destino no tiene factor definido.", level: "warn" };
+        const mme = v.dosis * o.factor;
+        const equivalente = mme / d.factor;
+        const ajustada = equivalente * ((_c = v.reduccion) != null ? _c : 0.67);
+        const rescate = ajustada * 0.1;
+        return {
+          main: fmt(ajustada, 1),
+          mainUnit: `mg/día de ${d.label} (${d.via})`,
+          secondary: fmt(mme, 1),
+          secondaryLabel: "MME/día equivalentes",
+          interpretation: `Dosis inicial recomendada tras la rotación. Repartir en las tomas habituales del opioide de destino y ajustar según respuesta y efectos adversos. Prever pauta de rescate (aprox. 10 % de la dosis diaria).`,
+          level: "warn",
+          details: [
+            `Equivalente sin reducción: ${fmt(equivalente, 1)} mg/día.`,
+            `Rescate orientativo: ${fmt(rescate, 1)} mg cada 4 h a demanda.`,
+            "La rotación a metadona requiere consulta con especialista: la relación de conversión no es lineal y su vida media prolongada aumenta el riesgo de acumulación.",
+            "En rotación a parche transdérmico, mantener la analgesia previa 12–24 h tras la aplicación mientras se alcanza el estado estacionario."
+          ]
+        };
+      },
+      notes: [
+        "Herramienta de apoyo: la rotación exige valoración clínica individual y monitorización estrecha en las primeras 24–72 h.",
+        "Reduce la dosis calculada si el paciente presenta ancianidad, insuficiencia renal o hepática, comorbilidad respiratoria o síndrome de apnea."
+      ],
+      references: [
+        'Fine PG, Portenoy RK. Establishing "best practices" for opioid rotation. J Pain Symptom Manage. 2009;38(3):418-25.'
+      ]
+    },
+    {
+      id: "conversion-benzodiacepinas",
+      name: "Conversión de benzodiacepinas",
+      shortName: "Benzodiacepinas",
+      description: "Proporciona equivalencias orientativas entre benzodiacepinas usando el diazepam como referencia.",
+      category: CAT20,
+      specialty: FARM2,
+      inputs: [
+        {
+          id: "origen",
+          type: "select",
+          label: "Benzodiacepina de partida",
+          noPoints: true,
+          dropdown: true,
+          options: BENZO_EQUIV.map((b, i) => ({ label: b.label, value: i }))
+        },
+        { id: "dosis", type: "number", label: "Dosis diaria total", unit: "mg", min: 0.05, max: 500, step: 0.05 },
+        {
+          id: "destino",
+          type: "select",
+          label: "Benzodiacepina equivalente",
+          noPoints: true,
+          dropdown: true,
+          options: BENZO_EQUIV.map((b, i) => ({ label: b.label, value: i }))
+        }
+      ],
+      compute: (v) => {
+        var _a, _b;
+        const o = BENZO_EQUIV[(_a = v.origen) != null ? _a : 0];
+        const d = BENZO_EQUIV[(_b = v.destino) != null ? _b : 0];
+        const diazepamEq = v.dosis / o.factor * 10;
+        const equivalente = diazepamEq * d.factor / 10;
+        return {
+          main: fmt(equivalente, 2),
+          mainUnit: `mg/día de ${d.label}`,
+          secondary: fmt(diazepamEq, 1),
+          secondaryLabel: "mg/día equivalentes de diazepam",
+          interpretation: "La conversión entre benzodiacepinas es aproximada y la variabilidad interindividual es alta. Vida media, potencia y ansiedad rebote difieren de una molécula a otra.",
+          level: "warn",
+          details: [
+            `Equivalencia de referencia: 10 mg de diazepam ≡ ${fmt(o.factor, 2)} mg de ${o.label} ≡ ${fmt(d.factor, 2)} mg de ${d.label}.`,
+            "Al pasar a diazepam para deshabituación se aprovecha su vida media larga; hacerlo de forma gradual (5–10 % de reducción cada 2–4 semanas).",
+            "La retirada brusca puede precipitar convulsiones y delirio: nunca suspender abruptamente en tratamiento crónico."
+          ]
+        };
+      },
+      notes: ["Los factores de equivalencia proceden del manual clásico de Ashton; la comunidad clínica los utiliza como referencia orientativa."],
+      references: [
+        "Ashton CH. Benzodiazepines: How they work and how to withdraw. Universidad de Newcastle, 2002 (rev. 2007)."
+      ]
+    },
+    {
+      id: "ciwa-b",
+      name: "CIWA-B para la abstinencia de benzodiacepinas",
+      shortName: "CIWA-B",
+      description: "Evalúa la gravedad del síndrome de abstinencia de benzodiacepinas.",
+      category: CAT20,
+      specialty: FARM2,
+      inputs: [
+        ...[
+          ["irritabilidad", "Irritabilidad"],
+          ["fatiga", "Fatiga"],
+          ["tension", "Tensión muscular"],
+          ["dificultadConcentracion", "Dificultad para concentrarse"],
+          ["perdidaApetito", "Pérdida de apetito"],
+          ["entumecimiento", "Entumecimiento u hormigueos"],
+          ["tinnitus", "Zumbidos de oídos"],
+          ["confusion", "Confusión"],
+          ["fotofobia", "Molestia con la luz"],
+          ["fonofobia", "Molestia con el ruido"],
+          ["pesadillas", "Pesadillas"],
+          ["nauseas", "Náuseas"],
+          ["temblor", "Temblor"],
+          ["sudoracion", "Sudoración"],
+          ["ansiedad", "Ansiedad"],
+          ["agitacion", "Agitación"],
+          ["alucinacionesV", "Alucinaciones visuales"],
+          ["alucinacionesA", "Alucinaciones auditivas"],
+          ["alucinacionesT", "Alucinaciones táctiles"]
+        ].map(([id, label]) => ({
+          id,
+          type: "select",
+          label,
+          options: [
+            { label: "0 — Nada", value: 0 },
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4 — Muy intenso", value: 4 }
+          ]
+        })),
+        {
+          id: "sueno",
+          type: "select",
+          label: "Alteración del sueño",
+          options: [
+            { label: "0 — Normal", value: 0 },
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4 — Insomnio grave", value: 4 }
+          ]
+        },
+        {
+          id: "debilidad",
+          type: "select",
+          label: "Debilidad muscular",
+          options: [
+            { label: "0 — Ninguna", value: 0 },
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4 — Grave", value: 4 }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const ids = [
+          "irritabilidad",
+          "fatiga",
+          "tension",
+          "dificultadConcentracion",
+          "perdidaApetito",
+          "entumecimiento",
+          "tinnitus",
+          "confusion",
+          "fotofobia",
+          "fonofobia",
+          "pesadillas",
+          "nauseas",
+          "temblor",
+          "sudoracion",
+          "ansiedad",
+          "agitacion",
+          "alucinacionesV",
+          "alucinacionesA",
+          "alucinacionesT",
+          "sueno",
+          "debilidad"
+        ];
+        const score = ids.reduce((acc, id) => {
+          var _a;
+          return acc + ((_a = v[id]) != null ? _a : 0);
+        }, 0);
+        return {
+          main: String(score),
+          mainUnit: "puntos (0–84)",
+          interpretation: score < 20 ? "Abstinencia leve: continuar reducción gradual y vigilar." : score < 40 ? "Abstinencia moderada: enlentecer o parar la reducción y valorar apoyo farmacológico." : "Abstinencia intensa: riesgo de convulsiones y delirio; ingreso y tratamiento activo.",
+          level: score < 20 ? "ok" : score < 40 ? "warn" : "danger"
+        };
+      },
+      notes: ["Los umbrales son orientativos; la CIWA-B se usa junto a la clínica para modular el ritmo de deshabituación."],
+      references: [
+        "Busto UE, et al. Clinical Institute Withdrawal Assessment for Benzodiazepines (CIWA-B). J Clin Psychopharmacol. 1989;9(6):412-6."
+      ]
+    }
+  ];
+
+  // inurse-main/src/calculators/index.ts
   var CATEGORIES = [
     "Gravedad en UCI y sepsis",
     "Neurocrítico e ictus",
@@ -9684,10 +10428,13 @@
     "Infecciones",
     "Endocrino y tóxicos",
     "Antropometría y metabolismo",
+    "Función renal y ajuste de dosis",
+    "Fluidos, electrolitos e infusiones",
+    "Opioides, benzodiacepinas y controlados",
     "Farmacología y dosificación",
     "Fórmulas y cálculos clínicos"
   ];
-  var SPECIALTIES = ["Anestesiología", "Cardiología", "Medicina Intensiva"];
+  var SPECIALTIES = ["Anestesiología", "Cardiología", "Medicina Intensiva", "Farmacia"];
   var EXTRA_SPECIALTIES = {
     // Anestesiología ↔ Cardiología
     pam: ["Cardiología", "Medicina Intensiva"],
@@ -9698,8 +10445,7 @@
     cage: ["Cardiología"],
     vexus: ["Cardiología"],
     // Compartidas con Medicina Intensiva
-    "fluidos-mantenimiento": ["Anestesiología", "Medicina Intensiva"],
-    "cockcroft-gault": ["Anestesiología", "Medicina Intensiva"],
+    "fluidos-mantenimiento": ["Anestesiología", "Medicina Intensiva", "Farmacia"],
     "calcio-corregido": ["Anestesiología", "Medicina Intensiva"],
     qtc: ["Anestesiología"],
     diuresis: ["Anestesiología", "Medicina Intensiva"],
@@ -9746,7 +10492,22 @@
     "fluidos-intraoperatorios": ["Medicina Intensiva"],
     reticulocitos: ["Medicina Intensiva"],
     sofa: ["Medicina Intensiva"],
-    "spo2-fio2": ["Medicina Intensiva"]
+    "spo2-fio2": ["Medicina Intensiva"],
+    // Compartidas con Farmacia
+    "cockcroft-gault": ["Anestesiología", "Medicina Intensiva", "Farmacia"],
+    mdrd: ["Farmacia"],
+    "imc-sc": ["Farmacia", "Medicina Intensiva"],
+    "peso-ideal": ["Farmacia", "Medicina Intensiva"],
+    "gasto-energetico": ["Farmacia", "Medicina Intensiva"],
+    "masa-libre-grasa-farm": ["Farmacia"],
+    "anestesicos-locales-farm": ["Farmacia"],
+    "fluidos-intraoperatorios-farm": ["Farmacia"],
+    crioprecipitado: ["Farmacia"],
+    "etanol-estimado": ["Farmacia"],
+    "deficit-agua-libre": ["Farmacia"],
+    "deficit-bicarbonato": ["Farmacia"],
+    "tpa-ictus": ["Farmacia"],
+    "ritmo-goteo": ["Farmacia"]
   };
   var ALL = [
     ...uciGravedad,
@@ -9770,6 +10531,8 @@
     ...infecciones,
     ...antropometria,
     ...farmacologia,
+    ...farmaciaFormulas,
+    ...farmaciaOpioides,
     ...formulas
   ];
   var CALCULATORS = ALL.map((c) => {
@@ -9777,6 +10540,6 @@
     return extra ? { ...c, specialty: [.../* @__PURE__ */ new Set([...c.specialty, ...extra])] } : c;
   });
 
-  // entry.ts
+  // entry2.ts
   window.ENFERIX_ESCALAS_DATA = { CATEGORIES, SPECIALTIES, CALCULATORS };
 })();
