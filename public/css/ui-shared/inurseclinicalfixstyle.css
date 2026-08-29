@@ -97,4 +97,7 @@
 .nearby-type-tag.aed{background:rgba(250,204,21,.18);color:#FACC15}
 .nearby-topbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .nearby-topbar select{padding:8px 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}
+.nearby-error-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.nearby-error-actions a.icBtn{text-decoration:none;display:inline-flex;align-items:center}
+.nearby-attrib{margin-top:14px;text-align:center;font-size:11.5px;color:var(--text-dim,#94a3b8);opacity:.75}
 .biblio-list a:hover{text-decoration:underline}
