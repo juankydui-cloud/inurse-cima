@@ -8,7 +8,10 @@
     "start": "node server.mjs",
     "android:sync": "cap sync android",
     "android:assets": "python3 scripts/gen-android-assets.py && cap sync android",
-    "android:open": "cap open android"
+    "android:open": "cap open android",
+    "build:escalas": "node scripts/build-escalas.mjs",
+    "verify:escalas": "node scripts/verify-escalas.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=18"
@@ -20,6 +23,8 @@
   "devDependencies": {
     "@capacitor/android": "^8.4.2",
     "@capacitor/cli": "^8.4.2",
-    "@capacitor/core": "^8.4.2"
+    "@capacitor/core": "^8.4.2",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.5.4"
   }
 }
