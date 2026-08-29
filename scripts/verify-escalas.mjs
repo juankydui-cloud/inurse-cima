@@ -125,7 +125,7 @@ if (baselinePath) {
   const extra = [...na].filter(x => !ba.has(x));
   const common = [...ba].filter(x => na.has(x));
   const changed = common.filter(id =>
-    JSON.stringify(baseline.compute[id]) !== JSON.stringify(snapshot.compute[id])
+    stable(baseline.compute[id]) !== stable(snapshot.compute[id])
   );
   console.log('');
   console.log('--- diff vs baseline ---');

@@ -545,7 +545,10 @@ export const pediatria2: Calculator[] = [
     ],
   },
   {
-    id: 'kawasaki',
+    // Renombrada localmente para evitar colisión con la ya existente en
+    // cardio-varios.ts (que se mantiene con id 'kawasaki'). Se preserva
+    // también aquí para que aparezca en el catálogo de Pediatría.
+    id: 'kawasaki-ped',
     name: 'Criterios de la enfermedad de Kawasaki',
     shortName: 'Kawasaki',
     description: 'Diagnóstico de la enfermedad de Kawasaki en niños.',

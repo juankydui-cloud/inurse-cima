@@ -483,7 +483,9 @@ export const familyPractice: Calculator[] = [
 
   // -------- Duke treadmill --------
   {
-    id: 'duke-treadmill',
+    // Renombrada localmente para evitar colisión con la ya existente en
+    // cardio-sca.ts (que se mantiene con id 'duke-treadmill').
+    id: 'duke-treadmill-mf',
     name: 'Puntuación de Duke en ergometría',
     shortName: 'Duke treadmill',
     description: 'Pronóstico coronario tras prueba de esfuerzo estándar (Bruce).',
