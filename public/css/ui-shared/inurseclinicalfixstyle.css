@@ -95,6 +95,11 @@
   padding:2px 7px;border-radius:6px;margin-top:4px}
 .nearby-type-tag.hospital{background:rgba(239,68,68,.18);color:#F87171}
 .nearby-type-tag.aed{background:rgba(250,204,21,.18);color:#FACC15}
+/* Horario y procedencia del dato. El "abierto ahora" solo lo publica Google,
+   así que aparece únicamente cuando la respuesta lo trae: nunca se deduce. */
+.nearby-item .info small.nearby-open{color:#34D399;font-weight:700}
+.nearby-item .info small.nearby-shut{color:#F87171;font-weight:700}
+.nearby-src{margin:14px 2px 0;font-size:11px;line-height:1.45;color:var(--text-dim,#94a3b8)}
 .nearby-topbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
 .nearby-topbar select{padding:8px 10px;border-radius:10px;border:1px solid var(--border,#1e293b);background:var(--bg,#070a12);color:var(--text,#fff);font:inherit}
 .biblio-list a:hover{text-decoration:underline}

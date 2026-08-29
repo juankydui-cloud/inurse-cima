@@ -333,7 +333,7 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
   }
 
   if (clientContext?.nearby) {
-    ctx += "--- SERVICIOS SANITARIOS CERCANOS AL USUARIO (OpenStreetMap, ubicación compartida por el propio usuario) ---\n";
+    ctx += "--- SERVICIOS SANITARIOS CERCANOS AL USUARIO (Google Maps para hospitales, OpenStreetMap para desfibriladores; ubicación compartida por el propio usuario) ---\n";
     ctx += clientContext.nearby + "\n\n";
   }
 

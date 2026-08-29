@@ -563,7 +563,11 @@ window.EnferixProcSearch={
   }
 };
 
-/* ---- Servicios sanitarios cercanos (geolocalización + OpenStreetMap) ---- */
+/* ---- Servicios sanitarios cercanos (geolocalización + Google Maps / OSM) ----
+   Los hospitales los sirve Google Maps (Places) y los desfibriladores
+   OpenStreetMap, que es el único que publica ese dato. El servidor decide y
+   lo cuenta en la respuesta (campo `source`), así que aquí no se da por
+   supuesta ninguna fuente: se muestra la que realmente ha respondido. */
 var releaseNearbyFocusTrap=null;
 var nearbyLastResults=null,nearbyLastCoords=null;
 function nearbyConsent(){try{return localStorage.getItem('inurse_geo_consent')==='1'}catch(e){return false}}
@@ -579,7 +583,7 @@ function renderNearbyPermission(){
   if(btn)btn.onclick=function(){requestNearbySearch('all')};
 }
 function renderNearbyLoading(){
-  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando OpenStreetMap.</p></div>';
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando los mapas.</p></div>';
 }
 function renderNearbyError(msg,title,retryFn){
   $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>'+esc(title||'No se ha podido obtener tu ubicación')+'</h3><p>'+esc(msg)+'</p><button class="icBtn alt" id="nearbyRetryBtn">Reintentar</button></div>';
@@ -603,11 +607,15 @@ function renderNearbyResults(data){
           '<div class="info"><b>'+esc(x.name)+'</b><br><span class="nearby-type-tag '+x.kind+'">'+esc(nearbyTypeLabel(x.kind))+'</span>'+
           (x.address?'<small>'+esc(x.address)+'</small>':'')+
           (x.phone?'<small>☎ '+esc(x.phone)+'</small>':'')+
+          (x.openNow===true?'<small class="nearby-open">🟢 Abierto ahora</small>':x.openNow===false?'<small class="nearby-shut">🔴 Cerrado ahora</small>':'')+
           '<div class="actions"><span class="nearby-go">🗺️ Toca para abrir la ruta</span></div></div>'+
           '<span class="dist">'+x.distanceKm+' km</span></div>';
       }).join('')+'</div>'
-    : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en OpenStreetMap dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
-  $('#nearbyBody').innerHTML=typeSel+list;
+    : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados dentro de ese radio. Si es una urgencia, llama al 112: no des por hecho que no hay nada cerca.</p></div>';
+  var avisos=(data.notices||[]).filter(Boolean);
+  var foot='<p class="nearby-src">Datos de '+esc(data.source||'los mapas')+'.'+
+    (avisos.length?' '+esc(avisos.join(' ')):'')+'</p>';
+  $('#nearbyBody').innerHTML=typeSel+list+foot;
   function goToItem(i){var it=nearbyLastResults[i];if(it&&it.mapsUrl)window.open(it.mapsUrl,'_blank','noopener')}
   $('#nearbyBody').querySelectorAll('[data-maps-i]').forEach(function(el){
     el.onclick=function(){goToItem(+el.dataset.mapsI)};
@@ -635,7 +643,7 @@ function searchNearbyAt(coords,type){
     .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
     .then(function(res){
       if(!res.ok){
-        renderNearbyError(res.d.error||'El servidor no ha podido consultar OpenStreetMap.','No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
+        renderNearbyError(res.d.error||'El servidor no ha podido consultar los mapas.','No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
         return;
       }
       renderNearbyResults(res.d);

@@ -17,3 +17,7 @@ services:
         sync: false
       - key: NICE_API_KEY
         sync: false
+      # Places API (New) para hospitales cercanos. Sin ella, la búsqueda sigue
+      # funcionando contra OpenStreetMap, como hasta ahora.
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
