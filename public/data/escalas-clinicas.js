@@ -1,10 +1,11 @@
 /* =========================================================================
    Enferix · Índices y escalas clínicas
-   263 calculadoras en 40 categorías y 10 especialidades: Anestesiología (46),
-   Cardiología (69), Medicina Intensiva (142), Farmacia (24), Pediatría (12),
+   320 calculadoras en 41 categorías y 11 especialidades: Anestesiología (46),
+   Cardiología (69), Medicina Intensiva (142), Farmacia (24), Pediatría (31),
    Cuidados Críticos Neonatales (12), Neurología crítica (11), Emergencias (18),
-   Medicina Familiar (19) y Cirugía Cardiotorácica (13). Muchas escalas se
-   comparten entre especialidades, por eso las cifras suman más que el total.
+   Medicina Familiar (34), Cirugía Cardiotorácica (13) y Obstetricia (2).
+   Muchas escalas se comparten entre especialidades, por eso las cifras suman
+   más que el total.
    Incluye fórmulas, notas clínicas, referencias bibliográficas y las
    advertencias de seguridad de cada escala.
    Portado del proyecto React+TypeScript juankydue-dev/inurse (rama main)
@@ -14422,6 +14423,2641 @@
     }
   ];
 
+  // inurse-m2/src/calculators/pediatria-2.ts
+  var pediatria2 = (function () {
+  const CAT = 'Neonatología y pediatría';
+  const CAT_GO = 'Obstetricia y ginecología';
+  const PED = ['Pediatría'];
+  const OBS = ['Obstetricia'];
+  const escala = (items) => items.map(([value, label]) => ({ label: `${value} — ${label}`, value }));
+  var pediatria2 = [
+      {
+          id: 'pecarn-head',
+          name: 'PECARN para traumatismo craneoencefálico pediátrico',
+          shortName: 'PECARN cabeza',
+          description: 'Regla de decisión para identificar niños con TCE leve que no necesitan tomografía craneal.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'edad',
+                  type: 'select',
+                  label: 'Edad del paciente',
+                  noPoints: true,
+                  options: [
+                      { label: '< 2 años', value: 0 },
+                      { label: '≥ 2 años', value: 1 },
+                  ],
+              },
+              { id: 'gcs', type: 'boolean', label: 'GCS ≤ 14 o alteración del estado mental (agitación, somnolencia, respuestas lentas, preguntas repetidas)', noPoints: true },
+              { id: 'palpableInfant', type: 'boolean', label: '< 2 años: fractura craneal palpable', noPoints: true },
+              { id: 'baseCraneo', type: 'boolean', label: '≥ 2 años: signos de fractura de base de cráneo (hemotímpano, ojos de mapache, otorrea o rinorrea de LCR, signo de Battle)', noPoints: true },
+              { id: 'hematomaCuero', type: 'boolean', label: '< 2 años: hematoma en cuero cabelludo no frontal', noPoints: true },
+              { id: 'perdidaConciencia', type: 'boolean', label: '< 2 años: pérdida de conciencia ≥ 5 s   |   ≥ 2 años: pérdida de conciencia', noPoints: true },
+              { id: 'comportamiento', type: 'boolean', label: '< 2 años: cambio de comportamiento según los padres', noPoints: true },
+              { id: 'mecanismo', type: 'boolean', label: 'Mecanismo grave de lesión (accidente vehículo, muerte de otro pasajero, atropello, caída > 0,9 m si < 2 años o > 1,5 m si ≥ 2 años, impacto por objeto de alta energía)', noPoints: true },
+              { id: 'vomitos', type: 'boolean', label: '≥ 2 años: vómitos', noPoints: true },
+              { id: 'cefalea', type: 'boolean', label: '≥ 2 años: cefalea intensa', noPoints: true },
+          ],
+          compute: (v) => {
+              const menor2 = v.edad === 0;
+              const factorAlto = v.gcs === 1 || (menor2 ? v.palpableInfant === 1 : v.baseCraneo === 1);
+              const factorIntermedio = menor2
+                  ? v.hematomaCuero === 1 || v.perdidaConciencia === 1 || v.comportamiento === 1 || v.mecanismo === 1
+                  : v.perdidaConciencia === 1 || v.vomitos === 1 || v.cefalea === 1 || v.mecanismo === 1;
+              if (factorAlto)
+                  return {
+                      main: 'TC craneal recomendada',
+                      interpretation: 'Factor de alto riesgo: riesgo de lesión cerebral traumática clínicamente significativa ≈ 4,4 % en < 2 años y 4,3 % en ≥ 2 años. Se recomienda tomografía craneal.',
+                      level: 'danger',
+                  };
+              if (factorIntermedio)
+                  return {
+                      main: 'Observación o TC',
+                      interpretation: 'Factores intermedios: riesgo ≈ 0,9 % en < 2 años y 0,8 % en ≥ 2 años. Decisión compartida con la familia: observación 4–6 h en centro con TC disponible o tomografía. Factores que inclinan hacia TC: síntomas o hallazgos empeoran, mecanismo grave, edad < 3 meses, preferencia parental.',
+                      level: 'warn',
+                  };
+              return {
+                  main: 'TC no necesaria',
+                  interpretation: 'Sin factores de riesgo: riesgo de lesión cerebral traumática clínicamente significativa < 0,05 %. Puede evitarse la tomografía y dar alta con recomendaciones de observación domiciliaria.',
+                  level: 'ok',
+              };
+          },
+          notes: [
+              'Aplicable a niños con GCS 14–15 en las primeras 24 h tras un traumatismo craneal cerrado no penetrante.',
+              'Regla más validada en pediatría; sensibilidad prácticamente del 100 % para lesión que requiere neurocirugía.',
+          ],
+          references: [
+              'Kuppermann N, et al. Identification of children at very low risk of clinically-important brain injuries after head trauma: a prospective cohort study. Lancet. 2009;374(9696):1160-70.',
+          ],
+      },
+      {
+          id: 'catch',
+          name: 'Regla CATCH — traumatismo craneal pediátrico',
+          shortName: 'CATCH',
+          description: 'Regla canadiense de decisión para tomografía tras traumatismo craneal en niños.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'gcs', type: 'boolean', label: 'GCS < 15 a las 2 horas del traumatismo', noPoints: true },
+              { id: 'fracturaAbierta', type: 'boolean', label: 'Sospecha de fractura craneal abierta o deprimida', noPoints: true },
+              { id: 'cefalea', type: 'boolean', label: 'Historia de cefalea que empeora', noPoints: true },
+              { id: 'irritabilidad', type: 'boolean', label: 'Irritabilidad al examen', noPoints: true },
+              { id: 'baseCraneo', type: 'boolean', label: 'Signos de fractura de base de cráneo', noPoints: true },
+              { id: 'hematoma', type: 'boolean', label: 'Hematoma extenso, blando y con crepitación en el cuero cabelludo', noPoints: true },
+              { id: 'mecanismo', type: 'boolean', label: 'Mecanismo peligroso (accidente vehículo, caída > 0,9 m o de 5 escalones, caída desde bicicleta sin casco)', noPoints: true },
+          ],
+          compute: (v) => {
+              const alto = v.gcs === 1 || v.fracturaAbierta === 1 || v.cefalea === 1 || v.irritabilidad === 1;
+              const medio = !alto && (v.baseCraneo === 1 || v.hematoma === 1 || v.mecanismo === 1);
+              return {
+                  main: alto ? 'TC obligada' : medio ? 'TC recomendada' : 'TC no necesaria',
+                  interpretation: alto
+                      ? 'Factor de riesgo alto: tomografía obligada por riesgo de necesidad de intervención neuroquirúrgica.'
+                      : medio
+                          ? 'Factor de riesgo medio: tomografía recomendada por riesgo de lesión cerebral en la imagen.'
+                          : 'Sin factores de riesgo: puede evitarse la tomografía.',
+                  level: alto ? 'danger' : medio ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Aplicable a niños de 0–16 años con GCS 13–15 tras un traumatismo craneal menor con pérdida de conciencia testificada, amnesia o vómitos.'],
+          references: [
+              'Osmond MH, et al. CATCH: a clinical decision rule for the use of computed tomography in children with minor head injury. CMAJ. 2010;182(4):341-8.',
+          ],
+      },
+      {
+          id: 'chalice',
+          name: 'Regla CHALICE — traumatismo craneal pediátrico',
+          shortName: 'CHALICE',
+          description: 'Regla británica de decisión para tomografía tras traumatismo craneal en niños < 16 años.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'perdida', type: 'boolean', label: 'Pérdida de conciencia > 5 minutos', noPoints: true },
+              { id: 'amnesia', type: 'boolean', label: 'Amnesia > 5 minutos', noPoints: true },
+              { id: 'somnolencia', type: 'boolean', label: 'Somnolencia anormal', noPoints: true },
+              { id: 'vomitos', type: 'boolean', label: '≥ 3 vómitos tras el traumatismo', noPoints: true },
+              { id: 'sospechaMaltrato', type: 'boolean', label: 'Sospecha de maltrato no accidental', noPoints: true },
+              { id: 'convulsion', type: 'boolean', label: 'Convulsión postraumática (sin epilepsia previa)', noPoints: true },
+              { id: 'gcs', type: 'boolean', label: 'GCS < 14 (o < 15 si < 1 año)', noPoints: true },
+              { id: 'fractura', type: 'boolean', label: 'Sospecha de fractura craneal penetrante o deprimida, o fontanela abombada tensa', noPoints: true },
+              { id: 'baseCraneo', type: 'boolean', label: 'Signos de fractura de base de cráneo', noPoints: true },
+              { id: 'focal', type: 'boolean', label: 'Déficit neurológico focal', noPoints: true },
+              { id: 'hematomaInfant', type: 'boolean', label: '< 1 año: hematoma, tumefacción o laceración > 5 cm en cuero cabelludo', noPoints: true },
+              { id: 'mecanismo', type: 'boolean', label: 'Mecanismo peligroso (accidente vehículo alta velocidad, caída > 3 m, impacto por objeto de alta velocidad)', noPoints: true },
+          ],
+          compute: (v) => {
+              const positivo = ['perdida', 'amnesia', 'somnolencia', 'vomitos', 'sospechaMaltrato', 'convulsion', 'gcs', 'fractura', 'baseCraneo', 'focal', 'hematomaInfant', 'mecanismo'].some((k) => v[k] === 1);
+              return {
+                  main: positivo ? 'TC indicada' : 'TC no necesaria',
+                  interpretation: positivo
+                      ? 'Al menos un criterio positivo: se recomienda tomografía craneal.'
+                      : 'Ningún criterio positivo: puede evitarse la tomografía (sensibilidad ≈ 98 % para lesión cerebral clínicamente significativa).',
+                  level: positivo ? 'danger' : 'ok',
+              };
+          },
+          references: [
+              'Dunning J, et al. Derivation of the children\'s head injury algorithm for the prediction of important clinical events decision rule for head injury in children. Arch Dis Child. 2006;91(11):885-91.',
+          ],
+      },
+      {
+          id: 'pas-samuel',
+          name: 'Puntuación de apendicitis pediátrica de Samuel (PAS)',
+          shortName: 'PAS',
+          description: 'Estima la probabilidad de apendicitis aguda en niños con dolor abdominal.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'tos', type: 'boolean', label: 'Dolor con tos, salto o percusión', points: 2 },
+              { id: 'anorexia', type: 'boolean', label: 'Anorexia' },
+              { id: 'fiebre', type: 'boolean', label: 'Fiebre > 38 °C' },
+              { id: 'nauseas', type: 'boolean', label: 'Náuseas o vómitos' },
+              { id: 'fid', type: 'boolean', label: 'Dolor a la palpación en fosa ilíaca derecha', points: 2 },
+              { id: 'leucocitosis', type: 'boolean', label: 'Leucocitos > 10.000/mm³' },
+              { id: 'neutrofilia', type: 'boolean', label: 'Neutrófilos > 7.500/mm³' },
+              { id: 'migracion', type: 'boolean', label: 'Migración del dolor a fosa ilíaca derecha' },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['tos', 'anorexia', 'fiebre', 'nauseas', 'fid', 'leucocitosis', 'neutrofilia', 'migracion']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–10)',
+                  interpretation: score <= 3
+                      ? 'Baja probabilidad de apendicitis: valorar alta con reevaluación.'
+                      : score <= 6
+                          ? 'Probabilidad intermedia: observación y prueba de imagen (ecografía).'
+                          : 'Alta probabilidad de apendicitis: valoración quirúrgica.',
+                  level: score <= 3 ? 'ok' : score <= 6 ? 'warn' : 'danger',
+              };
+          },
+          references: [
+              'Samuel M. Pediatric appendicitis score. J Pediatr Surg. 2002;37(6):877-81.',
+          ],
+      },
+      {
+          id: 'pgcs',
+          name: 'Escala de coma de Glasgow pediátrica',
+          shortName: 'GCS pediátrica',
+          description: 'Valora el nivel de conciencia en pacientes pediátricos preverbales o verbales.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'ocular',
+                  type: 'select',
+                  label: 'Respuesta ocular',
+                  dropdown: true,
+                  options: escala([
+                      [4, 'Espontánea'],
+                      [3, 'A la voz'],
+                      [2, 'Al dolor'],
+                      [1, 'Ninguna'],
+                  ]),
+                  default: 4,
+              },
+              {
+                  id: 'verbal',
+                  type: 'select',
+                  label: 'Respuesta verbal',
+                  dropdown: true,
+                  options: escala([
+                      [5, 'Sonríe/balbucea (< 2 a) o orientado (≥ 2 a)'],
+                      [4, 'Llanto consolable (< 2 a) o confuso (≥ 2 a)'],
+                      [3, 'Llanto inconsolable (< 2 a) o palabras inapropiadas (≥ 2 a)'],
+                      [2, 'Gemidos (< 2 a) o sonidos incomprensibles (≥ 2 a)'],
+                      [1, 'Ninguna'],
+                  ]),
+                  default: 5,
+              },
+              {
+                  id: 'motora',
+                  type: 'select',
+                  label: 'Respuesta motora',
+                  dropdown: true,
+                  options: escala([
+                      [6, 'Movimientos espontáneos con propósito'],
+                      [5, 'Localiza el dolor'],
+                      [4, 'Retirada al dolor'],
+                      [3, 'Flexión anormal (decorticación)'],
+                      [2, 'Extensión anormal (descerebración)'],
+                      [1, 'Ninguna'],
+                  ]),
+                  default: 6,
+              },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['ocular', 'verbal', 'motora']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (3–15)',
+                  secondary: `O${v.ocular} V${v.verbal} M${v.motora}`,
+                  interpretation: score >= 13
+                      ? 'Alteración leve del nivel de conciencia.'
+                      : score >= 9
+                          ? 'Alteración moderada: vigilancia estrecha, neuroimagen.'
+                          : 'Alteración grave (≤ 8): valorar aislamiento de la vía aérea.',
+                  level: score >= 13 ? 'ok' : score >= 9 ? 'warn' : 'danger',
+              };
+          },
+      },
+      {
+          id: 'pts',
+          name: 'Puntuación de trauma pediátrica (PTS)',
+          shortName: 'PTS',
+          description: 'Valora la gravedad del traumatismo en niños para orientar el triage.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'peso',
+                  type: 'select',
+                  label: 'Peso',
+                  options: escala([
+                      [2, '> 20 kg'],
+                      [1, '10–20 kg'],
+                      [-1, '< 10 kg'],
+                  ]),
+              },
+              {
+                  id: 'aerea',
+                  type: 'select',
+                  label: 'Vía aérea',
+                  options: escala([
+                      [2, 'Normal'],
+                      [1, 'Mantenible (oxígeno, cánula)'],
+                      [-1, 'Precisa intubación'],
+                  ]),
+              },
+              {
+                  id: 'pas',
+                  type: 'select',
+                  label: 'Presión arterial sistólica',
+                  options: escala([
+                      [2, '> 90 mmHg (o pulso periférico palpable)'],
+                      [1, '50–90 mmHg (o pulso central palpable)'],
+                      [-1, '< 50 mmHg (o sin pulso)'],
+                  ]),
+              },
+              {
+                  id: 'conciencia',
+                  type: 'select',
+                  label: 'Nivel de conciencia',
+                  options: escala([
+                      [2, 'Despierto'],
+                      [1, 'Somnoliento o pérdida de conciencia'],
+                      [-1, 'Coma o descerebración'],
+                  ]),
+              },
+              {
+                  id: 'abierta',
+                  type: 'select',
+                  label: 'Heridas abiertas',
+                  options: escala([
+                      [2, 'Ninguna'],
+                      [1, 'Menores'],
+                      [-1, 'Múltiples o penetrantes'],
+                  ]),
+              },
+              {
+                  id: 'esqueleto',
+                  type: 'select',
+                  label: 'Lesiones esqueléticas',
+                  options: escala([
+                      [2, 'Ninguna'],
+                      [1, 'Fractura cerrada única'],
+                      [-1, 'Fractura abierta o múltiple'],
+                  ]),
+              },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['peso', 'aerea', 'pas', 'conciencia', 'abierta', 'esqueleto']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (−6 a +12)',
+                  interpretation: score >= 9
+                      ? 'Trauma leve: manejo habitual en urgencias.'
+                      : score >= 6
+                          ? 'Trauma moderado: traslado a hospital con capacidad pediátrica.'
+                          : 'Trauma grave (≤ 5): traslado a centro de referencia de trauma pediátrico.',
+                  level: score >= 9 ? 'ok' : score >= 6 ? 'warn' : 'danger',
+              };
+          },
+          references: [
+              'Tepas JJ, et al. The Pediatric Trauma Score as a predictor of injury severity: an objective assessment. J Trauma. 1988;28(4):425-9.',
+          ],
+      },
+      {
+          id: 'westley-croup',
+          name: 'Puntuación de Westley para crup',
+          shortName: 'Westley (crup)',
+          description: 'Cuantifica la gravedad del crup viral (laringotraqueítis aguda).',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'estridor',
+                  type: 'select',
+                  label: 'Estridor inspiratorio',
+                  options: escala([
+                      [0, 'Ausente'],
+                      [1, 'Con la agitación'],
+                      [2, 'En reposo'],
+                  ]),
+              },
+              {
+                  id: 'tiraje',
+                  type: 'select',
+                  label: 'Tiraje',
+                  options: escala([
+                      [0, 'Ausente'],
+                      [1, 'Leve'],
+                      [2, 'Moderado'],
+                      [3, 'Intenso'],
+                  ]),
+              },
+              {
+                  id: 'aire',
+                  type: 'select',
+                  label: 'Entrada de aire',
+                  options: escala([
+                      [0, 'Normal'],
+                      [1, 'Disminuida'],
+                      [2, 'Muy disminuida'],
+                  ]),
+              },
+              {
+                  id: 'cianosis',
+                  type: 'select',
+                  label: 'Cianosis',
+                  options: escala([
+                      [0, 'Ausente'],
+                      [4, 'Con la agitación'],
+                      [5, 'En reposo'],
+                  ]),
+              },
+              {
+                  id: 'conciencia',
+                  type: 'select',
+                  label: 'Nivel de conciencia',
+                  options: escala([
+                      [0, 'Normal'],
+                      [5, 'Alterado'],
+                  ]),
+              },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['estridor', 'tiraje', 'aire', 'cianosis', 'conciencia']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–17)',
+                  interpretation: score <= 2
+                      ? 'Crup leve: dexametasona 0,15–0,6 mg/kg oral en dosis única, observación.'
+                      : score <= 5
+                          ? 'Crup moderado: dexametasona y valorar adrenalina nebulizada.'
+                          : score <= 11
+                              ? 'Crup grave: adrenalina nebulizada, dexametasona, oxígeno, observación estrecha.'
+                              : 'Insuficiencia respiratoria inminente: preparar vía aérea avanzada.',
+                  level: score <= 2 ? 'ok' : score <= 5 ? 'warn' : 'danger',
+              };
+          },
+          references: [
+              'Westley CR, Cotton EK, Brooks JG. Nebulized racemic epinephrine by IPPB for the treatment of croup. Am J Dis Child. 1978;132(5):484-7.',
+          ],
+      },
+      {
+          id: 'peld',
+          name: 'PELD — Model for End-Stage Liver Disease pediátrico',
+          shortName: 'PELD',
+          description: 'Cuantifica la gravedad de la hepatopatía crónica en niños < 12 años en lista de trasplante hepático.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'bilirrubina', type: 'number', label: 'Bilirrubina total', unit: 'mg/dL', min: 0.1, max: 40, step: 0.1 },
+              { id: 'inr', type: 'number', label: 'INR', min: 0.5, max: 10, step: 0.01 },
+              { id: 'albumina', type: 'number', label: 'Albúmina', unit: 'g/dL', min: 1, max: 6, step: 0.1 },
+              { id: 'menor1', type: 'boolean', label: 'Edad < 1 año en el momento de la inclusión en lista' },
+              { id: 'crecimiento', type: 'boolean', label: 'Fallo de crecimiento (< −2 DE en talla o peso)' },
+          ],
+          compute: (v) => {
+              const acotar = (x, min) => Math.max(x, min);
+              const bili = acotar(v.bilirrubina, 1);
+              const inr = acotar(v.inr, 1);
+              const alb = acotar(v.albumina, 1);
+              const raw = 4.80 * Math.log(bili) +
+                  18.57 * Math.log(inr) -
+                  6.87 * Math.log(alb) +
+                  (v.menor1 === 1 ? 4.36 : 0) +
+                  (v.crecimiento === 1 ? 6.67 : 0);
+              const peld = Math.max(0, Math.round(raw));
+              return {
+                  main: String(peld),
+                  mainUnit: 'PELD',
+                  interpretation: peld < 10
+                      ? 'Enfermedad hepática compensada; seguimiento habitual.'
+                      : peld < 20
+                          ? 'Deterioro moderado: valoración por hepatología pediátrica.'
+                          : 'Deterioro grave: prioridad en lista de trasplante.',
+                  level: peld < 10 ? 'ok' : peld < 20 ? 'warn' : 'danger',
+              };
+          },
+          notes: ['Aplicable a menores de 12 años; a partir de 12 años se usa el MELD del adulto.'],
+          references: [
+              'McDiarmid SV, et al. Development of a pediatric end-stage liver disease score. Transplantation. 2002;74(2):173-81.',
+          ],
+      },
+      {
+          id: 'pucai',
+          name: 'PUCAI — Índice de actividad de la colitis ulcerosa pediátrica',
+          shortName: 'PUCAI',
+          description: 'Cuantifica la actividad de la colitis ulcerosa en niños sin necesidad de endoscopia.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'dolor',
+                  type: 'select',
+                  label: 'Dolor abdominal',
+                  options: escala([
+                      [0, 'Ausente'],
+                      [5, 'Puede ignorarlo'],
+                      [10, 'No puede ignorarlo'],
+                  ]),
+              },
+              {
+                  id: 'sangrado',
+                  type: 'select',
+                  label: 'Sangrado rectal',
+                  dropdown: true,
+                  options: escala([
+                      [0, 'Ausente'],
+                      [10, 'Pequeña cantidad, < 50 % de las deposiciones'],
+                      [20, 'Pequeña cantidad, en la mayoría'],
+                      [30, 'Gran cantidad (> 50 % del contenido)'],
+                  ]),
+              },
+              {
+                  id: 'consistencia',
+                  type: 'select',
+                  label: 'Consistencia de las heces',
+                  options: escala([
+                      [0, 'Formadas'],
+                      [5, 'Parcialmente formadas'],
+                      [10, 'Completamente no formadas'],
+                  ]),
+              },
+              {
+                  id: 'deposiciones',
+                  type: 'select',
+                  label: 'Número de deposiciones en 24 h',
+                  dropdown: true,
+                  options: escala([
+                      [0, '0–2'],
+                      [5, '3–5'],
+                      [10, '6–8'],
+                      [15, '> 8'],
+                  ]),
+              },
+              {
+                  id: 'nocturnas',
+                  type: 'select',
+                  label: 'Deposiciones nocturnas (que despiertan)',
+                  options: escala([
+                      [0, 'No'],
+                      [10, 'Sí'],
+                  ]),
+              },
+              {
+                  id: 'actividad',
+                  type: 'select',
+                  label: 'Nivel de actividad',
+                  options: escala([
+                      [0, 'Sin limitación'],
+                      [5, 'Actividad ocasionalmente limitada'],
+                      [10, 'Muy limitada'],
+                  ]),
+              },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['dolor', 'sangrado', 'consistencia', 'deposiciones', 'nocturnas', 'actividad']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–85)',
+                  interpretation: score < 10
+                      ? 'Remisión (< 10): mantener tratamiento actual y controles.'
+                      : score < 35
+                          ? 'Actividad leve (10–34).'
+                          : score < 65
+                              ? 'Actividad moderada (35–64): considerar intensificación del tratamiento.'
+                              : 'Actividad grave (≥ 65): hospitalización con corticoides intravenosos; PUCAI ≥ 45 al día 3 y ≥ 65 al día 5 predice fracaso a corticoides y necesita rescate.',
+                  level: score < 10 ? 'ok' : score < 35 ? 'info' : score < 65 ? 'warn' : 'danger',
+              };
+          },
+          references: [
+              'Turner D, et al. Development, validation, and evaluation of a pediatric ulcerative colitis activity index: a prospective multicenter study. Gastroenterology. 2007;133(2):423-32.',
+          ],
+      },
+      {
+          id: 'kawasaki-ped',
+          name: 'Criterios de la enfermedad de Kawasaki',
+          shortName: 'Kawasaki',
+          description: 'Diagnóstico de la enfermedad de Kawasaki en niños.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'fiebre', type: 'boolean', label: 'Fiebre ≥ 5 días (o < 5 días si se cumplen suficientes criterios)', noPoints: true },
+              { id: 'conjuntivitis', type: 'boolean', label: 'Conjuntivitis bilateral no exudativa', noPoints: true },
+              { id: 'oral', type: 'boolean', label: 'Alteraciones oro-faríngeas (labios agrietados, lengua aframbuesada, faringe hiperémica)', noPoints: true },
+              { id: 'extremidades', type: 'boolean', label: 'Cambios en manos y pies (eritema/edema palmoplantar o descamación periungueal en fase subaguda)', noPoints: true },
+              { id: 'exantema', type: 'boolean', label: 'Exantema polimorfo', noPoints: true },
+              { id: 'adenopatia', type: 'boolean', label: 'Adenopatía cervical ≥ 1,5 cm, generalmente unilateral', noPoints: true },
+          ],
+          compute: (v) => {
+              const criterios = sum(v, ['conjuntivitis', 'oral', 'extremidades', 'exantema', 'adenopatia']);
+              if (v.fiebre !== 1)
+                  return {
+                      main: 'No cumple criterios',
+                      interpretation: 'La fiebre ≥ 5 días es un criterio obligatorio (o < 5 días con ≥ 4 criterios adicionales si se sospecha fuertemente).',
+                      level: 'ok',
+                  };
+              if (criterios >= 4)
+                  return {
+                      main: 'Kawasaki clásica',
+                      interpretation: 'Fiebre ≥ 5 días + ≥ 4 criterios principales: se diagnostica enfermedad de Kawasaki. Iniciar inmunoglobulina intravenosa 2 g/kg en 12 h y AAS a dosis antiinflamatoria en las primeras 10 días de fiebre.',
+                      level: 'danger',
+                  };
+              if (criterios >= 2)
+                  return {
+                      main: 'Kawasaki incompleta posible',
+                      interpretation: 'Fiebre ≥ 5 días + 2–3 criterios: valorar Kawasaki incompleta. Solicitar PCR, VSG, hemograma, transaminasas, orina y ecocardiograma. Consultar criterios de laboratorio y de imagen de la AHA 2017.',
+                      level: 'warn',
+                  };
+              return {
+                  main: 'Kawasaki improbable',
+                  interpretation: 'Menos de 2 criterios adicionales: buscar otros diagnósticos. Si persiste la fiebre sin foco, reevaluar.',
+                  level: 'ok',
+              };
+          },
+          notes: [
+              'La ecocardiografía es indispensable en todo caso sospechado para valorar aneurismas coronarios.',
+              'En Kawasaki incompleta, seguir el algoritmo de la AHA con laboratorio y ecocardiograma.',
+          ],
+          references: [
+              'McCrindle BW, et al. Diagnosis, Treatment, and Long-Term Management of Kawasaki Disease. AHA Scientific Statement. Circulation. 2017;135(17):e927-e999.',
+          ],
+      },
+      {
+          id: 'crafft',
+          name: 'CRAFFT — Cribado de consumo de sustancias en adolescentes',
+          shortName: 'CRAFFT',
+          description: 'Cribado del consumo problemático de alcohol y drogas en adolescentes.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'car', type: 'boolean', label: '¿Has viajado en un coche conducido por alguien (incluido tú) que había consumido alcohol o drogas? (C)' },
+              { id: 'relax', type: 'boolean', label: '¿Consumes alcohol o drogas para relajarte, sentirte mejor o encajar? (R)' },
+              { id: 'alone', type: 'boolean', label: '¿Consumes alcohol o drogas cuando estás solo/a? (A)' },
+              { id: 'forget', type: 'boolean', label: '¿Olvidas cosas que has hecho estando bajo los efectos? (F)' },
+              { id: 'family', type: 'boolean', label: '¿Tu familia o amigos te han dicho que reduzcas el consumo? (F)' },
+              { id: 'trouble', type: 'boolean', label: '¿Te has metido en problemas estando bajo los efectos? (T)' },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['car', 'relax', 'alone', 'forget', 'family', 'trouble']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–6)',
+                  interpretation: score >= 2
+                      ? 'CRAFFT ≥ 2: alta sospecha de consumo problemático o trastorno por consumo. Entrevista motivacional y valorar derivación a salud mental.'
+                      : score === 1
+                          ? 'Una respuesta positiva: consejo breve, refuerzo y reevaluar.'
+                          : 'Cribado negativo: refuerzo positivo.',
+                  level: score >= 2 ? 'danger' : score === 1 ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Aplicable a adolescentes de 12 a 21 años. Una respuesta afirmativa a «coche» siempre exige consejo específico aunque el resto sea negativo.'],
+          references: [
+              'Knight JR, et al. Validity of the CRAFFT substance abuse screening test among adolescent clinic patients. Arch Pediatr Adolesc Med. 2002;156(6):607-14.',
+          ],
+      },
+      {
+          id: 'heads-ed',
+          name: 'HEADS-ED — Cribado psicosocial pediátrico en urgencias',
+          shortName: 'HEADS-ED',
+          description: 'Herramienta rápida de cribado psicosocial para adolescentes que acuden a urgencias por motivos de salud mental.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              ...[
+                  ['home', 'Home (hogar)'],
+                  ['education', 'Educación / empleo'],
+                  ['activities', 'Actividades y pares'],
+                  ['drugs', 'Alcohol y drogas'],
+                  ['suicidalidad', 'Suicidalidad'],
+                  ['emociones', 'Emociones y comportamiento (ansiedad, depresión…)'],
+                  ['descargador', 'Recursos de apoyo (professionals/discharge)'],
+              ].map(([id, label]) => ({
+                  id,
+                  type: 'select',
+                  label,
+                  options: escala([
+                      [0, 'Sin problemas'],
+                      [1, 'Problemas leves-moderados'],
+                      [2, 'Problemas graves o urgentes'],
+                  ]),
+              })),
+          ],
+          compute: (v) => {
+              const ids = ['home', 'education', 'activities', 'drugs', 'suicidalidad', 'emociones', 'descargador'];
+              const score = sum(v, ids);
+              const suic = (v.suicidalidad ?? 0) === 2;
+              const consulta = score >= 8 || suic;
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–14)',
+                  interpretation: consulta
+                      ? 'Se recomienda consulta con psiquiatría o salud mental (HEADS-ED ≥ 8 o suicidalidad grave).'
+                      : 'Puntuación baja: seguir con evaluación clínica habitual y valorar apoyo comunitario.',
+                  level: consulta ? 'danger' : 'warn',
+              };
+          },
+          references: [
+              'Cappelli M, et al. The HEADS-ED: a rapid mental health screening tool for pediatric patients in the emergency department. Pediatrics. 2012;130(2):e321-7.',
+          ],
+      },
+      {
+          id: 'lansky',
+          name: 'Escala de Lansky (equivalente pediátrico de Karnofsky)',
+          shortName: 'Lansky',
+          description: 'Evalúa el nivel de actividad funcional en niños con enfermedad grave (oncología pediátrica).',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              {
+                  id: 'nivel',
+                  type: 'select',
+                  label: 'Nivel de actividad',
+                  dropdown: true,
+                  noPoints: true,
+                  options: [
+                      { label: '100 — Totalmente activo, normal', value: 100 },
+                      { label: '90 — Restricciones menores en actividades físicas intensas', value: 90 },
+                      { label: '80 — Activo pero se cansa antes', value: 80 },
+                      { label: '70 — Actividad limitada; se cansa con juegos activos', value: 70 },
+                      { label: '60 — Levantado y con juegos tranquilos; pocos juegos activos', value: 60 },
+                      { label: '50 — Se levanta y se viste; sin juegos activos; puede participar en juegos tranquilos', value: 50 },
+                      { label: '40 — Principalmente en cama; participa en actividades tranquilas', value: 40 },
+                      { label: '30 — En cama; necesita ayuda incluso para juegos tranquilos', value: 30 },
+                      { label: '20 — Duerme mucho; juego totalmente limitado a actividades muy pasivas', value: 20 },
+                      { label: '10 — No juega; no se levanta de la cama', value: 10 },
+                      { label: '0 — No responde', value: 0 },
+                  ],
+              },
+          ],
+          compute: (v) => {
+              const g = v.nivel ?? 100;
+              return {
+                  main: String(g),
+                  mainUnit: '/100',
+                  interpretation: g >= 70
+                      ? 'Estado funcional preservado: tolerará razonablemente los tratamientos.'
+                      : g >= 40
+                          ? 'Estado funcional intermedio: valorar caso a caso.'
+                          : 'Estado funcional muy reducido: en general no se toleran los tratamientos oncológicos activos; priorizar control sintomático.',
+                  level: g >= 70 ? 'ok' : g >= 40 ? 'warn' : 'danger',
+              };
+          },
+          references: [
+              'Lansky SB, et al. The measurement of performance in childhood cancer patients. Cancer. 1987;60(7):1651-6.',
+          ],
+      },
+      {
+          id: 'wat-1',
+          name: 'WAT-1 — Escala de abstinencia pediátrica',
+          shortName: 'WAT-1',
+          description: 'Cuantifica el síndrome de abstinencia de opioides y benzodiacepinas en pacientes pediátricos críticos.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'deposiciones', type: 'boolean', label: 'Deposiciones blandas o líquidas en las últimas 12 h' },
+              { id: 'vomitos', type: 'boolean', label: 'Vómitos, arcadas o babeo en las últimas 12 h' },
+              { id: 'temperatura', type: 'boolean', label: 'Temperatura > 37,8 °C en las últimas 12 h' },
+              {
+                  id: 'estado',
+                  type: 'select',
+                  label: 'Estado tras estímulo (nuevo)',
+                  options: [
+                      { label: 'Calmado o tranquilo', value: 0 },
+                      { label: 'Inquieto o distraído', value: 1 },
+                      { label: 'Muy agitado', value: 2 },
+                  ],
+              },
+              { id: 'temblor', type: 'boolean', label: 'Temblor con o sin estímulo' },
+              { id: 'sudoracion', type: 'boolean', label: 'Sudoración' },
+              { id: 'movimientos', type: 'boolean', label: 'Movimientos no coordinados o repetitivos' },
+              { id: 'bostezos', type: 'boolean', label: 'Bostezos o estornudos ≥ 3 veces en 1 h' },
+              { id: 'sobresalto', type: 'boolean', label: 'Sobresalto exagerado al ruido' },
+              { id: 'tonoMus', type: 'boolean', label: 'Hipertonía muscular' },
+              { id: 'tiempoConsuelo', type: 'boolean', label: 'Tiempo hasta el consuelo > 5 minutos' },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['deposiciones', 'vomitos', 'temperatura', 'estado', 'temblor', 'sudoracion', 'movimientos', 'bostezos', 'sobresalto', 'tonoMus', 'tiempoConsuelo']);
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–12)',
+                  interpretation: score < 3
+                      ? 'Sin síntomas de abstinencia significativos: mantener plan de destete.'
+                      : 'WAT-1 ≥ 3: síndrome de abstinencia significativo. Ralentizar el destete o administrar dosis de rescate.',
+                  level: score < 3 ? 'ok' : 'warn',
+              };
+          },
+          references: [
+              'Franck LS, et al. The Withdrawal Assessment Tool-1 (WAT-1): an assessment instrument for monitoring opioid and benzodiazepine withdrawal symptoms in pediatric patients. Pediatr Crit Care Med. 2008;9(6):573-80.',
+          ],
+      },
+      {
+          id: 'sodio-hiperglucemia',
+          name: 'Corrección de sodio por hiperglucemia',
+          shortName: 'Na corregido (glucosa)',
+          description: 'Estima el sodio sérico real en pacientes con hiperglucemia significativa.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'sodio', type: 'number', label: 'Sodio medido', unit: 'mEq/L', min: 100, max: 180, step: 0.1 },
+              { id: 'glucemia', type: 'number', label: 'Glucemia', unit: 'mg/dL', min: 100, max: 2000, step: 1 },
+          ],
+          compute: (v) => {
+              const na = v.sodio + 1.6 * ((v.glucemia - 100) / 100);
+              const naHillier = v.sodio + 2.4 * ((v.glucemia - 100) / 100);
+              return {
+                  main: fmt(na, 1),
+                  mainUnit: 'mEq/L (Katz 1,6)',
+                  secondary: fmt(naHillier, 1),
+                  secondaryLabel: 'mEq/L (Hillier 2,4)',
+                  interpretation: 'La fórmula clásica (Katz, 1,6 mEq/L por cada 100 mg/dL de glucosa por encima de 100) infraestima el sodio real; la fórmula de Hillier (2,4) es más exacta con glucemias muy altas.',
+                  level: 'info',
+              };
+          },
+          references: [
+              'Hillier TA, et al. Hyponatremia: evaluating the correction factor for hyperglycemia. Am J Med. 1999;106(4):399-403.',
+          ],
+      },
+      {
+          id: 'fecha-parto',
+          name: 'Fecha probable de parto y edad gestacional',
+          shortName: 'Fecha del parto',
+          description: 'Calcula la fecha probable de parto (regla de Naegele) y la edad gestacional actual a partir de la fecha de la última menstruación.',
+          category: CAT_GO,
+          specialty: OBS,
+          inputs: [
+              {
+                  id: 'metodo',
+                  type: 'select',
+                  label: 'Base de cálculo',
+                  noPoints: true,
+                  options: [
+                      { label: 'Última menstruación (FUR)', value: 0 },
+                      { label: 'Fecha de concepción', value: 1 },
+                  ],
+              },
+              { id: 'dia', type: 'number', label: 'Día (1–31)', min: 1, max: 31, step: 1 },
+              { id: 'mes', type: 'number', label: 'Mes (1–12)', min: 1, max: 12, step: 1 },
+              { id: 'anio', type: 'number', label: 'Año', min: 2020, max: 2030, step: 1 },
+              { id: 'hoyDia', type: 'number', label: 'Hoy — día', min: 1, max: 31, step: 1 },
+              { id: 'hoyMes', type: 'number', label: 'Hoy — mes', min: 1, max: 12, step: 1 },
+              { id: 'hoyAnio', type: 'number', label: 'Hoy — año', min: 2020, max: 2030, step: 1 },
+          ],
+          compute: (v) => {
+              const base = new Date(v.anio, v.mes - 1, v.dia);
+              if (isNaN(base.getTime()))
+                  return { main: '—', interpretation: 'Fecha no válida.', level: 'warn' };
+              const inicio = v.metodo === 1 ? new Date(base.getTime() - 14 * 86400000) : base;
+              const parto = new Date(inicio.getTime() + 280 * 86400000);
+              const hoy = new Date(v.hoyAnio, v.hoyMes - 1, v.hoyDia);
+              if (isNaN(hoy.getTime()))
+                  return { main: '—', interpretation: 'La fecha de hoy no es válida.', level: 'warn' };
+              const dias = Math.floor((hoy.getTime() - inicio.getTime()) / 86400000);
+              const semanas = Math.floor(dias / 7);
+              const restoDias = dias % 7;
+              const fmtDate = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+              return {
+                  main: fmtDate(parto),
+                  mainUnit: 'fecha probable de parto',
+                  secondary: `${semanas} sem + ${restoDias} d`,
+                  secondaryLabel: 'edad gestacional actual',
+                  interpretation: dias < 0
+                      ? 'La fecha base es posterior a hoy; revisa las fechas.'
+                      : semanas < 22
+                          ? 'Primer o segundo trimestre.'
+                          : semanas < 37
+                              ? 'Pretérmino: si nace ahora, requiere atención neonatal especializada.'
+                              : semanas < 42
+                                  ? 'A término.'
+                                  : 'Postérmino: valorar inducción según protocolo.',
+                  level: semanas < 37 ? 'warn' : semanas < 42 ? 'ok' : 'warn',
+                  details: [
+                      `Fecha de inicio calculada: ${fmtDate(inicio)}.`,
+                      'Regla de Naegele: FUR + 280 días (o + 40 semanas).',
+                  ],
+              };
+          },
+      },
+      {
+          id: 'mapi',
+          name: 'Índice predictivo del asma modificado (mAPI)',
+          shortName: 'mAPI',
+          description: 'Predice el riesgo de asma persistente en preescolares con episodios recurrentes de sibilancias.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'episodios', type: 'boolean', label: '≥ 4 episodios de sibilancias en el último año (al menos uno confirmado por un médico)', noPoints: true },
+              { id: 'padres', type: 'boolean', label: 'Criterio mayor: asma diagnosticada en padres', noPoints: true },
+              { id: 'atopia', type: 'boolean', label: 'Criterio mayor: dermatitis atópica personal', noPoints: true },
+              { id: 'sensibAero', type: 'boolean', label: 'Criterio mayor: sensibilización a ≥ 1 aeroalérgeno', noPoints: true },
+              { id: 'sensibAlim', type: 'boolean', label: 'Criterio menor: sensibilización a leche, huevo o frutos secos', noPoints: true },
+              { id: 'sibsSinCatarro', type: 'boolean', label: 'Criterio menor: sibilancias no relacionadas con resfriados', noPoints: true },
+              { id: 'eosinofilia', type: 'boolean', label: 'Criterio menor: eosinofilia ≥ 4 %', noPoints: true },
+          ],
+          compute: (v) => {
+              if (v.episodios !== 1)
+                  return {
+                      main: 'No aplicable',
+                      interpretation: 'La regla se aplica a preescolares con ≥ 4 episodios de sibilancias en el último año.',
+                      level: 'info',
+                  };
+              const mayores = sum(v, ['padres', 'atopia', 'sensibAero']);
+              const menores = sum(v, ['sensibAlim', 'sibsSinCatarro', 'eosinofilia']);
+              const positivo = mayores >= 1 || menores >= 2;
+              return {
+                  main: positivo ? 'mAPI positivo' : 'mAPI negativo',
+                  secondary: `${mayores} mayor + ${menores} menor`,
+                  interpretation: positivo
+                      ? 'mAPI positivo: alto valor predictivo positivo para el diagnóstico de asma en edad escolar. Reforzar seguimiento y tratamiento preventivo.'
+                      : 'mAPI negativo: valor predictivo negativo muy alto; probable evolución favorable con la edad.',
+                  level: positivo ? 'warn' : 'ok',
+              };
+          },
+          references: [
+              'Guilbert TW, et al. Atopic characteristics of children with recurrent wheezing at high risk for the development of childhood asthma. J Allergy Clin Immunol. 2004;114(6):1282-7.',
+          ],
+      },
+      {
+          id: 'regla-7-lyme',
+          name: 'Regla de los 7 para la meningitis de Lyme',
+          shortName: 'Regla de 7 (Lyme)',
+          description: 'Diferencia la meningitis de Lyme de la meningitis aséptica viral en niños de áreas endémicas.',
+          category: CAT,
+          specialty: PED,
+          inputs: [
+              { id: 'sintomas', type: 'boolean', label: '≥ 7 días de síntomas', noPoints: true },
+              { id: 'parCraneal', type: 'boolean', label: 'Parálisis de un par craneal (especialmente el VII)', noPoints: true },
+              { id: 'mononuclear', type: 'boolean', label: '≥ 70 % de mononucleares en el LCR', noPoints: true },
+          ],
+          compute: (v) => {
+              const criterios = ['sintomas', 'parCraneal', 'mononuclear'].filter((k) => v[k] === 1).length;
+              return {
+                  main: criterios === 0 ? 'Riesgo bajo' : 'No de bajo riesgo',
+                  secondary: `${criterios}/3 criterios positivos`,
+                  interpretation: criterios === 0
+                      ? 'Ningún criterio positivo: riesgo muy bajo de meningitis de Lyme (probabilidad < 10 %). Puede tratarse como meningitis viral inicialmente y esperar a la serología.'
+                      : 'Uno o más criterios positivos: se recomienda iniciar antibioterapia empírica cubriendo Borrelia (ceftriaxona) mientras se completa la serología.',
+                  level: criterios === 0 ? 'ok' : 'warn',
+              };
+          },
+          notes: ['Aplicable en niños de áreas endémicas con meningitis linfocitaria confirmada.'],
+          references: [
+              'Cohn KA, et al. Validation of a clinical prediction rule to distinguish Lyme meningitis from aseptic meningitis. Pediatrics. 2012;129(1):e46-53.',
+          ],
+      },
+      {
+          id: 'flamm-vbac',
+          name: 'Puntuación de Flamm — parto vaginal tras cesárea (VBAC)',
+          shortName: 'Flamm VBAC',
+          description: 'Estima la probabilidad de éxito de un parto vaginal en una gestante con cesárea previa.',
+          category: CAT_GO,
+          specialty: OBS,
+          inputs: [
+              {
+                  id: 'edad',
+                  type: 'select',
+                  label: 'Edad materna',
+                  options: [
+                      { label: '< 40 años', value: 2 },
+                      { label: '≥ 40 años', value: 0 },
+                  ],
+              },
+              { id: 'partoPrevio', type: 'boolean', label: 'Parto vaginal previo', points: 4 },
+              { id: 'partoDespuesCesarea', type: 'boolean', label: 'Parto vaginal después de la cesárea previa', points: 1 },
+              { id: 'indicacion', type: 'boolean', label: 'La cesárea previa NO fue por falta de progresión' },
+              {
+                  id: 'borramiento',
+                  type: 'select',
+                  label: 'Borramiento cervical al ingreso',
+                  dropdown: true,
+                  options: [
+                      { label: '≥ 75 %', value: 2 },
+                      { label: '25–74 %', value: 1 },
+                      { label: '< 25 %', value: 0 },
+                  ],
+              },
+              {
+                  id: 'dilatacion',
+                  type: 'select',
+                  label: 'Dilatación cervical al ingreso',
+                  options: [
+                      { label: '≥ 4 cm', value: 1 },
+                      { label: '< 4 cm', value: 0 },
+                  ],
+              },
+          ],
+          compute: (v) => {
+              const score = sum(v, ['edad', 'partoPrevio', 'partoDespuesCesarea', 'indicacion', 'borramiento', 'dilatacion']);
+              const exito = ['49 %', '60 %', '67 %', '75 %', '82 %', '85 %', '89 %', '93 %', '95 %', '95 %', '95 %'][Math.min(score, 10)];
+              return {
+                  main: String(score),
+                  mainUnit: 'puntos (0–10)',
+                  secondary: exito,
+                  secondaryLabel: 'probabilidad de VBAC exitoso',
+                  interpretation: score >= 8
+                      ? 'Alta probabilidad de éxito: candidata a intento de parto vaginal.'
+                      : score >= 4
+                          ? 'Probabilidad moderada: informar riesgos-beneficios y decidir con la paciente.'
+                          : 'Probabilidad baja: valorar cesárea electiva salvo preferencia informada de la paciente.',
+                  level: score >= 8 ? 'ok' : score >= 4 ? 'warn' : 'danger',
+              };
+          },
+          notes: ['Contraindicaciones absolutas de VBAC: cesárea previa clásica, cirugía uterina previa con entrada en cavidad, dos o más cesáreas previas en la mayoría de guías, ruptura uterina previa.'],
+          references: [
+              'Flamm BL, Geiger AM. Vaginal birth after cesarean delivery: an admission scoring system. Obstet Gynecol. 1997;90(6):907-10.',
+          ],
+      },
+  ];
+    return pediatria2;
+  })();
+
+  // inurse-m2/src/calculators/primary-care.ts
+  var primaryCare = (function () {
+  const S = (arr) => arr.reduce((a, b) => a + Number(b || 0), 0);
+  const CAT_SALUD_MENTAL = 'Geriatría, fragilidad y salud mental';
+  const CAT_URG = 'Urgencias y decisión clínica';
+  const CAT_MED = 'Medicina interna y familiar';
+  const CAT_INFEC = 'Infecciones';
+  const CAT_DOLOR = 'Dolor';
+  const CAT_TOX = 'Endocrino y tóxicos';
+  const CAT_FORM = 'Fórmulas y cálculos clínicos';
+  const CAT_HEMAT = 'Hematología y oncología';
+  const CAT_TEV = 'Tromboembolismo venoso';
+  const CAT_GO = 'Obstetricia y ginecología';
+  const CAT_NEO = 'Neonatología y pediatría';
+  const MED = ['Medicina Familiar'];
+  const URG = ['Emergencias'];
+  const PED = ['Pediatría'];
+  // ------- helpers de escalas frecuentes (0-3) ---------
+  const OPC03 = [
+      { label: '0 — Nunca', value: 0 },
+      { label: '1 — Varios días', value: 1 },
+      { label: '2 — Más de la mitad de los días', value: 2 },
+      { label: '3 — Casi todos los días', value: 3 },
+  ];
+  var primaryCare = [
+      // -------- PHQ-9 --------
+      {
+          id: 'phq-9',
+          name: 'PHQ-9 — cribado de depresión',
+          shortName: 'PHQ-9',
+          description: 'Frecuencia de nueve síntomas depresivos en las últimas 2 semanas (DSM-5). Cribado y seguimiento.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'anhedonia', type: 'select', label: '1. Poco interés o placer en hacer cosas', options: OPC03 },
+              { id: 'depresion', type: 'select', label: '2. Sensación de estar decaído/a, deprimido/a o sin esperanza', options: OPC03 },
+              { id: 'sueno', type: 'select', label: '3. Problemas para dormir o dormir en exceso', options: OPC03 },
+              { id: 'cansancio', type: 'select', label: '4. Cansancio o poca energía', options: OPC03 },
+              { id: 'apetito', type: 'select', label: '5. Poco apetito o comer en exceso', options: OPC03 },
+              { id: 'fracaso', type: 'select', label: '6. Sentirse mal consigo mismo/a, fracasado/a o culpable', options: OPC03 },
+              { id: 'concentracion', type: 'select', label: '7. Dificultad para concentrarse (leer, ver TV)', options: OPC03 },
+              { id: 'psicomotor', type: 'select', label: '8. Lentitud o inquietud psicomotora percibidas por los demás', options: OPC03 },
+              { id: 'ideacion', type: 'select', label: '9. Ideas de muerte, autolesión o «estaría mejor muerto/a»', options: OPC03 },
+          ],
+          compute: (v) => {
+              const total = S([v.anhedonia, v.depresion, v.sueno, v.cansancio, v.apetito, v.fracaso, v.concentracion, v.psicomotor, v.ideacion]);
+              let level = 'ok';
+              let sub = 'Sin depresión (0–4).';
+              if (total >= 20) {
+                  level = 'danger';
+                  sub = 'Depresión grave (≥ 20): iniciar tratamiento activo y valoración especializada.';
+              }
+              else if (total >= 15) {
+                  level = 'warn';
+                  sub = 'Depresión moderadamente grave (15–19): tratamiento activo.';
+              }
+              else if (total >= 10) {
+                  level = 'warn';
+                  sub = 'Depresión moderada (10–14): considerar tratamiento activo.';
+              }
+              else if (total >= 5) {
+                  level = 'info';
+                  sub = 'Depresión leve (5–9): vigilancia y apoyo.';
+              }
+              const ideacion = Number(v.ideacion) > 0;
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (0–27)',
+                  interpretation: (ideacion ? '⚠ Ítem 9 positivo: valorar riesgo de suicidio con entrevista dirigida. ' : '') + sub, level: ideacion ? 'danger' : level,
+              };
+          },
+          notes: ['Kroenke K, Spitzer RL, Williams JB. J Gen Intern Med 2001. Punto de corte ≥ 10 sensibilidad ~88 %, especificidad ~88 %. Ítem 9 obliga a valorar riesgo suicida.'],
+      },
+      // -------- GAD-7 --------
+      {
+          id: 'gad-7',
+          name: 'GAD-7 — cribado de ansiedad generalizada',
+          shortName: 'GAD-7',
+          description: 'Frecuencia de 7 síntomas de ansiedad en las últimas 2 semanas.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'nervios', type: 'select', label: '1. Sentirse nervioso/a, ansioso/a o con los nervios de punta', options: OPC03 },
+              { id: 'preocuparse', type: 'select', label: '2. No poder dejar de preocuparse o controlar la preocupación', options: OPC03 },
+              { id: 'diversas', type: 'select', label: '3. Preocuparse demasiado por diferentes cosas', options: OPC03 },
+              { id: 'relajarse', type: 'select', label: '4. Dificultad para relajarse', options: OPC03 },
+              { id: 'inquieto', type: 'select', label: '5. Estar tan inquieto/a que resulta difícil quedarse sentado/a', options: OPC03 },
+              { id: 'irritable', type: 'select', label: '6. Enfadarse o irritarse fácilmente', options: OPC03 },
+              { id: 'miedo', type: 'select', label: '7. Sentir miedo como si algo horrible fuese a suceder', options: OPC03 },
+          ],
+          compute: (v) => {
+              const total = S([v.nervios, v.preocuparse, v.diversas, v.relajarse, v.inquieto, v.irritable, v.miedo]);
+              let level = 'ok';
+              let sub = 'Ansiedad mínima (0–4).';
+              if (total >= 15) {
+                  level = 'danger';
+                  sub = 'Ansiedad grave (≥ 15): considerar tratamiento activo y derivación.';
+              }
+              else if (total >= 10) {
+                  level = 'warn';
+                  sub = 'Ansiedad moderada (10–14): valorar tratamiento.';
+              }
+              else if (total >= 5) {
+                  level = 'info';
+                  sub = 'Ansiedad leve (5–9): vigilar evolución.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–21)', interpretation: sub, level };
+          },
+          notes: ['Spitzer RL. Arch Intern Med 2006. Punto de corte ≥ 10 para TAG: sensibilidad 89 %, especificidad 82 %.'],
+      },
+      // -------- AUDIT-C --------
+      {
+          id: 'audit-c',
+          name: 'AUDIT-C — cribado de consumo de riesgo de alcohol',
+          shortName: 'AUDIT-C',
+          description: 'Tres primeras preguntas del AUDIT: frecuencia y cantidad de consumo.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              {
+                  id: 'frecuencia',
+                  type: 'select',
+                  label: '¿Con qué frecuencia consume alguna bebida alcohólica?',
+                  options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Una vez al mes o menos', value: 1 },
+                      { label: '2 — 2–4 veces al mes', value: 2 },
+                      { label: '3 — 2–3 veces por semana', value: 3 },
+                      { label: '4 — 4 o más veces por semana', value: 4 },
+                  ],
+              },
+              {
+                  id: 'unidades',
+                  type: 'select',
+                  label: '¿Cuántas consumiciones de bebida alcohólica toma un día normal?',
+                  options: [
+                      { label: '0 — 1 o 2', value: 0 },
+                      { label: '1 — 3 o 4', value: 1 },
+                      { label: '2 — 5 o 6', value: 2 },
+                      { label: '3 — 7 a 9', value: 3 },
+                      { label: '4 — 10 o más', value: 4 },
+                  ],
+              },
+              {
+                  id: 'atracon',
+                  type: 'select',
+                  label: '¿Con qué frecuencia toma 6 o más bebidas en una sola ocasión?',
+                  options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Menos de una vez al mes', value: 1 },
+                      { label: '2 — Mensualmente', value: 2 },
+                      { label: '3 — Semanalmente', value: 3 },
+                      { label: '4 — A diario o casi a diario', value: 4 },
+                  ],
+              },
+              { id: 'sexo', type: 'select', label: 'Sexo', noPoints: true, options: [
+                      { label: 'Hombre', value: 0 }, { label: 'Mujer', value: 1 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = S([v.frecuencia, v.unidades, v.atracon]);
+              const umbral = v.sexo === 1 ? 3 : 4;
+              const positivo = total >= umbral;
+              return {
+                  main: fmt(total),
+                  mainUnit: `puntos (umbral ≥ ${umbral})`,
+                  interpretation: positivo
+                      ? `Cribado positivo (≥ ${umbral}): consumo de riesgo. Completar el AUDIT-10 y ofrecer intervención breve.`
+                      : 'Cribado negativo.',
+                  level: positivo ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Bush K. Arch Intern Med 1998. Puntos de corte 4 en hombres y 3 en mujeres. Cualquier respuesta ≥ 4 en la pregunta 3 sugiere consumo perjudicial.'],
+      },
+      // -------- DAST-10 --------
+      {
+          id: 'dast-10',
+          name: 'DAST-10 — consumo problemático de drogas',
+          shortName: 'DAST-10',
+          description: 'Diez preguntas Sí/No sobre uso de drogas (no incluye alcohol) en los últimos 12 meses.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'noMedica', type: 'boolean', label: '1. ¿Ha consumido drogas distintas a las que precisa por razones médicas?' },
+              { id: 'masDeUna', type: 'boolean', label: '2. ¿Abusa de más de una droga a la vez?' },
+              { id: 'parar', type: 'boolean', label: '3. ¿Es incapaz de parar el consumo cuando quiere?' },
+              { id: 'lagunas', type: 'boolean', label: '4. ¿Ha tenido pérdidas de memoria (blackouts) o flashbacks por el consumo?' },
+              { id: 'culpa', type: 'boolean', label: '5. ¿Se siente mal o culpable por consumir?' },
+              { id: 'familia', type: 'boolean', label: '6. ¿Su familia se queja por su consumo?' },
+              { id: 'problemas', type: 'boolean', label: '7. ¿Ha descuidado a su familia por el consumo?' },
+              { id: 'ilegal', type: 'boolean', label: '8. ¿Ha realizado actividades ilegales para conseguir drogas?' },
+              { id: 'abstinencia', type: 'boolean', label: '9. ¿Ha tenido síntomas de abstinencia al parar?' },
+              { id: 'medico', type: 'boolean', label: '10. ¿Ha tenido problemas médicos por el consumo (memoria, hepatitis, hemorragias, convulsiones)?' },
+          ],
+          compute: (v) => {
+              const total = S([v.noMedica, v.masDeUna, v.parar, v.lagunas, v.culpa, v.familia, v.problemas, v.ilegal, v.abstinencia, v.medico]);
+              let level = 'ok';
+              let sub = 'Sin problemas relacionados con drogas (0).';
+              if (total >= 9) {
+                  level = 'danger';
+                  sub = 'Nivel grave (9–10): tratamiento intensivo.';
+              }
+              else if (total >= 6) {
+                  level = 'warn';
+                  sub = 'Nivel sustancial (6–8): evaluación e intervención.';
+              }
+              else if (total >= 3) {
+                  level = 'warn';
+                  sub = 'Nivel moderado (3–5): evaluación adicional y consejo.';
+              }
+              else if (total >= 1) {
+                  level = 'info';
+                  sub = 'Nivel bajo (1–2): consejo motivacional breve.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–10)', interpretation: sub, level };
+          },
+          notes: ['Skinner HA. Addict Behav 1982. Punto de corte ≥ 3 para intervención breve, ≥ 6 evaluación intensiva.'],
+      },
+      // -------- 4AT delirio --------
+      {
+          id: '4at',
+          name: '4AT — cribado rápido de delirio',
+          shortName: '4AT',
+          description: 'Herramienta de 4 ítems en <2 min para cribar delirio y deterioro cognitivo.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'alerta', type: 'select', label: 'Alerta (observar 10 s)', options: [
+                      { label: '0 — Normal', value: 0 },
+                      { label: '0 — Levemente somnoliento < 10 s pero luego normal', value: 0 },
+                      { label: '4 — Claramente anormal (agitación, hipoactividad marcada)', value: 4 },
+                  ] },
+              { id: 'amt4', type: 'select', label: 'AMT-4 (edad, fecha de nacimiento, lugar, año)', options: [
+                      { label: '0 — Sin errores', value: 0 },
+                      { label: '1 — 1 error', value: 1 },
+                      { label: '2 — 2 o más errores / no evaluable', value: 2 },
+                  ] },
+              { id: 'atencion', type: 'select', label: 'Atención: meses del año hacia atrás desde diciembre', options: [
+                      { label: '0 — Consigue ≥ 7 correctos', value: 0 },
+                      { label: '1 — Empieza pero < 7 o se niega', value: 1 },
+                      { label: '2 — No evaluable (somnolencia, mala salud)', value: 2 },
+                  ] },
+              { id: 'curso', type: 'select', label: 'Curso agudo o fluctuante (en las últimas 2 semanas y todavía presente en 24 h)', options: [
+                      { label: '0 — No', value: 0 },
+                      { label: '4 — Sí', value: 4 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = S([v.alerta, v.amt4, v.atencion, v.curso]);
+              let level = 'ok';
+              let sub = 'Delirio o deterioro cognitivo grave improbables (0).';
+              if (total >= 4) {
+                  level = 'danger';
+                  sub = 'Posible delirio ± deterioro cognitivo (≥ 4): valorar causa, entorno y medicación.';
+              }
+              else if (total >= 1) {
+                  level = 'warn';
+                  sub = 'Posible deterioro cognitivo (1–3): valorar en profundidad.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–12)', interpretation: sub, level };
+          },
+          notes: ['MacLullich A. Age Ageing 2014. Validado en urgencias, hospitalización y geriatría. Sensibilidad ~90 %, especificidad ~85 % para delirio.'],
+      },
+      // -------- AMT-4 --------
+      {
+          id: 'amt-4',
+          name: 'AMT-4 — Abbreviated Mental Test',
+          shortName: 'AMT-4',
+          description: 'Cribado ultrabreve de orientación con 4 preguntas.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'edad', type: 'boolean', label: 'Edad correcta' },
+              { id: 'nacimiento', type: 'boolean', label: 'Fecha de nacimiento correcta' },
+              { id: 'lugar', type: 'boolean', label: 'Lugar donde está correcto' },
+              { id: 'anio', type: 'boolean', label: 'Año actual correcto' },
+          ],
+          compute: (v) => {
+              const total = S([v.edad, v.nacimiento, v.lugar, v.anio]);
+              let level = 'ok';
+              let sub = 'Orientación conservada (4/4).';
+              if (total <= 2) {
+                  level = 'warn';
+                  sub = 'Probable deterioro cognitivo (≤ 2/4): completar valoración.';
+              }
+              else if (total === 3) {
+                  level = 'info';
+                  sub = 'Rendimiento reducido (3/4): repetir en evolución.';
+              }
+              return { main: `${total}/4`, interpretation: sub, level };
+          },
+          notes: ['Swain DG, Nightingale PG. Age Ageing 1997. Rendimiento comparable al AMT-10 para orientación básica.'],
+      },
+      // -------- PAINAD --------
+      {
+          id: 'painad',
+          name: 'PAINAD — dolor en demencia avanzada',
+          shortName: 'PAINAD',
+          description: 'Evaluación del dolor por observación (5 dimensiones) en pacientes con demencia moderada-grave.',
+          category: CAT_DOLOR,
+          specialty: MED,
+          inputs: [
+              { id: 'respiracion', type: 'select', label: 'Respiración independiente de la vocalización', options: [
+                      { label: '0 — Normal', value: 0 },
+                      { label: '1 — Respiración con dificultad ocasional o corta hiperventilación', value: 1 },
+                      { label: '2 — Respiración ruidosa, hiperventilación prolongada, Cheyne-Stokes', value: 2 },
+                  ] },
+              { id: 'vocalizacion', type: 'select', label: 'Vocalización negativa', options: [
+                      { label: '0 — Ausente', value: 0 },
+                      { label: '1 — Gemidos, quejas ocasionales; habla en tono bajo/negativo', value: 1 },
+                      { label: '2 — Llamadas repetidas, gemidos fuertes o llanto', value: 2 },
+                  ] },
+              { id: 'facial', type: 'select', label: 'Expresión facial', options: [
+                      { label: '0 — Sonriente o inexpresiva', value: 0 },
+                      { label: '1 — Triste, atemorizada, ceño fruncido', value: 1 },
+                      { label: '2 — Muecas', value: 2 },
+                  ] },
+              { id: 'corporal', type: 'select', label: 'Lenguaje corporal', options: [
+                      { label: '0 — Relajado', value: 0 },
+                      { label: '1 — Tenso, deambulación afligida, inquietud', value: 1 },
+                      { label: '2 — Rigidez, puños cerrados, rodillas flexionadas, apartar/golpear', value: 2 },
+                  ] },
+              { id: 'consuelo', type: 'select', label: 'Consolabilidad', options: [
+                      { label: '0 — Sin necesidad de consuelo', value: 0 },
+                      { label: '1 — Se distrae o tranquiliza con voz o toque', value: 1 },
+                      { label: '2 — Imposible consolar, distraer o tranquilizar', value: 2 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = S([v.respiracion, v.vocalizacion, v.facial, v.corporal, v.consuelo]);
+              let level = 'ok';
+              let sub = 'Sin dolor observado (0).';
+              if (total >= 7) {
+                  level = 'danger';
+                  sub = 'Dolor intenso (7–10): tratamiento y reevaluación tras 30–60 min.';
+              }
+              else if (total >= 4) {
+                  level = 'warn';
+                  sub = 'Dolor moderado (4–6): iniciar tratamiento analgésico.';
+              }
+              else if (total >= 1) {
+                  level = 'info';
+                  sub = 'Dolor leve (1–3): valorar causa y medidas no farmacológicas.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–10)', interpretation: sub, level };
+          },
+          notes: ['Warden V. J Am Med Dir Assoc 2003. Correlación con escalas verbales; recomendada en geriatría y cuidados paliativos.'],
+      },
+      // -------- MIDAS --------
+      {
+          id: 'midas',
+          name: 'MIDAS — discapacidad por migraña',
+          shortName: 'MIDAS',
+          description: 'Días perdidos por cefalea en los últimos 3 meses en 5 áreas.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              { id: 'trabajo', type: 'number', label: '1. Días de trabajo/estudio perdidos (últimos 3 meses)' },
+              { id: 'rendimiento', type: 'number', label: '2. Días con rendimiento reducido ≥ 50 % en trabajo/estudio' },
+              { id: 'casa', type: 'number', label: '3. Días de tareas del hogar perdidas' },
+              { id: 'casaReducido', type: 'number', label: '4. Días con rendimiento reducido ≥ 50 % en tareas del hogar' },
+              { id: 'ocio', type: 'number', label: '5. Días de actividades familiares/sociales/ocio perdidas' },
+          ],
+          compute: (v) => {
+              const total = Number(v.trabajo || 0) + Number(v.rendimiento || 0) + Number(v.casa || 0) + Number(v.casaReducido || 0) + Number(v.ocio || 0);
+              let level = 'ok';
+              let grado = 'Grado I: discapacidad mínima (0–5).';
+              if (total >= 21) {
+                  level = 'danger';
+                  grado = 'Grado IV: discapacidad grave (≥ 21). Profilaxis y valoración especializada.';
+              }
+              else if (total >= 11) {
+                  level = 'warn';
+                  grado = 'Grado III: discapacidad moderada (11–20). Considerar profilaxis.';
+              }
+              else if (total >= 6) {
+                  level = 'info';
+                  grado = 'Grado II: discapacidad leve (6–10).';
+              }
+              return { main: fmt(total), mainUnit: 'días', interpretation: grado, level };
+          },
+          notes: ['Stewart WF. Cephalalgia 1999. Se acompaña siempre de dos preguntas adicionales (días con cefalea y su intensidad) que no puntúan.'],
+      },
+      // -------- NDI --------
+      {
+          id: 'ndi',
+          name: 'NDI — Neck Disability Index',
+          shortName: 'NDI',
+          description: 'Discapacidad por cervicalgia en 10 áreas (0-5 cada una).',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: Array.from({ length: 10 }).map((_, i) => ({
+              id: `q${i + 1}`,
+              type: 'select',
+              label: [
+                  '1. Intensidad del dolor',
+                  '2. Cuidado personal (lavarse, vestirse)',
+                  '3. Levantar pesos',
+                  '4. Leer',
+                  '5. Cefalea',
+                  '6. Concentración',
+                  '7. Trabajo',
+                  '8. Conducir',
+                  '9. Sueño',
+                  '10. Ocio',
+              ][i],
+              options: [
+                  { label: '0 — Sin problemas', value: 0 },
+                  { label: '1', value: 1 },
+                  { label: '2', value: 2 },
+                  { label: '3', value: 3 },
+                  { label: '4', value: 4 },
+                  { label: '5 — Peor imaginable / imposible', value: 5 },
+              ],
+          })),
+          compute: (v) => {
+              const total = S([v.q1, v.q2, v.q3, v.q4, v.q5, v.q6, v.q7, v.q8, v.q9, v.q10]);
+              const pct = (total / 50) * 100;
+              let level = 'ok';
+              let sub = 'Sin discapacidad (0–4 puntos, < 10 %).';
+              if (total >= 35) {
+                  level = 'danger';
+                  sub = 'Discapacidad completa (≥ 70 %): reevaluar diagnóstico.';
+              }
+              else if (total >= 25) {
+                  level = 'danger';
+                  sub = 'Discapacidad grave (50–68 %).';
+              }
+              else if (total >= 15) {
+                  level = 'warn';
+                  sub = 'Discapacidad moderada (30–48 %).';
+              }
+              else if (total >= 5) {
+                  level = 'info';
+                  sub = 'Discapacidad leve (10–28 %).';
+              }
+              return { main: `${fmt(total)} (${fmt(pct, 0)} %)`, mainUnit: 'de 50', interpretation: sub, level };
+          },
+          notes: ['Vernon H. J Manipulative Physiol Ther 1991. Diferencia mínima clínicamente relevante ≈ 5 puntos o 10 %.'],
+      },
+      // -------- PUQE --------
+      {
+          id: 'puqe',
+          name: 'PUQE — náuseas y vómitos del embarazo',
+          shortName: 'PUQE',
+          description: 'Suma la duración de las náuseas, el número de vómitos y de arcadas en las últimas 24 h.',
+          category: CAT_GO,
+          specialty: MED,
+          inputs: [
+              { id: 'nausea', type: 'select', label: 'Horas con náuseas en 24 h', options: [
+                      { label: '1 — No', value: 1 },
+                      { label: '2 — ≤ 1 h', value: 2 },
+                      { label: '3 — 2–3 h', value: 3 },
+                      { label: '4 — 4–6 h', value: 4 },
+                      { label: '5 — > 6 h', value: 5 },
+                  ] },
+              { id: 'vomitos', type: 'select', label: 'Episodios de vómito en 24 h', options: [
+                      { label: '1 — Ninguno', value: 1 },
+                      { label: '2 — 1–2', value: 2 },
+                      { label: '3 — 3–4', value: 3 },
+                      { label: '4 — 5–6', value: 4 },
+                      { label: '5 — ≥ 7', value: 5 },
+                  ] },
+              { id: 'arcadas', type: 'select', label: 'Arcadas (sin expulsión) en 24 h', options: [
+                      { label: '1 — Ninguna', value: 1 },
+                      { label: '2 — 1–2', value: 2 },
+                      { label: '3 — 3–4', value: 3 },
+                      { label: '4 — 5–6', value: 4 },
+                      { label: '5 — ≥ 7', value: 5 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = S([v.nausea, v.vomitos, v.arcadas]);
+              let level = 'ok';
+              let sub = 'Náuseas y vómitos leves (≤ 6): antieméticos orales y medidas dietéticas.';
+              if (total >= 13) {
+                  level = 'danger';
+                  sub = 'Grave (≥ 13): considerar hospitalización, líquidos IV y antieméticos.';
+              }
+              else if (total >= 7) {
+                  level = 'warn';
+                  sub = 'Moderado (7–12): antieméticos, valorar hidratación y controles.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (3–15)', interpretation: sub, level };
+          },
+          notes: ['Koren G. Am J Obstet Gynecol 2002 (PUQE-24, modificado en 2005). Alta correlación con calidad de vida y con hospitalización.'],
+      },
+      // -------- Marburg heart score --------
+      {
+          id: 'marburg',
+          name: 'Puntuación cardíaca de Marburgo — dolor torácico en Primaria',
+          shortName: 'Marburgo',
+          description: 'Descarta enfermedad coronaria en pacientes con dolor torácico en Atención Primaria.',
+          category: CAT_URG,
+          specialty: MED,
+          inputs: [
+              { id: 'edadSexo', type: 'boolean', label: 'Edad y sexo (mujer ≥ 65 años o varón ≥ 55 años)' },
+              { id: 'ecvConocida', type: 'boolean', label: 'Enfermedad cardiovascular conocida (coronaria, arteriopatía, ictus)' },
+              { id: 'esfuerzo', type: 'boolean', label: 'El dolor empeora con el esfuerzo' },
+              { id: 'noPalpacion', type: 'boolean', label: 'El dolor NO se reproduce con la palpación' },
+              { id: 'pacienteCardiaco', type: 'boolean', label: 'El paciente cree que es un dolor de origen cardíaco' },
+          ],
+          compute: (v) => {
+              const total = S([v.edadSexo, v.ecvConocida, v.esfuerzo, v.noPalpacion, v.pacienteCardiaco]);
+              let level = 'ok';
+              let sub = 'Bajo riesgo (0–2): enfermedad coronaria improbable.';
+              if (total >= 4) {
+                  level = 'danger';
+                  sub = 'Riesgo alto (4–5): probabilidad ~ 63 %, derivar para valoración cardiológica.';
+              }
+              else if (total >= 3) {
+                  level = 'warn';
+                  sub = 'Riesgo intermedio (3): probabilidad ~ 17 %, ampliar pruebas.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–5)', interpretation: sub, level };
+          },
+          notes: ['Bösner S. CMAJ 2010. Sensibilidad 87 %, especificidad 81 % con corte ≥ 3. Uso exclusivo en Atención Primaria, no en urgencias.'],
+      },
+      // -------- INTERCHEST --------
+      {
+          id: 'interchest',
+          name: 'INTERCHEST — dolor torácico en Primaria',
+          shortName: 'INTERCHEST',
+          description: 'Alternativa a Marburg. Descarta coronariopatía en Atención Primaria.',
+          category: CAT_URG,
+          specialty: MED,
+          inputs: [
+              { id: 'edadSexo', type: 'boolean', label: 'Mujer ≥ 65 años o varón ≥ 55 años' },
+              { id: 'ecvHistoria', type: 'boolean', label: 'Antecedentes de enfermedad coronaria' },
+              { id: 'esfuerzo', type: 'boolean', label: 'Dolor relacionado con esfuerzo' },
+              { id: 'pacienteCardiaco', type: 'boolean', label: 'El paciente asume que es cardíaco' },
+              { id: 'presion', type: 'boolean', label: 'Sensación de presión' },
+              { id: 'palpacionNo', type: 'boolean', label: 'NO reproducible con la palpación' },
+          ],
+          compute: (v) => {
+              // Puntuación: cada positivo suma; palpación NO reproducible = 1, esfuerzo=1, edad-sexo=1, historia=1, presión=1, paciente=1 (rango 0-6)
+              const total = S([v.edadSexo, v.ecvHistoria, v.esfuerzo, v.pacienteCardiaco, v.presion, v.palpacionNo]);
+              const alto = total >= 2;
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (0–6)',
+                  interpretation: alto
+                      ? 'Riesgo aumentado (≥ 2): valorar derivación / pruebas complementarias.'
+                      : 'Bajo riesgo (0–1): valor predictivo negativo ~ 98 %. Coronariopatía muy improbable.',
+                  level: alto ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Aerts M. Fam Pract 2017. Punto de corte ≥ 2 con sensibilidad ~ 90 %.'],
+      },
+      // -------- Pittsburgh knee --------
+      {
+          id: 'pittsburgh-rodilla',
+          name: 'Reglas de rodilla de Pittsburgh',
+          shortName: 'Pittsburgh rodilla',
+          description: 'Necesidad de radiografía tras traumatismo de rodilla.',
+          category: CAT_URG,
+          specialty: URG,
+          inputs: [
+              { id: 'mecanismo', type: 'boolean', label: 'Mecanismo: caída o traumatismo con choque directo' },
+              { id: 'edad', type: 'select', label: 'Edad', options: [
+                      { label: '12–50 años', value: 0 },
+                      { label: '< 12 años', value: 1 },
+                      { label: '> 50 años', value: 1 },
+                  ] },
+              { id: 'noCarga', type: 'boolean', label: 'Incapaz de caminar 4 pasos con carga en urgencias' },
+          ],
+          compute: (v) => {
+              if (!v.mecanismo) {
+                  return { main: 'Sin indicación de radiografía', interpretation: 'Falta el criterio de mecanismo traumático (contusión o caída).', level: 'ok' };
+              }
+              const indicada = v.edad === 1 || v.noCarga === 1;
+              return {
+                  main: indicada ? 'Radiografía indicada' : 'Radiografía NO necesaria',
+                  interpretation: indicada
+                      ? 'Cumple mecanismo + edad de riesgo o incapacidad para cargar peso: solicitar Rx.'
+                      : 'Puede evitarse la radiografía si la exploración es normal.',
+                  level: indicada ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Seaberg DC. Ann Emerg Med 1998. Sensibilidad 99 % para fractura clínicamente significativa.'],
+      },
+      // -------- PECARN c-spine --------
+      {
+          id: 'pecarn-cspine',
+          name: 'PECARN cervical — lesión de columna cervical pediátrica',
+          shortName: 'PECARN cervical',
+          description: 'Identifica niños < 18 años con TCE-trauma cervical que requieren imagen.',
+          category: CAT_NEO,
+          specialty: PED,
+          inputs: [
+              { id: 'gcs', type: 'boolean', label: 'Alteración de conciencia (GCS < 15, alterado)' },
+              { id: 'focal', type: 'boolean', label: 'Déficit neurológico focal' },
+              { id: 'dolorCuello', type: 'boolean', label: 'Dolor cervical o dolor a la palpación de línea media' },
+              { id: 'torticolis', type: 'boolean', label: 'Torticolis' },
+              { id: 'traumaTronco', type: 'boolean', label: 'Traumatismo torácico significativo' },
+              { id: 'condicionAlto', type: 'boolean', label: 'Condición predisponente (Down, artritis reumatoide, EDS, otros)' },
+              { id: 'buceoAlto', type: 'boolean', label: 'Buceo o mecanismo de alto riesgo (accidente vehículo > 60 km/h, atropello, caída > 3 m)' },
+          ],
+          compute: (v) => {
+              const alto = S([v.gcs, v.focal, v.dolorCuello, v.torticolis, v.traumaTronco, v.condicionAlto, v.buceoAlto]);
+              if (alto === 0) {
+                  return {
+                      main: 'Imagen NO necesaria',
+                      interpretation: 'Sin factores de riesgo: valor predictivo negativo alto. Retirar collarín tras exploración.',
+                      level: 'ok',
+                  };
+              }
+              return {
+                  main: 'Considerar imagen cervical',
+                  interpretation: `${alto} factor(es) presente(s): TC cervical o Rx AP/lateral/odontoides según protocolo local.`,
+                  level: 'warn',
+              };
+          },
+          notes: ['Leonard JC. Ann Emerg Med 2011. Estudio original: 8 factores con sensibilidad 98 %. La regla PECARN 2024 (Leonard JC. Lancet Child Adolesc Health) simplifica; usar la versión clásica hasta validación local.'],
+      },
+      // -------- ATLAS C. difficile --------
+      {
+          id: 'atlas-cdiff',
+          name: 'ATLAS — pronóstico de C. difficile',
+          shortName: 'ATLAS',
+          description: 'Predice la respuesta al tratamiento en infección por Clostridioides difficile.',
+          category: CAT_INFEC,
+          specialty: MED,
+          inputs: [
+              { id: 'edad', type: 'select', label: 'Edad', options: [
+                      { label: '0 — < 60 años', value: 0 },
+                      { label: '1 — 60–79 años', value: 1 },
+                      { label: '2 — ≥ 80 años', value: 2 },
+                  ] },
+              { id: 'tempC', type: 'select', label: 'Temperatura', options: [
+                      { label: '0 — ≤ 37,5 °C', value: 0 },
+                      { label: '1 — 37,6–38,5 °C', value: 1 },
+                      { label: '2 — > 38,5 °C', value: 2 },
+                  ] },
+              { id: 'leucos', type: 'select', label: 'Leucocitos (×10⁹/L)', options: [
+                      { label: '0 — < 16', value: 0 },
+                      { label: '1 — 16–25', value: 1 },
+                      { label: '2 — > 25', value: 2 },
+                  ] },
+              { id: 'albumina', type: 'select', label: 'Albúmina (g/dL)', options: [
+                      { label: '0 — > 3,5', value: 0 },
+                      { label: '1 — 2,6–3,5', value: 1 },
+                      { label: '2 — < 2,6', value: 2 },
+                  ] },
+              { id: 'antibiotico', type: 'boolean', label: 'Antibiótico sistémico concomitante' },
+          ],
+          compute: (v) => {
+              const total = S([v.edad, v.tempC, v.leucos, v.albumina, v.antibiotico ? 2 : 0]);
+              let level = 'ok';
+              let sub = 'Buen pronóstico (0–3): curación esperada.';
+              if (total >= 8) {
+                  level = 'danger';
+                  sub = 'Muy mal pronóstico (≥ 8): considerar tratamiento intensivo y valoración quirúrgica.';
+              }
+              else if (total >= 6) {
+                  level = 'warn';
+                  sub = 'Mal pronóstico (6–7): vigilancia estrecha.';
+              }
+              else if (total >= 4) {
+                  level = 'info';
+                  sub = 'Riesgo intermedio (4–5).';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–10)', interpretation: sub, level };
+          },
+          notes: ['Miller MA. BMC Infect Dis 2013. Correlaciona con curación al día 10 y recaída.'],
+      },
+      // -------- Martin LDL --------
+      {
+          id: 'martin-ldl',
+          name: 'LDL de Martin-Hopkins',
+          shortName: 'LDL Martin',
+          description: 'Alternativa a Friedewald: usa relación TG/VLDL ajustada por franja de triglicéridos.',
+          category: CAT_FORM,
+          specialty: MED,
+          inputs: [
+              { id: 'colTotal', type: 'number', label: 'Colesterol total (mg/dL)' },
+              { id: 'hdl', type: 'number', label: 'HDL (mg/dL)' },
+              { id: 'trigliceridos', type: 'number', label: 'Triglicéridos (mg/dL)' },
+          ],
+          compute: (v) => {
+              const ct = Number(v.colTotal);
+              const hdl = Number(v.hdl);
+              const tg = Number(v.trigliceridos);
+              if (!ct || !hdl || !tg)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              if (tg >= 400)
+                  return { main: '—', interpretation: 'Con TG ≥ 400 mg/dL no se recomienda estimar el LDL: solicitar LDL directo.', level: 'warn' };
+              // Tabla 180-celdas de Martin: aproximación por franjas
+              const noHDL = ct - hdl;
+              const franjas = [
+                  // [minTG, maxTG, ratios por bandas de no-HDL: <100, 100-129, 130-159, 160-189, 190-219, ≥220]
+                  [0, 49, [3.5, 3.4, 3.3, 3.3, 3.2, 3.1]],
+                  [50, 69, [4.0, 3.9, 3.7, 3.6, 3.5, 3.4]],
+                  [70, 99, [4.3, 4.2, 4.0, 3.9, 3.8, 3.7]],
+                  [100, 129, [4.9, 4.6, 4.4, 4.2, 4.1, 4.0]],
+                  [130, 159, [5.4, 5.0, 4.8, 4.6, 4.5, 4.4]],
+                  [160, 199, [6.2, 5.5, 5.2, 5.0, 4.8, 4.7]],
+                  [200, 249, [7.2, 6.2, 5.7, 5.5, 5.3, 5.2]],
+                  [250, 299, [8.5, 6.8, 6.3, 6.0, 5.8, 5.6]],
+                  [300, 399, [10.6, 8.0, 7.2, 6.8, 6.5, 6.4]],
+              ];
+              const banda = noHDL < 100 ? 0 : noHDL < 130 ? 1 : noHDL < 160 ? 2 : noHDL < 190 ? 3 : noHDL < 220 ? 4 : 5;
+              const franja = franjas.find(([lo, hi]) => tg >= lo && tg <= hi) || franjas[franjas.length - 1];
+              const ratio = franja[2][banda];
+              const ldl = ct - hdl - tg / ratio;
+              return {
+                  main: fmt(ldl, 0),
+                  mainUnit: 'mg/dL',
+                  interpretation: `no-HDL ${fmt(noHDL, 0)} · TG/VLDL ratio ${ratio}. Más preciso que Friedewald cuando TG 150–400 mg/dL.`,
+                  level: 'ok',
+              };
+          },
+          notes: ['Martin SS. JAMA 2013 (180-cell table). Recomendado por AHA/ACC 2018 sobre Friedewald.'],
+      },
+      // -------- Mentzer --------
+      {
+          id: 'mentzer',
+          name: 'Índice de Mentzer',
+          shortName: 'Mentzer',
+          description: 'Distingue β-talasemia menor de ferropenia en microcitosis.',
+          category: CAT_HEMAT,
+          specialty: MED,
+          inputs: [
+              { id: 'vcm', type: 'number', label: 'VCM (fL)' },
+              { id: 'hematies', type: 'number', label: 'Hematíes (×10¹²/L)' },
+          ],
+          compute: (v) => {
+              const vcm = Number(v.vcm);
+              const rbc = Number(v.hematies);
+              if (!vcm || !rbc)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              const idx = vcm / rbc;
+              const tal = idx < 13;
+              return {
+                  main: fmt(idx, 1),
+                  mainUnit: 'VCM/RBC',
+                  interpretation: tal
+                      ? 'Índice < 13: sugiere β-talasemia menor (hematíes conservados). Solicitar Hb A₂.'
+                      : 'Índice > 13: sugiere ferropenia. Completar perfil férrico.',
+                  level: 'info',
+              };
+          },
+          notes: ['Mentzer WC. Lancet 1973. Sensibilidad ~ 80 % — no sustituye a la HPLC en talasemia.'],
+      },
+      // -------- RFM --------
+      {
+          id: 'rfm',
+          name: 'RFM — Relative Fat Mass',
+          shortName: 'RFM',
+          description: 'Estima el % de grasa corporal a partir de la relación altura/perímetro de cintura.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              { id: 'altura', type: 'number', label: 'Altura (cm)' },
+              { id: 'cintura', type: 'number', label: 'Perímetro abdominal (cm)' },
+              { id: 'sexo', type: 'select', label: 'Sexo', options: [
+                      { label: 'Hombre', value: 0 }, { label: 'Mujer', value: 1 },
+                  ] },
+          ],
+          compute: (v) => {
+              const h = Number(v.altura);
+              const c = Number(v.cintura);
+              if (!h || !c)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              const base = v.sexo === 1 ? 76 : 64;
+              const rfm = base - 20 * (h / c);
+              const obesidad = v.sexo === 1 ? rfm >= 35 : rfm >= 25;
+              return {
+                  main: fmt(rfm, 1),
+                  mainUnit: '% grasa',
+                  interpretation: obesidad
+                      ? 'Compatible con obesidad según % grasa (≥ 25 % en hombres, ≥ 35 % en mujeres).'
+                      : 'Dentro del rango no-obeso por % de grasa.',
+                  level: obesidad ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Woolcott OO. Sci Rep 2018. Menos sesgo que el IMC para estimar grasa corporal.'],
+      },
+      // -------- IMPEDE-VTE --------
+      {
+          id: 'impede-vte',
+          name: 'IMPEDE-VTE — TEV en mieloma múltiple',
+          shortName: 'IMPEDE-VTE',
+          description: 'Riesgo de tromboembolismo venoso en pacientes con mieloma múltiple.',
+          category: CAT_TEV,
+          specialty: MED,
+          inputs: [
+              { id: 'imid', type: 'select', label: 'IMID (talidomida/lenalidomida/pomalidomida)', options: [
+                      { label: '0 — No', value: 0 },
+                      { label: '4 — Sí', value: 4 },
+                  ] },
+              { id: 'imcAlto', type: 'boolean', label: 'IMC ≥ 25 kg/m² (+1)' },
+              { id: 'fracturaPelvis', type: 'boolean', label: 'Fractura pélvica, cadera o fémur (+4)' },
+              { id: 'epo', type: 'boolean', label: 'Uso de eritropoyetina (+1)' },
+              { id: 'doxo', type: 'boolean', label: 'Doxorrubicina (+3)' },
+              { id: 'dexoAlta', type: 'select', label: 'Dexametasona semanal', options: [
+                      { label: '0 — No', value: 0 },
+                      { label: '2 — Dosis estándar', value: 2 },
+                      { label: '4 — Dosis alta (> 160 mg/mes)', value: 4 },
+                  ] },
+              { id: 'tevPrevio', type: 'boolean', label: 'Antecedente de TEV (+5)' },
+              { id: 'trombofilia', type: 'boolean', label: 'Trombofilia conocida (+3)' },
+              { id: 'cvc', type: 'boolean', label: 'Catéter venoso central o vía tunelizada (+2)' },
+              { id: 'profilaxis', type: 'select', label: 'Profilaxis antitrombótica', options: [
+                      { label: '0 — Sin profilaxis', value: 0 },
+                      { label: '-3 — AAS profiláctico', value: -3 },
+                      { label: '-4 — HBPM o anticoagulación completa', value: -4 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = S([
+                  v.imid, v.imcAlto, v.fracturaPelvis ? 4 : 0, v.epo, v.doxo ? 3 : 0, v.dexoAlta,
+                  v.tevPrevio ? 5 : 0, v.trombofilia ? 3 : 0, v.cvc ? 2 : 0, v.profilaxis,
+              ]);
+              let level = 'ok';
+              let sub = 'Riesgo bajo (≤ 3): sin profilaxis específica.';
+              if (total >= 8) {
+                  level = 'danger';
+                  sub = 'Alto riesgo (≥ 8): profilaxis con HBPM o DOAC durante el ciclo.';
+              }
+              else if (total >= 4) {
+                  level = 'warn';
+                  sub = 'Riesgo intermedio (4–7): profilaxis con AAS o HBPM según guías.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos', interpretation: sub, level };
+          },
+          notes: ['Sanfilippo KM. Am J Hematol 2019. IMWG y NCCN recomiendan profilaxis desde riesgo intermedio.'],
+      },
+      // -------- ORT-OUD --------
+      {
+          id: 'ort-oud',
+          name: 'ORT-OUD — riesgo de trastorno por opioides',
+          shortName: 'ORT-OUD',
+          description: 'Versión actualizada del Opioid Risk Tool. Predice trastorno por uso de opioides antes de prescripciones prolongadas.',
+          category: CAT_TOX,
+          specialty: MED,
+          inputs: [
+              { id: 'afAlcohol', type: 'boolean', label: 'Antecedente familiar de abuso de alcohol' },
+              { id: 'afIlegal', type: 'boolean', label: 'Antecedente familiar de abuso de drogas ilegales' },
+              { id: 'apAlcohol', type: 'boolean', label: 'Antecedente personal de abuso de alcohol' },
+              { id: 'apIlegal', type: 'boolean', label: 'Antecedente personal de abuso de drogas ilegales' },
+              { id: 'apReceta', type: 'boolean', label: 'Antecedente personal de abuso de fármacos con receta' },
+              { id: 'edadJoven', type: 'boolean', label: 'Edad 16–45 años' },
+              { id: 'psq', type: 'boolean', label: 'Trastorno psiquiátrico (depresión, TDAH, TOC, bipolar, esquizofrenia)' },
+          ],
+          compute: (v) => {
+              const total = S([v.afAlcohol, v.afIlegal, v.apAlcohol, v.apIlegal, v.apReceta, v.edadJoven, v.psq]);
+              let level = 'ok';
+              let sub = 'Riesgo bajo (0–2).';
+              if (total >= 4) {
+                  level = 'danger';
+                  sub = 'Riesgo alto (≥ 4): considerar alternativas no opioides y consultar con especialista en dolor/adicciones.';
+              }
+              else if (total === 3) {
+                  level = 'warn';
+                  sub = 'Riesgo moderado (3): consentimiento, monitorización con acuerdo terapéutico y análisis de orina.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–7)', interpretation: sub, level };
+          },
+          notes: ['Cheatle MD. J Pain 2019 (ORT-OUD, versión revisada sin sesgo de sexo). Instrumento de cribado, no diagnóstico.'],
+      },
+      // -------- MDQ bipolar --------
+      {
+          id: 'mdq',
+          name: 'MDQ — cribado de trastorno bipolar',
+          shortName: 'MDQ',
+          description: 'Mood Disorder Questionnaire para episodios hipomaníacos/maniacos previos.',
+          category: CAT_SALUD_MENTAL,
+          specialty: MED,
+          inputs: [
+              { id: 'sintomas', type: 'select', label: '¿Cuántos de los 13 síntomas típicos ha presentado alguna vez?', options: Array.from({ length: 14 }, (_, i) => ({ label: `${i} síntomas`, value: i })) },
+              { id: 'simultaneo', type: 'boolean', label: '¿Varios de esos síntomas ocurrieron al mismo tiempo?' },
+              { id: 'problemas', type: 'select', label: 'Grado de problemas que le causaron', options: [
+                      { label: 'Sin problemas', value: 0 },
+                      { label: 'Menores', value: 0 },
+                      { label: 'Moderados', value: 1 },
+                      { label: 'Graves', value: 1 },
+                  ] },
+          ],
+          compute: (v) => {
+              const sint = Number(v.sintomas || 0);
+              const positivo = sint >= 7 && v.simultaneo === 1 && v.problemas === 1;
+              return {
+                  main: positivo ? 'MDQ positivo' : 'MDQ negativo',
+                  interpretation: positivo
+                      ? '≥ 7 síntomas + simultáneos + problemas moderados/graves: valoración por psiquiatría para descartar bipolaridad.'
+                      : 'No cumple criterios para cribado positivo.',
+                  level: positivo ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Hirschfeld RM. Am J Psychiatry 2000. Sensibilidad ~ 73 %, especificidad 90 %. Complementar con entrevista clínica.'],
+      },
+      // -------- Paxlovid --------
+      {
+          id: 'paxlovid',
+          name: 'Indicación de Paxlovid (nirmatrelvir/ritonavir)',
+          shortName: 'Paxlovid',
+          description: 'Elegibilidad de nirmatrelvir/ritonavir para COVID-19 en adultos no hospitalizados.',
+          category: CAT_INFEC,
+          specialty: MED,
+          inputs: [
+              { id: 'sintomas', type: 'boolean', label: 'Inicio de síntomas hace ≤ 5 días' },
+              { id: 'noHosp', type: 'boolean', label: 'No requiere hospitalización por COVID-19' },
+              { id: 'riesgo', type: 'boolean', label: 'Al menos un factor de riesgo (edad ≥ 60, obesidad, diabetes, ERC, EPOC, cardiopatía, inmunodepresión)' },
+              { id: 'tfg', type: 'number', label: 'TFG estimada (mL/min/1,73 m²)' },
+              { id: 'child', type: 'select', label: 'Función hepática', options: [
+                      { label: 'Normal o Child-Pugh A', value: 0 },
+                      { label: 'Child-Pugh B', value: 1 },
+                      { label: 'Child-Pugh C', value: 2 },
+                  ] },
+              { id: 'interacciones', type: 'boolean', label: 'Fármacos contraindicados: rifampicina, carbamazepina, fenobarbital, hierba de San Juan, dronedarona, midazolam oral, alfuzosina, etc.' },
+          ],
+          compute: (v) => {
+              if (v.interacciones === 1)
+                  return { main: 'CONTRAINDICADO', interpretation: 'Interacciones graves con inhibición de CYP3A. Elegir alternativa (remdesivir).', level: 'danger' };
+              if (v.child === 2)
+                  return { main: 'CONTRAINDICADO', interpretation: 'Child-Pugh C: no usar.', level: 'danger' };
+              const tfg = Number(v.tfg);
+              if (tfg && tfg < 30)
+                  return { main: 'No recomendado', interpretation: 'TFG < 30 mL/min/1,73 m²: no usar Paxlovid. Considerar remdesivir.', level: 'danger' };
+              if (!v.sintomas || !v.noHosp || !v.riesgo)
+                  return { main: 'No indicado', interpretation: 'No cumple los tres criterios: síntomas ≤ 5 días, ambulatorio y factor de riesgo.', level: 'info' };
+              const ajuste = tfg && tfg < 60;
+              return {
+                  main: 'Indicado',
+                  interpretation: ajuste
+                      ? 'Ajuste de dosis (TFG 30–60): nirmatrelvir 150 mg + ritonavir 100 mg/12 h × 5 días.'
+                      : 'Dosis estándar: nirmatrelvir 300 mg + ritonavir 100 mg/12 h × 5 días. Revisar interacciones.',
+                  level: ajuste ? 'warn' : 'ok',
+              };
+          },
+          notes: ['FDA/AEMPS ficha técnica 2024. Iniciar en ≤ 5 días desde el inicio de síntomas. Consultar Liverpool COVID-19 Drug Interactions.'],
+      },
+      // -------- NAC Rumack-Matthew --------
+      {
+          id: 'nac-paracetamol',
+          name: 'N-acetilcisteína en intoxicación por paracetamol',
+          shortName: 'NAC paracetamol',
+          description: 'Necesidad y dosificación de N-acetilcisteína (Prescott) según niveles y horas.',
+          category: CAT_TOX,
+          specialty: URG,
+          inputs: [
+              { id: 'horas', type: 'number', label: 'Horas desde la ingesta' },
+              { id: 'paracetamol', type: 'number', label: 'Paracetamol sérico (µg/mL)' },
+              { id: 'peso', type: 'number', label: 'Peso (kg)' },
+              { id: 'liberacionSostenida', type: 'boolean', label: 'Formulación de liberación sostenida o ingesta múltiple' },
+          ],
+          compute: (v) => {
+              const h = Number(v.horas);
+              const p = Number(v.paracetamol);
+              const kg = Number(v.peso);
+              if (!h || !p || !kg)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              if (h < 4)
+                  return { main: 'Repetir nivel a las 4 h', interpretation: 'La nomograma no es aplicable antes de las 4 h.', level: 'info' };
+              // Rumack-Matthew: línea de tratamiento = 150 µg/mL a las 4 h, semivida 4 h → nivel_umbral = 150 * 0.5^((h-4)/4)
+              const umbral = 150 * Math.pow(0.5, (h - 4) / 4);
+              const tratar = p >= umbral || v.liberacionSostenida === 1 || h > 24;
+              const carga = Math.min(kg, 100) * 150;
+              const dosis2 = Math.min(kg, 100) * 50;
+              const dosis3 = Math.min(kg, 100) * 100;
+              return {
+                  main: tratar ? 'Iniciar NAC IV' : 'NAC NO indicada',
+                  mainUnit: `umbral ${fmt(umbral, 0)} µg/mL`,
+                  interpretation: tratar
+                      ? `Régimen Prescott 21 h (peso máx. 100 kg): ${fmt(carga, 0)} mg en 200 mL en 60 min → ${fmt(dosis2, 0)} mg en 500 mL en 4 h → ${fmt(dosis3, 0)} mg en 1 000 mL en 16 h.`
+                      : `Nivel ${p} µg/mL < línea de tratamiento (${fmt(umbral, 0)}). Reevaluar clínica y transaminasas.`,
+                  level: tratar ? 'danger' : 'ok',
+              };
+          },
+          notes: ['Prescott LF 1979; Rumack BH 1975. En Reino Unido se usa una línea única a 100 µg/mL (SNAP 12 h). Iniciar sin esperar niveles si ingesta > 150 mg/kg o desconocida.'],
+          references: ['AEMPS: N-acetilcisteína, ficha técnica · https://cima.aemps.es'],
+      },
+  ];
+    return primaryCare;
+  })();
+
+  // inurse-m2/src/calculators/family-practice.ts
+  var familyPractice = (function () {
+  const CAT_SM = 'Geriatría, fragilidad y salud mental';
+  const CAT_MED = 'Medicina interna y familiar';
+  const CAT_GO = 'Obstetricia y ginecología';
+  const CAT_TEV = 'Tromboembolismo venoso';
+  const CAT_ENDO = 'Endocrino, obesidad y diabetes';
+  const CAT_RIESGO = 'Riesgo perioperatorio';
+  const CAT_SCA = 'Síndrome coronario agudo y dolor torácico';
+  const CAT_SINCOPE = 'Síncope';
+  const CAT_FORM = 'Fórmulas y cálculos clínicos';
+  const MED = ['Medicina Familiar'];
+  var familyPractice = [
+      // -------- EPDS --------
+      {
+          id: 'epds',
+          name: 'EPDS — Escala de Depresión Posnatal de Edimburgo',
+          shortName: 'EPDS',
+          description: 'Cribado de depresión posparto y del embarazo (10 ítems, últimos 7 días).',
+          category: CAT_GO,
+          specialty: MED,
+          inputs: [
+              { id: 'q1', type: 'select', label: '1. He sido capaz de reírme y ver el lado divertido de las cosas', options: [
+                      { label: '0 — Tanto como siempre', value: 0 },
+                      { label: '1 — No tanto ahora', value: 1 },
+                      { label: '2 — Mucho menos ahora', value: 2 },
+                      { label: '3 — Nada en absoluto', value: 3 },
+                  ] },
+              { id: 'q2', type: 'select', label: '2. He mirado el futuro con ilusión', options: [
+                      { label: '0 — Tanto como siempre', value: 0 },
+                      { label: '1 — Menos que antes', value: 1 },
+                      { label: '2 — Mucho menos que antes', value: 2 },
+                      { label: '3 — Casi nada', value: 3 },
+                  ] },
+              { id: 'q3', type: 'select', label: '3. Me he culpado innecesariamente cuando las cosas iban mal', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — Sí, algunas veces', value: 2 },
+                      { label: '3 — Sí, la mayor parte del tiempo', value: 3 },
+                  ] },
+              { id: 'q4', type: 'select', label: '4. He estado ansiosa o preocupada sin motivo', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — Sí, a veces', value: 2 },
+                      { label: '3 — Sí, muy a menudo', value: 3 },
+                  ] },
+              { id: 'q5', type: 'select', label: '5. He sentido miedo o pánico sin motivo', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — No, no mucho', value: 1 },
+                      { label: '2 — Sí, a veces', value: 2 },
+                      { label: '3 — Sí, con bastante frecuencia', value: 3 },
+                  ] },
+              { id: 'q6', type: 'select', label: '6. Las cosas me han estado abrumando', options: [
+                      { label: '0 — Nunca; he manejado todo bien', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — Sí, a veces no he podido manejar tan bien como siempre', value: 2 },
+                      { label: '3 — Sí, la mayor parte del tiempo no he podido manejar nada', value: 3 },
+                  ] },
+              { id: 'q7', type: 'select', label: '7. He estado tan infeliz que he tenido dificultad para dormir', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — Sí, a veces', value: 2 },
+                      { label: '3 — Sí, la mayor parte del tiempo', value: 3 },
+                  ] },
+              { id: 'q8', type: 'select', label: '8. Me he sentido triste o desgraciada', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — Sí, a veces', value: 2 },
+                      { label: '3 — Sí, la mayor parte del tiempo', value: 3 },
+                  ] },
+              { id: 'q9', type: 'select', label: '9. He estado tan infeliz que he estado llorando', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Solo ocasionalmente', value: 1 },
+                      { label: '2 — Sí, con bastante frecuencia', value: 2 },
+                      { label: '3 — Sí, la mayor parte del tiempo', value: 3 },
+                  ] },
+              { id: 'q10', type: 'select', label: '10. Se me ha ocurrido la idea de hacerme daño', options: [
+                      { label: '0 — Nunca', value: 0 },
+                      { label: '1 — Casi nunca', value: 1 },
+                      { label: '2 — A veces', value: 2 },
+                      { label: '3 — Sí, con bastante frecuencia', value: 3 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = sum(v, ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10']);
+              const ideacion = (v.q10 ?? 0) > 0;
+              let level = 'ok';
+              let sub = 'Cribado negativo (< 10).';
+              if (total >= 13) {
+                  level = 'danger';
+                  sub = 'Probable depresión posparto (≥ 13): valoración especializada.';
+              }
+              else if (total >= 10) {
+                  level = 'warn';
+                  sub = 'Posible depresión posparto (10–12): repetir en 2 semanas y valorar.';
+              }
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (0–30)',
+                  interpretation: (ideacion ? '⚠ Ítem 10 positivo: valorar riesgo suicida siempre. ' : '') + sub,
+                  level: ideacion ? 'danger' : level,
+              };
+          },
+          notes: ['Cox JL, Holden JM, Sagovsky R. Br J Psychiatry 1987. Cribado en cualquier momento del embarazo o hasta 12 meses posparto.'],
+      },
+      // -------- MADRS --------
+      {
+          id: 'madrs',
+          name: 'MADRS — Montgomery-Åsberg Depression Rating Scale',
+          shortName: 'MADRS',
+          description: 'Gravedad de la depresión en adultos (10 ítems, 0-6 cada uno).',
+          category: CAT_SM,
+          specialty: MED,
+          inputs: [
+              'Tristeza aparente', 'Tristeza referida', 'Tensión interna', 'Sueño reducido', 'Apetito reducido', 'Dificultad de concentración', 'Lasitud', 'Incapacidad para sentir', 'Pensamientos pesimistas', 'Pensamientos suicidas'
+          ].map((lab, i) => ({
+              id: `m${i + 1}`,
+              type: 'select',
+              label: `${i + 1}. ${lab}`,
+              options: [0, 1, 2, 3, 4, 5, 6].map((n) => ({ label: `${n}`, value: n })),
+          })),
+          compute: (v) => {
+              const ids = Array.from({ length: 10 }, (_, i) => `m${i + 1}`);
+              const total = sum(v, ids);
+              const ideacion = (v.m10 ?? 0) >= 3;
+              let level = 'ok';
+              let sub = 'Sin depresión o mínima (0–6).';
+              if (total >= 35) {
+                  level = 'danger';
+                  sub = 'Depresión grave (≥ 35).';
+              }
+              else if (total >= 20) {
+                  level = 'warn';
+                  sub = 'Depresión moderada (20–34).';
+              }
+              else if (total >= 7) {
+                  level = 'info';
+                  sub = 'Depresión leve (7–19).';
+              }
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (0–60)',
+                  interpretation: (ideacion ? '⚠ Ítem 10 ≥ 3: valorar riesgo suicida. ' : '') + sub,
+                  level: ideacion ? 'danger' : level,
+              };
+          },
+          notes: ['Montgomery SA, Åsberg M. Br J Psychiatry 1979. Escala de referencia en ensayos clínicos de depresión mayor.'],
+      },
+      // -------- C-SSRS simplificado --------
+      {
+          id: 'c-ssrs',
+          name: 'C-SSRS — cribado de ideación y conducta suicida',
+          shortName: 'C-SSRS',
+          description: 'Versión de cribado (últimos 30 días para ideación; siempre para conducta).',
+          category: CAT_SM,
+          specialty: MED,
+          inputs: [
+              { id: 'i1', type: 'boolean', label: '1. ¿Ha deseado estar muerto/a o poder dormirse y no despertar?' },
+              { id: 'i2', type: 'boolean', label: '2. ¿Ha tenido pensamientos reales de suicidarse?' },
+              { id: 'i3', type: 'boolean', label: '3. ¿Ha pensado en cómo hacerlo (método)?' },
+              { id: 'i4', type: 'boolean', label: '4. ¿Ha tenido alguna intención de actuar según estos pensamientos?' },
+              { id: 'i5', type: 'boolean', label: '5. ¿Ha comenzado a elaborar un plan específico o lo tiene?' },
+              { id: 'c', type: 'boolean', label: '6. En su vida, ¿alguna vez ha hecho algo o preparado algo para acabar con su vida?' },
+              { id: 'c3m', type: 'boolean', label: '   ¿Ha ocurrido en los últimos 3 meses?' },
+          ],
+          compute: (v) => {
+              let nivel = 'Sin riesgo detectable';
+              let level = 'ok';
+              let sub = 'Todos los ítems negativos: no se requiere derivación por conducta suicida.';
+              if (v.i1 || v.i2) {
+                  level = 'info';
+                  nivel = 'Riesgo bajo';
+                  sub = 'Ideación pasiva o activa sin plan: evaluar factores de riesgo y proteger acceso a medios.';
+              }
+              if (v.i3) {
+                  level = 'warn';
+                  nivel = 'Riesgo moderado';
+                  sub = 'Ideación con método considerado: valoración por salud mental de forma preferente.';
+              }
+              if (v.i4 || v.i5) {
+                  level = 'danger';
+                  nivel = 'Riesgo alto';
+                  sub = 'Intención o plan específico: derivación urgente y seguridad activa (retirar medios, acompañamiento).';
+              }
+              if (v.c && v.c3m) {
+                  level = 'danger';
+                  nivel = 'Riesgo alto (conducta reciente)';
+                  sub = 'Conducta suicida en los últimos 3 meses: derivación urgente y valoración de ingreso.';
+              }
+              return { main: nivel, interpretation: sub, level };
+          },
+          notes: ['Posner K. Am J Psychiatry 2011. La respuesta positiva a los ítems 4, 5 o a la conducta reciente exige actuación urgente.'],
+      },
+      // -------- HITS --------
+      {
+          id: 'hits',
+          name: 'HITS — cribado de violencia de pareja',
+          shortName: 'HITS',
+          description: 'Cuatro preguntas sobre golpes, insultos, amenazas y gritos en el último año.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              { id: 'h', type: 'select', label: 'Su pareja le ha pegado físicamente (H)', options: [
+                      { label: '1 — Nunca', value: 1 },
+                      { label: '2 — Raras veces', value: 2 },
+                      { label: '3 — A veces', value: 3 },
+                      { label: '4 — Con frecuencia', value: 4 },
+                      { label: '5 — Muy a menudo', value: 5 },
+                  ] },
+              { id: 'i', type: 'select', label: 'Le ha insultado o hablado despectivamente (I)', options: [
+                      { label: '1 — Nunca', value: 1 },
+                      { label: '2 — Raras veces', value: 2 },
+                      { label: '3 — A veces', value: 3 },
+                      { label: '4 — Con frecuencia', value: 4 },
+                      { label: '5 — Muy a menudo', value: 5 },
+                  ] },
+              { id: 't', type: 'select', label: 'La ha amenazado con hacerle daño (T)', options: [
+                      { label: '1 — Nunca', value: 1 },
+                      { label: '2 — Raras veces', value: 2 },
+                      { label: '3 — A veces', value: 3 },
+                      { label: '4 — Con frecuencia', value: 4 },
+                      { label: '5 — Muy a menudo', value: 5 },
+                  ] },
+              { id: 's', type: 'select', label: 'Le ha gritado o maldecido (S)', options: [
+                      { label: '1 — Nunca', value: 1 },
+                      { label: '2 — Raras veces', value: 2 },
+                      { label: '3 — A veces', value: 3 },
+                      { label: '4 — Con frecuencia', value: 4 },
+                      { label: '5 — Muy a menudo', value: 5 },
+                  ] },
+          ],
+          compute: (v) => {
+              const total = sum(v, ['h', 'i', 't', 's']);
+              const positivo = total >= 11;
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (4–20)',
+                  interpretation: positivo
+                      ? 'Cribado positivo (≥ 11): valorar violencia de pareja, seguridad y ofrecer recursos.'
+                      : 'Cribado negativo.',
+                  level: positivo ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Sherin KM. Fam Med 1998. Punto de corte ≥ 11 con sensibilidad 96 % y especificidad 91 %.'],
+      },
+      // -------- AAS --------
+      {
+          id: 'aas',
+          name: 'AAS — Abuse Assessment Screen',
+          shortName: 'AAS',
+          description: 'Cribado de violencia doméstica, especialmente durante el embarazo.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              { id: 'ultimoAno', type: 'boolean', label: '¿En el último año ha sido golpeada, abofeteada, pateada o agredida físicamente por alguien?' },
+              { id: 'embarazo', type: 'boolean', label: 'Durante el embarazo actual, ¿ha sufrido agresiones físicas?' },
+              { id: 'sexual', type: 'boolean', label: '¿En el último año ha sido forzada a mantener relaciones sexuales?' },
+              { id: 'miedo', type: 'boolean', label: '¿Tiene miedo de su pareja o de alguien de su entorno?' },
+          ],
+          compute: (v) => {
+              const positivo = v.ultimoAno || v.embarazo || v.sexual || v.miedo;
+              return {
+                  main: positivo ? 'AAS positivo' : 'AAS negativo',
+                  interpretation: positivo
+                      ? 'Cualquier respuesta afirmativa activa: valorar seguridad, red de apoyo y recursos legales/sociales.'
+                      : 'Sin evidencia actual de violencia doméstica en el cribado.',
+                  level: positivo ? 'warn' : 'ok',
+              };
+          },
+          notes: ['McFarlane J. JAMA 1992. Instrumento breve validado; combinar con espacio seguro para preguntar.'],
+      },
+      // -------- Pack-years --------
+      {
+          id: 'pack-years',
+          name: 'Paquetes-año de tabaco',
+          shortName: 'Paquetes-año',
+          description: 'Cuantifica el consumo acumulado de tabaco.',
+          category: CAT_FORM,
+          specialty: MED,
+          inputs: [
+              { id: 'cigarros', type: 'number', label: 'Cigarrillos por día' },
+              { id: 'anios', type: 'number', label: 'Años fumando' },
+          ],
+          compute: (v) => {
+              const c = Number(v.cigarros);
+              const a = Number(v.anios);
+              if (!c || !a)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              const pky = (c / 20) * a;
+              let level = 'info';
+              let sub = 'Consumo cuantificado. Consejo estructurado de deshabituación.';
+              if (pky >= 20) {
+                  level = 'warn';
+                  sub = 'Consumo ≥ 20 paquetes-año: indicación de cribado de cáncer de pulmón con TC de baja dosis (según edad y estado clínico).';
+              }
+              if (pky >= 30) {
+                  level = 'danger';
+                  sub = 'Consumo ≥ 30 paquetes-año: cribado firmemente indicado en adultos 50–80 años activos o exfumadores de < 15 años.';
+              }
+              return { main: fmt(pky, 1), mainUnit: 'paquetes-año', interpretation: sub, level };
+          },
+          notes: ['USPSTF 2021: cribado de CP con TCBD en 50–80 años, ≥ 20 paquetes-año, fumadores actuales o exfumadores de < 15 años.'],
+      },
+      // -------- IPSS / AUA-SI --------
+      {
+          id: 'ipss',
+          name: 'IPSS / AUA-SI — síntomas prostáticos',
+          shortName: 'IPSS',
+          description: 'Siete síntomas urinarios + una pregunta de calidad de vida.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              'Sensación de vaciado incompleto', 'Frecuencia (< 2 h)', 'Intermitencia', 'Urgencia', 'Chorro débil', 'Esfuerzo para orinar', 'Nocturia (n.º de veces al día)'
+          ].map((lab, i) => ({
+              id: `q${i + 1}`,
+              type: 'select',
+              label: `${i + 1}. ${lab}`,
+              options: [
+                  { label: '0 — Ninguna vez', value: 0 },
+                  { label: '1 — Menos de 1 de cada 5', value: 1 },
+                  { label: '2 — Menos de la mitad', value: 2 },
+                  { label: '3 — La mitad', value: 3 },
+                  { label: '4 — Más de la mitad', value: 4 },
+                  { label: '5 — Casi siempre', value: 5 },
+              ],
+          })),
+          compute: (v) => {
+              const ids = Array.from({ length: 7 }, (_, i) => `q${i + 1}`);
+              const total = sum(v, ids);
+              let level = 'ok';
+              let sub = 'Síntomas leves (0–7).';
+              if (total >= 20) {
+                  level = 'danger';
+                  sub = 'Síntomas graves (20–35): valorar tratamiento y derivación a urología.';
+              }
+              else if (total >= 8) {
+                  level = 'warn';
+                  sub = 'Síntomas moderados (8–19): iniciar tratamiento médico.';
+              }
+              return { main: fmt(total), mainUnit: 'puntos (0–35)', interpretation: sub, level };
+          },
+          notes: ['Barry MJ. J Urol 1992. Se acompaña de una octava pregunta (calidad de vida 0–6) que no puntúa pero orienta la decisión terapéutica.'],
+      },
+      // -------- HERDOO2 --------
+      {
+          id: 'herdoo2',
+          name: 'HERDOO2 — suspender anticoagulación tras TEV no provocado (mujeres)',
+          shortName: 'HERDOO2',
+          description: 'Identifica mujeres con TEV no provocado que pueden suspender la anticoagulación tras la fase inicial.',
+          category: CAT_TEV,
+          specialty: MED,
+          inputs: [
+              { id: 'hiperpig', type: 'boolean', label: 'Hiperpigmentación, edema o eritema de la pierna afectada' },
+              { id: 'dimero', type: 'boolean', label: 'Dímero-D ≥ 250 µg/L (con anticoagulación activa)' },
+              { id: 'imc', type: 'boolean', label: 'IMC ≥ 30 kg/m²' },
+              { id: 'edad', type: 'boolean', label: 'Edad ≥ 65 años' },
+          ],
+          compute: (v) => {
+              const total = sum(v, ['hiperpig', 'dimero', 'imc', 'edad']);
+              const suspender = total <= 1;
+              return {
+                  main: fmt(total),
+                  mainUnit: 'puntos (0–4)',
+                  interpretation: suspender
+                      ? 'Riesgo bajo (≤ 1): puede considerarse suspender anticoagulación (recurrencia anual ~ 3 %).'
+                      : 'Riesgo alto (≥ 2): mantener anticoagulación (recurrencia anual ~ 8 %).',
+                  level: suspender ? 'ok' : 'warn',
+              };
+          },
+          notes: ['Rodger MA. BMJ 2017 (validación REVERSE II). Solo aplicable en mujeres tras 5–12 meses de anticoagulación por TEV no provocado.'],
+      },
+      // -------- Dutch FH --------
+      {
+          id: 'dutch-fh',
+          name: 'Criterios Dutch Lipid Clinic (hipercolesterolemia familiar)',
+          shortName: 'Dutch FH',
+          description: 'Diagnóstico clínico de hipercolesterolemia familiar (HF) en adultos.',
+          category: CAT_MED,
+          specialty: MED,
+          inputs: [
+              { id: 'af1', type: 'boolean', label: 'Familiar de 1er grado con enfermedad coronaria/vascular prematura o LDL > percentil 95', points: 1 },
+              { id: 'af2', type: 'boolean', label: 'Familiar de 1er grado con xantomas tendinosos o arco corneal o LDL > percentil 95 (edad < 18 años)', points: 2 },
+              { id: 'ap1', type: 'boolean', label: 'Paciente con enfermedad coronaria prematura (< 55 años H / < 60 años M)', points: 2 },
+              { id: 'ap2', type: 'boolean', label: 'Paciente con enfermedad vascular cerebral/periférica prematura', points: 1 },
+              { id: 'xantoma', type: 'boolean', label: 'Xantomas tendinosos', points: 6 },
+              { id: 'arco', type: 'boolean', label: 'Arco corneal antes de los 45 años', points: 4 },
+              { id: 'ldl', type: 'select', label: 'LDL colesterol (mg/dL)', options: [
+                      { label: '0 — < 155', value: 0 },
+                      { label: '1 — 155–189', value: 1 },
+                      { label: '3 — 190–249', value: 3 },
+                      { label: '5 — 250–329', value: 5 },
+                      { label: '8 — ≥ 330', value: 8 },
+                  ] },
+              { id: 'mutacion', type: 'boolean', label: 'Mutación funcional documentada (LDLR, ApoB, PCSK9)', points: 8 },
+          ],
+          compute: (v) => {
+              const total = sum(v, ['af1', 'af2', 'ap1', 'ap2', 'xantoma', 'arco', 'ldl', 'mutacion']);
+              let dx = 'Diagnóstico improbable (< 3).';
+              let level = 'ok';
+              if (total > 8) {
+                  dx = 'Diagnóstico definitivo (> 8): manejo especializado de HF.';
+                  level = 'danger';
+              }
+              else if (total >= 6) {
+                  dx = 'Diagnóstico probable (6–8): tratamiento con estatinas de alta intensidad y estudio familiar.';
+                  level = 'warn';
+              }
+              else if (total >= 3) {
+                  dx = 'Diagnóstico posible (3–5): valorar cribado familiar.';
+                  level = 'info';
+              }
+              return { main: fmt(total), mainUnit: 'puntos', interpretation: dx, level };
+          },
+          notes: ['Dutch Lipid Clinic Network 1999. Criterios recomendados por ESC/EAS para el diagnóstico clínico de HF.'],
+      },
+      // -------- Gupta neumonía --------
+      {
+          id: 'gupta-neumonia',
+          name: 'Gupta — riesgo de neumonía postoperatoria',
+          shortName: 'Gupta neumonía',
+          description: 'Predice el riesgo de neumonía en los 30 días tras cirugía no cardíaca.',
+          category: CAT_RIESGO,
+          specialty: MED,
+          inputs: [
+              { id: 'edad', type: 'number', label: 'Edad (años)' },
+              { id: 'copd', type: 'boolean', label: 'EPOC' },
+              { id: 'tabaco', type: 'boolean', label: 'Fumador activo' },
+              { id: 'sepsis', type: 'select', label: 'Estado séptico preoperatorio', options: [
+                      { label: '−0,72 — Ninguno', value: -0.72 },
+                      { label: '0 — SIRS', value: 0 },
+                      { label: '+0,42 — Sepsis', value: 0.42 },
+                      { label: '+1,25 — Shock séptico', value: 1.25 },
+                  ] },
+              { id: 'clase', type: 'select', label: 'Clase funcional', options: [
+                      { label: '−0,29 — Independiente', value: -0.29 },
+                      { label: '+0,49 — Parcialmente dependiente', value: 0.49 },
+                      { label: '+1,26 — Totalmente dependiente', value: 1.26 },
+                  ] },
+              { id: 'asa', type: 'select', label: 'Clasificación ASA', options: [
+                      { label: '−3 — ASA I', value: -3 },
+                      { label: '−1,8 — ASA II', value: -1.8 },
+                      { label: '−0,9 — ASA III', value: -0.9 },
+                      { label: '0 — ASA IV', value: 0 },
+                      { label: '+0,65 — ASA V', value: 0.65 },
+                  ] },
+              { id: 'cirugia', type: 'select', label: 'Tipo de cirugía (riesgo)', options: [
+                      { label: '−1,3 — Piel/anorrectal/mama/ginecológica', value: -1.3 },
+                      { label: '−0,7 — Otros de riesgo bajo', value: -0.7 },
+                      { label: '0 — Neurocirugía / abdominal', value: 0 },
+                      { label: '+0,6 — Vascular / ORL', value: 0.6 },
+                      { label: '+1 — Torácica / esofágica', value: 1 },
+                  ] },
+          ],
+          compute: (v) => {
+              const edad = Number(v.edad) || 0;
+              const x = -2.8977 + 0.0144 * edad + 0.7241 * (v.copd ? 1 : 0) + 0.3225 * (v.tabaco ? 1 : 0) + Number(v.sepsis || 0) + Number(v.clase || 0) + Number(v.asa || 0) + Number(v.cirugia || 0);
+              const p = 100 / (1 + Math.exp(-x));
+              let level = 'ok';
+              if (p >= 5)
+                  level = 'danger';
+              else if (p >= 2)
+                  level = 'warn';
+              else if (p >= 1)
+                  level = 'info';
+              return {
+                  main: fmt(p, 2),
+                  mainUnit: '% neumonía a 30 días',
+                  interpretation: 'Optimizar función pulmonar, cesación tabáquica, fisioterapia respiratoria si riesgo elevado.',
+                  level,
+              };
+          },
+          notes: ['Gupta H. Chest 2013 (base ACS-NSQIP). Riesgo global < 1 % en cirugía electiva ambulatoria.'],
+      },
+      // -------- Gupta insuficiencia respiratoria --------
+      {
+          id: 'gupta-insufresp',
+          name: 'Gupta — riesgo de insuficiencia respiratoria postoperatoria',
+          shortName: 'Gupta IRA',
+          description: 'Predice ventilación mecánica > 48 h o reintubación en los 30 días.',
+          category: CAT_RIESGO,
+          specialty: MED,
+          inputs: [
+              { id: 'clase', type: 'select', label: 'Clase funcional', options: [
+                      { label: '−0,45 — Independiente', value: -0.45 },
+                      { label: '+0,77 — Parcial', value: 0.77 },
+                      { label: '+1,26 — Total', value: 1.26 },
+                  ] },
+              { id: 'asa', type: 'select', label: 'ASA', options: [
+                      { label: '−3,7 — I', value: -3.7 },
+                      { label: '−2,42 — II', value: -2.42 },
+                      { label: '−1,56 — III', value: -1.56 },
+                      { label: '−0,71 — IV', value: -0.71 },
+                      { label: '0 — V', value: 0 },
+                  ] },
+              { id: 'sepsis', type: 'select', label: 'Estado séptico preoperatorio', options: [
+                      { label: '−0,55 — Ninguno', value: -0.55 },
+                      { label: '0 — SIRS', value: 0 },
+                      { label: '+0,26 — Sepsis', value: 0.26 },
+                      { label: '+1,3 — Shock séptico', value: 1.3 },
+                  ] },
+              { id: 'emergencia', type: 'boolean', label: 'Cirugía urgente/emergente', points: 0 },
+              { id: 'cirugia', type: 'select', label: 'Tipo de cirugía', options: [
+                      { label: '−1,2 — Piel/anorrectal/mama', value: -1.2 },
+                      { label: '−0,4 — Otros de riesgo bajo', value: -0.4 },
+                      { label: '0 — Neurocirugía/abdominal', value: 0 },
+                      { label: '+0,5 — Vascular/ORL', value: 0.5 },
+                      { label: '+1,5 — Torácica/esofágica/aórtica', value: 1.5 },
+                  ] },
+          ],
+          compute: (v) => {
+              const x = -1.7397 + Number(v.clase || 0) + Number(v.asa || 0) + Number(v.sepsis || 0) + (v.emergencia ? 0.535 : 0) + Number(v.cirugia || 0);
+              const p = 100 / (1 + Math.exp(-x));
+              let level = 'ok';
+              if (p >= 5)
+                  level = 'danger';
+              else if (p >= 2)
+                  level = 'warn';
+              else if (p >= 1)
+                  level = 'info';
+              return {
+                  main: fmt(p, 2),
+                  mainUnit: '% IRA postoperatoria',
+                  interpretation: 'Considerar VMNI, fisioterapia y protocolos de extubación segura si riesgo elevado.',
+                  level,
+              };
+          },
+          notes: ['Gupta H. Mayo Clin Proc 2011.'],
+      },
+      // -------- Duke treadmill --------
+      {
+          id: 'duke-treadmill-mf',
+          name: 'Puntuación de Duke en ergometría',
+          shortName: 'Duke treadmill',
+          description: 'Pronóstico coronario tras prueba de esfuerzo estándar (Bruce).',
+          category: CAT_SCA,
+          specialty: MED,
+          inputs: [
+              { id: 'minutos', type: 'number', label: 'Duración del ejercicio (minutos)' },
+              { id: 'st', type: 'number', label: 'Máxima desviación del ST durante el ejercicio (mm)' },
+              { id: 'angina', type: 'select', label: 'Angina durante el ejercicio', options: [
+                      { label: '0 — Sin angina', value: 0 },
+                      { label: '1 — Angina no limitante', value: 1 },
+                      { label: '2 — Angina que obliga a parar', value: 2 },
+                  ] },
+          ],
+          compute: (v) => {
+              const t = Number(v.minutos);
+              const s = Number(v.st);
+              if (isNaN(t) || isNaN(s))
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              const score = t - 5 * s - 4 * Number(v.angina || 0);
+              let level = 'ok';
+              let sub = 'Riesgo bajo (≥ 5): mortalidad anual < 1 %.';
+              if (score <= -11) {
+                  level = 'danger';
+                  sub = 'Riesgo alto (≤ −11): mortalidad anual > 5 %. Coronariografía.';
+              }
+              else if (score < 5) {
+                  level = 'warn';
+                  sub = 'Riesgo intermedio (−10 a 4): mortalidad anual ≈ 2–3 %. Considerar imagen funcional.';
+              }
+              return { main: fmt(score, 0), mainUnit: 'puntos', interpretation: sub, level };
+          },
+          notes: ['Mark DB. N Engl J Med 1991. Fórmula: minutos − 5×ST − 4×angina.'],
+      },
+      // -------- Boston syncope --------
+      {
+          id: 'boston-sincope',
+          name: 'Criterios de síncope de Boston',
+          shortName: 'Boston síncope',
+          description: 'Identifica pacientes con síncope que requieren ingreso o estudio.',
+          category: CAT_SINCOPE,
+          specialty: MED,
+          inputs: [
+              { id: 'sca', type: 'boolean', label: 'Síntomas o signos de síndrome coronario agudo' },
+              { id: 'cardio', type: 'boolean', label: 'Antecedente de cardiopatía significativa' },
+              { id: 'familia', type: 'boolean', label: 'Antecedentes familiares de muerte súbita' },
+              { id: 'ecg', type: 'boolean', label: 'ECG con hallazgos relevantes (BAV, isquemia, QT largo, Brugada, Delta, HVI)' },
+              { id: 'esfuerzo', type: 'boolean', label: 'Síncope durante el ejercicio' },
+              { id: 'palpit', type: 'boolean', label: 'Palpitaciones antes del síncope' },
+              { id: 'hipovol', type: 'boolean', label: 'Signos de hipovolemia o hemorragia (Hb < 9 g/dL, sangrado activo)' },
+              { id: 'valvular', type: 'boolean', label: 'Soplo o valvulopatía significativa' },
+              { id: 'constantes', type: 'boolean', label: 'Alteración persistente de constantes (bradi < 50, taqui > 100 tras reposo)' },
+          ],
+          compute: (v) => {
+              const ids = ['sca', 'cardio', 'familia', 'ecg', 'esfuerzo', 'palpit', 'hipovol', 'valvular', 'constantes'];
+              const total = sum(v, ids);
+              const ingreso = total >= 1;
+              return {
+                  main: ingreso ? 'Ingreso recomendado' : 'Alta segura',
+                  interpretation: ingreso
+                      ? `${total} criterio(s) positivo(s): monitorización y estudio hospitalario.`
+                      : 'Ningún criterio de alto riesgo: síncope de bajo riesgo, alta con seguimiento ambulatorio.',
+                  level: ingreso ? 'warn' : 'ok',
+              };
+          },
+          notes: ['Grossman SA. Ann Emerg Med 2007. Sensibilidad 97 % para eventos adversos a 30 días.'],
+      },
+      // -------- Karter hipoglucemia --------
+      {
+          id: 'karter-hipoglucemia',
+          name: 'Riesgo de hipoglucemia grave (Karter)',
+          shortName: 'Karter',
+          description: 'Predice hipoglucemia grave en pacientes con diabetes tipo 2 con hospitalización o visita a urgencias en el último año.',
+          category: CAT_ENDO,
+          specialty: MED,
+          inputs: [
+              { id: 'hipoPrevia', type: 'select', label: 'Episodios previos de hipoglucemia en el último año', options: [
+                      { label: '0', value: 0 },
+                      { label: '1–2', value: 1 },
+                      { label: '≥ 3', value: 2 },
+                  ] },
+              { id: 'insulina', type: 'boolean', label: 'Tratamiento con insulina' },
+              { id: 'edad', type: 'boolean', label: 'Edad ≥ 77 años' },
+              { id: 'erc', type: 'boolean', label: 'ERC (TFG < 60)' },
+              { id: 'sulfonilurea', type: 'boolean', label: 'Uso de sulfonilurea' },
+              { id: 'urgencias', type: 'boolean', label: 'Visita a urgencias en el último año' },
+          ],
+          compute: (v) => {
+              // Simplificación: cada factor pondera 1; hipoPrevia 0/1/2
+              const total = Number(v.hipoPrevia || 0) + sum(v, ['insulina', 'edad', 'erc', 'sulfonilurea', 'urgencias']);
+              let categoria = 'Bajo (< 1 %/año).';
+              let level = 'ok';
+              if (total >= 5) {
+                  categoria = 'Alto (> 5 %/año).';
+                  level = 'danger';
+              }
+              else if (total >= 3) {
+                  categoria = 'Intermedio (~ 1–5 %/año).';
+                  level = 'warn';
+              }
+              return { main: fmt(total), mainUnit: 'puntos', interpretation: `Riesgo estimado a 12 meses: ${categoria} Ajustar objetivos de HbA1c y priorizar fármacos con bajo riesgo (metformina, iSGLT2, GLP-1).`, level };
+          },
+          notes: ['Karter AJ. JAMA Intern Med 2017 (modelo original 6 variables). Herramienta simplificada: use la versión completa para decisiones críticas.'],
+      },
+      // -------- Cambridge diabetes risk --------
+      {
+          id: 'cambridge-diabetes',
+          name: 'Cambridge Diabetes Risk Score',
+          shortName: 'Cambridge',
+          description: 'Riesgo de diabetes tipo 2 no diagnosticada en adultos.',
+          category: CAT_ENDO,
+          specialty: MED,
+          inputs: [
+              { id: 'edad', type: 'number', label: 'Edad (años)' },
+              { id: 'sexo', type: 'select', label: 'Sexo', options: [
+                      { label: 'Mujer', value: 0 }, { label: 'Hombre', value: 1 },
+                  ] },
+              { id: 'imc', type: 'number', label: 'IMC (kg/m²)' },
+              { id: 'familia', type: 'boolean', label: 'Antecedente familiar de diabetes (padres/hermanos)' },
+              { id: 'esteroides', type: 'boolean', label: 'Tratamiento con corticoides orales' },
+              { id: 'antihta', type: 'boolean', label: 'Tratamiento antihipertensivo actual' },
+              { id: 'fumador', type: 'select', label: 'Tabaco', options: [
+                      { label: 'No fumador', value: 0 },
+                      { label: 'Exfumador', value: 1 },
+                      { label: 'Fumador activo', value: 2 },
+                  ] },
+          ],
+          compute: (v) => {
+              const edad = Number(v.edad);
+              const imc = Number(v.imc);
+              if (!edad || !imc)
+                  return { main: 'Completa los campos numéricos para ver el resultado.', interpretation: '' };
+              const beta = -6.322 + 0.063 * edad + 0.573 * (v.sexo === 1 ? 1 : 0) + 0.116 * imc + 0.728 * (v.familia ? 1 : 0) + 2.191 * (v.esteroides ? 1 : 0) + 1.222 * (v.antihta ? 1 : 0) + 0.855 * (v.fumador === 2 ? 1 : 0) + 0.221 * (v.fumador === 1 ? 1 : 0);
+              const p = 100 / (1 + Math.exp(-beta));
+              let level = 'ok';
+              let sub = 'Riesgo bajo (< 3 %).';
+              if (p >= 15) {
+                  level = 'danger';
+                  sub = 'Riesgo muy alto (≥ 15 %): glucemia/HbA1c ahora.';
+              }
+              else if (p >= 8) {
+                  level = 'warn';
+                  sub = 'Riesgo alto (8–15 %): cribado y consejo intensivo.';
+              }
+              else if (p >= 3) {
+                  level = 'info';
+                  sub = 'Riesgo intermedio (3–8 %).';
+              }
+              return { main: fmt(p, 1), mainUnit: '% probabilidad', interpretation: sub, level };
+          },
+          notes: ['Griffin SJ. Diabetes Metab Res Rev 2000. Diseñada como cribado no invasivo.'],
+      },
+  ];
+    return familyPractice;
+  })();
+
+
   // inurse-m2/src/calculators/index.ts
   var CATEGORIES = [
     "Gravedad en UCI y sepsis",
@@ -14452,6 +17088,7 @@
     "Fluidos, electrolitos e infusiones",
     "Opioides, benzodiacepinas y controlados",
     "Neonatología y pediatría",
+    "Obstetricia y ginecología",
     "Neurología crítica e ictus",
     "Urgencias y decisión clínica",
     "Medicina interna y familiar",
@@ -14475,7 +17112,8 @@
     "Neurología crítica",
     "Emergencias",
     "Medicina Familiar",
-    "Cirugía Cardiotorácica"
+    "Cirugía Cardiotorácica",
+    "Obstetricia"
   ];
   var EXTRA_SPECIALTIES = {
     // Anestesiología ↔ Cardiología
@@ -14580,6 +17218,9 @@
     ...urgencias,
     ...medicinaFamilia,
     ...cardiotoracica,
+    ...pediatria2,
+    ...primaryCare,
+    ...familyPractice,
     ...formulas
   ];
   var CALCULATORS = ALL.map((c) => {
