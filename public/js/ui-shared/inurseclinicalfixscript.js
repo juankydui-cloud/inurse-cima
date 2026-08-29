@@ -631,16 +631,31 @@ function renderNearbyResults(data){
 }
 function searchNearbyAt(coords,type){
   renderNearbyLoading();
-  fetch('/api/nearby?lat='+coords.lat+'&lon='+coords.lon+'&type='+encodeURIComponent(type||'all'))
+  // El backend prueba varios mirrors de Overpass en paralelo; el peor caso
+  // realista ronda 35 s. Damos 45 s de margen y, si expira, mostramos un
+  // mensaje útil en vez de dejar el spinner girando indefinidamente.
+  var friendlyTimeout='Los servidores de OpenStreetMap tardan más de lo habitual. Vuelve a intentarlo en unos segundos.';
+  var ctrl=(typeof AbortController!=='undefined')?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ctrl.abort()},45000):null;
+  fetch('/api/nearby?lat='+coords.lat+'&lon='+coords.lon+'&type='+encodeURIComponent(type||'all'),
+        ctrl?{signal:ctrl.signal}:{})
     .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
     .then(function(res){
+      if(timer)clearTimeout(timer);
       if(!res.ok){
-        renderNearbyError(res.d.error||'El servidor no ha podido consultar OpenStreetMap.','No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
+        var raw=res.d&&res.d.error;
+        var msg=(!raw||raw==='Timeout')?friendlyTimeout:raw;
+        renderNearbyError(msg,'No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
         return;
       }
       renderNearbyResults(res.d);
     })
-    .catch(function(e){renderNearbyError('Error de conexión: '+e.message,'No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)})});
+    .catch(function(e){
+      if(timer)clearTimeout(timer);
+      var aborted=e&&(e.name==='AbortError'||/aborted/i.test(e.message||''));
+      var msg=aborted?friendlyTimeout:('Error de conexión: '+(e.message||e));
+      renderNearbyError(msg,'No se ha podido buscar cerca de ti',function(){searchNearbyAt(coords,type)});
+    });
 }
 function requestNearbySearch(type){
   renderNearbyLoading();
