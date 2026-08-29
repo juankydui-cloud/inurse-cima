@@ -1,6 +1,6 @@
 # Índices y escalas clínicas — motor modular TypeScript
 
-Las 320 calculadoras que sirve la sección «Escalas» de Enferix viven en
+Las 323 calculadoras que sirve la sección «Escalas» de Enferix viven en
 `src/calculators/*.ts`, agrupadas por temática (una calculadora es un objeto
 `Calculator` que declara sus entradas y una `compute()`). El motor de tipos y los
 helpers están en `src/engine/types.ts`.
@@ -69,10 +69,16 @@ escalas ya presentes:
 - `pediatria-2.ts` → `kawasaki-ped` (la de `cardio-varios.ts` mantiene `kawasaki`).
 - `family-practice.ts` → `duke-treadmill-mf` (la de `cardio-sca.ts` mantiene `duke-treadmill`).
 
-## Escalas de enfermería (Norton, Barthel, RASS, Morse, dolor)
+## Escalas de valoración enfermera
 
-Viven aparte en `public/data/escalas.js` como objeto `CALCS` global. El overlay
-de escalas las adapta al motor genérico con `adaptarLegado()` en
-`public/js/calculadoras/inurse-escalas-clinicas-js.js`. **No se han migrado**
-al motor TS a propósito, para no cambiar el comportamiento de la pestaña
-«Cálculo» que también las usa.
+`src/calculators/enfermeria.ts` incluye Norton, Morse y la escala de dolor
+(EVA / numérica verbal). Barthel y RASS no se duplican aquí porque el catálogo
+importado ya trae versiones más completas (`src/calculators/neuro-critica.ts`
+y `src/calculators/neurocritico.ts`), que ya eran las que se mostraban en la
+sección Escalas.
+
+La pestaña «Cálculo» sigue usando `public/data/escalas.js` (objeto `CALCS`
+global) con sus propias definiciones, sin cambios. Sólo la sección Escalas
+consumía el adaptador `adaptarLegado()` del overlay; ese código muerto se ha
+eliminado ahora que las escalas enfermeras son ciudadanas de primera del motor
+TS.

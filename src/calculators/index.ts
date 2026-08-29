@@ -31,6 +31,7 @@ import { neuroCritica } from './neuro-critica'
 import { urgencias } from './urgencias'
 import { medicinaFamilia } from './medicina-familia'
 import { cardiotoracica } from './cardiotoracica'
+import { enfermeria } from './enfermeria'
 
 /** Orden de las categorías en la pantalla principal. */
 export const CATEGORIES = [
@@ -75,6 +76,7 @@ export const CATEGORIES = [
   'Aorta y grandes vasos',
   'Farmacología y dosificación',
   'Fórmulas y cálculos clínicos',
+  'Valoración enfermera',
 ]
 
 export const SPECIALTIES = [
@@ -89,6 +91,7 @@ export const SPECIALTIES = [
   'Medicina Familiar',
   'Cirugía Cardiotorácica',
   'Obstetricia',
+  'Enfermería',
 ]
 
 /**
@@ -203,6 +206,7 @@ const ALL: Calculator[] = [
   ...medicinaFamilia,
   ...cardiotoracica,
   ...formulas,
+  ...enfermeria,
 ]
 
 export const CALCULATORS: Calculator[] = ALL.map((c) => {

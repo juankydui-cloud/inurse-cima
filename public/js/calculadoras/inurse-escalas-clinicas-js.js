@@ -14,88 +14,13 @@ var DATA_SRC='/data/escalas-clinicas.js';
 var state={view:'catalog',calcId:null,values:{},query:'',cat:'all',spec:'all'};
 var overlay=null,dataPromise=null;
 
-/* ── Escalas propias de Enferix migradas desde el apartado «Cálculo» ──
-   Norton, Barthel, RASS, Morse y la escala de dolor no están en el catálogo
-   importado, así que se adaptan desde CALCS (/data/escalas.js) al motor
-   genérico. Se reutiliza su función compute() original sin reescribirla. */
-var CAT_ENFERMERIA='Valoración enfermera';
-var ESP_ENFERMERIA='Enfermería';
-var LEGADO={
-  norton:'Riesgo de úlceras por presión según estado físico, mental, actividad, movilidad e incontinencia.',
-  barthel:'Grado de autonomía en las diez actividades básicas de la vida diaria.',
-  rass:'Nivel de sedación y agitación del paciente crítico, de -5 a +4.',
-  morse:'Riesgo de caídas durante el ingreso hospitalario.',
-  dolor:'Intensidad del dolor mediante escala visual analógica o numérica verbal.'
-};
-
-/* El nivel de color se deduce del semáforo que ya usan las interpretaciones. */
-function nivelDesdeTexto(t){
-  if(/🔴/.test(t))return 'danger';
-  if(/🟠|🟡/.test(t))return 'warn';
-  if(/🟢/.test(t))return 'ok';
-  return 'info';
-}
-
-/* CALCS se declara con «const» en /data/escalas.js, así que existe como global
-   pero NO como propiedad de window: hay que leerlo por su nombre. */
-function calcsGlobal(){
-  try{if(typeof CALCS!=='undefined')return CALCS;}catch(e){}
-  return window.CALCS||null;
-}
-
-function adaptarLegado(id){
-  var todas=calcsGlobal();
-  var c=todas&&todas[id];
-  if(!c||!c.fields)return null;
-  return {
-    id:'legacy-'+id,
-    name:c.title,
-    description:LEGADO[id]||'',
-    category:CAT_ENFERMERIA,
-    specialty:[ESP_ENFERMERIA],
-    inputs:c.fields.map(function(f){
-      if(f.type==='number'){
-        return {id:f.id,type:'number',label:f.label,unit:f.unit};
-      }
-      return {id:f.id,type:'select',label:f.label,dropdown:true,noPoints:true,
-        options:(f.options||[]).map(function(o){return {value:o.v,label:o.l};})};
-    }),
-    compute:function(v){
-      var r=c.compute(v)||{};
-      return {
-        main:String(r.main==null?'':r.main),
-        interpretation:r.interp||'',
-        level:nivelDesdeTexto(r.interp||''),
-        details:r.detail?[r.detail]:[]
-      };
-    }
-  };
-}
-
-var legadoCache=null;
-function escalasLegado(){
-  if(legadoCache)return legadoCache;
-  if(!calcsGlobal())return [];
-  var cat=window.ENFERIX_ESCALAS_DATA;
-  /* Si el catálogo importado ya trae la escala con el mismo identificador
-     (Barthel y RASS, por ejemplo), se usa esa y no la copia de «Cálculo»:
-     así la sección nunca muestra la misma escala dos veces. */
-  var yaEsta={};
-  if(cat)cat.CALCULATORS.forEach(function(c){yaEsta[c.id]=true;});
-  legadoCache=Object.keys(LEGADO).filter(function(id){return !yaEsta[id];})
-    .map(adaptarLegado).filter(Boolean);
-  return legadoCache;
-}
-
+/* Las escalas de valoración enfermera (Norton, Morse y la escala de dolor)
+   viven ahora en el motor TS (src/calculators/enfermeria.ts) y llegan
+   dentro del propio bundle. Barthel y RASS se sirven desde el catálogo
+   importado (neuro-critica.ts, neurocritico.ts). El adaptador legacy que
+   había aquí ya no hace falta. */
 function data(){
-  var d=window.ENFERIX_ESCALAS_DATA;
-  if(!d)return {CATEGORIES:[],SPECIALTIES:[],CALCULATORS:[]};
-  var leg=escalasLegado();
-  return {
-    CATEGORIES:leg.length?d.CATEGORIES.concat([CAT_ENFERMERIA]):d.CATEGORIES,
-    SPECIALTIES:leg.length?d.SPECIALTIES.concat([ESP_ENFERMERIA]):d.SPECIALTIES,
-    CALCULATORS:d.CALCULATORS.concat(leg)
-  };
+  return window.ENFERIX_ESCALAS_DATA||{CATEGORIES:[],SPECIALTIES:[],CALCULATORS:[]};
 }
 
 /* El catálogo pesa varios cientos de KB: se carga la primera vez que se abre

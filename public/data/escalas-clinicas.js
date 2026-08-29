@@ -16881,6 +16881,276 @@ var __enferix_escalas = (() => {
     }
   ];
 
+  // src/calculators/enfermeria.ts
+  var CAT24 = "Valoraci\xF3n enfermera";
+  var ENF = ["Enfermer\xEDa"];
+  var enfermeria = [
+    {
+      id: "norton",
+      name: "Norton (riesgo de UPP)",
+      shortName: "Norton",
+      description: "Riesgo de \xFAlceras por presi\xF3n seg\xFAn estado f\xEDsico, mental, actividad, movilidad e incontinencia.",
+      category: CAT24,
+      specialty: ENF,
+      inputs: [
+        {
+          id: "fis",
+          type: "select",
+          label: "Estado f\xEDsico general",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 4, label: "4 \u2014 Bueno" },
+            { value: 3, label: "3 \u2014 Mediano" },
+            { value: 2, label: "2 \u2014 Regular" },
+            { value: 1, label: "1 \u2014 Muy malo" }
+          ]
+        },
+        {
+          id: "men",
+          type: "select",
+          label: "Estado mental",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 4, label: "4 \u2014 Alerta" },
+            { value: 3, label: "3 \u2014 Ap\xE1tico" },
+            { value: 2, label: "2 \u2014 Confuso" },
+            { value: 1, label: "1 \u2014 Estuporoso o comatoso" }
+          ]
+        },
+        {
+          id: "act",
+          type: "select",
+          label: "Actividad",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 4, label: "4 \u2014 Ambulante" },
+            { value: 3, label: "3 \u2014 Camina con ayuda" },
+            { value: 2, label: "2 \u2014 Sentado" },
+            { value: 1, label: "1 \u2014 Encamado" }
+          ]
+        },
+        {
+          id: "mov",
+          type: "select",
+          label: "Movilidad",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 4, label: "4 \u2014 Total" },
+            { value: 3, label: "3 \u2014 Disminuida" },
+            { value: 2, label: "2 \u2014 Muy limitada" },
+            { value: 1, label: "1 \u2014 Inm\xF3vil" }
+          ]
+        },
+        {
+          id: "inc",
+          type: "select",
+          label: "Incontinencia",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 4, label: "4 \u2014 Ninguna" },
+            { value: 3, label: "3 \u2014 Ocasional" },
+            { value: 2, label: "2 \u2014 Urinaria o fecal" },
+            { value: 1, label: "1 \u2014 Doble incontinencia" }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const fis = v.fis ?? 4;
+        const men = v.men ?? 4;
+        const act = v.act ?? 4;
+        const mov = v.mov ?? 4;
+        const inc = v.inc ?? 4;
+        const total = fis + men + act + mov + inc;
+        let interpretation;
+        let level;
+        if (total <= 12) {
+          level = "danger";
+          interpretation = "\u{1F534} Riesgo alto \u2014 superficie especial de manejo de presi\xF3n, cambios posturales y revisi\xF3n diaria de la piel";
+        } else if (total <= 14) {
+          level = "warn";
+          interpretation = "\u{1F7E0} Riesgo medio \u2014 pauta de cambios posturales y protecci\xF3n de prominencias \xF3seas";
+        } else {
+          level = "ok";
+          interpretation = "\u{1F7E2} Riesgo m\xEDnimo \u2014 mantener vigilancia y reevaluar si cambia la situaci\xF3n";
+        }
+        return {
+          main: `Norton ${total} / 20`,
+          interpretation,
+          level,
+          details: [
+            `F\xEDsico ${fis} \xB7 Mental ${men} \xB7 Actividad ${act} \xB7 Movilidad ${mov} \xB7 Incontinencia ${inc}`
+          ]
+        };
+      }
+    },
+    {
+      id: "morse",
+      name: "Morse (riesgo de ca\xEDdas)",
+      shortName: "Morse",
+      description: "Riesgo de ca\xEDdas durante el ingreso hospitalario.",
+      category: CAT24,
+      specialty: ENF,
+      inputs: [
+        {
+          id: "ant",
+          type: "select",
+          label: "Antecedente de ca\xEDdas recientes",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 No" },
+            { value: 25, label: "25 \u2014 S\xED" }
+          ]
+        },
+        {
+          id: "dx",
+          type: "select",
+          label: "M\xE1s de un diagn\xF3stico m\xE9dico",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 No" },
+            { value: 15, label: "15 \u2014 S\xED" }
+          ]
+        },
+        {
+          id: "ayu",
+          type: "select",
+          label: "Ayuda para deambular",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 Ninguna, reposo en cama o ayuda de enfermer\xEDa" },
+            { value: 15, label: "15 \u2014 Muletas, bast\xF3n o andador" },
+            { value: 30, label: "30 \u2014 Se apoya en el mobiliario" }
+          ]
+        },
+        {
+          id: "iv",
+          type: "select",
+          label: "Terapia intravenosa o v\xEDa heparinizada",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 No" },
+            { value: 20, label: "20 \u2014 S\xED" }
+          ]
+        },
+        {
+          id: "mar",
+          type: "select",
+          label: "Marcha",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 Normal, reposo en cama o inmovilidad" },
+            { value: 10, label: "10 \u2014 D\xE9bil" },
+            { value: 20, label: "20 \u2014 Alterada o inestable" }
+          ]
+        },
+        {
+          id: "men",
+          type: "select",
+          label: "Estado mental",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 Consciente de sus limitaciones" },
+            { value: 15, label: "15 \u2014 Olvida o sobreestima sus limitaciones" }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const ant = v.ant ?? 0;
+        const dx = v.dx ?? 0;
+        const ayu = v.ayu ?? 0;
+        const iv = v.iv ?? 0;
+        const mar = v.mar ?? 0;
+        const men = v.men ?? 0;
+        const total = ant + dx + ayu + iv + mar + men;
+        let interpretation;
+        let level;
+        if (total >= 45) {
+          level = "danger";
+          interpretation = "\u{1F534} Riesgo alto \u2014 medidas espec\xEDficas de prevenci\xF3n de ca\xEDdas y registro en el plan de cuidados";
+        } else if (total >= 25) {
+          level = "warn";
+          interpretation = "\u{1F7E0} Riesgo medio \u2014 medidas preventivas est\xE1ndar";
+        } else {
+          level = "ok";
+          interpretation = "\u{1F7E2} Riesgo bajo \u2014 medidas b\xE1sicas de seguridad";
+        }
+        return {
+          main: `Morse ${total} / 125`,
+          interpretation,
+          level,
+          details: [
+            `Antecedente ${ant} \xB7 Diagn\xF3sticos ${dx} \xB7 Ayuda ${ayu} \xB7 V\xEDa IV ${iv} \xB7 Marcha ${mar} \xB7 Mental ${men}`
+          ]
+        };
+      }
+    },
+    {
+      id: "dolor",
+      name: "Dolor (EVA y escala num\xE9rica)",
+      shortName: "Dolor \xB7 EVA",
+      description: "Intensidad del dolor mediante escala visual anal\xF3gica o escala num\xE9rica verbal.",
+      category: CAT24,
+      specialty: ENF,
+      inputs: [
+        {
+          id: "d",
+          type: "select",
+          label: "Intensidad referida por el paciente",
+          dropdown: true,
+          noPoints: true,
+          options: [
+            { value: 0, label: "0 \u2014 Sin dolor" },
+            { value: 1, label: "1" },
+            { value: 2, label: "2" },
+            { value: 3, label: "3" },
+            { value: 4, label: "4" },
+            { value: 5, label: "5" },
+            { value: 6, label: "6" },
+            { value: 7, label: "7" },
+            { value: 8, label: "8" },
+            { value: 9, label: "9" },
+            { value: 10, label: "10 \u2014 El peor dolor imaginable" }
+          ]
+        }
+      ],
+      compute: (v) => {
+        const d = v.d ?? 0;
+        let interpretation;
+        let level;
+        if (d === 0) {
+          level = "ok";
+          interpretation = "\u{1F7E2} Sin dolor \u2014 mantener la reevaluaci\xF3n pautada";
+        } else if (d <= 3) {
+          level = "warn";
+          interpretation = "\u{1F7E1} Dolor leve \u2014 medidas no farmacol\xF3gicas y analgesia de primer escal\xF3n si procede";
+        } else if (d <= 6) {
+          level = "warn";
+          interpretation = "\u{1F7E0} Dolor moderado \u2014 revisar la pauta analg\xE9sica y reevaluar tras administrarla";
+        } else {
+          level = "danger";
+          interpretation = "\u{1F534} Dolor intenso \u2014 analgesia de rescate y reevaluaci\xF3n precoz";
+        }
+        return {
+          main: `Dolor ${d} / 10`,
+          interpretation,
+          level,
+          details: ["Escala visual anal\xF3gica o escala num\xE9rica verbal"]
+        };
+      }
+    }
+  ];
+
   // src/calculators/index.ts
   var CATEGORIES = [
     "Gravedad en UCI y sepsis",
@@ -16923,7 +17193,8 @@ var __enferix_escalas = (() => {
     "Soporte extracorp\xF3reo",
     "Aorta y grandes vasos",
     "Farmacolog\xEDa y dosificaci\xF3n",
-    "F\xF3rmulas y c\xE1lculos cl\xEDnicos"
+    "F\xF3rmulas y c\xE1lculos cl\xEDnicos",
+    "Valoraci\xF3n enfermera"
   ];
   var SPECIALTIES = [
     "Anestesiolog\xEDa",
@@ -16936,7 +17207,8 @@ var __enferix_escalas = (() => {
     "Emergencias",
     "Medicina Familiar",
     "Cirug\xEDa Cardiotor\xE1cica",
-    "Obstetricia"
+    "Obstetricia",
+    "Enfermer\xEDa"
   ];
   var EXTRA_SPECIALTIES = {
     // Anestesiología ↔ Cardiología
@@ -17044,7 +17316,8 @@ var __enferix_escalas = (() => {
     ...urgencias,
     ...medicinaFamilia,
     ...cardiotoracica,
-    ...formulas
+    ...formulas,
+    ...enfermeria
   ];
   var CALCULATORS = ALL.map((c) => {
     const extra = EXTRA_SPECIALTIES[c.id];
