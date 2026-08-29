@@ -579,10 +579,25 @@ function renderNearbyPermission(){
   if(btn)btn.onclick=function(){requestNearbySearch('all')};
 }
 function renderNearbyLoading(){
-  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando OpenStreetMap.</p></div>';
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">📍</span><h3>Buscando cerca de ti…</h3><p>Consultando fuentes cartográficas.</p></div>';
+}
+// Enlace de emergencia a Google Maps con la ubicación del usuario. No usa API
+// key: es la búsqueda normal de Maps con lat/lon en la URL. Útil como último
+// recurso cuando ni Google Places ni OpenStreetMap responden.
+function nearbyGoogleMapsUrl(query){
+  var q=encodeURIComponent(query||'hospitales cerca de mí');
+  if(nearbyLastCoords){
+    return 'https://www.google.com/maps/search/?api=1&query='+q+
+      '&query_place_id=&query='+nearbyLastCoords.lat+','+nearbyLastCoords.lon;
+  }
+  return 'https://www.google.com/maps/search/?api=1&query='+q;
 }
 function renderNearbyError(msg,title,retryFn){
-  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>'+esc(title||'No se ha podido obtener tu ubicación')+'</h3><p>'+esc(msg)+'</p><button class="icBtn alt" id="nearbyRetryBtn">Reintentar</button></div>';
+  var mapsBtn=nearbyLastCoords
+    ?' <a class="icBtn alt" id="nearbyGmapsBtn" href="'+nearbyGoogleMapsUrl('hospitales cerca de mí')+
+      '" target="_blank" rel="noopener">🗺️ Abrir en Google Maps</a>'
+    :'';
+  $('#nearbyBody').innerHTML='<div class="nearby-permission"><span class="em">⚠️</span><h3>'+esc(title||'No se ha podido obtener tu ubicación')+'</h3><p>'+esc(msg)+'</p><div class="nearby-error-actions"><button class="icBtn" id="nearbyRetryBtn">Reintentar</button>'+mapsBtn+'</div></div>';
   var r=$('#nearbyRetryBtn');if(r)r.onclick=retryFn||function(){requestNearbySearch('all')};
 }
 function nearbyResultsSummary(items){
@@ -606,8 +621,12 @@ function renderNearbyResults(data){
           '<div class="actions"><span class="nearby-go">🗺️ Toca para abrir la ruta</span></div></div>'+
           '<span class="dist">'+x.distanceKm+' km</span></div>';
       }).join('')+'</div>'
-    : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en OpenStreetMap dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
-  $('#nearbyBody').innerHTML=typeSel+list;
+    : '<div class="nearby-permission"><span class="em">🔍</span><h3>Sin resultados en 5 km</h3><p>No hay hospitales ni desfibriladores registrados en las fuentes consultadas dentro de ese radio. Prueba a ampliar la búsqueda desde un lugar con mejor cobertura de datos.</p></div>';
+  // Atribución de fuentes (obligatoria para Google Places, buena práctica para OSM).
+  var sourceLine=data.source
+    ? '<div class="nearby-attrib">Fuentes: '+esc(data.source)+'</div>'
+    : '';
+  $('#nearbyBody').innerHTML=typeSel+list+sourceLine;
   function goToItem(i){var it=nearbyLastResults[i];if(it&&it.mapsUrl)window.open(it.mapsUrl,'_blank','noopener')}
   $('#nearbyBody').querySelectorAll('[data-maps-i]').forEach(function(el){
     el.onclick=function(){goToItem(+el.dataset.mapsI)};
