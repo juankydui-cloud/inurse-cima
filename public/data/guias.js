@@ -6412,7 +6412,7 @@ const DOCS = [
   "cat": "sepsis",
   "especialidad": "Sepsis / Urgencias / Críticos",
   "title": "Manejo extrahospitalario de la sepsis",
-  "source": "Adaptado del bloque Miscelánea del manual INGESA 2013; contrastar con Surviving Sepsis Campaign y protocolo local vigente.",
+  "source": "Adaptado del bloque Miscelánea del manual INGESA 2013 · Actualizado con NICE NG253 (2025) y Surviving Sepsis Campaign 2026; aplicar el protocolo vigente en el centro.",
   "tags": "sepsis shock septico prehospitalaria sospecha infeccion hipotension lactato qSOFA SOFA fiebre hipotermia antibiotico fluidoterapia noradrenalina codigo sepsis",
   "summary": "Reconocimiento precoz de sepsis y shock séptico: sospecha de infección, disfunción orgánica, ABCDE, oxígeno, fluidoterapia, antibiótico precoz si protocolo y traslado con preaviso.",
   "relations": {
@@ -6491,6 +6491,10 @@ const DOCS = [
     {
       "h": "Focos prioritarios",
       "b": "<ul><li>Respiratorio: neumonía.</li><li>Urinario: pielonefritis/urosepsis.</li><li>Abdominal: peritonitis, colangitis, perforación.</li><li>Cutáneo: celulitis, fascitis necrotizante.</li><li>SNC: meningitis/encefalitis.</li><li>Catéter/dispositivo: bacteriemia asociada.</li></ul>"
+    },
+    {
+      "h": "Fluidoterapia inicial: dos marcos vigentes",
+      "b": "<p>Existen actualmente dos aproximaciones a la fluidoterapia inicial en sepsis, y conviene conocer ambas:</p><ul><li><b>NICE NG253 (2025)</b> recomienda volúmenes menores al inicio en pacientes en riesgo, con reevaluación clínica tras cada infusión en lugar de bolos protocolizados. Prioriza la titulación individualizada e implicación más temprana del equipo de cuidados intensivos que en ediciones previas.</li><li><b>Surviving Sepsis Campaign 2026</b> mantiene al menos <b>30 mL/kg de cristaloide</b> en las primeras 3 horas ante hipoperfusión inducida por sepsis, con preferencia por cristaloides balanceados frente al suero salino 0,9 %, y recomendación en contra de almidones y gelatinas.</li></ul><p>No son recomendaciones equivalentes. Aplique el protocolo vigente en su centro y, ante la duda, consulte con el equipo de cuidados intensivos.</p><p><b>Valoración reforzada (NG253).</b> Extremar la valoración en personas con barrera idiomática o dificultades de comunicación —neurodivergencia, deterioro cognitivo, discapacidad intelectual, daño cerebral—, donde los signos de alarma pueden pasar desapercibidos.</p>"
     },
     {
       "h": "Cuidados de enfermería",
