@@ -115,29 +115,33 @@ const DOCS = [
     "id": "gold",
     "cat": "resp",
     "title": "EPOC: diagnóstico y manejo",
-    "source": "GOLD 2025 · Estrategia global",
-    "tags": "epoc fev1 fvc espirometria abe laba lama ics eosinofilos exacerbacion ensifentrina dupilumab roflumilast azitromicina tabaco rehabilitacion",
-    "summary": "Diagnóstico por espirometría (FEV1/FVC <0,70). Clasificación ABE y tratamiento por grupo y eosinófilos.",
+    "source": "GOLD 2026 · Report v1.3 (Dic 2025)",
+    "tags": "epoc fev1 fvc espirometria abe laba lama ics eosinofilos exacerbacion ensifentrina dupilumab mepolizumab roflumilast azitromicina tabaco rehabilitacion actividad baja actividad case-finding busqueda activa vrs",
+    "summary": "Diagnóstico por espirometría (FEV1/FVC <0,70). Reencuadre 2026: enfermedad de actividad, objetivo «baja actividad». Escalar con una sola exacerbación. Búsqueda activa de casos.",
     "sec": [
       {
-        "h": "Diagnóstico",
-        "b": "<p>Confirmación con espirometría: <b>FEV1/FVC posbroncodilatador < 0,70.</b> Gravedad por FEV1: GOLD 1 ≥80%, GOLD 2 50-79%, GOLD 3 30-49%, GOLD 4 <30%.</p>"
+        "h": "Reencuadre 2026: enfermedad de actividad",
+        "b": "<p>GOLD 2026 recontextualiza la EPOC como enfermedad de <b>actividad</b> más que como limitación fija al flujo aéreo. El objetivo terapéutico pasa a ser alcanzar y mantener un <b>estado de baja actividad de la enfermedad</b> — se abandona la idea de la EPOC como diagnóstico estático.</p><p>La guía añade un <b>algoritmo de búsqueda activa de casos</b> (case-finding) para detectar antes a los pacientes: la EPOC infradiagnosticada es una prioridad de salud pública.</p>"
       },
       {
-        "h": "Clasificación ABE",
-        "b": "<ul><li><b>Grupo A:</b> pocos síntomas, bajo riesgo → un broncodilatador de larga duración.</li><li><b>Grupo B:</b> más síntomas (mMRC ≥2 o CAT ≥10), bajo riesgo → <b>LABA + LAMA</b>.</li><li><b>Grupo E:</b> exacerbaciones frecuentes → LABA + LAMA. Si eosinófilos ≥300, valorar triple terapia + ICS.</li></ul><p>A todos, broncodilatador de rescate de acción corta.</p>"
+        "h": "Diagnóstico",
+        "b": "<p>Confirmación con espirometría: <b>FEV1/FVC posbroncodilatador &lt; 0,70.</b> Gravedad por FEV1: GOLD 1 ≥80%, GOLD 2 50-79%, GOLD 3 30-49%, GOLD 4 &lt;30%.</p>"
+      },
+      {
+        "h": "Clasificación ABE (ajuste 2026)",
+        "b": "<ul><li><b>Grupo A:</b> pocos síntomas, bajo riesgo → un broncodilatador de larga duración.</li><li><b>Grupo B:</b> más síntomas (mMRC ≥2 o CAT ≥10), bajo riesgo → <b>LABA + LAMA</b>.</li><li><b>Grupo E:</b> exacerbaciones frecuentes → LABA + LAMA. Si eosinófilos ≥300, valorar triple terapia + ICS.</li></ul><p><b>Umbral de escalada más bajo (novedad GOLD 2026):</b> incluso <b>una sola exacerbación moderada o grave</b> antes de iniciar el tratamiento de mantenimiento aumenta el riesgo de nuevos eventos. No hace falta esperar a dos exacerbaciones al año para intervenir con más intensidad.</p><p>A todos, broncodilatador de rescate de acción corta.</p>"
       },
       {
         "h": "Seguimiento por síntoma dominante",
-        "b": "<ul><li><b>Disnea:</b> optimizar broncodilatación, valorar ensifentrina.</li><li><b>Exacerbaciones:</b> escalar a triple terapia. ICS beneficia con eosinófilos ≥100, más cuanto más altos.</li><li>Eosinófilos <100 persistentes: azitromicina (no fumadores) o roflumilast.</li><li>Triple terapia + eosinófilos ≥300 con bronquitis crónica: dupilumab (novedad 2025).</li></ul>"
+        "b": "<ul><li><b>Disnea:</b> optimizar broncodilatación, valorar ensifentrina.</li><li><b>Exacerbaciones:</b> escalar a triple terapia. ICS beneficia con eosinófilos ≥100, más cuanto más altos.</li><li>Eosinófilos &lt;100 persistentes: azitromicina (no fumadores) o roflumilast.</li><li>Triple terapia + eosinófilos ≥300 con bronquitis crónica: <b>dupilumab y mepolizumab</b> como opciones en fenotipo de inflamación tipo 2 (evidencia reforzada en GOLD 2026; contrastar nivel exacto con el Report v1.3 antes de basar una recomendación firme).</li></ul>"
       },
       {
         "h": "No farmacológico",
-        "b": "<ul><li><b>Dejar de fumar</b> es lo que más modifica el curso.</li><li>Vacunas: gripe, neumococo, COVID, Tdap, herpes zóster, VRS en >60.</li><li>Rehabilitación pulmonar en todos los grados.</li><li>Oxigenoterapia de larga duración en hipoxemia grave en reposo.</li></ul>"
+        "b": "<ul><li><b>Dejar de fumar</b> es lo que más modifica el curso.</li><li>Vacunas: gripe, neumococo, COVID, Tdap, herpes zóster; <b>VRS a partir de los 50 años</b> (actualización GOLD 2026, era ≥60).</li><li>Rehabilitación pulmonar en todos los grados.</li><li>Oxigenoterapia de larga duración en hipoxemia grave en reposo.</li></ul>"
       },
       {
         "h": "Exacerbaciones",
-        "b": "<p>Empeoramiento <14 días. Descartar neumonía, IC y TEP. Broncodilatadores de acción corta + corticoides sistémicos (≤5 días) ± antibióticos (5 días). VMNI de primera opción en fallo respiratorio agudo.</p>"
+        "b": "<p>Empeoramiento &lt;14 días. Descartar neumonía, IC y TEP. Broncodilatadores de acción corta + corticoides sistémicos (≤5 días) ± antibióticos (5 días). VMNI de primera opción en fallo respiratorio agudo. GOLD 2026 revisa la clasificación de gravedad de exacerbaciones y los criterios de ingreso — revisar el capítulo específico en el Report.</p>"
       }
     ]
   },
