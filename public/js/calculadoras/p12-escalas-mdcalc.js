@@ -38,8 +38,9 @@
 
   var state = {
     onlyFavs: false,
-    injecting: false   // guard para MutationObserver
+    mo: null           // MutationObserver activo
   };
+  var MO_OPTS = { childList: true, subtree: true };
 
   function getData(){
     /* El módulo de escalas expone su data como `window.ENFERIX_ESCALAS_DATA`
@@ -223,9 +224,12 @@
   function reinjectAll(){
     var host = document.getElementById('esc35Body');
     if(!host) return;
-    state.injecting = true;
+    /* Silencia el observer mientras mutamos; si se dejaba con un flag,
+       las mutaciones se encolaban en microtask y disparaban el callback
+       DESPUÉS de reset del flag, provocando bucle infinito. */
+    if(state.mo){ try{ state.mo.disconnect(); }catch(e){} }
     reinject(host);
-    state.injecting = false;
+    if(state.mo){ try{ state.mo.observe(host, MO_OPTS); }catch(e){} }
   }
 
   /* ── Listeners globales delegados en document.body ── */
@@ -258,16 +262,16 @@
   function startObserver(){
     var host = document.getElementById('esc35Body');
     if(!host) return false;
-    reinjectAll();
-    var mo = new MutationObserver(function(muts){
-      if(state.injecting) return;
-      /* Si cambia el grid, re-inyectamos. */
+    if(state.mo){ try{ state.mo.disconnect(); }catch(e){} }
+    state.mo = new MutationObserver(function(muts){
+      /* Nos importa un renderGroups() del monolito, que reemplaza
+         `#esc35Groups.innerHTML` entero — su childList es la señal. */
       var relevant = muts.some(function(m){
         return m.type === 'childList' && (m.target.id === 'esc35Groups' || m.target.id === 'esc35Body');
       });
       if(relevant){ reinjectAll(); }
     });
-    mo.observe(host, { childList: true, subtree: true });
+    reinjectAll();   // primer render (dispara disconnect/observe internamente)
     return true;
   }
 

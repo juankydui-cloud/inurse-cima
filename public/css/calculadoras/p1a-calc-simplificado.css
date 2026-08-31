@@ -1,0 +1,28 @@
+/* P1-A · Simplificación del panel Cálculo
+   Deja visibles solo Perfusiones y Dosis pediátricas (esta última pasa
+   a comportarse como un sub-apartado). El código de Parkland, NANDA/
+   NIC/NOC y del acceso a Algoritmos NO se borra: solo se ocultan las
+   pestañas del overlay. Se pueden re-exponer quitando este bloque.
+*/
+.calc-tab[data-c="parkland"],
+.calc-tab[data-c="nnn"],
+.calc-tab.v27-calc-alg-tab{
+  display:none !important;
+}
+
+/* Reestilo suave de las dos tabs supervivientes como toggle */
+.calc-tabs{ gap:6px }
+.calc-tab[data-c="perf"],
+.calc-tab[data-c="dosisPed"]{
+  border:1px solid rgba(120,150,220,.22);
+  border-radius:12px;
+  padding:8px 14px;
+  font-size:13px; font-weight:700;
+  transition:.15s;
+}
+.calc-tab[data-c="perf"].active,
+.calc-tab[data-c="dosisPed"].active{
+  background:linear-gradient(135deg,rgba(51,182,166,.16),rgba(51,182,166,.08));
+  border-color:rgba(51,182,166,.5);
+  color:#33B6A6;
+}
