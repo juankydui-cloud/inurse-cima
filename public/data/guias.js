@@ -6697,6 +6697,32 @@ const DOCS = [
     }
   ],
   "block": 14
+},
+{
+  "id": "rehab-cardiaca-esc-2026",
+  "cat": "cardio",
+  "title": "Rehabilitación cardíaca (ESC 2026)",
+  "source": "ESC 2026 · Primera guía específica de rehabilitación cardíaca",
+  "tags": "rehabilitacion cardiaca ejercicio secundaria educacion adherencia insuficiencia cardiaca sca revascularizacion coronaria tratamiento medico ottimo prevencion",
+  "summary": "Primera guía ESC dedicada a rehabilitación cardíaca. Impacto directo en la fase de agudos es limitado, pero conviene documentar derivación temprana y educación del alta.",
+  "sec": [
+    {
+      "h": "Qué cambia con esta guía",
+      "b": "<p>Primera guía específica de rehabilitación cardíaca de la ESC. Sistematiza indicaciones (post-SCA, revascularización coronaria, insuficiencia cardíaca crónica, trasplante cardíaco), duración, componentes (ejercicio, educación, apoyo psicológico y sociolaboral) y criterios de derivación. La derivación desde la hospitalización pasa a considerarse parte del alta segura, no un extra opcional.</p>"
+    },
+    {
+      "h": "Papel de enfermería en agudos",
+      "b": "<ul><li>Iniciar movilización precoz según protocolo local en cuanto la estabilidad clínica lo permita.</li><li>Educación breve al alta: qué es la rehabilitación cardíaca, por qué reduce reingresos y mortalidad, cómo se accede en el área.</li><li>Cribado de barreras: transporte, situación laboral, apoyo familiar, comorbilidad musculoesquelética.</li><li>Solicitar la derivación al programa antes del alta, no dejarla al seguimiento en consultas externas.</li><li>Referencia cruzada con la ficha de insuficiencia cardíaca (`ic`) y con las fichas de SCA.</li></ul>"
+    },
+    {
+      "h": "Componentes del programa",
+      "b": "<ul><li><b>Ejercicio supervisado</b> progresivo, adaptado a la capacidad funcional.</li><li><b>Educación</b>: adherencia, control de factores de riesgo, dieta, tabaco, alcohol, actividad sexual.</li><li><b>Apoyo psicológico</b>: cribado y manejo de ansiedad, depresión y estrés postraumático (frecuentes tras un evento agudo).</li><li><b>Reincorporación sociolaboral</b>: certificados, adaptación del puesto, actividad de ocio.</li><li>Seguimiento estructurado con reevaluación de riesgo y ajuste de tratamiento farmacológico óptimo.</li></ul>"
+    },
+    {
+      "h": "Nota de contraste",
+      "b": "<p>Esta ficha se ha redactado a partir de la información pública sobre la nueva guía ESC 2026 de rehabilitación cardíaca. Antes de basar en ella recomendaciones firmes, contrastar con el documento oficial completo en escardio.org — algunos detalles operativos y umbrales concretos pueden requerir precisión adicional.</p>"
+    }
+  ]
 }
 ];
 window.DOCS = DOCS;
