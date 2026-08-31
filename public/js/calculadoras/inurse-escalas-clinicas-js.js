@@ -11,8 +11,27 @@
 
 var LEVEL_LABEL={ok:'Bajo',info:'Leve',warn:'Intermedio',danger:'Alto'};
 var DATA_SRC='/data/escalas-clinicas.js';
-var state={view:'catalog',calcId:null,values:{},query:'',cat:'all',spec:'all'};
+var state={view:'catalog',calcId:null,values:{},query:'',openSpec:null};
 var overlay=null,dataPromise=null;
+
+/* Iconografía y color por especialidad, para el grid tipo MDCalc de la
+   pantalla de catálogo. Reutiliza el mismo lenguaje visual que la sección
+   Guías clínicas (patologias/inurse56-js.js). */
+var SPEC_META={
+  'Anestesiología':               {em:'💉', color:'#8B5CF6'},
+  'Cardiología':                  {em:'❤️', color:'#F43F5E'},
+  'Medicina Intensiva':           {em:'🏥', color:'#6366F1'},
+  'Farmacia':                     {em:'💊', color:'#EC4899'},
+  'Pediatría':                    {em:'👶', color:'#F97316'},
+  'Cuidados Críticos Neonatales': {em:'👼', color:'#FB7185'},
+  'Neurología crítica':           {em:'🧠', color:'#A855F7'},
+  'Emergencias':                  {em:'🚑', color:'#FB923C'},
+  'Medicina Familiar':            {em:'🩺', color:'#38BDF8'},
+  'Cirugía Cardiotorácica':       {em:'🫀', color:'#E11D48'},
+  'Obstetricia':                  {em:'🤰', color:'#F472B6'},
+  'Enfermería':                   {em:'🩹', color:'#14B8A6'}
+};
+function specMeta(name){return SPEC_META[name]||{em:'📁',color:'#94A3B8'};}
 
 /* Las escalas de valoración enfermera (Norton, Morse y la escala de dolor)
    viven ahora en el motor TS (src/calculators/enfermeria.ts) y llegan
@@ -119,30 +138,25 @@ function openCalc(id){
   }).catch(function(){open();});
 }
 
-/* ── Catálogo ── */
+/* ── Catálogo ──
+   Rediseño estilo MDCalc / Guías clínicas: grid de tarjetas por
+   especialidad con acordeón. Cada tarjeta muestra icono + nombre +
+   número de escalas. Al pulsar se despliega en línea con la lista de
+   escalas. El buscador es lo único fijo arriba: escribir (o dictar
+   por voz — el botón lo añade automáticamente
+   public/js/voice/inline-script-18064.js) muestra resultados planos
+   ordenados por relevancia y oculta el grid.
+   Se han eliminado el hero, los stats (323/12/100%) y los chips de
+   filtro por especialidad y por categoría — su función la asumen las
+   tarjetas del grid y el buscador. */
 function showCatalog(){
   state.view='catalog';state.calcId=null;
-  var d=data();
   var body=document.getElementById('esc35Body');
-  var specs='<button type="button" class="esc35-spec'+(state.spec==='all'?' on':'')+'" data-spec="all">Todas las especialidades</button>'+
-    d.SPECIALTIES.map(function(s){
-      var n=d.CALCULATORS.filter(function(c){return c.specialty.indexOf(s)>=0;}).length;
-      return '<button type="button" class="esc35-spec'+(state.spec===s?' on':'')+'" data-spec="'+esc(s)+'">'+esc(s)+' <i>'+n+'</i></button>';
-    }).join('');
   body.innerHTML=
-    '<section class="esc35-hero">'+
-      '<div><span class="esc35-eyebrow">'+esc(d.SPECIALTIES.slice(0,3).join(' · '))+
-      (d.SPECIALTIES.length>3?' · +'+(d.SPECIALTIES.length-3)+' más':'')+'</span>'+
-      '<h3>Índices y escalas clínicas listos para usar</h3>'+
-      '<p>Gravedad en UCI, neurocrítico, ventilación, riesgo perioperatorio, arritmias, tromboembolismo, pediatría y neonatología, urgencias, medicina familiar, cirugía cardiotorácica, dolor, infecciones y farmacología. Cada escala muestra su puntuación, el riesgo estimado y la interpretación en vivo.</p></div>'+
-      '<div class="esc35-stats"><div><b>'+d.CALCULATORS.length+'</b><span>escalas</span></div><div><b>'+d.SPECIALTIES.length+'</b><span>especialidades</span></div><div><b>100%</b><span>sin conexión</span></div></div>'+
-    '</section>'+
-    '<div class="esc35-specs" id="esc35Specs">'+specs+'</div>'+
     '<div class="esc35-tools">'+
       '<label class="esc35-search"><span>🔎</span>'+
       '<input id="esc35Search" type="search" placeholder="Buscar RCRI, SOFA, CHA₂DS₂-VASc, CIWA…" autocomplete="off">'+
       '<button type="button" id="esc35Clear" aria-label="Borrar búsqueda">✕</button></label>'+
-      '<div class="esc35-filters" id="esc35Filters"></div>'+
     '</div>'+
     '<div id="esc35Groups"></div>'+
     '<aside class="esc35-note"><span>🛡️</span><div><b>Apoyo a la decisión clínica</b>'+
@@ -151,21 +165,16 @@ function showCatalog(){
   inp.value=state.query;
   inp.addEventListener('input',function(){state.query=inp.value;renderGroups();});
   document.getElementById('esc35Clear').addEventListener('click',function(){state.query='';inp.value='';inp.focus();renderGroups();});
-  document.getElementById('esc35Specs').addEventListener('click',function(e){
-    var b=e.target.closest('[data-spec]');if(!b)return;
-    state.spec=b.dataset.spec;state.cat='all';
-    document.querySelectorAll('#esc35Specs .esc35-spec').forEach(function(x){x.classList.toggle('on',x===b);});
-    renderCatChips();renderGroups();
-  });
-  document.getElementById('esc35Filters').addEventListener('click',function(e){
-    var b=e.target.closest('[data-cat]');if(!b)return;
-    state.cat=b.dataset.cat;
-    document.querySelectorAll('#esc35Filters .esc35-chip').forEach(function(x){x.classList.toggle('on',x===b);});
-    renderGroups();
-  });
-  renderCatChips();
   document.getElementById('esc35Groups').addEventListener('click',function(e){
-    var card=e.target.closest('[data-esc35-id]');if(!card)return;
+    var head=e.target.closest('[data-esc35-spec-toggle]');
+    if(head){
+      var name=head.getAttribute('data-esc35-spec-toggle');
+      state.openSpec=(state.openSpec===name)?null:name;
+      renderGroups();
+      return;
+    }
+    var card=e.target.closest('[data-esc35-id]');
+    if(!card)return;
     state.view='calc';state.calcId=card.dataset.esc35Id;
     var c=data().CALCULATORS.find(function(x){return x.id===state.calcId;});
     state.values=initialValues(c);
@@ -179,41 +188,19 @@ function tarjeta(c){
     '<b>'+esc(c.name)+'</b><small>'+esc(c.description)+'</small></button>';
 }
 
-/* Escalas de la especialidad activa, sin aplicar buscador ni categoría. */
-function bySpecialty(){
-  var d=data();
-  if(state.spec==='all')return d.CALCULATORS;
-  return d.CALCULATORS.filter(function(c){return c.specialty.indexOf(state.spec)>=0;});
-}
-
-/* Solo se ofrecen las categorías que tienen escalas en la especialidad activa:
-   con 26 categorías, mostrarlas todas siempre resultaría inmanejable. */
-function renderCatChips(){
-  var d=data();
-  var present=bySpecialty().reduce(function(acc,c){acc[c.category]=(acc[c.category]||0)+1;return acc;},{});
-  var html='<button type="button" class="esc35-chip'+(state.cat==='all'?' on':'')+'" data-cat="all">Todas</button>';
-  html+=d.CATEGORIES.filter(function(c){return present[c];}).map(function(c){
-    return '<button type="button" class="esc35-chip'+(state.cat===c?' on':'')+'" data-cat="'+esc(c)+'">'+
-      esc(c)+' <i>'+present[c]+'</i></button>';
-  }).join('');
-  document.getElementById('esc35Filters').innerHTML=html;
-}
-
 function renderGroups(){
   var d=data();
   var q=norm(state.query.trim());
   var qc=compact(state.query);
-  var list=bySpecialty().filter(function(c){
-    if(state.cat!=='all'&&c.category!==state.cat)return false;
-    if(!q)return true;
-    var texto=[c.name,c.shortName||'',c.description,c.category,c.id].join(' ');
-    return norm(texto).indexOf(q)>=0||(qc&&compact(texto).indexOf(qc)>=0);
-  });
 
   /* Con más de 250 escalas, buscar un nombre concreto tiene que devolverlo
      primero: al buscar se muestra una lista única ordenada por relevancia,
-     en lugar de la agrupación por categorías. */
+     en lugar del grid por especialidad. */
   if(q){
+    var list=d.CALCULATORS.filter(function(c){
+      var texto=[c.name,c.shortName||'',c.description,c.category,c.id].join(' ');
+      return norm(texto).indexOf(q)>=0||(qc&&compact(texto).indexOf(qc)>=0);
+    });
     var puntuar=function(c){
       var nombre=norm(c.name+' '+(c.shortName||''));
       var nc=compact(c.name+' '+(c.shortName||''));
@@ -229,14 +216,29 @@ function renderGroups(){
       : '<p class="esc35-empty">No se encontraron escalas para «'+esc(state.query)+'».</p>';
     return;
   }
-  var html=d.CATEGORIES.map(function(cat){
-    var items=list.filter(function(c){return c.category===cat;});
-    if(!items.length)return '';
-    return '<section class="esc35-cat"><h4>'+esc(cat)+' <small>'+items.length+'</small></h4>'+
-      '<div class="esc35-grid">'+items.map(tarjeta).join('')+'</div></section>';
-  }).join('');
-  document.getElementById('esc35Groups').innerHTML=
-    html||'<p class="esc35-empty">No se encontraron escalas para «'+esc(state.query)+'».</p>';
+
+  /* Vista por defecto: grid de especialidades con acordeón (estilo MDCalc). */
+  var html='<div class="esc35-spec-grid">'+d.SPECIALTIES.map(function(s){
+    var items=d.CALCULATORS.filter(function(c){return c.specialty.indexOf(s)>=0;});
+    var meta=specMeta(s);
+    var open=state.openSpec===s;
+    var body=open
+      ? '<div class="esc35-spec-body"><div class="esc35-grid">'+items.map(tarjeta).join('')+'</div></div>'
+      : '';
+    return '<div class="esc35-spec-card'+(open?' open':'')+'" style="--spc:'+meta.color+'">'+
+      '<button type="button" class="esc35-spec-head" data-esc35-spec-toggle="'+esc(s)+'" aria-expanded="'+(open?'true':'false')+'">'+
+        '<span class="esc35-spec-stripe"></span>'+
+        '<span class="esc35-spec-em">'+meta.em+'</span>'+
+        '<span class="esc35-spec-meta">'+
+          '<span class="esc35-spec-name">'+esc(s)+'</span>'+
+          '<span class="esc35-spec-count">'+items.length+' escala'+(items.length===1?'':'s')+'</span>'+
+        '</span>'+
+        '<span class="esc35-spec-chev">▾</span>'+
+      '</button>'+
+      body+
+    '</div>';
+  }).join('')+'</div>';
+  document.getElementById('esc35Groups').innerHTML=html;
 }
 
 /* ── Vista de calculadora ── */

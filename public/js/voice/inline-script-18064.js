@@ -13,7 +13,8 @@
   {id:'in196Search'},
   {id:'v27AlgSearch'},
   {id:'v28CimaQuery'},
-  {id:'nxSearch'}
+  {id:'nxSearch'},
+  {id:'esc35Search', after:'esc35Clear'}
  ];
 
  function addMicToField(cfg){
