@@ -1,0 +1,123 @@
+/* P1.1 · Inicio "vivo"
+   Estilos aislados del componente. Usa tokens del diseño vigente:
+   teal #33B6A6, semánticos verde/ámbar/rojo. Sin gradientes, sombra
+   contenida. Alineado con `.nx-wrap` / `.nx-pharma`. */
+.p1v-host{ margin:14px 0 4px }
+.p1v-wrap{
+  background:var(--card-solid,#111827);
+  border:1px solid var(--border,#1E293B);
+  border-radius:20px;
+  padding:18px 18px 16px;
+}
+.p1v-head{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; margin-bottom:14px;
+}
+.p1v-head h2{
+  margin:0 0 4px; font-size:16px; font-weight:800;
+  color:var(--text,#E5EEFF); letter-spacing:.2px;
+}
+.p1v-sub{ margin:0; color:var(--muted,#7f93bd); font-size:12px }
+.p1v-time{ color:var(--muted,#7f93bd); font-size:11px; white-space:nowrap; padding-top:2px }
+
+.p1v-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;
+}
+.p1v-card{
+  display:flex; flex-direction:column; gap:6px; text-align:left;
+  padding:12px 12px 11px; border-radius:14px;
+  background:rgba(51,182,166,.05);
+  border:1px solid rgba(51,182,166,.18);
+  color:inherit; font:inherit; cursor:pointer;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.p1v-card:hover{
+  transform:translateY(-1px);
+  border-color:rgba(51,182,166,.4);
+  background:rgba(51,182,166,.09);
+}
+.p1v-card-top{ display:flex; align-items:center; gap:6px; flex-wrap:wrap }
+.p1v-card-title{ font-size:13.5px; font-weight:700; color:var(--text,#E5EEFF); line-height:1.28 }
+.p1v-card-src{ font-size:11px; color:var(--muted,#7f93bd); line-height:1.3 }
+
+.p1v-cat{
+  display:inline-flex; align-items:center; padding:2px 7px;
+  border-radius:999px; font-size:10px; font-weight:700; letter-spacing:.3px;
+  background:rgba(120,150,220,.14); color:#c7d4f2;
+  text-transform:uppercase;
+}
+
+.p1v-chip{
+  display:inline-flex; align-items:center; padding:2px 8px;
+  border-radius:999px; font-size:10.5px; font-weight:700;
+  letter-spacing:.2px; border:1px solid transparent;
+}
+.p1v-vigente{
+  background:rgba(51,182,166,.14); color:#33B6A6;
+  border-color:rgba(51,182,166,.35);
+}
+.p1v-revisar{
+  background:rgba(245,158,11,.14); color:#F59E0B;
+  border-color:rgba(245,158,11,.35);
+}
+.p1v-caducada{
+  background:rgba(239,68,68,.15); color:#F87171;
+  border-color:rgba(239,68,68,.4);
+}
+.p1v-sin-fecha{
+  background:rgba(148,163,184,.14); color:#94A3B8;
+  border-color:rgba(148,163,184,.32);
+}
+
+.p1v-att-wrap{
+  margin-top:14px; padding-top:12px;
+  border-top:1px dashed var(--border,#1E293B);
+}
+.p1v-att-wrap > summary{
+  display:flex; align-items:center; gap:8px;
+  list-style:none; cursor:pointer; user-select:none;
+  color:var(--text,#E5EEFF); font-weight:700; font-size:13px;
+  padding:2px 0;
+}
+.p1v-att-wrap > summary::-webkit-details-marker{ display:none }
+.p1v-att-dot{
+  width:8px; height:8px; border-radius:50%; background:#F59E0B;
+  box-shadow:0 0 0 3px rgba(245,158,11,.25);
+}
+.p1v-att-count{
+  margin-left:auto; padding:1px 8px; border-radius:999px;
+  background:rgba(245,158,11,.14); color:#F59E0B;
+  font-size:11px; font-weight:800;
+}
+.p1v-att-list{
+  display:flex; flex-direction:column; gap:6px; margin-top:10px;
+}
+.p1v-att{
+  display:flex; flex-direction:column; gap:3px; text-align:left;
+  padding:9px 12px; border-radius:12px;
+  background:rgba(15,23,42,.5);
+  border:1px solid var(--border,#1E293B);
+  color:inherit; font:inherit; cursor:pointer;
+  transition:border-color .15s ease, background .15s ease;
+}
+.p1v-att:hover{
+  border-color:rgba(245,158,11,.4);
+  background:rgba(245,158,11,.05);
+}
+.p1v-att-title{ font-size:13px; font-weight:700; color:var(--text,#E5EEFF) }
+.p1v-att-meta{
+  font-size:11px; color:var(--muted,#7f93bd);
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+}
+.p1v-empty{
+  padding:12px; text-align:center; color:var(--muted,#7f93bd);
+  font-size:12px; font-style:italic;
+}
+
+@media (max-width:520px){
+  .p1v-head{ flex-direction:column; gap:6px }
+  .p1v-time{ white-space:normal }
+  .p1v-grid{ grid-template-columns:1fr 1fr }
+  .p1v-card{ padding:10px }
+}
