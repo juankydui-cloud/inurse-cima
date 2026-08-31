@@ -438,7 +438,6 @@
       +'</div>'
       +'</div>'
 
-      +'</div>'
       +'<div class="nx-aj-section">'
       +'<div class="nx-aj-section-title"><span class="ic">☁️</span>Cuenta y sincronización</div>'
       +'<div class="nx-aj-card" id="nxAccountBox"><div class="nx-aj-row"><span>Comprobando sesión…</span></div></div>'
@@ -524,8 +523,6 @@
       +'<div class="nx-aj-field"><label for="nxJavnyKey">Clave API Gemini</label><input type="password" id="nxJavnyKey" value="'+esc(javnySaved.apiKey||'')+'" placeholder="AIza..."></div>'
       +'<button class="nx-aj-btn" id="nxJavnySave">Guardar configuración de Javny</button>'
       +'</div>'
-      +'</div>'
-
       +'</div>'
 
       +'<div class="nx-aj-section">'
