@@ -256,3 +256,62 @@ body.esc35-lock{overflow:hidden}
   .esc35-select{max-width:none;width:100%}
   .esc35-result-main b,.esc35-result-sec b{font-size:23px}
 }
+
+/* ── Grid de especialidades (estilo MDCalc / Guías clínicas) ──
+   Sustituye al hero + stats + chips del diseño previo. Cada tarjeta es un
+   acordeón: la cabecera pinta icono + nombre + contador, y al pulsar se
+   expande hacia abajo con la lista de escalas de esa especialidad. */
+.esc35-spec-grid{
+  display:grid;gap:12px;margin:2px 0 10px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+}
+.esc35-spec-card{
+  --spc:#38BDF8;
+  border:1px solid var(--border);border-radius:16px;background:var(--card);
+  overflow:hidden;transition:border-color .2s ease,box-shadow .2s ease,transform .15s ease;
+}
+.esc35-spec-card:hover{
+  border-color:color-mix(in srgb,var(--spc) 45%,var(--border));
+  box-shadow:0 6px 20px color-mix(in srgb,var(--spc) 12%,transparent);
+}
+.esc35-spec-card.open{
+  grid-column:1/-1;
+  border-color:color-mix(in srgb,var(--spc) 55%,var(--border));
+  box-shadow:0 10px 26px color-mix(in srgb,var(--spc) 15%,transparent);
+}
+.esc35-spec-head{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:14px 16px;background:transparent;border:none;color:inherit;
+  font:inherit;text-align:left;cursor:pointer;position:relative;
+}
+.esc35-spec-stripe{
+  position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--spc);
+  border-radius:0 4px 4px 0;
+}
+.esc35-spec-em{
+  font-size:26px;line-height:1;flex:0 0 auto;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.25));
+}
+.esc35-spec-meta{
+  display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;
+}
+.esc35-spec-name{
+  font-size:14px;font-weight:700;color:var(--text,#f1f5f9);letter-spacing:.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.esc35-spec-count{
+  font-size:11.5px;color:var(--text-dim,#94a3b8);letter-spacing:.02em;
+}
+.esc35-spec-chev{
+  font-size:14px;color:var(--text-dim,#94a3b8);
+  transition:transform .2s ease;flex:0 0 auto;
+}
+.esc35-spec-card.open .esc35-spec-chev{transform:rotate(180deg);color:var(--spc);}
+.esc35-spec-body{
+  padding:6px 14px 16px;border-top:1px solid var(--border);
+}
+.esc35-spec-body .esc35-grid{margin-top:10px;}
+
+/* Modo noche: sin sombras coloridas, borde más marcado */
+[data-theme="night"] .esc35-spec-card{box-shadow:none}
+[data-theme="night"] .esc35-spec-card.open{box-shadow:none;border-width:2px}
