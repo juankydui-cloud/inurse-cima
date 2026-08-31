@@ -9,6 +9,25 @@
  * sin cargarlo entero en memoria. Suficiente para lo que necesita
  * terminology-connector.mjs: encontrar el código de concepto de un término
  * exacto, nunca inventarlo.
+ *
+ * MANTENIMIENTO DEL SNAPSHOT
+ * ---------------------------------------------------------------------------
+ * El fichero `snomed_ct_es.tsv.gz` en la raíz del repo es estático: no se
+ * actualiza solo. SNOMED International publica una release nueva de la
+ * Edición Española aproximadamente cada 3 meses (foro SNOMED, MLDS).
+ *
+ * Última release conocida al escribir esta nota: agosto de 2026
+ * (https://forums.snomed.org/t/august-2026-snomed-ct-spanish-edition-production-release-available/1523).
+ *
+ * Para actualizar:
+ *   1. Descargar el paquete oficial desde MLDS con la licencia de afiliado.
+ *   2. Extraer el fichero "sct2_Description_Snapshot-es_*.txt" del paquete.
+ *   3. Convertir a TSV comprimido: `gzip -9 sct2_Description_Snapshot-es_*.txt`
+ *      y renombrar el resultado como `snomed_ct_es.tsv.gz`.
+ *   4. Reemplazar el fichero en la raíz del repo y commitear.
+ *
+ * El arranque del servidor logea la fecha de modificación del snapshot para
+ * detectar de un vistazo cuándo se actualizó por última vez.
  * ---------------------------------------------------------------------------
  */
 import fs from "node:fs";
@@ -32,6 +51,19 @@ function norm(s) {
 
 export function snomedDataAvailable() {
   return fs.existsSync(DATA_FILE);
+}
+
+/** Fecha de modificación del snapshot local, o null si no está disponible.
+ *  Se expone para poder log-uear al arranque cuándo se actualizó por última
+ *  vez el snapshot de SNOMED CT Edición Española.
+ */
+export function snomedSnapshotMtime() {
+  if (!snomedDataAvailable()) return null;
+  try {
+    return fs.statSync(DATA_FILE).mtime;
+  } catch {
+    return null;
+  }
 }
 
 /**
