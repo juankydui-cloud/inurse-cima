@@ -1,0 +1,36 @@
+/* P1.4 · Pictogramas de dilución (patrón Stabilis) — estilos aislados */
+.p14-pictos{
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin:8px 0 10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(51,182,166,.06);
+  border:1px solid rgba(51,182,166,.22);
+}
+.p14-picto-item{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 10px 5px 8px;
+  border-radius:999px;
+  background:rgba(15,23,42,.5);
+  border:1px solid rgba(120,150,220,.18);
+  color:#c7d4f2; font-size:11.5px; font-weight:700; letter-spacing:.2px;
+  cursor:default; transition:.15s;
+}
+.p14-picto-item:hover{
+  border-color:rgba(51,182,166,.45);
+  color:#33B6A6;
+  background:rgba(51,182,166,.08);
+}
+.p14-pico{
+  width:18px; height:18px; flex:none;
+  color:#33B6A6;
+  transition:color .15s;
+}
+.p14-picto-item:hover .p14-pico{ color:#67e8f9 }
+.p14-picto-label{ white-space:nowrap }
+
+@media (max-width:520px){
+  .p14-pictos{ padding:8px 10px; gap:6px }
+  .p14-picto-item{ font-size:11px; padding:4px 8px 4px 6px }
+  .p14-pico{ width:16px; height:16px }
+}
