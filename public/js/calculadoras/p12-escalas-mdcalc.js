@@ -277,21 +277,27 @@
 
   function boot(){
     document.body.addEventListener('click', onBodyClick, true);
-    /* El overlay de escalas se monta perezosamente. Reintentar hasta que
-       aparezca #esc35Body (cuando el user abre "Escalas"). */
+    /* El overlay de escalas se monta perezosamente. Enganchamos SOLO UNA VEZ
+       (con un flag) porque el observer global sobre `document.body` se
+       disparaba en cada mutación — incluidas las que nosotros mismos
+       provocamos dentro de reinject() — y creaba un bucle infinito que
+       congelaba el hilo y bloqueaba la apertura del catálogo. */
+    var started = false;
+    var tryStart = function(){
+      if(started) return true;
+      if(!document.getElementById('esc35Body')) return false;
+      started = true;
+      startObserver();
+      return true;
+    };
+    if(tryStart()) return;
     var tries = 0;
     var t = setInterval(function(){
-      if(document.getElementById('esc35Body')){
-        startObserver();
-        clearInterval(t);
-        return;
-      }
-      if(++tries > 240) clearInterval(t);
+      if(tryStart() || ++tries > 240) clearInterval(t);
     }, 500);
-    /* Además: si el overlay se destruye/recrea, un MutationObserver global
-       lo vuelve a enganchar. */
     var gm = new MutationObserver(function(){
-      if(document.getElementById('esc35Body')){ startObserver(); }
+      if(started){ try{ gm.disconnect(); }catch(e){} return; }
+      if(tryStart()){ try{ gm.disconnect(); }catch(e){} }
     });
     try{ gm.observe(document.body, { childList: true, subtree: true }); }catch(e){}
   }
