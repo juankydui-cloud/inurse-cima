@@ -206,6 +206,70 @@ const DOCS = [
     ]
   },
   {
+    "id": "cardio-renal",
+    "cat": "cardio",
+    "title": "Cribado cardio-renal (ESC/ERA 2026)",
+    "source": "ESC 2026 · en colaboración con European Renal Association (DOI 10.1093/eurheartj/ehag098)",
+    "tags": "cardio renal erc enfermedad renal cronica cribado albuminuria cociente albumina creatinina filtrado glomerular egfr stamp iecas ara-ii isglt2 estatinas prevencion cardiovascular",
+    "summary": "Primera guía ESC de eje cardio-renal: cribado universal de ERC en toda enfermedad cardiovascular con eGFR y cociente albúmina/creatinina en orina. Marco STAMP.",
+    "sec": [
+      {
+        "h": "Novedad 2026",
+        "b": "<p>Primera guía conjunta ESC + European Renal Association. Se estima que en Europa hay ~100 millones de personas con enfermedad renal crónica; todas ellas con riesgo cardiovascular elevado. La guía sale del silo tradicional y aborda el eje cardio-renal como una única entidad.</p>"
+      },
+      {
+        "h": "Cribado universal de ERC en cardiovascular",
+        "b": "<p>En todo paciente con enfermedad cardiovascular conocida se recomienda cribado de ERC. Incluye <b>dos determinaciones</b>, no una:</p><ul><li><b>Filtrado glomerular estimado</b> a partir de creatinina (CKD-EPI 2021 sigue vigente).</li><li><b>Cociente albúmina/creatinina en orina (UACR)</b> — pieza clave para detectar daño renal precoz que no se ve con la creatinina sola.</li></ul><p>La sola creatinina infradiagnostica ERC. El UACR se recomienda incluir en la primera analítica de cribado cardiovascular.</p>"
+      },
+      {
+        "h": "Marco STAMP",
+        "b": "<ul><li><b>S · Screen</b> (cribar): eGFR + UACR en todo paciente con EC.</li><li><b>T · Triage</b> (triar): estratificar el riesgo combinado ERC-EC.</li><li><b>A · Address CKD risk</b>: abordar factores modificables (HTA, DM, obesidad, tabaco).</li><li><b>M · Modify CVD management</b>: adaptar el manejo cardiovascular al perfil renal (ajuste de dosis, elección de fármacos).</li><li><b>P · Plan services</b>: coordinar servicios y planificar seguimiento nefrocardiológico.</li></ul>"
+      },
+      {
+        "h": "Tratamiento precoz",
+        "b": "<p>Despliegue precoz de:</p><ul><li><b>IECA / ARA-II</b> para reducir albuminuria y proteger el riñón.</li><li><b>iSGLT2</b> (dapagliflozina, empagliflozina) — beneficio cardiovascular y renal demostrado.</li><li><b>Estatinas</b> según riesgo cardiovascular.</li><li>Control estricto de HTA, DM y peso.</li></ul>"
+      },
+      {
+        "h": "Enfoque enfermero",
+        "b": "<p>Vigilar creatinina y potasio al iniciar/titular IECA/ARA-II/iSGLT2. Educación en adherencia y en signos de descompensación renal (edema, oliguria, disnea nueva). Coordinar con nefrología si eGFR &lt; 30 o UACR ≥ 300 mg/g. Cruce con la ficha de insuficiencia cardíaca para cribado renal en descompensación.</p>"
+      }
+    ]
+  },
+  {
+    "id": "anemia-erc",
+    "cat": "cardio",
+    "title": "Anemia en enfermedad renal crónica (KDIGO 2026)",
+    "source": "KDIGO 2026 · Anemia in CKD (Kidney International)",
+    "tags": "anemia enfermedad renal cronica erc kdigo hemoglobina hierro oral intravenoso hif-phi prolil hidroxilasa eritropoyesis esa transfusion decision compartida",
+    "summary": "Sustituye la guía KDIGO 2012. Abandona la diana única de Hb: decisión individualizada. Nuevos criterios de hierro IV vs oral y de HIF-PHI.",
+    "sec": [
+      {
+        "h": "Cambio de fondo: sin diana única de hemoglobina",
+        "b": "<p>KDIGO 2026 abandona la <b>diana única de hemoglobina</b> que orientaba la práctica desde 2012. La decisión de subir la Hb pasa a ser <b>individualizada</b>, mediante <b>decisión compartida</b> con el paciente en función de:</p><ul><li>Síntomas atribuibles a la anemia.</li><li>Comorbilidad (cardiovascular, oncológica).</li><li>Riesgo de transfusión y de eventos adversos por eritropoyesis-estimulantes o HIF-PHI.</li><li>Preferencias y valores del paciente.</li></ul><p>Cualquier tabla con rango fijo de Hb objetivo procedente de la guía 2012 queda superada.</p>"
+      },
+      {
+        "h": "Evaluación sistemática de anemia y déficit de hierro",
+        "b": "<p>Ante Hb reducida en ERC, evaluar sistemáticamente:</p><ul><li>Hemograma completo, reticulocitos, ferritina, saturación de transferrina (IST).</li><li>Vitamina B12 y folato.</li><li>Descartar sangrado activo, hemólisis, inflamación crónica.</li><li>Función renal y proteinuria.</li></ul>"
+      },
+      {
+        "h": "Hierro oral vs intravenoso",
+        "b": "<p>KDIGO 2026 aclara los criterios:</p><ul><li><b>Hierro oral</b>: ERC no diálisis con buena tolerancia y déficit leve-moderado. Barato y accesible; limitado por tolerancia digestiva y absorción reducida en inflamación crónica.</li><li><b>Hierro intravenoso</b>: preferente en diálisis, en intolerancia oral, en respuesta insuficiente al oral, y cuando se busca corrección más rápida. Preparados de alta dosis por infusión son la opción actual.</li></ul>"
+      },
+      {
+        "h": "ESAs y HIF-PHIs (novedad)",
+        "b": "<p>La decisión de usar <b>agentes estimulantes de la eritropoyesis (ESAs)</b> o <b>inhibidores de la prolil-hidroxilasa del HIF (HIF-PHIs)</b> para subir la hemoglobina se toma por <b>decisión compartida</b>, considerando síntomas, riesgos de transfusión y riesgos específicos del fármaco.</p><ul><li><b>ESAs</b> (darbepoetina, epoetina): vía SC/IV, uso consolidado.</li><li><b>HIF-PHIs</b> (roxadustat, daprodustat, vadadustat): vía oral, novedad de 2026. Perfil de riesgo cardiovascular específico — revisar contraindicaciones antes de iniciar.</li></ul>"
+      },
+      {
+        "h": "Transfusión",
+        "b": "<p>La transfusión se reserva para anemia grave sintomática con riesgo vital, sangrado activo o falta de respuesta a las otras estrategias. Cada transfusión aumenta el riesgo de aloinmunización — importante en candidatos a trasplante renal.</p>"
+      },
+      {
+        "h": "Enfoque enfermero",
+        "b": "<p>Registrar Hb basal y tendencia, no cifras absolutas. Vigilar síntomas atribuibles a anemia (astenia, disnea de esfuerzo, palpitaciones, mala calidad del sueño). Adherencia al hierro oral (dosis fraccionadas, ayunas si tolera, no con calcio ni café). Reacciones a la infusión IV de hierro. Educación en decisión compartida: no hay «una Hb correcta» — hay la Hb que le va mejor a este paciente concreto.</p>"
+      }
+    ]
+  },
+  {
     "id": "arritmias",
     "cat": "cardio",
     "title": "Arritmias ventriculares y muerte súbita",
