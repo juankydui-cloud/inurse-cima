@@ -174,26 +174,30 @@ const DOCS = [
   {
     "id": "ic",
     "cat": "cardio",
-    "title": "Insuficiencia cardíaca aguda y crónica",
-    "source": "ESC 2021",
-    "tags": "insuficiencia cardiaca fevi icfer arni iscglt2 betabloqueante arm furosemida diuretico nyha bnp congestion humedo seco caliente frio",
-    "summary": "Clasificación por FEVI. Cuatro pilares en IC-FEr. En aguda: húmedo/seco y caliente/frío.",
+    "title": "Insuficiencia cardíaca (crónica y descompensada)",
+    "source": "ESC 2026",
+    "tags": "insuficiencia cardiaca fevi icfer icfec arni iscglt2 betabloqueante arm mineralocorticoide furosemida diuretico nyha bnp congestion humedo seco caliente frio estadios semaglutida tirzepatida obesidad descompensada fundacional",
+    "summary": "Nueva clasificación por FEVI (IC-FEr <50% agrupa la antigua «ligeramente reducida»; IC-FEc ≥50%). ARM clase I en toda FEVI. La antigua «IC aguda» pasa a «IC descompensada».",
     "sec": [
       {
-        "h": "Clasificación por FEVI",
-        "b": "<ul><li><b>IC-FEr</b> (reducida): FEVI ≤40%. Donde más fármacos reducen mortalidad.</li><li><b>IC-FElr</b> (ligeramente reducida): 41-49%.</li><li><b>IC-FEc</b> (conservada): ≥50% con alteración estructural y péptidos elevados.</li></ul><p>Diagnóstico con clínica + péptidos natriuréticos + ecocardiografía.</p>"
+        "h": "Clasificación por FEVI (ESC 2026)",
+        "b": "<ul><li><b>IC-FEr</b> (reducida): FEVI <b>&lt; 50 %</b>. <b>Desaparece la categoría «ligeramente reducida» (41-49 %)</b> — se integra aquí. Comparten etiología (contractilidad reducida, disfunción sistólica) y responden al mismo tratamiento; muchos pacientes con FEVI 41-49 % deterioran a &lt; 40 % con el tiempo.</li><li><b>IC-FEc</b> (conservada): FEVI ≥ 50 % con alteración estructural y péptidos elevados.</li></ul><p>Diagnóstico con clínica + péptidos natriuréticos + ecocardiografía. La FEVI puede estar <b>falsamente elevada</b> en ciertas situaciones (p. ej. insuficiencia mitral significativa).</p><p><b>IC con FEVI mejorada:</b> los pacientes con IC-FEr que mejoran la FEVI tras tratamiento tienen mejor pronóstico, pero <b>deben mantener el tratamiento médico óptimo</b> — retirarlo lleva a recaída.</p>"
       },
       {
-        "h": "Los 4 pilares de la IC-FEr",
-        "b": "<ul><li><b>IECA o ARNI</b> (sacubitrilo-valsartán preferente).</li><li><b>Betabloqueante</b> titulado.</li><li><b>ARM</b> (espironolactona o eplerenona).</li><li><b>iSGLT2</b> (dapagliflozina/empagliflozina).</li></ul><p>Ponerlos pronto y a la vez. <b>Diuréticos de asa</b> (furosemida) para la congestión: alivian síntomas pero no cambian pronóstico.</p>"
+        "h": "Estadios A-D (ESC 2026)",
+        "b": "<ul><li><b>A · En riesgo:</b> sin signos, síntomas ni alteraciones cardíacas.</li><li><b>B · Pre-IC:</b> alteraciones cardíacas sin signos ni síntomas.</li><li><b>C · IC sintomática.</b></li><li><b>D · IC avanzada.</b></li></ul><p>El énfasis 2026 está en <b>prevención e inicio precoz del tratamiento</b>: cuanto antes en el estadio, mayor beneficio.</p>"
       },
       {
-        "h": "IC aguda",
-        "b": "<p>Valorar dos ejes: congestivo (<b>húmedo</b>/seco) y perfusión (<b>caliente</b>/frío).</p><ul><li>Oxigenoterapia/VMNI si insuficiencia respiratoria.</li><li>Diuréticos de asa IV para descongestionar.</li><li>Vasodilatadores IV si la tensión lo permite.</li><li>Inotrópicos/vasopresores solo en shock cardiogénico.</li></ul><p>Buscar desencadenante: SCA, crisis HTA, arritmia, infección, transgresión, anemia, TEP.</p>"
+        "h": "Terapia farmacológica fundacional",
+        "b": "<ul><li><b>IECA o ARNI</b> (sacubitrilo-valsartán preferente) en IC-FEr.</li><li><b>Betabloqueante</b> titulado en IC-FEr.</li><li><b>ARM</b> (espironolactona o eplerenona) — <b>clase I en IC crónica sea cual sea la FEVI</b>, no sólo en IC-FEr (cambio ESC 2026).</li><li><b>iSGLT2</b> (dapagliflozina/empagliflozina).</li></ul><p>Ponerlos pronto y a la vez. Los <b>diuréticos de asa</b> (furosemida) forman parte de la <b>terapia adicional</b> para la congestión: alivian síntomas pero no cambian pronóstico.</p><p><b>Semaglutida o tirzepatida (clase IIa)</b> en IC-FEc con obesidad.</p><p>La ESC 2026 reagrupa el tratamiento en <b>fundacional / adicional / intervencionista dirigida por guías</b>, dejando atrás la etiqueta GDMT («tratamiento médico dirigido por guías»).</p>"
+      },
+      {
+        "h": "IC descompensada (antes «IC aguda»)",
+        "b": "<p>La ESC 2026 reemplaza el término «IC aguda» por <b>«IC descompensada»</b>: en la mayoría de los pacientes la función cardíaca declina de forma progresiva hasta que el corazón ya no compensa, no de forma súbita — la etiqueta anterior transmitía una idea equivocada.</p><p>Valorar dos ejes: congestivo (<b>húmedo</b>/seco) y perfusión (<b>caliente</b>/frío).</p><ul><li>Oxigenoterapia/VMNI si insuficiencia respiratoria.</li><li>Diuréticos de asa IV para descongestionar.</li><li>Vasodilatadores IV si la tensión lo permite.</li><li>Inotrópicos/vasopresores solo en shock cardiogénico.</li></ul><p>Buscar desencadenante: SCA, crisis HTA, arritmia, infección, transgresión, anemia, TEP. <b>Cribar comorbilidad renal</b> (filtrado glomerular estimado + cociente albúmina/creatinina en orina, según ESC 2026 cardio-renal).</p>"
       },
       {
         "h": "Enfoque enfermero",
-        "b": "<p>Educación (adherencia, peso diario, sal), vigilancia de congestión, función renal e iones en la titulación. Cribar déficit de hierro (hierro IV mejora síntomas y reingresos).</p>"
+        "b": "<p>Educación (adherencia, peso diario, sal), vigilancia de congestión, función renal e iones en la titulación. Cribar déficit de hierro (hierro IV mejora síntomas y reingresos).</p><p>Para el manejo prehospitalario específico del edema agudo de pulmón y de la IC descompensada extrahospitalaria, consultar las fichas basadas en INGESA («Insuficiencia cardíaca aguda y EAP», «Insuficiencia cardiaca aguda» y «Edema agudo de pulmón»), que se mantienen con su fuente original.</p>"
       }
     ]
   },
