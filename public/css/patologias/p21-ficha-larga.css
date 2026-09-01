@@ -45,6 +45,26 @@ body.in57-visual #in54ProtocolScreen .in54-proto-head{
 .in54-section[data-in54-section]{ scroll-margin-top:180px }
 .p21-puntos{ scroll-margin-top:180px }
 
+/* ── Toasts flotantes NUNCA por encima del contenido de la ficha ──
+   Cuando el visor de ficha está abierto (`body.in54-protocol-open`),
+   forzamos que cualquier notificación flotante conocida se sitúe por
+   debajo del `#in54ProtocolScreen` (z-index 14000) o se oculte. Regla
+   general: cualquier elemento cuya id o clase incluya "toast" y esté en
+   position:fixed. Whitelist adicional para IDs específicos que no llevan
+   la palabra "toast" en su nombre. */
+body.in54-protocol-open #in18VoiceToast,
+body.in54-protocol-open [id*="Toast" i],
+body.in54-protocol-open [class*="toast" i],
+body.in54-protocol-open #v29JavnyLifeOverlay:not(.on),
+body.in54-protocol-open #recOverlay:not(.show),
+body.in54-protocol-open .v29vl-label,
+body.in54-protocol-open .v29vl-transcript,
+body.in54-protocol-open .v29vl-response{
+  z-index:100 !important;
+}
+/* El overlay de ficha es opaco full-screen, así que bajar el z-index de
+   los toasts basta para ocultarlos visualmente sin desmontarlos. */
+
 /* Bloque Puntos clave */
 .p21-puntos{
   margin:16px 0 0;

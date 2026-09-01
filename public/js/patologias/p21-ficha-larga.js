@@ -77,18 +77,23 @@
       head.appendChild(tabs);
     }
   }
-  function bindActiveOnScroll(root){
-    var tabButtons = Array.from(root.querySelectorAll('.in54-tab[data-in54-tab]'));
-    if(!tabButtons.length) return;
-    var sections = Array.from(root.querySelectorAll('.in54-section[data-in54-section]'));
+  function bindActiveOnScroll(){
+    /* Las pestañas viven ahora en `.in54-proto-head`, fuera del root.
+       Usamos document para localizarlas. */
+    var tabButtons = Array.from(document.querySelectorAll('.in54-proto-head .in54-tab[data-in54-tab]'));
+    if(!tabButtons.length){
+      /* Reintenta en el próximo frame por si stickifyTabs aún no movió. */
+      requestAnimationFrame(bindActiveOnScroll);
+      return;
+    }
+    var sections = Array.from(document.querySelectorAll('#in54ProtocolContent .in54-section[data-in54-section], #in54ProtocolContent .p21-puntos[data-in54-section]'));
     if(!sections.length) return;
+
     var labelToBtn = {};
-    tabButtons.forEach(function(b){
-      var lab = b.getAttribute('data-in54-tab');
-      labelToBtn[lab] = b;
-    });
-    /* Añade la pestaña "Puntos clave" si el bloque existe y aún no está */
-    var pk = root.querySelector('.p21-puntos');
+    tabButtons.forEach(function(b){ labelToBtn[b.getAttribute('data-in54-tab')] = b; });
+
+    /* Añade la pestaña "Puntos clave" si existe la sección y aún no está. */
+    var pk = document.querySelector('#in54ProtocolContent .p21-puntos');
     if(pk && !labelToBtn['Puntos clave']){
       var newTab = document.createElement('button');
       newTab.className = 'in54-tab';
@@ -97,27 +102,51 @@
       newTab.addEventListener('click', function(){
         pk.scrollIntoView({ behavior:'smooth', block:'start' });
       });
-      /* Inserta como segunda pestaña (tras Resumen) si existe. */
       var resumenBtn = labelToBtn['Resumen'];
       if(resumenBtn && resumenBtn.nextSibling){
         resumenBtn.parentNode.insertBefore(newTab, resumenBtn.nextSibling);
-      } else {
-        tabButtons[0] && tabButtons[0].parentNode.insertBefore(newTab, tabButtons[0].nextSibling);
+      } else if(tabButtons[0]){
+        tabButtons[0].parentNode.insertBefore(newTab, tabButtons[0].nextSibling);
       }
-      tabButtons = Array.from(root.querySelectorAll('.in54-tab[data-in54-tab]'));
+      tabButtons = Array.from(document.querySelectorAll('.in54-proto-head .in54-tab[data-in54-tab]'));
       labelToBtn['Puntos clave'] = newTab;
-      sections = Array.from(root.querySelectorAll('.in54-section[data-in54-section]'));
     }
-    var io = new IntersectionObserver(function(entries){
-      /* La sección más cerca de la línea guía manda la pestaña activa. */
-      var visible = entries.filter(function(e){ return e.isIntersecting; })
-        .sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
-      if(!visible.length) return;
-      var top = visible[0];
-      var label = top.target.getAttribute('data-in54-section');
+
+    /* rootMargin del IO compensa la altura real del header (que ahora
+       contiene el título + las tabs), medida en vivo. La zona activa es
+       "cualquier sección visible bajo el header, hasta ~45% de la
+       ventana". Escogemos la de menor top (la que más arriba está bajo
+       el header) como sección activa. */
+    var scroller = document.getElementById('in54ProtocolScreen');
+    var head = document.querySelector('.in54-proto-head');
+    function currentTop(){
+      /* +4px de margen extra por si el header tiene border sutil. */
+      return (head ? head.getBoundingClientRect().height : 150) + 4;
+    }
+    function pickActive(){
+      var offTop = currentTop();
+      var candidate = null;
+      var candidateTop = -Infinity;
+      sections.forEach(function(s){
+        var r = s.getBoundingClientRect();
+        /* Sección "activa" es la última cuya top ha pasado el borde
+           inferior del header. */
+        if(r.top - offTop <= 8 && r.top > candidateTop){
+          candidate = s;
+          candidateTop = r.top;
+        }
+      });
+      /* Fallback: si ninguna ha pasado (estás al principio), usa la
+         primera. */
+      if(!candidate) candidate = sections[0];
+      var label = candidate.getAttribute('data-in54-section');
       tabButtons.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-in54-tab') === label); });
-    }, { rootMargin: '-180px 0px -55% 0px', threshold: 0 });
-    sections.forEach(function(s){ io.observe(s); });
+    }
+
+    /* Escuchar scroll del contenedor real y de la ventana (fallback). */
+    if(scroller){ scroller.addEventListener('scroll', pickActive, { passive:true }); }
+    window.addEventListener('scroll', pickActive, { passive:true });
+    pickActive();
   }
 
   /* ── Inyección ── */
@@ -141,7 +170,7 @@
       banner.parentNode.insertBefore(pk, tabs || banner.nextSibling);
     }
     stickifyTabs(container);
-    bindActiveOnScroll(container);
+    bindActiveOnScroll();
     container.dataset.p21 = '1';
   }
 

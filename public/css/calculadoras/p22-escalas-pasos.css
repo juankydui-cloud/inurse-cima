@@ -1,0 +1,112 @@
+/* P2.2 · Modo paso a paso para escalas largas — estilos aislados */
+
+.p22-tools{
+  display:flex; align-items:center; gap:14px;
+  margin:12px 0 14px;
+  padding:8px 10px;
+  border-radius:14px;
+  border:1px solid rgba(120,150,220,.18);
+  background:rgba(15,23,42,.55);
+}
+.p22-modeswitch{
+  display:inline-flex; gap:4px;
+  padding:4px;
+  border-radius:12px;
+  background:rgba(10,18,34,.7);
+  border:1px solid rgba(120,150,220,.15);
+}
+.p22-mode{
+  padding:6px 12px; border-radius:9px;
+  border:1px solid transparent;
+  background:transparent;
+  color:#8aa0c8; font:inherit; font-size:12.5px; font-weight:700;
+  cursor:pointer; transition:.15s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.p22-mode:hover{ color:#c7d4f2 }
+.p22-mode.on{
+  background:linear-gradient(135deg,rgba(51,182,166,.2),rgba(51,182,166,.08));
+  color:#33B6A6;
+  border-color:rgba(51,182,166,.4);
+}
+
+.p22-progress{
+  flex:1; min-width:120px;
+  display:flex; align-items:center; gap:10px;
+}
+.p22-progress-bar{
+  flex:1; height:6px; border-radius:999px;
+  background:rgba(148,163,184,.15);
+  overflow:hidden;
+}
+.p22-progress-fill{
+  display:block; height:100%; border-radius:999px;
+  background:linear-gradient(90deg,#33B6A6,#22d3ee);
+  transition:width .25s ease;
+}
+.p22-progress-text{
+  color:#c7d4f2; font-size:12px; font-weight:700;
+  white-space:nowrap;
+}
+.p22-progress-text b{ color:#E5EEFF }
+
+/* Ocultar rows fuera del paso actual */
+.p22-hidden{ display:none !important }
+.p22-current{
+  animation:p22FadeIn .2s ease;
+}
+/* En mobile, `.esc35-row` pasa a flex-direction:column y su label lleva
+   `flex:1 1 240px` que, al ser eje vertical, se interpreta como base
+   de 240px de ALTO. Con siblings da igual (se comparten). Con un solo
+   row en modo paso, ese 240px queda como hueco enorme antes del ctrl.
+   Reset explícito. */
+.p22-active #esc35Inputs > .esc35-row.p22-current{
+  min-height:auto !important;
+  height:auto !important;
+  padding:14px 16px !important;
+}
+.p22-active #esc35Inputs > .esc35-row.p22-current > .esc35-row-label{
+  flex:0 0 auto !important;
+  min-width:0 !important;
+}
+.p22-active #esc35Inputs > .esc35-row.p22-current > .esc35-row-ctrl{
+  margin-top:12px;
+  flex:0 0 auto !important;
+}
+@keyframes p22FadeIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)} }
+
+/* Navegación paso a paso */
+.p22-nav{
+  display:none;
+  gap:10px;
+  margin-top:14px;
+}
+.p22-nav.on{ display:flex }
+.p22-btn{
+  flex:1;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid rgba(120,150,220,.25);
+  background:rgba(15,23,42,.7);
+  color:#E5EEFF; font:inherit; font-size:14px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.p22-btn:hover:not(:disabled){
+  border-color:rgba(51,182,166,.5);
+  background:rgba(51,182,166,.08);
+  color:#33B6A6;
+}
+.p22-btn:disabled{ opacity:.35; cursor:not-allowed }
+.p22-btn.p22-next{
+  background:linear-gradient(135deg,#33B6A6,#22d3ee);
+  color:#0b1120;
+  border-color:transparent;
+}
+.p22-btn.p22-next:hover{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(51,182,166,.28) }
+
+@media (max-width:520px){
+  .p22-tools{ flex-wrap:wrap; gap:10px }
+  .p22-progress{ min-width:100% }
+  .p22-mode{ font-size:12px; padding:5px 10px }
+  .p22-btn{ font-size:13px; padding:11px }
+}
