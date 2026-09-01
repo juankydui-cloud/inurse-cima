@@ -25,7 +25,13 @@ body:not(.in60-content-mode):not(.in54-protocol-open) .nx-wrap{
   padding-bottom:var(--enfx-fab-safe) !important;
 }
 
-/* Panel lateral de guías (ya llevaba 160px, lo llevamos al mismo valor) */
+/* Panel lateral de guías. El scroller REAL es `.v29-body` (contenedor
+   padre del host), no `#in56GuidesHost`: el host tiene overflow visible
+   y su padding no se ve porque el scroll ocurre arriba. Aplicamos el
+   colchón al scroller real y también al host por consistencia. */
+#v29Panel .v29-body{
+  padding-bottom:var(--enfx-fab-safe) !important;
+}
 #in56GuidesHost{
   padding-bottom:var(--enfx-fab-safe) !important;
 }
