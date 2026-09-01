@@ -64,45 +64,18 @@
       + '</section>';
   }
 
-  /* ── Sticky tabs + highlight on scroll ── */
-  function measureHeadOffset(){
-    /* `.in54-proto-head` es sticky (top:0). Su altura depende de si el
-       título cabe en 1 o 2 líneas, así que la medimos y la aplicamos
-       directamente como `style.top` a `.in54-tabs` (más fiable que un
-       CSS var que tarda en propagar durante el primer render). */
-    var head = document.querySelector('.in54-proto-head');
-    var tabs = document.querySelector('.in54-tabs.p21-tabs-sticky');
-    if(!head || !tabs) return;
-    var h = head.getBoundingClientRect().height;
-    if(h && h > 20){
-      tabs.style.top = Math.round(h) + 'px';
-      document.documentElement.style.setProperty('--p21-head-h', Math.round(h) + 'px');
-    }
-  }
+  /* ── Sticky tabs: en vez de hacer sticky la barra por separado (lo que
+     provoca overlap con el header cuyo alto varía), la MOVEMOS DENTRO
+     del propio header sticky. Así viajan juntos, sin cálculos ni
+     glitches, y garantizamos fondo opaco compartido. */
   function stickifyTabs(root){
     var tabs = root.querySelector('.in54-tabs');
-    if(!tabs) return;
-    tabs.classList.add('p21-tabs-sticky');
-    /* Mide en varios ticks: inicial, tras paint, y tras 100ms — así
-       capturamos la altura DESPUÉS de que renderProtocol reemplace el
-       título por el real (que puede ocupar dos líneas). */
-    measureHeadOffset();
-    requestAnimationFrame(function(){
-      measureHeadOffset();
-      requestAnimationFrame(measureHeadOffset);
-    });
-    setTimeout(measureHeadOffset, 120);
-    setTimeout(measureHeadOffset, 400);
-    window.addEventListener('resize', measureHeadOffset);
     var head = document.querySelector('.in54-proto-head');
-    if(head && window.ResizeObserver){
-      var ro = new ResizeObserver(measureHeadOffset);
-      try{ ro.observe(head); }catch(e){}
+    if(!tabs || !head) return;
+    tabs.classList.add('p21-tabs-in-head');
+    if(!head.querySelector('.p21-tabs-in-head')){
+      head.appendChild(tabs);
     }
-    /* Además, en cada scroll del contenedor re-medir por si el título
-       cambió de altura entre navegaciones. */
-    var scroller = document.getElementById('in54ProtocolScreen');
-    if(scroller){ scroller.addEventListener('scroll', measureHeadOffset, { passive:true }); }
   }
   function bindActiveOnScroll(root){
     var tabButtons = Array.from(root.querySelectorAll('.in54-tab[data-in54-tab]'));
