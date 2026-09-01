@@ -1,0 +1,58 @@
+/* P2-A · Estilos para los SVG del sistema Enferix
+   Los iconos son currentColor + stroke=1.6 y heredan el color/tamaño del
+   contenedor donde se inyectan. Estas reglas normalizan tamaños en las
+   zonas donde antes había emojis (nav, escalas, cabecera de ficha). */
+
+.enfx-ic{
+  display:inline-block;
+  width:1em; height:1em;
+  vertical-align:middle;
+  flex-shrink:0;
+}
+
+/* NAV bar superior: el `.ic` de cada botón. */
+.nx-nav button .enfx-ic{
+  width:22px; height:22px;
+  color:currentColor;
+  filter:drop-shadow(0 2px 6px rgba(56,189,248,.16));
+}
+.nx-nav button.on .enfx-ic{
+  color:#fff;
+  filter:drop-shadow(0 2px 8px rgba(120,190,255,.42));
+}
+
+/* Menú desplegable del "Inicio" (lista de secciones). */
+.nx-hmenu-item .enfx-ic{
+  width:20px; height:20px;
+  color:#8aa0c8;
+}
+
+/* Cards de especialidad en el catálogo de Escalas. El original tenía
+   el emoji dentro de `.esc35-spec-em`; el color heredado sale del
+   stripe `--spc` propio de la especialidad. */
+.esc35-spec-em{ line-height:1 }
+.esc35-spec-em .enfx-ic{
+  width:26px; height:26px;
+  color:var(--spc, #94A3B8);
+  stroke-width:1.7;
+}
+
+/* Icono de cabecera de la ficha (banner in54). */
+.in54-proto-icon .enfx-ic{
+  width:42px; height:42px;
+  color:#33B6A6;
+  stroke-width:1.5;
+}
+
+/* Utilidad genérica: cuando un contenedor tiene el marker de que
+   metimos el SVG, resetear el font-size que apuntaba al emoji. */
+.enfx-ic-slot{ font-size:0 }
+.enfx-ic-slot .enfx-ic{ font-size:1rem }
+
+/* Iconos dentro de los botones de acción de ficha (Leer/Vídeo/…) */
+.in58-action .enfx-ic,
+.in58-action-em .enfx-ic{
+  width:18px; height:18px;
+  margin-right:2px; vertical-align:-3px;
+  color:currentColor;
+}

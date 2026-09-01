@@ -171,6 +171,46 @@
   color:#33B6A6;
 }
 
+/* Etiqueta "Tramo" cuando la interpretación viene estructurada por
+   nivel de puntuación desde la fuente de la escala. */
+.p22-final-interp-tag{
+  display:inline-block; margin-right:6px;
+  padding:1px 8px; border-radius:999px;
+  background:rgba(51,182,166,.16); color:#33B6A6;
+  font-size:10px; font-weight:800; letter-spacing:.4px;
+  text-transform:uppercase;
+  vertical-align:middle;
+}
+
+/* Guardar / Compartir en el panel final */
+.p22-final-actions{
+  display:flex; gap:10px;
+  margin-top:14px; padding-top:12px;
+  border-top:1px dashed rgba(120,150,220,.28);
+}
+.p22-final-btn{
+  flex:1;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 14px; border-radius:12px;
+  border:1px solid rgba(120,150,220,.28);
+  background:rgba(15,23,42,.55);
+  color:#c7d4f2; font:inherit; font-size:13px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.p22-final-btn-ic{ display:inline-flex; width:18px; height:18px; color:currentColor }
+.p22-final-btn-ic .enfx-ic{ width:18px; height:18px; color:currentColor }
+.p22-final-btn-lbl{ line-height:1 }
+.p22-final-btn:hover:not(:disabled){
+  border-color:rgba(51,182,166,.5);
+  color:#33B6A6;
+  background:rgba(51,182,166,.06);
+}
+.p22-final-btn:disabled{
+  opacity:.65; cursor:default;
+  color:#34D399; border-color:rgba(52,211,153,.4);
+  background:rgba(52,211,153,.06);
+}
+
 /* En modo paso a paso: el panel completo de resultado y los bloques
    auxiliares se ocultan siempre. Durante el recorrido, los puntos
    viven en el chip PUNTOS junto a la barra de progreso. En el paso

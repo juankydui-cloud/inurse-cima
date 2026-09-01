@@ -53,8 +53,8 @@
       tools.className = 'p22-tools';
       tools.innerHTML =
         '<div class="p22-modeswitch" role="tablist" aria-label="Modo de escala">'
-        + '<button type="button" class="p22-mode" data-p22-mode="form" role="tab">📋 '+esc(L.form)+'</button>'
-        + '<button type="button" class="p22-mode" data-p22-mode="step" role="tab">🪜 '+esc(L.paso)+'</button>'
+        + '<button type="button" class="p22-mode" data-p22-mode="form" role="tab"><span class="p22-mode-em" data-p22-icon="clipboard">📋</span> '+esc(L.form)+'</button>'
+        + '<button type="button" class="p22-mode" data-p22-mode="step" role="tab"><span class="p22-mode-em" data-p22-icon="steps">🪜</span> '+esc(L.paso)+'</button>'
         + '</div>'
         + '<div class="p22-progress" hidden>'
         +   '<div class="p22-progress-bar"><span class="p22-progress-fill"></span></div>'
@@ -197,7 +197,50 @@
     /* Fallback: buscador PubMed con la cita textual */
     var q = encodeURIComponent(t);
     return '<span class="p22-ref-text">'+esc(t)+'</span>'
-      + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener">🔍 Buscar en PubMed</a>';
+      + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener"><span class="p22-ref-em" data-p22-icon="search">🔎</span> Buscar en PubMed</a>';
+  }
+
+  /* Lee del catálogo de escalas la definición del calculator visible.
+     La info estructurada opcional que consumimos es:
+       c.interpretationsByLevel = { alto: '…', intermedio: '…', bajo: '…' }
+     rellenada solo desde fuentes validadas en el .ts del calculador; si
+     no existe, seguimos usando el texto que devuelve c.compute(). */
+  function currentCalc(){
+    var titleEl = document.querySelector('.esc35-calc h3');
+    var name = (titleEl && titleEl.textContent || '').trim();
+    if(!name) return null;
+    var d = window.ENFERIX_ESCALAS_DATA;
+    if(!d || !Array.isArray(d.CALCULATORS)) return null;
+    return d.CALCULATORS.find(function(c){ return c.name === name; }) || null;
+  }
+  function currentLevel(result){
+    if(!result) return null;
+    var m = String(result.className||'').match(/lvl-([a-z0-9-]+)/i);
+    return m ? m[1] : null;
+  }
+
+  function saveResult(payload){
+    try{
+      var arr = JSON.parse(localStorage.getItem('inurse_p22_saved_v1') || '[]');
+      arr.unshift(payload);
+      arr = arr.slice(0, 40);
+      localStorage.setItem('inurse_p22_saved_v1', JSON.stringify(arr));
+    }catch(e){}
+  }
+  function shareResult(payload){
+    var text = payload.title + '\n' + payload.score + ' puntos'
+      + (payload.level ? ' · ' + payload.level.toUpperCase() : '')
+      + (payload.interp ? '\n' + payload.interp : '')
+      + '\n\n(vía Enferix)';
+    try{
+      if(navigator.share){
+        navigator.share({ title: payload.title, text: text }).catch(function(){});
+        return;
+      }
+    }catch(e){}
+    try{
+      navigator.clipboard && navigator.clipboard.writeText && navigator.clipboard.writeText(text);
+    }catch(e){}
   }
 
   function renderFinalPanel(root){
@@ -216,7 +259,20 @@
     var interp = result.querySelector('.esc35-result-interp');
     var details = result.querySelector('.esc35-result-details');
     var pill = result.querySelector('.esc35-pill');
-    /* Reconstruir referencias con enlaces */
+    /* Interpretación por tramo: si el calculator lo trae estructurado,
+       lo usamos; si no, caemos al texto genérico del monolito. */
+    var calc = currentCalc();
+    var level = currentLevel(result);
+    var byLevel = calc && calc.interpretationsByLevel;
+    var interpHTML = '';
+    if(byLevel && level && byLevel[level]){
+      interpHTML = '<div class="p22-final-interp"><span class="p22-final-interp-tag">Tramo</span>'
+        + esc(byLevel[level]) + '</div>';
+    } else if(interp){
+      interpHTML = '<div class="p22-final-interp">'+ interp.innerHTML +'</div>';
+    }
+
+    /* Referencias con enlaces */
     var refsHTML = '';
     if(refs){
       var items = Array.from(refs.querySelectorAll('li')).map(function(li){
@@ -226,14 +282,57 @@
         refsHTML = '<div class="p22-final-refs"><b>Fuente:</b><ul>'+ items.join('') +'</ul></div>';
       }
     }
+
+    /* Título de la escala para acciones */
+    var calcName = (calc && calc.name) || (document.querySelector('.esc35-calc h3') || {}).textContent || '';
+    var scoreNum = currentScore();
+
     panel.innerHTML =
       '<div class="p22-final-head">'
-      +   (pill ? '<span class="p22-final-pill">'+pill.textContent+'</span>' : '')
+      +   (pill ? '<span class="p22-final-pill">'+esc(pill.textContent)+'</span>' : '')
       +   '<div class="p22-final-main">'+ (main ? main.innerHTML : '') +'</div>'
       + '</div>'
-      + (interp ? '<div class="p22-final-interp">'+ interp.innerHTML +'</div>' : '')
+      + interpHTML
       + (details ? '<ul class="p22-final-details">'+ details.innerHTML +'</ul>' : '')
-      + refsHTML;
+      + refsHTML
+      + '<div class="p22-final-actions">'
+      +   '<button type="button" class="p22-final-btn" data-p22-save>'
+      +     '<span class="p22-final-btn-ic" data-p2a-icon="save"></span>'
+      +     '<span class="p22-final-btn-lbl">Guardar</span>'
+      +   '</button>'
+      +   '<button type="button" class="p22-final-btn" data-p22-share>'
+      +     '<span class="p22-final-btn-ic" data-p2a-icon="share"></span>'
+      +     '<span class="p22-final-btn-lbl">Compartir</span>'
+      +   '</button>'
+      + '</div>';
+
+    /* Enganchar acciones */
+    var payload = {
+      id: (calc && calc.id) || '',
+      title: calcName,
+      score: scoreNum,
+      level: level,
+      interp: interp ? interp.textContent.trim() : '',
+      ts: Date.now()
+    };
+    var saveBtn = panel.querySelector('[data-p22-save]');
+    var shareBtn = panel.querySelector('[data-p22-share]');
+    if(saveBtn){
+      saveBtn.addEventListener('click', function(){
+        saveResult(payload);
+        saveBtn.innerHTML =
+          '<span class="p22-final-btn-ic" data-p2a-icon="check"></span>'
+          + '<span class="p22-final-btn-lbl">Guardado</span>';
+        if(window.EnferixIcons){
+          var ic = saveBtn.querySelector('[data-p2a-icon]');
+          if(ic){ ic.innerHTML = window.EnferixIcons.get('check'); ic.classList.add('enfx-ic-slot'); }
+        }
+        saveBtn.disabled = true;
+      });
+    }
+    if(shareBtn){
+      shareBtn.addEventListener('click', function(){ shareResult(payload); });
+    }
   }
 
   function apply(root){

@@ -201,7 +201,7 @@
     var expanded = !!state._exp;
     return '<div class="p24-filters'+(expanded?' expanded':' collapsed')+'">'
       + '<div class="p24-head">'
-      +   '<span class="p24-title">🔧 '+esc(L.title)+'</span>'
+      +   '<span class="p24-title"><span class="p24-title-em" data-p24-icon="filter">🔧</span> '+esc(L.title)+'</span>'
       +   '<div class="p24-head-actions">'
       +     '<button class="p24-reset" type="button"'+(active.length?'':' hidden')+'>↺ '+esc(L.reset)+'</button>'
       +     '<button class="p24-toggle" type="button" data-p24-toggle>'+ (expanded ? '▲ '+esc(L.collapse) : '▼ '+esc(L.expand)) +'</button>'

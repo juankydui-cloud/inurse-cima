@@ -59,7 +59,7 @@
       ? '<span class="p21-badge p21-badge-manual" title="Puntos clave revisados por el editor de la ficha">Revisado</span>'
       : '<span class="p21-badge p21-badge-auto" title="Extraídos automáticamente de las secciones de la ficha; verificar antes de citar">Extraído de la ficha</span>';
     return '<section class="p21-puntos" data-in54-section="Puntos clave" data-p21="1">'
-      +   '<h3><span class="p21-em">🔑</span>Puntos clave '+tag+'</h3>'
+      +   '<h3><span class="p21-em" data-p21-icon="key">🔑</span>Puntos clave '+tag+'</h3>'
       +   '<ul>'+ p.items.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('') +'</ul>'
       + '</section>';
   }
