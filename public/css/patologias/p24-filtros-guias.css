@@ -1,0 +1,99 @@
+/* P2.4 · Filtros del listado de guías (patrón NICE) — estilos aislados */
+
+.p24-filters{
+  margin-bottom:14px; padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(120,150,220,.22);
+  background:linear-gradient(180deg,rgba(15,23,42,.7),rgba(15,23,42,.5));
+  display:flex; flex-direction:column; gap:10px;
+}
+
+.p24-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+}
+.p24-title{
+  font-size:12px; font-weight:800; color:#c7d4f2;
+  letter-spacing:.5px; text-transform:uppercase;
+}
+.p24-reset{
+  padding:5px 12px; border-radius:999px;
+  background:rgba(51,182,166,.14); color:#33B6A6;
+  border:1px solid rgba(51,182,166,.35);
+  font:inherit; font-size:11.5px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.p24-reset:hover{ background:rgba(51,182,166,.28); color:#67e8f9 }
+.p24-reset[hidden]{ display:none }
+
+/* Fila de filtros aplicados con ✕ para quitar cada uno */
+.p24-applied{
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px;
+  padding-bottom:10px;
+  border-bottom:1px dashed rgba(120,150,220,.2);
+}
+.p24-applied-lbl{
+  font-size:11px; font-weight:800; color:#8aa0c8;
+  letter-spacing:.4px; text-transform:uppercase;
+}
+.p24-applied-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 6px 4px 10px; border-radius:999px;
+  background:rgba(51,182,166,.2); color:#33B6A6;
+  border:1px solid rgba(51,182,166,.5);
+  font-size:11.5px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.p24-applied-chip:hover{ background:rgba(51,182,166,.35) }
+.p24-x{
+  display:inline-grid; place-items:center;
+  width:16px; height:16px; border-radius:50%;
+  background:rgba(0,0,0,.28); color:#fff;
+  border:none; font-size:10px; font-weight:800;
+  cursor:pointer;
+}
+
+/* Filas de chips por dimensión */
+.p24-row{
+  display:flex; align-items:center; gap:10px;
+}
+.p24-row-label{
+  flex:0 0 55px;
+  font-size:11px; font-weight:800; color:#8aa0c8;
+  letter-spacing:.4px; text-transform:uppercase;
+}
+.p24-row-chips{
+  flex:1;
+  display:flex; flex-wrap:wrap; gap:5px;
+}
+.p24-chip{
+  padding:5px 10px; border-radius:999px;
+  background:rgba(15,23,42,.6);
+  border:1px solid rgba(120,150,220,.22);
+  color:#c7d4f2; font:inherit; font-size:11.5px; font-weight:600;
+  cursor:pointer; transition:.15s;
+  white-space:nowrap;
+}
+.p24-chip:hover{
+  border-color:rgba(51,182,166,.5); color:#33B6A6;
+}
+.p24-chip.on{
+  background:rgba(51,182,166,.22); color:#33B6A6;
+  border-color:rgba(51,182,166,.6); font-weight:800;
+}
+/* Chips de estado con acento propio si están activos */
+.p24-chip-vigente.on { background:rgba(51,182,166,.22); color:#33B6A6; border-color:rgba(51,182,166,.6) }
+.p24-chip-revisar.on { background:rgba(245,158,11,.22); color:#F59E0B; border-color:rgba(245,158,11,.55) }
+.p24-chip-caducada.on{ background:rgba(239,68,68,.22); color:#F87171; border-color:rgba(239,68,68,.55) }
+
+.p24-counter{
+  font-size:11.5px; color:#8aa0c8; font-weight:700;
+  padding-top:4px; border-top:1px dashed rgba(120,150,220,.2);
+}
+
+@media (max-width:520px){
+  .p24-row{ flex-direction:column; align-items:flex-start; gap:5px }
+  .p24-row-label{ flex:0 0 auto }
+  .p24-row-chips{ width:100% }
+  .p24-chip{ font-size:11px; padding:4px 9px }
+}
