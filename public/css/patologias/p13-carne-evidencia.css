@@ -35,14 +35,53 @@
 
 /* Sello GRADE */
 .p13-grade{
+  position:relative;
   display:inline-flex; align-items:center;
   padding:3px 9px; border-radius:999px;
   font-size:11px; font-weight:800; letter-spacing:.3px;
   border:1px solid transparent;
+  cursor:help;
 }
 .p13-grade-a{ background:rgba(52,211,153,.14); color:#34D399; border-color:rgba(52,211,153,.4) }
 .p13-grade-b{ background:rgba(251,191,36,.14); color:#FBBF24; border-color:rgba(251,191,36,.4) }
 .p13-grade-c{ background:rgba(248,113,113,.14); color:#F87171; border-color:rgba(248,113,113,.4) }
+
+/* Tooltip explicativo del GRADE — hover o focus muestra la definición.
+   Anclado al chip con position:absolute. */
+.p13-grade-tip{
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%; transform:translateX(-50%) translateY(4px);
+  min-width:240px; max-width:min(320px, 88vw);
+  padding:12px 14px;
+  border-radius:12px;
+  background:#0a1220;
+  border:1px solid rgba(120,150,220,.35);
+  box-shadow:0 12px 32px rgba(0,0,0,.55);
+  color:#c7d4f2; font-size:12px; font-weight:600;
+  line-height:1.45; text-align:left; letter-spacing:0;
+  display:flex; flex-direction:column; gap:6px;
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease, visibility .15s;
+  z-index:20;
+  text-transform:none;
+}
+.p13-grade-tip::after{
+  content:''; position:absolute;
+  bottom:-6px; left:50%; transform:translateX(-50%) rotate(45deg);
+  width:10px; height:10px;
+  background:#0a1220;
+  border-right:1px solid rgba(120,150,220,.35);
+  border-bottom:1px solid rgba(120,150,220,.35);
+}
+.p13-grade:hover .p13-grade-tip,
+.p13-grade:focus .p13-grade-tip,
+.p13-grade:focus-within .p13-grade-tip{
+  opacity:1; visibility:visible;
+  transform:translateX(-50%) translateY(0);
+}
+.p13-grade-tip b{ color:#E5EEFF; font-weight:800; font-size:13px }
+.p13-grade-tip em{ color:#8aa0c8; font-style:normal; font-size:10.5px; opacity:.85 }
 
 /* Fuente y campos opcionales */
 .p13-source{ color:#c7d4f2; font-weight:600 }

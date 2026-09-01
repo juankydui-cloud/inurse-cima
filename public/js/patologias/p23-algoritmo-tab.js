@@ -97,7 +97,7 @@
     btn.className = 'in54-tab p23-tab';
     btn.setAttribute('data-p23-open','1');
     btn.setAttribute('data-in54-tab', 'Algoritmo');
-    btn.innerHTML = '<span class="p23-tab-em">'+esc(diag.icon || '🧩')+'</span>'+esc(L.tab);
+    btn.innerHTML = '<span class="p23-tab-em" data-p23-icon="algorithm">'+esc(diag.icon || '🧩')+'</span>'+esc(L.tab);
     btn.addEventListener('click', function(e){
       e.preventDefault(); e.stopPropagation();
       openOverlay(id, diag);
@@ -124,7 +124,7 @@
       '<div class="p23-shell" role="dialog" aria-modal="true" aria-labelledby="p23Title">'
       + '<header class="p23-head">'
       +   '<div class="p23-head-left">'
-      +     '<span class="p23-head-em">'+esc(diag.icon || '🧩')+'</span>'
+      +     '<span class="p23-head-em" data-p23-icon="algorithm">'+esc(diag.icon || '🧩')+'</span>'
       +     '<div class="p23-head-titles">'
       +       '<h2 id="p23Title">'+esc(diag.title || L.title)+'</h2>'
       +       (doc ? '<div class="p23-head-sub">'+ stateChip + '<span class="p23-head-src">'+esc(doc.source||'')+'</span></div>' : '')

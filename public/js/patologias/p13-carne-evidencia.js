@@ -109,7 +109,33 @@
     if(!letter) return '';
     var l = String(letter).toUpperCase();
     if(l !== 'A' && l !== 'B' && l !== 'C') return '';
-    return '<span class="p13-grade p13-grade-'+esc(l.toLowerCase())+'" title="'+esc(L.evidencia)+' GRADE '+esc(l)+'">'+esc(L.evidencia)+' '+esc(l)+'</span>';
+    /* Descripción larga del sistema GRADE por nivel, bilingüe. Se
+       muestra al pulsar/hover sobre el chip como tooltip explicativo
+       (no nativo — vive en `.p13-grade-tip`). */
+    var GRADE_DESC = {
+      es: {
+        A: 'Evidencia ALTA — confianza alta en que el efecto real está próximo al estimado. Guías internacionales, revisiones sistemáticas.',
+        B: 'Evidencia MODERADA — confianza moderada; nuevos estudios podrían cambiar el estimado.',
+        C: 'Evidencia BAJA — confianza limitada. Basado en protocolo institucional o consenso local.',
+        head: 'Sistema GRADE (Grading of Recommendations Assessment, Development and Evaluation)'
+      },
+      ca: {
+        A: 'Evidència ALTA — alta confiança que l\'efecte real és proper a l\'estimat. Guies internacionals, revisions sistemàtiques.',
+        B: 'Evidència MODERADA — confiança moderada; nous estudis podrien canviar l\'estimat.',
+        C: 'Evidència BAIXA — confiança limitada. Basada en protocol institucional o consens local.',
+        head: 'Sistema GRADE (Grading of Recommendations Assessment, Development and Evaluation)'
+      }
+    };
+    var lang = detectLang();
+    var g = GRADE_DESC[lang] || GRADE_DESC.es;
+    return '<span class="p13-grade p13-grade-'+esc(l.toLowerCase())+'" tabindex="0" aria-label="'+esc(L.evidencia+' GRADE '+l)+'" role="button">'
+      +    esc(L.evidencia)+' '+esc(l)
+      +    '<span class="p13-grade-tip" role="tooltip">'
+      +      '<b>'+esc(L.evidencia)+' '+esc(l)+'</b>'
+      +      '<span>'+esc(g[l])+'</span>'
+      +      '<em>'+esc(g.head)+'</em>'
+      +    '</span>'
+      + '</span>';
   }
   function sourceHTML(doc){
     if(!doc.source) return '';

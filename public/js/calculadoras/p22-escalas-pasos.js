@@ -53,8 +53,8 @@
       tools.className = 'p22-tools';
       tools.innerHTML =
         '<div class="p22-modeswitch" role="tablist" aria-label="Modo de escala">'
-        + '<button type="button" class="p22-mode" data-p22-mode="form" role="tab">📋 '+esc(L.form)+'</button>'
-        + '<button type="button" class="p22-mode" data-p22-mode="step" role="tab">🪜 '+esc(L.paso)+'</button>'
+        + '<button type="button" class="p22-mode" data-p22-mode="form" role="tab"><span class="p22-mode-em" data-p22-icon="clipboard">📋</span> '+esc(L.form)+'</button>'
+        + '<button type="button" class="p22-mode" data-p22-mode="step" role="tab"><span class="p22-mode-em" data-p22-icon="steps">🪜</span> '+esc(L.paso)+'</button>'
         + '</div>'
         + '<div class="p22-progress" hidden>'
         +   '<div class="p22-progress-bar"><span class="p22-progress-fill"></span></div>'
@@ -197,7 +197,7 @@
     /* Fallback: buscador PubMed con la cita textual */
     var q = encodeURIComponent(t);
     return '<span class="p22-ref-text">'+esc(t)+'</span>'
-      + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener">🔍 Buscar en PubMed</a>';
+      + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener"><span class="p22-ref-em" data-p22-icon="search">🔎</span> Buscar en PubMed</a>';
   }
 
   function renderFinalPanel(root){
