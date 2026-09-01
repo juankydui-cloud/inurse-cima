@@ -1,0 +1,72 @@
+/* P2.1 · Ficha larga navegable
+   Estilos aislados. Sticky para `.in54-tabs` (bajo el header sticky que
+   ya provee inurse54) y presentación del bloque Puntos clave. */
+
+/* Sticky tabs — se pegan justo bajo el header, cuya altura mide el JS y
+   expone como `--p21-head-h`. Fallback razonable si el JS aún no midió. */
+.p21-tabs-sticky{
+  position:sticky;
+  top:var(--p21-head-h, 76px);
+  z-index:2;
+  background:linear-gradient(180deg,rgba(10,18,34,.95),rgba(10,18,34,.82));
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+}
+
+/* Deja margen de scroll para que las secciones no queden ocultas bajo
+   header + tabs sticky al hacer scrollIntoView (~alto tabs + margen). */
+.in54-section[data-in54-section]{
+  scroll-margin-top:calc(var(--p21-head-h, 76px) + 74px);
+}
+.p21-puntos{ scroll-margin-top:calc(var(--p21-head-h, 76px) + 74px) }
+
+/* Bloque Puntos clave */
+.p21-puntos{
+  margin:16px 0 0;
+  padding:16px 18px 14px;
+  border-radius:22px;
+  border:1px solid rgba(51,182,166,.28);
+  background:
+    linear-gradient(180deg,rgba(51,182,166,.10),rgba(51,182,166,.04)),
+    rgba(10,18,34,.75);
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+}
+.p21-puntos h3{
+  margin:0 0 10px;
+  display:flex; align-items:center; gap:10px;
+  font-size:16px; font-weight:800; color:#E5EEFF; letter-spacing:-.2px;
+}
+.p21-em{ font-size:18px }
+.p21-puntos ul{
+  margin:0; padding:0 0 0 20px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.p21-puntos li{
+  color:#c7d4f2; line-height:1.5; font-size:14px;
+}
+.p21-puntos li::marker{ color:#33B6A6 }
+
+/* Etiquetas de origen del bloque */
+.p21-badge{
+  display:inline-flex; align-items:center;
+  margin-left:auto;
+  padding:3px 10px; border-radius:999px;
+  font-size:11px; font-weight:800; letter-spacing:.3px;
+  border:1px solid transparent;
+  text-transform:uppercase;
+}
+.p21-badge-manual{
+  background:rgba(52,211,153,.14); color:#34D399; border-color:rgba(52,211,153,.4);
+}
+.p21-badge-auto{
+  background:rgba(148,163,184,.14); color:#94A3B8; border-color:rgba(148,163,184,.32);
+}
+
+@media (max-width:520px){
+  .p21-tabs-sticky{ top:70px; border-radius:14px }
+  .in54-section[data-in54-section]{ scroll-margin-top:140px }
+  .p21-puntos{ scroll-margin-top:140px; padding:12px 14px 11px }
+  .p21-puntos h3{ font-size:15px }
+  .p21-puntos li{ font-size:13.5px }
+  .p21-badge{ font-size:10.5px; padding:2px 8px }
+}
