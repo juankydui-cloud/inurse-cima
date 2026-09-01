@@ -31,15 +31,69 @@
       title:'Filtrar', estado:'Estado', fuente:'Fuente', area:'Área',
       all:'Todas', reset:'Restablecer', applied:'Aplicados',
       vigente:'Vigente', revisar:'Por revisar', caducada:'Caducada', sinFecha:'Sin fecha',
-      counter:'{n} guías'
+      counter:'{n} guías', expand:'Mostrar filtros', collapse:'Ocultar filtros'
     },
     ca: {
       title:'Filtrar', estado:'Estat', fuente:'Font', area:'Àrea',
       all:'Totes', reset:'Restablir', applied:'Aplicats',
       vigente:'Vigent', revisar:'Per revisar', caducada:'Caducada', sinFecha:'Sense data',
-      counter:'{n} guies'
+      counter:'{n} guies', expand:'Mostrar filtres', collapse:'Amagar filtres'
     }
   };
+
+  /* Nombres legibles bilingües + fusión de duplicados. La clave son las
+     `doc.cat` que se ven en la base actual (ped/pedia, farm/farmaco…);
+     se apuntan al MISMO grupo humano en ambos idiomas. La lista
+     canónica de nombres es la que la UI enseña; internamente seguimos
+     agrupando por la clave canónica (p. ej. pedia). */
+  var AREA_MAP = {
+    /* clave-fuente : { canonical, es, ca } */
+    'ped':       { c:'pedia',   es:'Pediatría',           ca:'Pediatria' },
+    'pedia':     { c:'pedia',   es:'Pediatría',           ca:'Pediatria' },
+    'farm':      { c:'farma',   es:'Farmacia',            ca:'Farmàcia' },
+    'farmaco':   { c:'farma',   es:'Farmacia',            ca:'Farmàcia' },
+    'farma':     { c:'farma',   es:'Farmacia',            ca:'Farmàcia' },
+    'cardio':    { c:'cardio',  es:'Cardiología',         ca:'Cardiologia' },
+    'derma':     { c:'derma',   es:'Dermatología',        ca:'Dermatologia' },
+    'digest':    { c:'digest',  es:'Digestivo',           ca:'Digestiu' },
+    'emer':      { c:'urgen',   es:'Urgencias',           ca:'Urgències' },
+    'urgen':     { c:'urgen',   es:'Urgencias',           ca:'Urgències' },
+    'endo':      { c:'endo',    es:'Endocrinología',      ca:'Endocrinologia' },
+    'endocrino': { c:'endo',    es:'Endocrinología',      ca:'Endocrinologia' },
+    'enfoqueuci':{ c:'uci',     es:'UCI',                 ca:'UCI' },
+    'uci':       { c:'uci',     es:'UCI',                 ca:'UCI' },
+    'esp':       { c:'esp',     es:'Especialidades',      ca:'Especialitats' },
+    'extra':     { c:'extra',   es:'Extrahospitalaria',   ca:'Extrahospitalària' },
+    'imagen':    { c:'imagen',  es:'Imagen (Rx/POCUS)',   ca:'Imatge (Rx/POCUS)' },
+    'nefro':     { c:'nefro',   es:'Nefrología',          ca:'Nefrologia' },
+    'neuro':     { c:'neuro',   es:'Neurología',          ca:'Neurologia' },
+    'obst':      { c:'obst',    es:'Obstetricia',         ca:'Obstetrícia' },
+    'oft':       { c:'oft',     es:'Oftalmología',        ca:'Oftalmologia' },
+    'onco':      { c:'onco',    es:'Oncología',           ca:'Oncologia' },
+    'orl':       { c:'orl',     es:'ORL',                 ca:'ORL' },
+    'paliativos':{ c:'palia',   es:'Cuidados paliativos', ca:'Cures pal·liatives' },
+    'palia':     { c:'palia',   es:'Cuidados paliativos', ca:'Cures pal·liatives' },
+    'psiq':      { c:'psiq',    es:'Psiquiatría',         ca:'Psiquiatria' },
+    'resp':      { c:'resp',    es:'Respiratorio',        ca:'Respiratori' },
+    'resus':     { c:'resus',   es:'Reanimación',         ca:'Reanimació' },
+    'sepsis':    { c:'infec',   es:'Infecciosas',         ca:'Infeccioses' },
+    'infec':     { c:'infec',   es:'Infecciosas',         ca:'Infeccioses' },
+    'toxico':    { c:'toxico',  es:'Toxicología',         ca:'Toxicologia' },
+    'trauma':    { c:'trauma',  es:'Trauma',              ca:'Trauma' },
+    'ictus':     { c:'neuro',   es:'Neurología',          ca:'Neurologia' },
+    'farmacia':  { c:'farma',   es:'Farmacia',            ca:'Farmàcia' },
+    'otros':     { c:'otros',   es:'Otros / General',     ca:'Altres / General' }
+  };
+  function normalizeArea(cat){
+    var k = String(cat||'otros').toLowerCase();
+    if(AREA_MAP[k]) return AREA_MAP[k];
+    return { c:k, es:k, ca:k };
+  }
+  function areaLabel(cat){
+    var m = normalizeArea(cat);
+    return detectLang() === 'ca' ? m.ca : m.es;
+  }
+  function areaCanonical(cat){ return normalizeArea(cat).c; }
   function t(){ return LANG[detectLang()] || LANG.es; }
 
   /* Familias de fuentes reconocidas — orden importa para priorizar */
@@ -75,7 +129,7 @@
   }
   /* Estado del filtro persistido en localStorage */
   var STATE_KEY = 'inurse_p24_filters_v1';
-  var state = { estado:'all', fuente:'all', area:'all' };
+  var state = { estado:'all', fuente:'all', area:'all', _exp:false };
   function load(){
     try{
       var s = JSON.parse(localStorage.getItem(STATE_KEY)||'null');
@@ -83,6 +137,7 @@
         state.estado = s.estado || 'all';
         state.fuente = s.fuente || 'all';
         state.area = s.area || 'all';
+        state._exp = !!s._exp;
       }
     }catch(e){}
   }
@@ -100,7 +155,7 @@
       out.push({ key:'estado', val:state.estado, label:L.estado+': '+lab });
     }
     if(state.fuente !== 'all') out.push({ key:'fuente', val:state.fuente, label:L.fuente+': '+state.fuente });
-    if(state.area !== 'all')   out.push({ key:'area',   val:state.area,   label:L.area+': '+state.area });
+    if(state.area !== 'all')   out.push({ key:'area',   val:state.area,   label:L.area+': '+(AREA_MAP[state.area]?(detectLang()==='ca'?AREA_MAP[state.area].ca:AREA_MAP[state.area].es):state.area) });
     return out;
   }
 
@@ -108,20 +163,23 @@
     var L = t();
     var docs = (window.DOCS||[]);
     var famMap = {};
-    var areaMap = {};
+    var areaMap = {};   /* clave canónica → cuenta */
+    var areaLabelMap = {};   /* clave canónica → etiqueta bilingüe */
     docs.forEach(function(d){
       var f = docFamily(d.source);
       famMap[f] = (famMap[f]||0) + 1;
-      var a = d.cat || 'otros';
-      areaMap[a] = (areaMap[a]||0) + 1;
+      var can = areaCanonical(d.cat);
+      areaMap[can] = (areaMap[can]||0) + 1;
+      areaLabelMap[can] = areaLabel(d.cat);
     });
     var famChips = [['all', L.all]].concat(
       Object.keys(famMap).sort(function(a,b){ return famMap[b]-famMap[a]; })
         .map(function(k){ return [k, k + ' (' + famMap[k] + ')']; })
     );
     var areaChips = [['all', L.all]].concat(
-      Object.keys(areaMap).sort()
-        .map(function(k){ return [k, k + ' (' + areaMap[k] + ')']; })
+      Object.keys(areaMap).sort(function(a,b){
+        return (areaLabelMap[a]||'').localeCompare(areaLabelMap[b]||'','es');
+      }).map(function(k){ return [k, (areaLabelMap[k]||k) + ' (' + areaMap[k] + ')']; })
     );
     /* Fila de "filtros aplicados" arriba, cada uno con ✕ para quitar */
     var active = activeChipsList();
@@ -137,21 +195,30 @@
         + '</div>'
       : '';
 
-    return '<div class="p24-filters">'
+    /* Panel plegado por defecto (persistido). Solo la fila de
+       "Filtrar + Restablecer + Aplicados + contador" queda visible; los
+       chips de dimensiones se ocultan hasta expandir. */
+    var expanded = !!state._exp;
+    return '<div class="p24-filters'+(expanded?' expanded':' collapsed')+'">'
       + '<div class="p24-head">'
       +   '<span class="p24-title">🔧 '+esc(L.title)+'</span>'
-      +   '<button class="p24-reset" type="button"'+(active.length?'':' hidden')+'>↺ '+esc(L.reset)+'</button>'
+      +   '<div class="p24-head-actions">'
+      +     '<button class="p24-reset" type="button"'+(active.length?'':' hidden')+'>↺ '+esc(L.reset)+'</button>'
+      +     '<button class="p24-toggle" type="button" data-p24-toggle>'+ (expanded ? '▲ '+esc(L.collapse) : '▼ '+esc(L.expand)) +'</button>'
+      +   '</div>'
       + '</div>'
       + appliedHTML
-      + chipRow(L.estado, 'estado', [
-          ['all', L.all],
-          ['vigente', L.vigente + ' ●'],
-          ['revisar', L.revisar + ' ●'],
-          ['caducada', L.caducada + ' ●']
-        ])
-      + chipRow(L.fuente, 'fuente', famChips)
-      + chipRow(L.area,   'area',   areaChips)
       + '<div class="p24-counter" data-p24-counter></div>'
+      + '<div class="p24-body"'+(expanded?'':' hidden')+'>'
+      +   chipRow(L.estado, 'estado', [
+            ['all', L.all],
+            ['vigente', L.vigente + ' ●'],
+            ['revisar', L.revisar + ' ●'],
+            ['caducada', L.caducada + ' ●']
+          ])
+      +   chipRow(L.fuente, 'fuente', famChips)
+      +   chipRow(L.area,   'area',   areaChips)
+      + '</div>'
       + '</div>';
   }
   function chipRow(label, key, options){
@@ -172,7 +239,7 @@
   function docPasses(doc){
     if(state.estado !== 'all' && docState(doc) !== state.estado) return false;
     if(state.fuente !== 'all' && docFamily(doc.source) !== state.fuente) return false;
-    if(state.area !== 'all' && (doc.cat || 'otros') !== state.area) return false;
+    if(state.area !== 'all' && areaCanonical(doc.cat || 'otros') !== state.area) return false;
     return true;
   }
 
@@ -224,6 +291,12 @@
       apply(host);
     }
     host.addEventListener('click', function(e){
+      var toggle = e.target.closest('[data-p24-toggle]');
+      if(toggle){
+        state._exp = !state._exp;
+        save(); refresh();
+        return;
+      }
       var clearBtn = e.target.closest('[data-p24-clear]');
       if(clearBtn){
         var k = clearBtn.getAttribute('data-p24-clear');
@@ -242,7 +315,7 @@
       }
       var reset = e.target.closest('.p24-reset');
       if(reset){
-        state = { estado:'all', fuente:'all', area:'all' };
+        state = { estado:'all', fuente:'all', area:'all', _exp:state._exp };
         save(); refresh();
       }
     });

@@ -10,21 +10,29 @@
 
 .p24-head{
   display:flex; align-items:center; justify-content:space-between;
-  gap:10px;
+  gap:10px; flex-wrap:wrap;
 }
 .p24-title{
   font-size:12px; font-weight:800; color:#c7d4f2;
   letter-spacing:.5px; text-transform:uppercase;
 }
-.p24-reset{
+.p24-head-actions{ display:flex; align-items:center; gap:6px }
+.p24-reset,
+.p24-toggle{
   padding:5px 12px; border-radius:999px;
-  background:rgba(51,182,166,.14); color:#33B6A6;
-  border:1px solid rgba(51,182,166,.35);
+  border:1px solid rgba(120,150,220,.28);
   font:inherit; font-size:11.5px; font-weight:800;
   cursor:pointer; transition:.15s;
+  background:rgba(15,23,42,.55); color:#c7d4f2;
 }
+.p24-reset{ background:rgba(51,182,166,.14); color:#33B6A6; border-color:rgba(51,182,166,.35) }
 .p24-reset:hover{ background:rgba(51,182,166,.28); color:#67e8f9 }
 .p24-reset[hidden]{ display:none }
+.p24-toggle:hover{ border-color:rgba(51,182,166,.5); color:#33B6A6 }
+
+/* Cuerpo colapsable */
+.p24-body[hidden]{ display:none }
+.p24-filters.collapsed .p24-body{ display:none }
 
 /* Fila de filtros aplicados con ✕ para quitar cada uno */
 .p24-applied{
@@ -97,3 +105,18 @@
   .p24-row-chips{ width:100% }
   .p24-chip{ font-size:11px; padding:4px 9px }
 }
+
+/* Margen inferior de seguridad para el panel de guías: los flotantes
+   (lupa + avatar Javny) se posan cerca del borde inferior y taparían
+   la última categoría. Da colchón de scroll suficiente. */
+#in56GuidesHost{
+  padding-bottom:160px !important;
+}
+
+/* Corrige el espacio faltante entre nombre y contador en la cabecera
+   de cada grupo de guías ("Cardiología35 protocolos" → "Cardiología ·
+   35 protocolos"). */
+.in56-guide-meta{ gap:8px !important; align-items:baseline !important }
+.in56-guide-name{ margin-right:6px }
+.in56-guide-count{ font-weight:600; color:#8aa0c8 }
+.in56-guide-count::before{ content:'· '; opacity:.6; margin-right:2px }
