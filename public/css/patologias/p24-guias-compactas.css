@@ -1,0 +1,95 @@
+/* P2.4 · Compact grid para las cards de especialidad del listado de
+   guías, en referencia al índice de escalas (que ya está en grid).
+   Aplica sin depender del `#v29Panel` (el v38-guias-glass antiguo lo
+   asumía y no siempre está); selector directo sobre `#in56GuidesHost`
+   con !important porque compite con la vieja capa. */
+
+#in56GuidesHost{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)) !important;
+  gap:10px !important;
+  align-content:start !important;
+}
+
+/* Elementos que ocupan toda la fila (título de sección, filtros P2.4). */
+#in56GuidesHost > .in56-menu-section-title,
+#in56GuidesHost > .p24-filters{
+  grid-column:1 / -1 !important;
+}
+
+/* Cada especialidad → tarjeta compacta cuadrada con acento propio. */
+#in56GuidesHost .in56-guide-group{
+  margin-bottom:0 !important;
+  border-radius:14px !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  background:rgba(15,23,42,.55) !important;
+  transition:.18s;
+}
+#in56GuidesHost .in56-guide-group:hover{
+  transform:translateY(-2px);
+  border-color:rgba(51,182,166,.5) !important;
+}
+#in56GuidesHost .in56-guide-head{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:8px !important;
+  padding:14px 10px !important;
+  min-height:112px !important;
+  position:relative !important;
+}
+#in56GuidesHost .in56-guide-stripe{ display:none !important }
+#in56GuidesHost .in56-guide-emoji{
+  width:42px !important; height:42px !important;
+  border-radius:12px !important;
+  background:color-mix(in srgb, var(--spc, #22D3EE) 20%, transparent) !important;
+  border:1px solid color-mix(in srgb, var(--spc, #22D3EE) 35%, transparent) !important;
+  font-size:22px !important;
+  display:grid !important; place-items:center !important;
+}
+#in56GuidesHost .in56-guide-meta{
+  flex:none !important;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+#in56GuidesHost .in56-guide-name{
+  font-size:12.5px !important; font-weight:800;
+  line-height:1.2; color:#E5EEFF;
+}
+#in56GuidesHost .in56-guide-count{
+  font-size:10.5px !important; color:#8aa0c8; font-weight:600;
+}
+#in56GuidesHost .in56-guide-count::before{ content:'' !important; margin:0 !important }
+#in56GuidesHost .in56-guide-chevron{
+  position:absolute !important; top:6px; right:8px;
+  font-size:10px; opacity:.6;
+}
+
+/* Al abrir un grupo: ocupa toda la fila y vuelve a layout horizontal
+   para dejar sitio a la lista de protocolos. */
+#in56GuidesHost .in56-guide-group.open{
+  grid-column:1 / -1 !important;
+}
+#in56GuidesHost .in56-guide-group.open .in56-guide-head{
+  flex-direction:row !important;
+  text-align:left !important;
+  justify-content:flex-start !important;
+  min-height:0 !important;
+  padding:12px 14px !important;
+}
+#in56GuidesHost .in56-guide-group.open .in56-guide-meta{
+  flex:1 !important; flex-direction:row !important; align-items:baseline; gap:8px;
+}
+#in56GuidesHost .in56-guide-group.open .in56-guide-chevron{
+  position:static !important;
+}
+#in56GuidesHost .in56-guide-group.open .in56-guide-emoji{
+  width:34px !important; height:34px !important; font-size:18px !important;
+}
+
+/* Icono SVG dentro del grid compacto */
+#in56GuidesHost .in56-guide-emoji .enfx-ic{
+  width:22px !important; height:22px !important;
+  color:var(--spc, #22D3EE);
+}

@@ -45,13 +45,19 @@ body.in57-visual #in54ProtocolScreen .in54-proto-head{
 .in54-section[data-in54-section]{ scroll-margin-top:180px }
 .p21-puntos{ scroll-margin-top:180px }
 
-/* ── Toasts flotantes NUNCA por encima del contenido de la ficha ──
-   Cuando el visor de ficha está abierto (`body.in54-protocol-open`),
-   forzamos que cualquier notificación flotante conocida se sitúe por
-   debajo del `#in54ProtocolScreen` (z-index 14000) o se oculte. Regla
-   general: cualquier elemento cuya id o clase incluya "toast" y esté en
-   position:fixed. Whitelist adicional para IDs específicos que no llevan
-   la palabra "toast" en su nombre. */
+/* ── Toasts flotantes NUNCA por encima de un overlay full-screen ──
+   Reglas para bajar el z-index de las notificaciones informativas
+   conocidas siempre que hay algo importante ocupando la pantalla:
+   - visor de ficha (`body.in54-protocol-open`)
+   - side menu de guías o cualquier overlay full-screen (`:has(#v29Panel.on)`,
+     `:has(.esc35-overlay.on)`, etc.)
+   Universal: bajamos el z-index del toast a 100, siempre. El toast
+   solo dura ~2s y solo aparece si no hay nada más importante encima. */
+#in18VoiceToast,
+[id*="Toast" i]{
+  z-index:100 !important;
+}
+/* Y refuerzo explícito por si otras capas suben el z-index del toast: */
 body.in54-protocol-open #in18VoiceToast,
 body.in54-protocol-open [id*="Toast" i],
 body.in54-protocol-open [class*="toast" i],
@@ -62,8 +68,6 @@ body.in54-protocol-open .v29vl-transcript,
 body.in54-protocol-open .v29vl-response{
   z-index:100 !important;
 }
-/* El overlay de ficha es opaco full-screen, así que bajar el z-index de
-   los toasts basta para ocultarlos visualmente sin desmontarlos. */
 
 /* Bloque Puntos clave */
 .p21-puntos{

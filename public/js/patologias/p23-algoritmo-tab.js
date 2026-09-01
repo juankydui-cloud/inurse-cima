@@ -126,7 +126,10 @@
       +   '<div class="p23-head-left">'
       +     '<span class="p23-head-em" data-p23-icon="algorithm">'+esc(diag.icon || '🧩')+'</span>'
       +     '<div class="p23-head-titles">'
-      +       '<h2 id="p23Title">'+esc(diag.title || L.title)+'</h2>'
+      /* El título del overlay hereda el de la ficha origen — ya viene en
+         el idioma de la ficha (es o ca) y evita el literal en inglés que
+         antes traía diag.title. Fallback: diag.title si no hay doc. */
+      +       '<h2 id="p23Title">'+esc((doc && doc.title) || diag.title || L.title)+'</h2>'
       +       (doc ? '<div class="p23-head-sub">'+ stateChip + '<span class="p23-head-src">'+esc(doc.source||'')+'</span></div>' : '')
       +     '</div>'
       +   '</div>'

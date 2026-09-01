@@ -48,3 +48,11 @@
    metimos el SVG, resetear el font-size que apuntaba al emoji. */
 .enfx-ic-slot{ font-size:0 }
 .enfx-ic-slot .enfx-ic{ font-size:1rem }
+
+/* Iconos dentro de los botones de acción de ficha (Leer/Vídeo/…) */
+.in58-action .enfx-ic,
+.in58-action-em .enfx-ic{
+  width:18px; height:18px;
+  margin-right:2px; vertical-align:-3px;
+  color:currentColor;
+}

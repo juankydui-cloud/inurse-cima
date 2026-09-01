@@ -68,14 +68,19 @@
     'ficha':            '<path d="M6 3h9l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><polyline points="14 3 14 8 19 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
 
     /* ───── P2 nuevos ───── */
-    'key':              '<circle cx="8" cy="15" r="4"/><line x1="11" y1="12" x2="20" y2="3"/><line x1="17" y1="6" x2="20" y2="9"/>',
+    'key':              '<circle cx="7.5" cy="12" r="3.5"/><path d="M11 12h10"/><path d="M17 12v3"/><path d="M20 12v2.5"/>',
     'clipboard':        '<rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16" x2="13" y2="16"/>',
     'steps':            '<path d="M4 20h4v-4H4z"/><path d="M10 16h4v-4h-4z"/><path d="M16 12h4V8h-4z"/><line x1="4" y1="20" x2="20" y2="20"/>',
     'search':           '<circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="20" y2="20"/>',
     'algorithm':        '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
     'filter':           '<path d="M4 4h16l-6 8v7l-4-2v-5z"/>',
     'shield':           '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
-    'help':             '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12" y2="17.5"/>'
+    'help':             '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12" y2="17.5"/>',
+    /* Acciones de ficha (Leer / Vídeo / Compartir / Verificar) */
+    'volume':           '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/>',
+    'play':             '<rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10 9 15 12 10 15" fill="currentColor" stroke="none"/>',
+    'share':            '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/>',
+    'sparkles':         '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6z"/>'
   };
 
   function get(name, opts){
@@ -99,7 +104,8 @@
     '🩹':'spec-enfermeria', '📁':'spec-generic',
     '📄':'ficha', '📋':'clipboard', '🔑':'key', '🪜':'steps',
     '🔍':'search', '🔎':'search', '⏱':'algorithm', '⏱️':'algorithm',
-    '🧩':'algorithm', '🔧':'filter', '🛡️':'shield', '🛡':'shield'
+    '🧩':'algorithm', '🔧':'filter', '🛡️':'shield', '🛡':'shield',
+    '🔊':'volume', '📢':'volume', '🎬':'play', '📤':'share', '✨':'sparkles'
   };
   function replaceEmoji(node){
     if(!node) return false;
