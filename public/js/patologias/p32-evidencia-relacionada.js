@@ -31,7 +31,8 @@
       fail:'No se ha podido consultar alguna fuente externa.',
       failSources:'Fuentes con error:', retry:'Reintentar',
       colEpmc:'Europe PMC', colNice:'NICE', colFda:'OpenFDA',
-      noItemsSource:'Sin resultados en esta fuente.'
+      noItemsSource:'Sin resultados en esta fuente.',
+      noDrugs:'Sin fármacos editoriales definidos en esta ficha para buscar en OpenFDA.'
     },
     ca: {
       title:'Evidència relacionada', subtitle:'Europe PMC · NICE · OpenFDA',
@@ -40,7 +41,8 @@
       fail:'No s\'ha pogut consultar alguna font externa.',
       failSources:'Fonts amb error:', retry:'Reintenta-ho',
       colEpmc:'Europe PMC', colNice:'NICE', colFda:'OpenFDA',
-      noItemsSource:'Sense resultats en aquesta font.'
+      noItemsSource:'Sense resultats en aquesta font.',
+      noDrugs:'Sense fàrmacs editorials definits en aquesta fitxa per cercar a OpenFDA.'
     }
   };
   function t(){ return L[detectLang()] || L.es; }
@@ -77,19 +79,33 @@
       + '</li>';
   }
 
+  function yearOf(item){
+    var y = parseInt(String(item && item.year || '').replace(/\D/g,'').slice(0,4), 10);
+    return isNaN(y) ? -1 : y;
+  }
+  // Más reciente primero: una guía de 2022 debe anteceder a la versión de
+  // 2015 de la misma sociedad. Sort estable: a igualdad de año conserva el
+  // orden de relevancia que ya trae la fuente.
+  function sortByYearDesc(items){
+    return items.slice().sort(function(a,b){ return yearOf(b) - yearOf(a); });
+  }
+
   function columnHTML(key, label, result){
     var LL = t();
     var failed = !result || result.status < 200 || result.status >= 300;
-    var items = (result && result.items) || [];
+    var items = sortByYearDesc((result && result.items) || []);
     var body;
-    if(failed){
+    if(result && result.skipped){
+      body = '<p class="p32-col-empty">'+esc(LL.noDrugs)+'</p>';
+    } else if(failed){
       body = '<p class="p32-col-empty p32-col-fail">'+esc(result && result.error ? result.error : LL.fail)+'</p>';
     } else if(!items.length){
       body = '<p class="p32-col-empty">'+esc(LL.noItemsSource)+'</p>';
     } else {
       body = '<ul class="p32-list">'+items.map(itemHTML).join('')+'</ul>';
     }
-    return '<div class="p32-col p32-col-'+key+'" data-p32-status="'+(failed?'fail':'ok')+'">'
+    var isSkipped = !!(result && result.skipped);
+    return '<div class="p32-col p32-col-'+key+'" data-p32-status="'+(isSkipped?'skipped':(failed?'fail':'ok'))+'">'
       + '<h4 class="p32-col-head">'+esc(label)+'</h4>'
       + body
       + '</div>';
@@ -108,7 +124,7 @@
       var html = '<div class="p32-state p32-state-fail">'
         + '<p class="p32-state-msg">'+esc(LL.fail)+'</p>'
         + (failedNames.length ? '<p class="p32-state-detail">'+esc(LL.failSources)+' '+esc(failedNames.join(', '))+'</p>' : '')
-        + '<button type="button" class="p32-retry" data-p32-retry="'+esc(query)+'">'+esc(LL.retry)+'</button>'
+        + '<button type="button" class="p32-retry">'+esc(LL.retry)+'</button>'
         + '</div>';
       box.innerHTML = html;
       return;
@@ -130,21 +146,37 @@
     renderResult(box, data, data.query || '');
   }
 
-  function loadEvidence(box, query){
+  // Cada `.p32-body` es propio de LA FICHA que lo creó: al cambiar de ficha,
+  // renderProtocol() reemplaza el innerHTML entero de #in54ProtocolContent
+  // (ver p21-ficha-larga.js), así que este nodo queda huérfano y se descarta.
+  // Aun así, si una petición tarda y el usuario ya navegó (o pulsó
+  // Reintentar dos veces seguidas), la respuesta tardía NUNCA debe pintarse:
+  // se compara un número de secuencia propio del nodo y se comprueba que
+  // sigue enganchado al documento antes de escribir nada.
+  function loadEvidence(box, query, drugs){
+    var mySeq = (box._p32Seq || 0) + 1;
+    box._p32Seq = mySeq;
+    box.dataset.p32Query = query || '';
+    box.dataset.p32Drugs = (drugs && drugs.length) ? drugs.join(',') : '';
     renderLoading(box);
-    fetch('/api/evidencia-relacionada?q='+encodeURIComponent(query), { cache:'no-store' })
+    var url = '/api/evidencia-relacionada?q='+encodeURIComponent(query);
+    if(drugs && drugs.length) url += '&drugs='+encodeURIComponent(drugs.join(','));
+    function stale(){ return box._p32Seq !== mySeq || !document.body.contains(box); }
+    fetch(url, { cache:'no-store' })
       .then(function(r){ return r.json().then(function(j){ return { ok:r.ok, body:j }; }); })
       .then(function(res){
+        if(stale()) return;
         if(!res.ok) throw new Error(res.body && res.body.error || 'HTTP error');
         try{ console.log('[EvidenciaRelacionada] debug por fuente:', res.body.sources); }catch(e){}
         renderResult(box, res.body, query);
       })
       .catch(function(err){
+        if(stale()) return;
         var LL = t();
         box.innerHTML = '<div class="p32-state p32-state-fail">'
           + '<p class="p32-state-msg">'+esc(LL.fail)+'</p>'
           + '<p class="p32-state-detail">'+esc(err.message||'')+'</p>'
-          + '<button type="button" class="p32-retry" data-p32-retry="'+esc(query)+'">'+esc(LL.retry)+'</button>'
+          + '<button type="button" class="p32-retry">'+esc(LL.retry)+'</button>'
           + '</div>';
       });
   }
@@ -158,6 +190,7 @@
     if(!doc) return;
     var query = (doc.evidenceQuery && String(doc.evidenceQuery).trim()) || doc.title || title;
     if(!query) return;
+    var drugs = Array.isArray(doc.evidenceDrugs) ? doc.evidenceDrugs.map(function(d){ return String(d).trim(); }).filter(Boolean) : [];
 
     var wrap = document.createElement('div');
     wrap.innerHTML = sectionHTML();
@@ -173,14 +206,14 @@
     }
 
     var box = section.querySelector('.p32-body');
-    loadEvidence(box, query);
+    loadEvidence(box, query, drugs);
   }
 
   document.addEventListener('click', function(ev){
-    var btn = ev.target.closest('[data-p32-retry]');
+    var btn = ev.target.closest('.p32-retry');
     if(!btn) return;
     var box = btn.closest('.p32-body');
-    if(box) loadEvidence(box, btn.getAttribute('data-p32-retry'));
+    if(box) loadEvidence(box, box.dataset.p32Query || '', box.dataset.p32Drugs ? box.dataset.p32Drugs.split(',') : []);
   });
 
   function scan(){

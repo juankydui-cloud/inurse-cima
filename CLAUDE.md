@@ -20,11 +20,16 @@ Contenido ya commiteado en la rama:
   - Endpoint `GET /api/terminology/dictionary` (cache 5 min).
   - Buscador por etiqueta y código; i18n ES/CA solo en el chrome (las
     etiquetas de taxonomía nunca se autotraducen).
+- **P3.2 · Evidencia relacionada al final de ficha** (commits `b2b5ade` +
+  siguiente con la corrección de OpenFDA — ver sección "Tarea en curso").
 
-En curso, sin commit todavía:
-
-- **P3.2 · Evidencia relacionada al final de ficha** — a la espera de OK
-  del usuario tras la última tanda de capturas (ver sección "Tarea en curso").
+⚠️ **Lección de la sesión anterior**: este mismo bloque (P3.2) se dio por
+"implementado, pendiente de OK" en una sesión previa, pero el contenedor se
+recicló antes de commitear y solo sobrevivió este CLAUDE.md — el código real
+se perdió por completo y hubo que reconstruirlo desde cero. Regla desde
+ahora: en cuanto un bloque quede visualmente aprobado, commitear enseguida
+(el entorno de ejecución remoto es efímero); no dar nada por "hecho" en este
+documento si no hay un commit real que lo respalde.
 
 ## Convenciones del proyecto
 
@@ -100,6 +105,13 @@ En curso, sin commit todavía:
 - El término de búsqueda en inglés (`evidenceQuery` en cada ficha) también
   es editorial: si no está, se envía el título ES tal cual. Nunca se
   autotraduce.
+- Mismo principio para `evidenceDrugs` (array editorial de fármacos que la
+  ficha nombra literalmente, p.ej. en su sección de tratamiento/reversión):
+  las fuentes de fármacos (OpenFDA) se consultan SOLO por esos nombres,
+  nunca por asociación temática con `evidenceQuery` — buscar un fármaco por
+  su indicación general trae resultados de fichas ajenas, no evidencia de
+  ESTA ficha. Sin `evidenceDrugs`, esa fuente no se llama y se muestra un
+  vacío honesto explicando por qué.
 
 ## Flujo de trabajo con el usuario
 
@@ -121,46 +133,80 @@ En curso, sin commit todavía:
 
 ## Tarea en curso — 2026-09-01
 
-**P3.2 · Evidencia relacionada al final de ficha**. Bloque nuevo al final
-de cada ficha clínica con resultados del orquestador RAG (Europe PMC + NICE
-+ OpenFDA), agrupados por fuente, con año y enlace externo.
+**P3.2 · Evidencia relacionada al final de ficha** — reconstruida en esta
+sesión (la anterior se perdió, ver aviso arriba) y ya aprobada visualmente
+por el usuario, con una corrección aplicada tras revisión suya. Bloque
+nuevo al final de cada ficha clínica con resultados del orquestador RAG
+(Europe PMC + NICE + OpenFDA), agrupados por fuente, con año y enlace
+externo.
 
 Implementado y validado con el usuario:
 
-- Endpoint `GET /api/evidencia-relacionada?q=<término>` en `server.mjs` con
-  probe nativo `fetch()` a cada fuente y respuesta `debug` por fuente
-  (URL exacta, status HTTP, count, ms, error).
+- Endpoint `GET /api/evidencia-relacionada?q=<término>&drugs=<f1,f2,…>` en
+  `server.mjs` con probe nativo `fetch()` a cada fuente y respuesta `debug`
+  por fuente (URL exacta, status HTTP, count, ms, error).
 - Fuente Europe PMC nueva en `sources/europepmc.mjs` (el orquestador la
-  mencionaba pero no la llamaba).
+  mencionaba pero no la llamaba: además de para este endpoint, se corrigió
+  `sources/orchestrator.mjs` — el hueco `pmcResult` invocaba `searchPubMed`
+  por duplicado en vez de a Europe PMC).
+- **OpenFDA se busca por fármaco, no por indicación** (corrección tras
+  revisión del usuario): el parámetro `drugs` viene del campo editorial
+  `doc.evidenceDrugs` y arma la query como
+  `openfda.generic_name/brand_name/substance_name` de esos fármacos
+  exactos. Nunca se busca por la indicación clínica general (`q`), porque
+  eso trae fármacos de fichas ajenas por asociación temática. Sin
+  `evidenceDrugs`, la fuente ni se llama (`skipped:true`, sin URL) y el
+  frontend muestra un vacío honesto distinto de "sin resultados"/"fallo".
 - Frontend `public/js/patologias/p32-evidencia-relacionada.js` +
   `public/css/patologias/p32-evidencia-relacionada.css` — observer sobre
-  `#in54ProtocolContent`, lee `doc.evidenceQuery` editorial del ficha
-  (fallback al título ES), llama al endpoint y renderiza.
-- **Dos estados vacíos separados**:
+  `#in54ProtocolContent`, lee `doc.evidenceQuery`/`doc.evidenceDrugs`
+  editoriales (fallback de `evidenceQuery` al título ES), llama al
+  endpoint y renderiza.
+- **Orden por año descendente** dentro de cada columna (más reciente
+  primero: una guía 2022 antecede a la versión 2015 de la misma sociedad).
+- **Aislamiento entre fichas verificado con navegación real** (Playwright,
+  no solo con el hook de mock): cada ficha dispara su propia petición
+  (`q`/`drugs` propios) y no queda contenido de la ficha anterior. Además,
+  cada `.p32-body` lleva un número de secuencia y comprueba que sigue
+  en el DOM antes de pintar una respuesta — blindaje ante una respuesta
+  tardía si el usuario ya navegó o reintentó dos veces seguidas.
+- **Dos estados vacíos separados** (más el tercero de "sin fármacos
+  editoriales" para OpenFDA):
   - `Sin resultados`: todas las fuentes respondieron 2xx pero count = 0.
   - `Fallo`: alguna fuente devolvió status ≠ 2xx o error de red. Muestra
     qué fuentes fallaron y un botón **Reintentar**.
 - Debug del endpoint expuesto también en la consola del navegador
   (`console.log('[EvidenciaRelacionada] debug por fuente:', …)`).
-- Campo editorial `evidenceQuery` añadido a la ficha `uci-acv-hemorragico`
-  como semilla: `"intracerebral hemorrhage management"` (el resto de
-  fichas se rellenan editorialmente por el usuario, no automático).
+- Campo editorial `evidenceQuery` + `evidenceDrugs` añadidos a la ficha
+  `uci-acv-hemorragico` como semilla: `"intracerebral hemorrhage
+  management"` / `["Idarucizumab","Andexanet alfa","Protamine"]` — estos
+  últimos tomados literalmente de la sección "Reversión de
+  anticoagulación" de la propia ficha. El resto de fichas se rellenan
+  editorialmente por el usuario, no automático.
 - Hook `window.EnferixEvidenciaRelacionada._renderMock(data)` expuesto
   para pruebas visuales sin depender de las APIs externas.
 
 **Limitación de entorno**: el sandbox de desarrollo bloquea
-`www.ebi.ac.uk:443` y `api.fda.gov:443` con 403 CONNECT (política del
-proxy corporativo). Las capturas con resultados reales de la API solo se
-pueden generar en Render (producción); localmente se validan con el hook
-`_renderMock`.
+`www.ebi.ac.uk:443`, `api.nice.org.uk:443` y `api.fda.gov:443` con 403
+(política del proxy corporativo). Las capturas con resultados reales de
+la API solo se pueden generar en Render (producción); localmente se
+validan con el hook `_renderMock`.
+
+**Hallazgo aparte (no corregido, fuera de alcance de P3.2)**: al navegar
+entre fichas con `window.openDoc()`, la barra de pestañas sticky
+(`.in54-tabs` movida a `.in54-proto-head` por `p21-ficha-larga.js`) se
+queda a veces con las etiquetas de la ficha anterior aunque el contenido
+ya es el de la nueva. Parece que `stickifyTabs()` no reemplaza la barra
+vieja cuando `head` ya tiene una `.p21-tabs-in-head`. Pendiente de que el
+usuario decida si se aborda y cuándo.
 
 **Pendiente**:
 
-- Aprobación del usuario sobre las 5 capturas de P3.2 v2 (fail real / sin
-  resultados / con resultados ES · CA / móvil).
-- Commit de P3.2 en `prioridad-tres` cuando llegue el OK.
-- Poner PR #141 en ready → merge → deploy Render → verificar resultados
-  reales con la ficha ACV hemorrágico.
+- Poner PR de P3.2 en ready → merge → deploy Render → verificar resultados
+  reales (Europe PMC/NICE/OpenFDA sin el bloqueo del proxy del sandbox)
+  con la ficha ACV hemorrágico.
+- Rellenar `evidenceQuery`/`evidenceDrugs` editorialmente en el resto de
+  fichas (hoy solo tiene `uci-acv-hemorragico`).
 
 **Siguiente mejora después de P3.2**: DataMatrix y página de planes en la
 nevera (tercer bloque de la Prioridad 3, según el orden que fijó el usuario:
@@ -169,9 +215,9 @@ navegador NNN → evidencia relacionada → datamatrix/planes).
 ## Referencias rápidas de rutas
 
 - Endpoints P3: `GET /api/terminology/dictionary`,
-  `GET /api/evidencia-relacionada?q=<término>`.
-- Fichas: `public/data/guias.js` (142 fichas hoy; añadir `evidenceQuery`
-  editorial cuando aporte).
+  `GET /api/evidencia-relacionada?q=<término>&drugs=<f1,f2,…>`.
+- Fichas: `public/data/guias.js` (142 fichas hoy; añadir `evidenceQuery` /
+  `evidenceDrugs` editoriales cuando aporten).
 - Diccionario NNN: `nnn_codes.json` en la raíz, regenerable con
   `python3 build_nnn_json.py`.
 - Escalas: `public/data/escalas.js` + `public/data/escalas-clinicas.js`.
