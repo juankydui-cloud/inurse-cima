@@ -1,54 +1,50 @@
-/* P1.3 · Carné de evidencia (patrón AMBOSS) — estilos aislados */
+/* P1.3 · Carné de evidencia — vive en la cabecera del card (`.card-body-title`),
+   siempre visible sin expandir el detalle. Diseño compacto en dos filas. */
 .p13-carne{
-  display:flex; flex-direction:column; gap:8px;
-  padding:12px 14px; margin:0 0 12px;
-  border-radius:14px;
-  background:linear-gradient(180deg,rgba(15,23,42,.65),rgba(15,23,42,.35));
-  border:1px solid rgba(120,150,220,.2);
+  display:flex; flex-direction:column; gap:6px;
+  margin-top:10px; padding:10px 12px;
+  border-radius:12px;
+  background:rgba(15,23,42,.6);
+  border:1px solid rgba(120,150,220,.18);
 }
-.p13-row1{ display:flex; align-items:center; flex-wrap:wrap; gap:8px }
-.p13-row2{ font-size:12px; color:#8aa0c8; line-height:1.4 }
+.p13-row1{ display:flex; align-items:center; flex-wrap:wrap; gap:6px }
+.p13-row2{
+  font-size:11.5px; color:#8aa0c8; line-height:1.5;
+  display:flex; align-items:center; flex-wrap:wrap; gap:4px;
+}
+.p13-sep{ opacity:.5 }
 .p13-hidden{ display:none !important }
 
-/* Chip de estado (grande, patrón AMBOSS) */
+/* Chip estado semántico */
 .p13-state{
   display:inline-flex; align-items:center; gap:6px;
-  padding:5px 12px; border-radius:999px;
-  font-size:13px; font-weight:800; letter-spacing:.2px;
+  padding:4px 10px; border-radius:999px;
+  font-size:12px; font-weight:800; letter-spacing:.2px;
   border:1px solid transparent;
 }
 .p13-state .p13-dot{
-  width:8px; height:8px; border-radius:50%;
+  width:7px; height:7px; border-radius:50%;
   background:currentColor;
   box-shadow:0 0 0 3px currentColor;
-  opacity:1;
 }
-.p13-state .p13-dot{ opacity:.35 }   /* halo */
+.p13-state .p13-dot{ box-shadow:0 0 0 3px rgba(255,255,255,.08) }
 .p13-state-vigente  { color:#33B6A6; background:rgba(51,182,166,.12); border-color:rgba(51,182,166,.35) }
 .p13-state-revisar  { color:#F59E0B; background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.35) }
 .p13-state-caducada { color:#F87171; background:rgba(239,68,68,.14);  border-color:rgba(239,68,68,.4) }
 .p13-state-sin-fecha{ color:#94A3B8; background:rgba(148,163,184,.14);border-color:rgba(148,163,184,.32) }
 
-/* Año */
-.p13-year{
-  display:inline-flex; align-items:center;
-  padding:4px 10px; border-radius:999px;
-  font-size:12px; font-weight:800; letter-spacing:.3px;
-  background:rgba(120,150,220,.14); color:#c7d4f2;
-}
-
 /* Sello GRADE */
 .p13-grade{
   display:inline-flex; align-items:center;
-  padding:4px 10px; border-radius:999px;
-  font-size:11.5px; font-weight:800; letter-spacing:.3px;
+  padding:3px 9px; border-radius:999px;
+  font-size:11px; font-weight:800; letter-spacing:.3px;
   border:1px solid transparent;
 }
 .p13-grade-a{ background:rgba(52,211,153,.14); color:#34D399; border-color:rgba(52,211,153,.4) }
 .p13-grade-b{ background:rgba(251,191,36,.14); color:#FBBF24; border-color:rgba(251,191,36,.4) }
 .p13-grade-c{ background:rgba(248,113,113,.14); color:#F87171; border-color:rgba(248,113,113,.4) }
 
-/* Fuente + enlace oficial */
+/* Fuente y campos opcionales */
 .p13-source{ color:#c7d4f2; font-weight:600 }
 .p13-source-link{
   color:#c7d4f2; font-weight:600; text-decoration:none;
@@ -56,6 +52,8 @@
   transition:.15s;
 }
 .p13-source-link:hover{ color:#33B6A6; border-bottom-color:#33B6A6 }
+.p13-reviewed, .p13-next{ color:#8aa0c8 }
+.p13-reviewed b{ color:#c7d4f2; font-weight:700 }
 
 /* ── Onboarding overlay ── */
 .p13-onb-overlay{
@@ -109,9 +107,9 @@
 .p13-onb-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(51,182,166,.35) }
 
 @media (max-width:520px){
-  .p13-carne{ padding:10px 12px; margin-bottom:10px }
-  .p13-state{ font-size:12px; padding:4px 10px }
-  .p13-grade{ font-size:10.5px; padding:3px 8px }
-  .p13-year{ font-size:11px; padding:3px 8px }
+  .p13-carne{ padding:8px 10px; margin-top:8px }
+  .p13-state{ font-size:11px; padding:3px 9px }
+  .p13-grade{ font-size:10.5px; padding:2px 8px }
+  .p13-row2{ font-size:11px }
   .p13-onb-panel{ max-width:100% }
 }
