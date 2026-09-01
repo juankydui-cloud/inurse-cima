@@ -1407,7 +1407,9 @@
  paint();
  updateConn();
  hideChat(); /* v30: la pantalla de inicio es siempre la guía limpia */
- if(!lget(KEYK,''))setTimeout(function(){ if(!messages.length)toastc('Pulsa ⚙︎ para añadir tu clave de Gemini') },1000);
+ /* P2.1: aviso "Pulsa ⚙ para añadir tu clave de Gemini" retirado del
+    contenido; la configuración vive únicamente dentro del panel de
+    Ajustes, donde el campo de la clave ya se ve al abrirlo. */
 })();
 
 /* ==== Service Worker inline (cache offline básico) ==== */

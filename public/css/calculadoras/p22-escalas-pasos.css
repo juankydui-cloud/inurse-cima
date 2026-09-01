@@ -1,0 +1,243 @@
+/* P2.2 · Modo paso a paso para escalas largas — estilos aislados */
+
+.p22-tools{
+  display:flex; align-items:center; gap:14px;
+  margin:12px 0 14px;
+  padding:8px 10px;
+  border-radius:14px;
+  border:1px solid rgba(120,150,220,.18);
+  background:rgba(15,23,42,.55);
+}
+.p22-modeswitch{
+  display:inline-flex; gap:4px;
+  padding:4px;
+  border-radius:12px;
+  background:rgba(10,18,34,.7);
+  border:1px solid rgba(120,150,220,.15);
+}
+.p22-mode{
+  padding:6px 12px; border-radius:9px;
+  border:1px solid transparent;
+  background:transparent;
+  color:#8aa0c8; font:inherit; font-size:12.5px; font-weight:700;
+  cursor:pointer; transition:.15s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.p22-mode:hover{ color:#c7d4f2 }
+.p22-mode.on{
+  background:linear-gradient(135deg,rgba(51,182,166,.2),rgba(51,182,166,.08));
+  color:#33B6A6;
+  border-color:rgba(51,182,166,.4);
+}
+
+.p22-progress{
+  flex:1; min-width:120px;
+  display:flex; align-items:center; gap:10px;
+}
+.p22-progress-bar{
+  flex:1; height:6px; border-radius:999px;
+  background:rgba(148,163,184,.15);
+  overflow:hidden;
+}
+.p22-progress-fill{
+  display:block; height:100%; border-radius:999px;
+  background:linear-gradient(90deg,#33B6A6,#22d3ee);
+  transition:width .25s ease;
+}
+.p22-progress-text{
+  color:#c7d4f2; font-size:12px; font-weight:700;
+  white-space:nowrap;
+}
+.p22-progress-text b{ color:#E5EEFF }
+.p22-score{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:999px;
+  background:rgba(51,182,166,.14); color:#33B6A6;
+  font-size:11px; font-weight:800; letter-spacing:.3px;
+  white-space:nowrap;
+}
+.p22-score-lbl{ text-transform:uppercase; opacity:.8 }
+.p22-score-val{ font-size:13px }
+
+/* Botones grandes de opción (paso a paso) */
+.p22-optgroup{
+  display:flex; flex-direction:column; gap:8px;
+  margin-top:10px;
+}
+.p22-opt{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-radius:14px;
+  border:1.5px solid rgba(120,150,220,.25);
+  background:rgba(15,23,42,.6);
+  color:#E5EEFF; font:inherit; font-size:14px; font-weight:600;
+  cursor:pointer; text-align:left;
+  transition:.15s;
+}
+.p22-opt:hover{
+  border-color:rgba(51,182,166,.55);
+  background:rgba(51,182,166,.08);
+  transform:translateY(-1px);
+}
+.p22-opt.on{
+  border-color:#33B6A6;
+  background:linear-gradient(135deg,rgba(51,182,166,.2),rgba(51,182,166,.06));
+  box-shadow:0 6px 22px rgba(51,182,166,.18);
+}
+.p22-opt-label{ flex:1; padding-right:12px }
+.p22-opt-pts{
+  display:inline-flex; align-items:center;
+  padding:3px 10px; border-radius:999px;
+  background:rgba(120,150,220,.16); color:#c7d4f2;
+  font-size:11.5px; font-weight:800;
+  min-width:38px; justify-content:center;
+  flex-shrink:0;
+}
+.p22-opt.on .p22-opt-pts{
+  background:rgba(51,182,166,.28); color:#0b1120;
+}
+
+/* Panel resultado final */
+.p22-final{
+  margin-top:14px; padding:18px 20px;
+  border-radius:20px;
+  border:1px solid rgba(51,182,166,.35);
+  background:linear-gradient(180deg,rgba(51,182,166,.14),rgba(51,182,166,.04));
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+  animation:p22FadeIn .25s ease;
+}
+.p22-final-head{
+  display:flex; align-items:baseline; gap:12px;
+  margin-bottom:10px;
+}
+.p22-final-pill{
+  display:inline-flex; align-items:center;
+  padding:4px 12px; border-radius:999px;
+  background:rgba(51,182,166,.24); color:#33B6A6;
+  font-size:11.5px; font-weight:800; letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.p22-final-main{ font-size:32px; font-weight:800; color:#E5EEFF; line-height:1 }
+.p22-final-main b{ color:inherit; font-weight:800 }
+.p22-final-main span{ font-size:14px; color:#8aa0c8; margin-left:6px; font-weight:600 }
+.p22-final-interp{
+  margin:8px 0 10px;
+  color:#c7d4f2; font-size:14px; line-height:1.5;
+}
+.p22-final-details{
+  margin:8px 0 12px; padding-left:22px;
+  color:#c7d4f2; font-size:13px; line-height:1.5;
+}
+.p22-final-details li::marker{ color:#33B6A6 }
+.p22-final-refs{
+  margin-top:12px; padding-top:10px;
+  border-top:1px dashed rgba(120,150,220,.28);
+  font-size:12.5px; color:#8aa0c8; line-height:1.55;
+}
+.p22-final-refs b{ color:#c7d4f2 }
+.p22-final-refs ul{
+  margin:6px 0 0; padding-left:20px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.p22-final-refs li::marker{ color:#33B6A6 }
+.p22-ref-text{ color:#c7d4f2 }
+.p22-ref-link{
+  display:inline-flex; align-items:center; gap:3px;
+  margin-left:4px;
+  padding:1px 8px; border-radius:999px;
+  background:rgba(51,182,166,.14); color:#33B6A6;
+  font-size:11px; font-weight:700;
+  text-decoration:none;
+  border:1px solid rgba(51,182,166,.32);
+  transition:.15s;
+  white-space:nowrap;
+}
+.p22-ref-link:hover{
+  background:rgba(51,182,166,.28);
+  border-color:rgba(51,182,166,.5);
+  color:#67e8f9;
+}
+.p22-final-empty{
+  color:#8aa0c8; font-size:13px; font-style:italic; padding:12px 0;
+}
+
+/* Botón Reiniciar en el paso final */
+.p22-btn.p22-restart{
+  background:rgba(120,150,220,.14);
+  color:#c7d4f2;
+  border-color:rgba(120,150,220,.3);
+}
+.p22-btn.p22-restart:hover{
+  border-color:rgba(51,182,166,.5);
+  color:#33B6A6;
+}
+
+/* En modo paso a paso: el panel completo de resultado y los bloques
+   auxiliares se ocultan siempre. Durante el recorrido, los puntos
+   viven en el chip PUNTOS junto a la barra de progreso. En el paso
+   final, el `.p22-final` reconstruye la info con más jerarquía. */
+.esc35-calc.p22-active[data-p22-mode="step"] > #esc35Result,
+.esc35-calc.p22-active[data-p22-mode="step"] > #esc35Extra,
+.esc35-calc.p22-active[data-p22-mode="step"] > .esc35-disclaimer{
+  display:none !important;
+}
+
+/* Ocultar rows fuera del paso actual */
+.p22-hidden{ display:none !important }
+.p22-current{
+  animation:p22FadeIn .2s ease;
+}
+/* En mobile, `.esc35-row` pasa a flex-direction:column y su label lleva
+   `flex:1 1 240px` que, al ser eje vertical, se interpreta como base
+   de 240px de ALTO. Con siblings da igual (se comparten). Con un solo
+   row en modo paso, ese 240px queda como hueco enorme antes del ctrl.
+   Reset explícito. */
+.p22-active #esc35Inputs > .esc35-row.p22-current{
+  min-height:auto !important;
+  height:auto !important;
+  padding:14px 16px !important;
+}
+.p22-active #esc35Inputs > .esc35-row.p22-current > .esc35-row-label{
+  flex:0 0 auto !important;
+  min-width:0 !important;
+}
+.p22-active #esc35Inputs > .esc35-row.p22-current > .esc35-row-ctrl{
+  margin-top:12px;
+  flex:0 0 auto !important;
+}
+@keyframes p22FadeIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)} }
+
+/* Navegación paso a paso */
+.p22-nav{
+  display:none;
+  gap:10px;
+  margin-top:14px;
+}
+.p22-nav.on{ display:flex }
+.p22-btn{
+  flex:1;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid rgba(120,150,220,.25);
+  background:rgba(15,23,42,.7);
+  color:#E5EEFF; font:inherit; font-size:14px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.p22-btn:hover:not(:disabled){
+  border-color:rgba(51,182,166,.5);
+  background:rgba(51,182,166,.08);
+  color:#33B6A6;
+}
+.p22-btn:disabled{ opacity:.35; cursor:not-allowed }
+.p22-btn.p22-next{
+  background:linear-gradient(135deg,#33B6A6,#22d3ee);
+  color:#0b1120;
+  border-color:transparent;
+}
+.p22-btn.p22-next:hover{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(51,182,166,.28) }
+
+@media (max-width:520px){
+  .p22-tools{ flex-wrap:wrap; gap:10px }
+  .p22-progress{ min-width:100% }
+  .p22-mode{ font-size:12px; padding:5px 10px }
+  .p22-btn{ font-size:13px; padding:11px }
+}
