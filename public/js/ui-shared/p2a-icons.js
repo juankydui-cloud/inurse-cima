@@ -83,7 +83,12 @@
     'sparkles':         '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6z"/>',
     /* Guardar / OK */
     'save':             '<path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><rect x="7" y="4" width="8" height="5"/><rect x="7" y="13" width="10" height="7"/>',
-    'check':            '<polyline points="5 12.5 10 17.5 19 7.5"/>'
+    'check':            '<polyline points="5 12.5 10 17.5 19 7.5"/>',
+    /* P3.1 navegador NNN */
+    'nnn':              '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8.2 7.4l7.6 3.4"/><path d="M8.2 16.6l7.6-3.4"/>',
+    'close-x':          '<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
+    'chevron-r':        '<polyline points="9 6 15 12 9 18"/>',
+    'clock':            '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>'
   };
 
   function get(name, opts){
