@@ -1,0 +1,62 @@
+/* P3.2 · Evidencia relacionada — estilos aislados.
+   Tokens Enferix (teal #33B6A6 · texto #E5EEFF · superficie #0A1222). */
+
+.p32-section .p32-em{ display:inline-flex; width:18px; height:18px; margin-right:6px; color:#33B6A6; vertical-align:-3px }
+.p32-section .p32-em .enfx-ic{ width:18px; height:18px }
+.p32-subtitle{ font-size:12px; font-weight:600; color:#8aa0c8; margin-left:6px }
+
+.p32-body{ margin-top:10px }
+.p32-loading{ color:#8aa0c8; font-size:13.5px }
+
+.p32-state{
+  border-radius:14px; padding:14px 16px;
+  border:1px solid rgba(148,163,184,.18);
+  background:rgba(10,18,34,.5);
+}
+.p32-state-msg{ margin:0 0 4px; font-weight:700; color:#E5EEFF }
+.p32-state-detail{ margin:0 0 10px; font-size:12.5px; color:#8aa0c8 }
+.p32-state-fail{ border-color:rgba(248,113,113,.35) }
+.p32-state-fail .p32-state-msg{ color:#fca5a5 }
+.p32-state-empty{ color:#c7d4f2; font-size:13.5px }
+
+.p32-retry{
+  border:1px solid rgba(51,182,166,.4);
+  background:rgba(51,182,166,.12);
+  color:#33B6A6; font:inherit; font-weight:700; font-size:12.5px;
+  padding:8px 14px; border-radius:12px; cursor:pointer;
+}
+.p32-retry:hover{ background:rgba(51,182,166,.2) }
+
+.p32-cols{
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;
+}
+@media (max-width: 900px){
+  .p32-cols{ grid-template-columns:1fr }
+}
+.p32-col{
+  border-radius:14px; padding:12px 14px;
+  border:1px solid rgba(148,163,184,.18);
+  background:rgba(10,18,34,.5);
+  min-width:0;
+}
+.p32-col[data-p32-status="fail"]{ border-color:rgba(248,113,113,.3) }
+.p32-col-head{
+  margin:0 0 8px; font-size:12.5px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.04em; color:#7dd3fc;
+}
+.p32-col-fda .p32-col-head{ color:#c4b5fd }
+.p32-col-nice .p32-col-head{ color:#4ade80 }
+.p32-col-empty{ color:#8aa0c8; font-size:12.5px; margin:0 }
+.p32-col-fail{ color:#fca5a5 }
+
+.p32-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px }
+.p32-item{ border-bottom:1px solid rgba(148,163,184,.12); padding-bottom:8px }
+.p32-item:last-child{ border-bottom:none; padding-bottom:0 }
+.p32-item-link{
+  color:#E5EEFF; font-size:13.5px; font-weight:700; text-decoration:none;
+  display:block; line-height:1.35;
+}
+.p32-item-link:hover{ color:#33B6A6; text-decoration:underline }
+.p32-item-title-plain{ color:#E5EEFF; font-size:13.5px; font-weight:700; display:block; line-height:1.35 }
+.p32-item-meta{ margin-top:2px; font-size:11.5px; color:#8aa0c8 }
+.p32-item-detail{ margin:4px 0 0; font-size:12.5px; color:#c7d4f2; line-height:1.4 }

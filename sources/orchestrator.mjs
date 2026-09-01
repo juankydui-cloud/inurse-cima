@@ -1,6 +1,7 @@
 import { requestJSON } from "../cache.mjs";
 import { searchPubMed } from "./pubmed.mjs";
 import { searchCrossref } from "./crossref.mjs";
+import { searchEuropePMC } from "./europepmc.mjs";
 import { searchNICE } from "./nice.mjs";
 import { searchOpenFDA } from "./openfda.mjs";
 import { searchClinicalTrials } from "./clinicaltrials.mjs";
@@ -255,7 +256,7 @@ async function searchAllSources(question) {
   const cimaQuery = normalize(question).split(" ").filter(w => w.length > 3)[0] || queries[0];
 
   const searches = [
-    searchPubMed(queries[0], { limit: 8 }),
+    searchEuropePMC(queries[0], { limit: 8 }),
     queries[1] ? searchPubMed(queries[1], { limit: 5 }) : Promise.resolve({ items: [] }),
     searchCrossref(queries[0], { limit: 5 }),
     searchPubMed(guidelineQuery, { limit: 5 }),
@@ -282,7 +283,7 @@ async function searchAllSources(question) {
     }
   }
 
-  if (pmcResult.status === "fulfilled") addUnique(pmcResult.value.items, "PubMed");
+  if (pmcResult.status === "fulfilled") addUnique(pmcResult.value.items, "Europe PMC");
   if (pubmedResult.status === "fulfilled") addUnique(pubmedResult.value.items, "PubMed");
   if (crossrefResult.status === "fulfilled") addUnique(crossrefResult.value.items, "Crossref");
   if (guidelineResult.status === "fulfilled") addUnique(guidelineResult.value.items, "Guías internacionales");
