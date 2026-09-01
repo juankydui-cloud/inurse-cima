@@ -80,7 +80,10 @@
     'volume':           '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/>',
     'play':             '<rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10 9 15 12 10 15" fill="currentColor" stroke="none"/>',
     'share':            '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/>',
-    'sparkles':         '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6z"/>'
+    'sparkles':         '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6z"/>',
+    /* Guardar / OK */
+    'save':             '<path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><rect x="7" y="4" width="8" height="5"/><rect x="7" y="13" width="10" height="7"/>',
+    'check':            '<polyline points="5 12.5 10 17.5 19 7.5"/>'
   };
 
   function get(name, opts){
@@ -105,7 +108,8 @@
     '📄':'ficha', '📋':'clipboard', '🔑':'key', '🪜':'steps',
     '🔍':'search', '🔎':'search', '⏱':'algorithm', '⏱️':'algorithm',
     '🧩':'algorithm', '🔧':'filter', '🛡️':'shield', '🛡':'shield',
-    '🔊':'volume', '📢':'volume', '🎬':'play', '📤':'share', '✨':'sparkles'
+    '🔊':'volume', '📢':'volume', '🎬':'play', '📤':'share', '✨':'sparkles',
+    '💾':'save', '✓':'check', '✅':'check'
   };
   function replaceEmoji(node){
     if(!node) return false;

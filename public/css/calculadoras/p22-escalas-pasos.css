@@ -190,12 +190,16 @@
 }
 .p22-final-btn{
   flex:1;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
   padding:10px 14px; border-radius:12px;
   border:1px solid rgba(120,150,220,.28);
   background:rgba(15,23,42,.55);
   color:#c7d4f2; font:inherit; font-size:13px; font-weight:800;
   cursor:pointer; transition:.15s;
 }
+.p22-final-btn-ic{ display:inline-flex; width:18px; height:18px; color:currentColor }
+.p22-final-btn-ic .enfx-ic{ width:18px; height:18px; color:currentColor }
+.p22-final-btn-lbl{ line-height:1 }
 .p22-final-btn:hover:not(:disabled){
   border-color:rgba(51,182,166,.5);
   color:#33B6A6;

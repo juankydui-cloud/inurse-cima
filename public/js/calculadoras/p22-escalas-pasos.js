@@ -296,8 +296,14 @@
       + (details ? '<ul class="p22-final-details">'+ details.innerHTML +'</ul>' : '')
       + refsHTML
       + '<div class="p22-final-actions">'
-      +   '<button type="button" class="p22-final-btn" data-p22-save>💾 Guardar</button>'
-      +   '<button type="button" class="p22-final-btn" data-p22-share>📤 Compartir</button>'
+      +   '<button type="button" class="p22-final-btn" data-p22-save>'
+      +     '<span class="p22-final-btn-ic" data-p2a-icon="save"></span>'
+      +     '<span class="p22-final-btn-lbl">Guardar</span>'
+      +   '</button>'
+      +   '<button type="button" class="p22-final-btn" data-p22-share>'
+      +     '<span class="p22-final-btn-ic" data-p2a-icon="share"></span>'
+      +     '<span class="p22-final-btn-lbl">Compartir</span>'
+      +   '</button>'
       + '</div>';
 
     /* Enganchar acciones */
@@ -314,7 +320,13 @@
     if(saveBtn){
       saveBtn.addEventListener('click', function(){
         saveResult(payload);
-        saveBtn.textContent = '✓ Guardado';
+        saveBtn.innerHTML =
+          '<span class="p22-final-btn-ic" data-p2a-icon="check"></span>'
+          + '<span class="p22-final-btn-lbl">Guardado</span>';
+        if(window.EnferixIcons){
+          var ic = saveBtn.querySelector('[data-p2a-icon]');
+          if(ic){ ic.innerHTML = window.EnferixIcons.get('check'); ic.classList.add('enfx-ic-slot'); }
+        }
         saveBtn.disabled = true;
       });
     }
