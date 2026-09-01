@@ -168,6 +168,38 @@
     if(inputs) inputs.parentNode.insertBefore(panel, inputs.nextSibling);
     return panel;
   }
+  /* Devuelve la referencia como HTML con enlace a PubMed. Si el texto
+     tiene un URL o DOI explícito, lo linkea directo; si no, añade un
+     buscador de PubMed sobre la cita. NO reformula el texto. */
+  function referenceToHTML(citation){
+    var t = String(citation||'').trim();
+    if(!t) return '';
+    /* URL directa dentro del texto */
+    var mUrl = t.match(/https?:\/\/[^\s]+/);
+    if(mUrl){
+      var url = mUrl[0].replace(/[.),;]+$/, '');
+      return '<span class="p22-ref-text">'+esc(t)+'</span>'
+        + ' <a class="p22-ref-link" href="'+esc(url)+'" target="_blank" rel="noopener">↗ Abrir</a>';
+    }
+    /* DOI (10.xxxx/...) */
+    var mDoi = t.match(/\b10\.\d{4,9}\/[^\s"'<>]+/);
+    if(mDoi){
+      var doi = mDoi[0].replace(/[.),;]+$/, '');
+      return '<span class="p22-ref-text">'+esc(t)+'</span>'
+        + ' <a class="p22-ref-link" href="https://doi.org/'+encodeURIComponent(doi)+'" target="_blank" rel="noopener">↗ DOI</a>';
+    }
+    /* PMID (7-8 dígitos precedidos por PMID o pmid o al final) */
+    var mPmid = t.match(/\bPMID\s*:?\s*(\d{6,9})/i);
+    if(mPmid){
+      return '<span class="p22-ref-text">'+esc(t)+'</span>'
+        + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/'+encodeURIComponent(mPmid[1])+'/" target="_blank" rel="noopener">↗ PubMed</a>';
+    }
+    /* Fallback: buscador PubMed con la cita textual */
+    var q = encodeURIComponent(t);
+    return '<span class="p22-ref-text">'+esc(t)+'</span>'
+      + ' <a class="p22-ref-link" href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener">🔍 Buscar en PubMed</a>';
+  }
+
   function renderFinalPanel(root){
     var panel = ensureFinalPanel(root);
     var result = root.querySelector('#esc35Result');
@@ -184,14 +216,24 @@
     var interp = result.querySelector('.esc35-result-interp');
     var details = result.querySelector('.esc35-result-details');
     var pill = result.querySelector('.esc35-pill');
+    /* Reconstruir referencias con enlaces */
+    var refsHTML = '';
+    if(refs){
+      var items = Array.from(refs.querySelectorAll('li')).map(function(li){
+        return '<li>'+ referenceToHTML(li.textContent || '') +'</li>';
+      });
+      if(items.length){
+        refsHTML = '<div class="p22-final-refs"><b>Fuente:</b><ul>'+ items.join('') +'</ul></div>';
+      }
+    }
     panel.innerHTML =
       '<div class="p22-final-head">'
-      +   (pill ? '<span class="p22-final-pill">'+pill.outerHTML.replace(/^<span[^>]*>/, '').replace(/<\/span>$/,'')+'</span>' : '')
+      +   (pill ? '<span class="p22-final-pill">'+pill.textContent+'</span>' : '')
       +   '<div class="p22-final-main">'+ (main ? main.innerHTML : '') +'</div>'
       + '</div>'
       + (interp ? '<div class="p22-final-interp">'+ interp.innerHTML +'</div>' : '')
       + (details ? '<ul class="p22-final-details">'+ details.innerHTML +'</ul>' : '')
-      + (refs ? '<div class="p22-final-refs"><b>Fuente:</b> '+ (refs.querySelector('ul')?refs.querySelector('ul').innerHTML:'') +'</div>' : '');
+      + refsHTML;
   }
 
   function apply(root){
