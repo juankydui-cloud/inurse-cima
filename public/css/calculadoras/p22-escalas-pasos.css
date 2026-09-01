@@ -49,6 +49,114 @@
   white-space:nowrap;
 }
 .p22-progress-text b{ color:#E5EEFF }
+.p22-score{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:999px;
+  background:rgba(51,182,166,.14); color:#33B6A6;
+  font-size:11px; font-weight:800; letter-spacing:.3px;
+  white-space:nowrap;
+}
+.p22-score-lbl{ text-transform:uppercase; opacity:.8 }
+.p22-score-val{ font-size:13px }
+
+/* Botones grandes de opción (paso a paso) */
+.p22-optgroup{
+  display:flex; flex-direction:column; gap:8px;
+  margin-top:10px;
+}
+.p22-opt{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-radius:14px;
+  border:1.5px solid rgba(120,150,220,.25);
+  background:rgba(15,23,42,.6);
+  color:#E5EEFF; font:inherit; font-size:14px; font-weight:600;
+  cursor:pointer; text-align:left;
+  transition:.15s;
+}
+.p22-opt:hover{
+  border-color:rgba(51,182,166,.55);
+  background:rgba(51,182,166,.08);
+  transform:translateY(-1px);
+}
+.p22-opt.on{
+  border-color:#33B6A6;
+  background:linear-gradient(135deg,rgba(51,182,166,.2),rgba(51,182,166,.06));
+  box-shadow:0 6px 22px rgba(51,182,166,.18);
+}
+.p22-opt-label{ flex:1; padding-right:12px }
+.p22-opt-pts{
+  display:inline-flex; align-items:center;
+  padding:3px 10px; border-radius:999px;
+  background:rgba(120,150,220,.16); color:#c7d4f2;
+  font-size:11.5px; font-weight:800;
+  min-width:38px; justify-content:center;
+  flex-shrink:0;
+}
+.p22-opt.on .p22-opt-pts{
+  background:rgba(51,182,166,.28); color:#0b1120;
+}
+
+/* Panel resultado final */
+.p22-final{
+  margin-top:14px; padding:18px 20px;
+  border-radius:20px;
+  border:1px solid rgba(51,182,166,.35);
+  background:linear-gradient(180deg,rgba(51,182,166,.14),rgba(51,182,166,.04));
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+  animation:p22FadeIn .25s ease;
+}
+.p22-final-head{
+  display:flex; align-items:baseline; gap:12px;
+  margin-bottom:10px;
+}
+.p22-final-pill{
+  display:inline-flex; align-items:center;
+  padding:4px 12px; border-radius:999px;
+  background:rgba(51,182,166,.24); color:#33B6A6;
+  font-size:11.5px; font-weight:800; letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.p22-final-main{ font-size:32px; font-weight:800; color:#E5EEFF; line-height:1 }
+.p22-final-main b{ color:inherit; font-weight:800 }
+.p22-final-main span{ font-size:14px; color:#8aa0c8; margin-left:6px; font-weight:600 }
+.p22-final-interp{
+  margin:8px 0 10px;
+  color:#c7d4f2; font-size:14px; line-height:1.5;
+}
+.p22-final-details{
+  margin:8px 0 12px; padding-left:22px;
+  color:#c7d4f2; font-size:13px; line-height:1.5;
+}
+.p22-final-details li::marker{ color:#33B6A6 }
+.p22-final-refs{
+  margin-top:12px; padding-top:10px;
+  border-top:1px dashed rgba(120,150,220,.28);
+  font-size:12.5px; color:#8aa0c8; line-height:1.5;
+}
+.p22-final-refs b{ color:#c7d4f2 }
+.p22-final-empty{
+  color:#8aa0c8; font-size:13px; font-style:italic; padding:12px 0;
+}
+
+/* Botón Reiniciar en el paso final */
+.p22-btn.p22-restart{
+  background:rgba(120,150,220,.14);
+  color:#c7d4f2;
+  border-color:rgba(120,150,220,.3);
+}
+.p22-btn.p22-restart:hover{
+  border-color:rgba(51,182,166,.5);
+  color:#33B6A6;
+}
+
+/* Cuando el panel final está visible, ocultamos el bloque original de
+   .esc35-result y el .esc35-disclaimer + .esc35-extra genéricos para
+   evitar duplicar información (el panel final ya los recoge). */
+.esc35-calc.p22-active .p22-final:not([hidden]) ~ #esc35Result,
+.esc35-calc.p22-active .p22-final:not([hidden]) ~ #esc35Extra,
+.esc35-calc.p22-active .p22-final:not([hidden]) ~ .esc35-disclaimer{
+  display:none !important;
+}
 
 /* Ocultar rows fuera del paso actual */
 .p22-hidden{ display:none !important }
