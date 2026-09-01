@@ -1446,18 +1446,32 @@ const DIAGRAMS = {
     icon: "⏱",
     title: "Sepsis 1-Hour Bundle · Reloj de progreso",
     render() {
+      /* Los objetivos intermedios por medida (5/15/30/45 min) NO están
+         en el Surviving Sepsis Campaign 1-Hour Bundle: la guía marca
+         un único objetivo global «dentro de la primera hora» para todos
+         los elementos. Por eso el campo `min` desaparece y solo queda
+         el reloj global de 60 min. Se prepara un campo opcional
+         `tiempoLocal` (string, ej. "≤15 min") que SOLO se muestra si la
+         ficha lo tiene relleno; en ese caso, se etiqueta como
+         "Protocolo local" para no confundirlo con la recomendación
+         internacional. */
       const items = [
-        {k:"lac",   l:"Lactato sérico (repetir si >2)", min:5},
-        {k:"cul",   l:"Hemocultivos ANTES de antibiótico", min:15},
-        {k:"atb",   l:"Antibiótico de amplio espectro", min:30},
-        {k:"crist", l:"30 mL/kg cristaloide si hipoTA o lactato ≥4", min:45},
-        {k:"vaso",  l:"Vasopresores si TAM <65 tras fluidos", min:60}
+        {k:"lac",   l:"Lactato sérico (repetir si >2)"},
+        {k:"cul",   l:"Hemocultivos ANTES de antibiótico"},
+        {k:"atb",   l:"Antibiótico de amplio espectro"},
+        {k:"crist", l:"30 mL/kg cristaloide si hipoTA o lactato ≥4"},
+        {k:"vaso",  l:"Vasopresores si TAM <65 tras fluidos"}
       ];
-      const list = items.map(i=>`<div class="sep-item" data-k="${i.k}" onclick="sepToggle('${i.k}')">
-        <div class="sep-check"></div>
-        <div class="sep-txt">${i.l}<small>Objetivo ≤${i.min} min</small></div>
-        <div class="sep-time" id="sepT-${i.k}">—</div>
-      </div>`).join("");
+      const list = items.map(i=>{
+        const localTag = i.tiempoLocal
+          ? `<small class="sep-local">Protocolo local · ${i.tiempoLocal}</small>`
+          : '';
+        return `<div class="sep-item" data-k="${i.k}" onclick="sepToggle('${i.k}')">
+          <div class="sep-check"></div>
+          <div class="sep-txt">${i.l}${localTag}</div>
+          <div class="sep-time" id="sepT-${i.k}">—</div>
+        </div>`;
+      }).join("");
       return `<div class="diag" id="diag-sep">
         <div class="diag-hdr">
           <div class="sep-clock">

@@ -47,11 +47,37 @@ body.p23-overlay-open{ overflow:hidden }
 }
 .p23-head-left{ display:flex; align-items:center; gap:12px; min-width:0 }
 .p23-head-em{ font-size:26px; flex-shrink:0 }
+.p23-head-titles{ min-width:0; display:flex; flex-direction:column; gap:4px }
 .p23-head h2{
-  margin:0; font-size:18px; font-weight:800; color:#E5EEFF;
+  margin:0; font-size:17px; font-weight:800; color:#E5EEFF;
   letter-spacing:-.2px;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
+.p23-head-sub{
+  display:flex; align-items:center; gap:8px;
+  min-width:0; font-size:11.5px; line-height:1.3;
+}
+.p23-head-src{
+  color:#8aa0c8; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Chip de estado semántico (mismo lenguaje visual que P1.3) */
+.p23-state{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:2px 9px; border-radius:999px;
+  font-size:11px; font-weight:800; letter-spacing:.2px;
+  border:1px solid transparent;
+  flex-shrink:0;
+}
+.p23-state-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:currentColor;
+}
+.p23-state-vigente  { color:#33B6A6; background:rgba(51,182,166,.14); border-color:rgba(51,182,166,.35) }
+.p23-state-revisar  { color:#F59E0B; background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.35) }
+.p23-state-caducada { color:#F87171; background:rgba(239,68,68,.15);  border-color:rgba(239,68,68,.4) }
+.p23-state-sin-fecha{ color:#94A3B8; background:rgba(148,163,184,.14);border-color:rgba(148,163,184,.32) }
 .p23-close{
   flex-shrink:0;
   width:40px; height:40px; border-radius:12px;

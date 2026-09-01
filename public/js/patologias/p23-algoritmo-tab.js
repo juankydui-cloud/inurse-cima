@@ -43,6 +43,46 @@
     var d = docs.find(function(d){ return d && d.title && d.title.trim() === title; });
     return d ? d.id : null;
   }
+  function currentDoc(){
+    var id = currentDocId();
+    if(!id) return null;
+    return (window.DOCS||[]).find(function(d){ return d && d.id === id; }) || null;
+  }
+
+  /* Chip de estado semántico igual que P1.3 (vigente/revisar/caducada)
+     — misma regla, INGESA cuenta como vigente. */
+  var CURRENT_YEAR = new Date().getFullYear();
+  function docYear(doc){
+    if(!doc) return null;
+    if(doc.last_updated){
+      var n = parseInt(String(doc.last_updated).slice(0,4), 10);
+      if(!isNaN(n)) return n;
+    }
+    var m = String(doc.source||'').match(/(19|20)\d{2}/);
+    return m ? parseInt(m[0], 10) : null;
+  }
+  function docState(doc, y){
+    if(/INGESA/i.test(String(doc && doc.source || ''))) return 'vigente';
+    if(!y) return 'sin-fecha';
+    var age = CURRENT_YEAR - y;
+    if(age <= 2) return 'vigente';
+    if(age <= 4) return 'revisar';
+    return 'caducada';
+  }
+  var STATE_LABEL_ES = { vigente:'Vigente', revisar:'Por revisar', caducada:'Caducada', 'sin-fecha':'Sin fecha' };
+  var STATE_LABEL_CA = { vigente:'Vigent',  revisar:'Per revisar', caducada:'Caducada', 'sin-fecha':'Sense data' };
+  function stateChipHTML(doc){
+    if(!doc) return '';
+    var y = docYear(doc);
+    var st = docState(doc, y);
+    var lang = detectLang();
+    var lab = (lang === 'ca' ? STATE_LABEL_CA : STATE_LABEL_ES)[st] || st;
+    var suffix = y ? ' · ' + y : '';
+    return '<span class="p23-state p23-state-'+esc(st)+'">'
+      +    '<span class="p23-state-dot"></span>'
+      +    esc(lab + suffix)
+      + '</span>';
+  }
 
   function ensureTab(){
     var id = currentDocId();
@@ -76,6 +116,8 @@
   function openOverlay(id, diag){
     closeOverlay();
     var L = t();
+    var doc = (window.DOCS||[]).find(function(d){ return d && d.id === id; }) || null;
+    var stateChip = stateChipHTML(doc);
     _overlay = document.createElement('div');
     _overlay.className = 'p23-overlay';
     _overlay.innerHTML =
@@ -83,7 +125,10 @@
       + '<header class="p23-head">'
       +   '<div class="p23-head-left">'
       +     '<span class="p23-head-em">'+esc(diag.icon || '🧩')+'</span>'
-      +     '<h2 id="p23Title">'+esc(diag.title || L.title)+'</h2>'
+      +     '<div class="p23-head-titles">'
+      +       '<h2 id="p23Title">'+esc(diag.title || L.title)+'</h2>'
+      +       (doc ? '<div class="p23-head-sub">'+ stateChip + '<span class="p23-head-src">'+esc(doc.source||'')+'</span></div>' : '')
+      +     '</div>'
       +   '</div>'
       +   '<button type="button" class="p23-close" id="p23Close" aria-label="'+esc(L.close)+'">✕</button>'
       + '</header>'
