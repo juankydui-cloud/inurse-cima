@@ -1,6 +1,8 @@
 import { requestJSON } from "../cache.mjs";
 
-const EPMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest";
+// EPMC_BASE_URL sólo se usa para apuntar a un doble local en pruebas
+// (docs/pruebas-streaming.md). En Render no está definida y se usa Europe PMC.
+const EPMC_BASE = process.env.EPMC_BASE_URL || "https://www.ebi.ac.uk/europepmc/webservices/rest";
 
 function stripTags(value) {
   return String(value || "")
