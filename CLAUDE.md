@@ -51,6 +51,22 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   expirar, informando "a tiempo" con cero referencias.
   `EPMC_BASE_URL` apunta Europe PMC a un doble local para probar los dos caminos.
 
+- **F1d · Fragmentos incrementales y salida sin retenciones** (PR #145) — el
+  evento `delta` llevaba el texto **acumulado** en cada fragmento (cientos de KB
+  por respuesta); ahora viaja sólo el trozo nuevo (`chunk`) y el texto se acumula
+  en el cliente. **Los tres consumidores** lo hacen así: portada, chat del avatar
+  y `javny-publico.html` — al tocar el formato del evento hay que actualizar los
+  tres. En el endpoint: `flushHeaders()`, `Connection: keep-alive` y
+  `setNoDelay`, además del `no-transform` y `X-Accel-Buffering: no` que ya había.
+  La compresión NUNCA ha tocado `/api`: sólo se aplica en `sendFile`, por
+  extensión de fichero (este servidor no usa Express).
+  Log nuevo que separa el tiempo del modelo del del transporte:
+  `[Gemini stream] N fragmentos · primero a los X ms · último a los Y ms`.
+
+  **Cómo medir el contexto de la portada**: las fichas las monta el NAVEGADOR
+  (`EnferixGuideRetrieve`). Medir el endpoint con `curl` manda `context` vacío
+  por construcción, y parece un fallo del servidor sin serlo.
+
   **Diagnóstico abierto de latencia** — medido en producción antes de F1b:
   contexto 15 ms, primer token **34.584 ms**, respuesta completa **31 ms
   después**. Que el texto entero llegue en 31 ms significa que Gemini no emite
