@@ -63,6 +63,23 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   Log nuevo que separa el tiempo del modelo del del transporte:
   `[Gemini stream] N fragmentos · primero a los X ms · último a los Y ms`.
 
+- **F1e · La redacción la hace Claude, con Gemini de reserva** (PR #146) — el
+  endpoint `/api/javny/chat/stream` llama a la **API de Anthropic** con su
+  streaming nativo (`sources/anthropic.mjs`, SDK oficial `@anthropic-ai/sdk`,
+  `client.messages.stream()` + evento `text`). El orquestador y el contexto de
+  fichas NO cambiaron: sólo cambia quién redacta.
+  **El guion clínico vive en `sources/guion-clinico.mjs`**, importado por las
+  DOS llamadas: si se duplica, la respuesta clínica cambia según el proveedor
+  que atienda, y eso no puede pasar.
+  Fallback: si Claude falla **antes** de emitir texto, se reintenta con Gemini
+  y el cliente recibe un evento `aviso`; si ya había texto en pantalla, el error
+  sube tal cual (reintentar duplicaría la respuesta a media frase).
+  `ANTHROPIC_API_KEY` en Render activa este camino; sin ella se usa Gemini.
+  `ANTHROPIC_MODEL` (por defecto `claude-opus-5`) y `ANTHROPIC_BASE_URL` (doble
+  local en pruebas). La portada pide `effort: "low"`; el chat mantiene `"high"`.
+  Log: `[Anthropic stream] N fragmentos · primero a los X ms · … · stop=…` —
+  ojo a `stop=refusal`, que llega con HTTP 200 y hay que comprobar aparte.
+
   **Cómo medir el contexto de la portada**: las fichas las monta el NAVEGADOR
   (`EnferixGuideRetrieve`). Medir el endpoint con `curl` manda `context` vacío
   por construcción, y parece un fallo del servidor sin serlo.
