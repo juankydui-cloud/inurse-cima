@@ -114,6 +114,13 @@ export async function nnnStats() {
   return { verificados: index.size, pendientes: pendientes.length };
 }
 
+export async function nnnDictionary() {
+  const { index, pendientes } = await loadNnnDictionary();
+  const verificados = {};
+  for (const [key, entry] of index.entries()) verificados[key] = entry;
+  return { verificados, pendientes_de_verificar: pendientes };
+}
+
 export function invalidateNnnCache() {
   _nnnCache = null;
 }
