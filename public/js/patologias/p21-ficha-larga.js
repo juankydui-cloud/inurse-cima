@@ -67,15 +67,41 @@
   /* ── Sticky tabs: en vez de hacer sticky la barra por separado (lo que
      provoca overlap con el header cuyo alto varía), la MOVEMOS DENTRO
      del propio header sticky. Así viajan juntos, sin cálculos ni
-     glitches, y garantizamos fondo opaco compartido. */
+     glitches, y garantizamos fondo opaco compartido.
+
+     BUG (detectado navegando entre fichas con openDoc): al mover `.in54-tabs`
+     dentro de `.in54-proto-head`, la barra queda FUERA de
+     `#in54ProtocolContent`. renderProtocol() reemplaza el innerHTML de ese
+     contenedor en cada ficha nueva, así que la barra vieja —ya reparentada—
+     sobrevive intacta al cambio. La comprobación `if(!head.querySelector(...))`
+     solo miraba si YA había una barra ahí (la había: la vieja) y por eso
+     nunca insertaba la nueva: la ficha cambiaba de contenido pero las
+     pestañas seguían siendo las de la ficha anterior. Corrección: si hay
+     una barra previa distinta de la actual, se retira antes de insertar. */
   function stickifyTabs(root){
     var tabs = root.querySelector('.in54-tabs');
     var head = document.querySelector('.in54-proto-head');
     if(!tabs || !head) return;
+    var stale = head.querySelector('.p21-tabs-in-head');
+    if(stale && stale !== tabs) stale.remove();
     tabs.classList.add('p21-tabs-in-head');
-    if(!head.querySelector('.p21-tabs-in-head')){
+    if(!head.contains(tabs)){
       head.appendChild(tabs);
     }
+  }
+  /* Igual que la barra de pestañas, los listeners de scroll quedaban
+     colgados de una ficha a la siguiente: cada llamada añadía otro par
+     (scroller + window) sin retirar el de la ficha anterior, que seguía
+     vivo apuntando a botones/secciones ya desechados. Se guarda la
+     referencia para poder retirarlos al reconstruir. */
+  var activeScrollHandler = null;
+  var activeScroller = null;
+  function unbindActiveOnScroll(){
+    if(!activeScrollHandler) return;
+    if(activeScroller){ activeScroller.removeEventListener('scroll', activeScrollHandler); }
+    window.removeEventListener('scroll', activeScrollHandler);
+    activeScrollHandler = null;
+    activeScroller = null;
   }
   function bindActiveOnScroll(){
     /* Las pestañas viven ahora en `.in54-proto-head`, fuera del root.
@@ -143,9 +169,13 @@
       tabButtons.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-in54-tab') === label); });
     }
 
-    /* Escuchar scroll del contenedor real y de la ventana (fallback). */
+    /* Escuchar scroll del contenedor real y de la ventana (fallback),
+       retirando primero el par de la ficha anterior si lo hubiera. */
+    unbindActiveOnScroll();
     if(scroller){ scroller.addEventListener('scroll', pickActive, { passive:true }); }
     window.addEventListener('scroll', pickActive, { passive:true });
+    activeScrollHandler = pickActive;
+    activeScroller = scroller;
     pickActive();
   }
 
