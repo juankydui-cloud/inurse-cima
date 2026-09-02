@@ -18,7 +18,7 @@ const GEMINI_BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.g
 // paralelo, pero la redacción no empieza hasta que responde la ÚLTIMA: sin tope,
 // una sola fuente lenta (hasta 18s en httpRequest) retrasa toda la respuesta.
 // Al agotarse, esa fuente se descarta y se redacta con las que sí llegaron.
-const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 7000);
+const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 5000);
 
 const SYSTEM_PROMPT = `Eres **Javny**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
 
@@ -265,7 +265,43 @@ function withBudget(promise, empty, ms = SOURCE_BUDGET_MS) {
   ]);
 }
 
-async function searchAllSources(question) {
+// Igual que withBudget, pero además registra qué le pasó a esa fuente: cuánto
+// tardó, cuántos resultados trajo y si acabó en ok / timeout / error. Sin esto
+// sólo se sabe cuánto tardó la fase entera, que es justo lo que no permite
+// distinguir "una fuente lenta" de "todas lentas" ni de "el modelo tarda".
+function medir(nombre, promesa, vacio, registro, ms = SOURCE_BUDGET_MS) {
+  const t0 = Date.now();
+  const marca = { nombre, ms: 0, estado: "ok", count: 0, error: null };
+  registro.push(marca);
+  // El temporizador se dispara aunque la fuente ya haya contestado. Sin esta
+  // bandera, marcaba como "timeout" (a los 5 s) fuentes que en realidad habían
+  // fallado o respondido en 35 ms: el diagnóstico salía justo del revés.
+  let resuelto = false;
+  const cerrar = (estado, v) => {
+    if (!resuelto) {
+      resuelto = true;
+      marca.estado = estado;
+      marca.ms = Date.now() - t0;
+      marca.count = Array.isArray(v?.items) ? v.items.length : (v ? 1 : 0);
+    }
+    return v;
+  };
+  const conEstado = Promise.resolve(promesa).then(
+    v => cerrar("ok", v),
+    e => {
+      const msg = e instanceof Error ? e.message : String(e);
+      const r = cerrar("error", vacio);
+      if (marca.estado === "error") marca.error = msg;
+      return r;
+    }
+  );
+  return Promise.race([
+    conEstado,
+    new Promise(resolve => setTimeout(() => resolve(cerrar("timeout", vacio)), ms))
+  ]);
+}
+
+async function searchAllSources(question, timings = []) {
   const queries = generateQueries(question);
   const guidelineQuery = `(${queries[0]}) AND (${GUIDELINE_ORGS.join(" OR ")})`;
   const drugName = detectDrugName(question);
@@ -276,16 +312,16 @@ async function searchAllSources(question) {
 
   const vacio = { items: [] };
   const searches = [
-    withBudget(searchEuropePMC(queries[0], { limit: 8 }), vacio),
-    queries[1] ? withBudget(searchPubMed(queries[1], { limit: 5 }), vacio) : Promise.resolve(vacio),
-    withBudget(searchCrossref(queries[0], { limit: 5 }), vacio),
-    withBudget(searchPubMed(guidelineQuery, { limit: 5 }), vacio),
-    withBudget(searchNICE(queries[0], { limit: 5 }), vacio),
-    drugName ? withBudget(searchOpenFDA(drugName), null) : Promise.resolve(null),
-    withBudget(searchClinicalTrials(queries[0], { limit: 5 }), vacio),
-    withBudget(searchSemanticScholar(queries[0], { limit: 5 }), vacio),
-    withBudget(searchWHO(queries[0], { limit: 5 }), vacio),
-    drugRelated ? withBudget(searchCIMA(cimaQuery, { limit: 5 }), vacio) : Promise.resolve(vacio)
+    medir("europepmc", searchEuropePMC(queries[0], { limit: 8 }), vacio, timings),
+    queries[1] ? medir("pubmed", searchPubMed(queries[1], { limit: 5 }), vacio, timings) : Promise.resolve(vacio),
+    medir("crossref", searchCrossref(queries[0], { limit: 5 }), vacio, timings),
+    medir("pubmed-guias", searchPubMed(guidelineQuery, { limit: 5 }), vacio, timings),
+    medir("nice", searchNICE(queries[0], { limit: 5 }), vacio, timings),
+    drugName ? medir("openfda", searchOpenFDA(drugName), null, timings) : Promise.resolve(null),
+    medir("clinicaltrials", searchClinicalTrials(queries[0], { limit: 5 }), vacio, timings),
+    medir("semanticscholar", searchSemanticScholar(queries[0], { limit: 5 }), vacio, timings),
+    medir("who", searchWHO(queries[0], { limit: 5 }), vacio, timings),
+    drugRelated ? medir("cima", searchCIMA(cimaQuery, { limit: 5 }), vacio, timings) : Promise.resolve(vacio)
   ];
 
   const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult] =
@@ -327,6 +363,7 @@ async function searchAllSources(question) {
     cimaDrugs: cimaDrugs.slice(0, 5),
     drugDetected: drugName,
     queries,
+    timings,
     errors: allSettled
       .filter(r => r.status === "rejected")
       .map(r => r.reason?.message || "Error desconocido")
@@ -472,7 +509,13 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
     ctx += "\n";
   }
 
-  ctx += `--- INSTRUCCIÓN ---
+  // La instrucción depende de si el contexto lleva literatura numerada o no.
+  // Cuando la generación arranca antes que las búsquedas externas (para no hacer
+  // esperar al usuario), el modelo escribe SIN literatura delante: pedirle citas
+  // [n] en ese caso es pedirle que se las invente, que es justo lo que la regla
+  // férrea del proyecto prohíbe.
+  if (n > 0) {
+    ctx += `--- INSTRUCCIÓN ---
 Utiliza TODAS las fuentes anteriores para responder la siguiente pregunta clínica.
 Cita cada afirmación con el número entre corchetes indicado junto a cada fuente arriba: [1], [2], [3]...
 Usa EXACTAMENTE esos números; no inventes ninguno ni cites uno que no exista en el contexto.
@@ -482,6 +525,20 @@ Si una fuente se contradice con otra, señálalo y prioriza la de mayor nivel de
 Si las fuentes no cubren algún aspecto, indícalo explícitamente.
 
 PREGUNTA DEL USUARIO: ${question}`;
+  } else {
+    ctx += `--- INSTRUCCIÓN ---
+Responde la siguiente pregunta clínica apoyándote ÚNICAMENTE en las fichas validadas de
+Enferix y demás contexto interno que aparece arriba, más tu conocimiento clínico general.
+En este contexto NO hay literatura externa recuperada, así que:
+- NO cites números entre corchetes ([1], [2]...): no existe ninguna lista de referencias a la
+  que puedan corresponder. Inventarlos sería atribuir una afirmación a una fuente inexistente.
+- Cuando una afirmación proceda de una ficha validada de Enferix, dilo con naturalidad en el
+  texto, nombrando la ficha ("según la ficha de … de Enferix").
+- Cuando algo NO esté cubierto por el contexto interno, dilo explícitamente en vez de rellenar.
+No inventes dosis, umbrales, concentraciones ni protocolos.
+
+PREGUNTA DEL USUARIO: ${question}`;
+  }
 
   return { ctx, refs };
 }
@@ -677,22 +734,71 @@ export async function orchestrateStream({ question, context: clientContext, hist
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
   }
 
-  // Las fases viajan como eventos propios para que el cliente pueda decir en qué
-  // punto está la consulta ("buscando en fuentes" / "redactando") desde el primer
-  // instante, en vez de quedarse en blanco hasta el primer fragmento de texto.
-  const { userPrompt, sources } = await prepareOrchestration(question, clientContext,
-    info => onEvent({ type: "phase", ...info }));
-  onEvent({ type: "sources", sources });
+  const t0 = Date.now();
 
-  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
+  // ── La generación NO espera a las fuentes externas ───────────────────────────
+  // Antes, la llamada al modelo iba después de searchAllSources: hasta que no
+  // respondía la última fuente no se escribía una sola letra, así que el usuario
+  // pagaba la búsqueda entera antes del primer token. Ahora el modelo arranca de
+  // inmediato con el contexto interno (fichas validadas de Enferix, vademécum y
+  // biblioteca), que el cliente ya trae montado, y las búsquedas externas corren
+  // en paralelo. Sus referencias se emiten cuando lleguen, y si no llegan a
+  // tiempo la respuesta sale igual: nunca la bloquean.
+  const { ctx: promptInterno } = assembleContext(question, {
+    articles: [], niceGuidelines: [], fdaDrug: null,
+    clinicalTrials: [], semanticScholar: [], whoDocuments: [], cimaDrugs: []
+  }, clientContext);
+
+  onEvent({ type: "phase", phase: "writing" });
+
+  // Las búsquedas salen YA, sin await: se recogen más abajo.
+  const timings = [];
+  let sourcesEmitidas = false;
+  const busquedas = searchAllSources(question, timings).then(resultados => {
+    const { refs } = assembleContext(question, resultados, clientContext);
+    const sources = buildSourcesPayload(refs, resultados);
+    // Se emiten en cuanto llegan, sin esperar a que el modelo termine: si las
+    // búsquedas ganan la carrera, el panel ya puede pintar la evidencia debajo
+    // del texto que todavía se está escribiendo.
+    onEvent({ type: "sources", sources });
+    sourcesEmitidas = true;
+    return { resultados, sources };
+  }).catch(err => {
+    console.error("[Orquestador] Las búsquedas externas fallaron:", err instanceof Error ? err.message : err);
+    return { resultados: null, sources: { references: [], queries: [], errors: ["Las fuentes externas no respondieron"] } };
+  });
+
+  let tPrimerFragmento = null;
+  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), promptInterno, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
     maxOutputTokens: 8192,
     temperature: 0.3
-  }, (fullText) => onEvent({ type: "delta", text: fullText }));
+  }, (fullText) => {
+    if (tPrimerFragmento === null) {
+      tPrimerFragmento = Date.now() - t0;
+      console.log(`[Orquestador] Primer fragmento de Gemini a los ${tPrimerFragmento} ms`);
+    }
+    onEvent({ type: "delta", text: fullText });
+  });
 
-  onEvent({ type: "done", answer, sources, fetchedAt: new Date().toISOString() });
+  // La respuesta ya está escrita; ahora se espera lo que quede de las búsquedas
+  // (con su propio tope), para adjuntar la evidencia relacionada al final.
+  const { sources } = await busquedas;
+  if (!sourcesEmitidas) onEvent({ type: "sources", sources });
+
+  const total = Date.now() - t0;
+  console.log(`[Orquestador] Fuentes: ${timings.map(m => `${m.nombre}=${m.estado}/${m.ms}ms/${m.count}`).join(" ") || "ninguna"}`);
+  console.log(`[Orquestador] Total ${total} ms · primer fragmento ${tPrimerFragmento ?? "n/d"} ms · ${sources.references.length} referencias`);
+
+  onEvent({
+    type: "done",
+    answer,
+    sources,
+    fetchedAt: new Date().toISOString(),
+    timings: { primerFragmentoMs: tPrimerFragmento, totalMs: total, fuentes: timings }
+  });
 }
 
 // Sonda de diagnóstico para /api/javny/health: hace la llamada más pequeña posible a

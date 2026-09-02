@@ -117,6 +117,7 @@
   letter-spacing:.04em; text-transform:uppercase;
   color:#8aa0c8;
 }
+.p33-refs-nota{ margin:0 0 10px; font-size:12px; line-height:1.5; color:var(--tenue,#8aa0c8) }
 .p33-refs-list{ margin:0; padding-left:20px; font-size:12.5px; line-height:1.5 }
 .p33-refs-list li{ margin:0 0 7px; color:#c7d4f2 }
 .p33-refs-list a{ color:#7dd3fc; text-decoration:none }
