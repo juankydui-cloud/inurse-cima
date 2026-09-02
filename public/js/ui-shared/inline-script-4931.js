@@ -1204,12 +1204,12 @@
    function callBackendStreaming(){
     return fetch(backend+'/api/javny/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(backendPayload)}).then(function(res){
      if(!res.ok||!res.body)throw new Error('HTTP '+res.status);
-     var reader=res.body.getReader(),decoder=new TextDecoder('utf-8'),buf='',finalAnswer=null,gotSources=false;
+     var reader=res.body.getReader(),decoder=new TextDecoder('utf-8'),buf='',finalAnswer=null,gotSources=false,acumulado='';
      function processLine(line){
       line=line.trim();if(!line)return;
       var evt;try{evt=JSON.parse(line);}catch(e){return;}
       if(evt.type==='sources'){applyBackendSources(evt.sources);gotSources=true;}
-      else if(evt.type==='delta'){if(onDelta)onDelta(evt.text||'');}
+      else if(evt.type==='delta'){acumulado+=(evt.chunk||'');if(onDelta)onDelta(acumulado);}
       else if(evt.type==='done'){if(!gotSources)applyBackendSources(evt.sources);finalAnswer=(evt.answer||'').trim();}
       else if(evt.type==='error'){var se=new Error(evt.error||'Error del servidor');se.javnyServerError=true;throw se;}
      }

@@ -643,6 +643,13 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
   const decoder = new TextDecoder("utf-8");
   let buf = "", full = "", blockReason = "", finishReason = "", sawCandidate = false, rawSample = "";
 
+  // Reloj de la propia conversación con Gemini. Sirve para distinguir, sin
+  // ambigüedad, "el modelo tarda en empezar" de "algo retiene los fragmentos por
+  // el camino": si el primer evento SSE llega a los 24 s y el último 300 ms
+  // después, el tiempo se lo ha llevado el modelo, no el transporte.
+  const tLlamada = Date.now();
+  let tPrimerEvento = null, tUltimoEvento = null, nEventos = 0;
+
   function handleEvent(jsonStr) {
     if (!jsonStr || jsonStr === "[DONE]") return;
     let evt;
@@ -653,7 +660,15 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
       sawCandidate = true;
       if (cand.finishReason && cand.finishReason !== "STOP") finishReason = cand.finishReason;
       const t = cand?.content?.parts ? cand.content.parts.map(p => p.text || "").join("") : "";
-      if (t) { full += t; if (onDelta) onDelta(full); }
+      if (t) {
+        nEventos++;
+        if (tPrimerEvento === null) tPrimerEvento = Date.now() - tLlamada;
+        tUltimoEvento = Date.now() - tLlamada;
+        // Se emite el fragmento RECIÉN llegado, no el texto acumulado. `full` sólo
+        // existe para devolver la respuesta entera al terminar (evento "done").
+        full += t;
+        if (onDelta) onDelta(t, full);
+      }
     }
   }
 
@@ -681,6 +696,11 @@ async function streamGeminiCall(systemPrompt, userPrompt, { apiKey, model, histo
   }
   // Último evento sin salto de línea final tras él (la conexión se cerró justo después).
   if (buf.trim()) processBlock(buf);
+
+  console.log(`[Gemini stream] ${nEventos} fragmentos · primero a los ${tPrimerEvento ?? "n/d"} ms · último a los ${tUltimoEvento ?? "n/d"} ms · ` +
+    (tPrimerEvento !== null && tUltimoEvento !== null
+      ? `el modelo tardó ${tPrimerEvento} ms en empezar y ${tUltimoEvento - tPrimerEvento} ms en emitirlo todo`
+      : "sin fragmentos"));
 
   if (!full.trim()) {
     if (blockReason) throw new Error(`Gemini bloqueó la respuesta por seguridad de contenido (${blockReason}). Reformula la pregunta.`);
@@ -816,12 +836,15 @@ export async function orchestrateStream({ question, context: clientContext, hist
     // La portada pide una respuesta corta; el chat mantiene su desarrollo largo.
     maxOutputTokens: conciso ? 2048 : 8192,
     temperature: 0.3
-  }, (fullText) => {
+  }, (chunk) => {
     if (tPrimerFragmento === null) {
       tPrimerFragmento = Date.now() - t0;
       console.log(`[Orquestador] Primer fragmento de Gemini a los ${tPrimerFragmento} ms (búsqueda: ${msBusqueda} ms)`);
     }
-    onEvent({ type: "delta", text: fullText });
+    // Viaja SOLO el fragmento recién generado. Antes iba el texto acumulado en
+    // cada evento, así que una respuesta de 8.000 caracteres en 200 fragmentos
+    // mandaba cientos de kilobytes por el cable en vez de ocho.
+    onEvent({ type: "delta", chunk });
   });
 
   // Si las fuentes llegaron tarde, se adjuntan igualmente como evidencia

@@ -339,11 +339,13 @@
             body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
           }
         } else if(evt.type === 'delta'){
-          if(tPrimerToken === null && (evt.text || '').trim()){
+          // El servidor manda el fragmento nuevo; el texto se acumula aquí.
+          var trozo = evt.chunk || '';
+          if(tPrimerToken === null && trozo.trim()){
             tPrimerToken = performance.now();
             marca('primer token del streaming', tPrimerToken - tEnvio);
           }
-          answer = evt.text || '';
+          answer += trozo;
           paint();
         } else if(evt.type === 'done'){
           if(!refs.length) applySources(evt.sources, evt.aTiempo);

@@ -651,15 +651,18 @@
           var decoder = new TextDecoder('utf-8');
           var buf = '';
           var answered = false;
+          var acumulado = '';
 
           function handleLine(line) {
             line = line.trim();
             if (!line) return;
             var evt;
             try { evt = JSON.parse(line); } catch (e) { return; }
-            if (evt.type === 'delta' && evt.text) {
+            if (evt.type === 'delta' && evt.chunk) {
               if (!answered) { pending.remove(); pending = addBubble('bot', '').bubble; pending.classList.remove('pending'); answered = true; }
-              pending.innerHTML = mdToHtml(evt.text);
+              // El servidor manda el fragmento nuevo; el texto se acumula aquí.
+              acumulado += evt.chunk;
+              pending.innerHTML = mdToHtml(acumulado);
               chatLog.scrollTop = chatLog.scrollHeight;
             } else if (evt.type === 'done') {
               var ms = Math.round(performance.now() - startedAt) / 1000;
