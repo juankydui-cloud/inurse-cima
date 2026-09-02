@@ -188,6 +188,47 @@
     })();
   }
 
+  /* ── Contexto interno ──────────────────────────────────────────────────────
+     La portada envía el MISMO contexto que el chat del avatar: las fichas
+     validadas de Enferix y el vademécum (EnferixGuideRetrieve, la propia
+     recuperación del chat), la biblioteca virtual, y los servicios sanitarios
+     cercanos cuando la pregunta va de eso. Sin este bloque, el servidor
+     redactaba solo con fuentes externas y las fichas validadas —la fuente
+     prioritaria del sistema— no llegaban a intervenir. */
+  var RE_CERCANOS = /hospital|urgencias?\s+(m[aá]s\s+)?cercan|\bdea\b|desfibrilador|d[oó]nde\s+puedo\s+ir|centro\s+sanitario\s+cercan/i;
+
+  function conTope(promesa, ms){
+    return Promise.race([
+      promesa,
+      new Promise(function(r){ setTimeout(function(){ r(''); }, ms); })
+    ]).catch(function(){ return ''; });
+  }
+
+  function buildContext(question){
+    var guides = '', library = '';
+    try {
+      if(typeof window.EnferixGuideRetrieve === 'function'){
+        guides = (window.EnferixGuideRetrieve(question) || {}).context || '';
+      }
+    } catch(e){}
+    try {
+      if(typeof window.EnferixLibraryRetrieve === 'function'){
+        library = window.EnferixLibraryRetrieve(question, 8) || '';
+      }
+    } catch(e){}
+
+    // Los cercanos son la única pieza que va por red. Se acota a 2,5 s para no
+    // retrasar el primer token: sin ella Javny ya sabe pedir que se active la
+    // ubicación, que es mejor que dejar la pantalla esperando.
+    var nearby = Promise.resolve('');
+    if(RE_CERCANOS.test(question) && window.EnferixNearby && window.EnferixNearby.getContextText){
+      try { nearby = conTope(Promise.resolve(window.EnferixNearby.getContextText()), 2500); } catch(e){}
+    }
+    return nearby.then(function(n){
+      return { guides: guides, library: library, nearby: n || '' };
+    });
+  }
+
   /* ── Consulta ────────────────────────────────────────────────────────────── */
   function ask(question){
     question = String(question || '').trim();
@@ -246,21 +287,24 @@
       current = null;
     }
 
-    var payload = {
-      question: question,
-      context: {},
-      history: [],
-      caseMemory: [],
-      route: {}
-    };
-    var opts = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    };
-    if(ctrl) opts.signal = ctrl.signal;
+    buildContext(question).then(function(contexto){
+      marca('contexto interno listo', performance.now() - tEnvio);
+      var payload = {
+        question: question,
+        context: contexto,
+        history: [],
+        caseMemory: [],
+        route: {}
+      };
+      var opts = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      };
+      if(ctrl) opts.signal = ctrl.signal;
 
-    fetch(backend + '/api/javny/chat/stream', opts).then(function(res){
+      return fetch(backend + '/api/javny/chat/stream', opts);
+    }).then(function(res){
       if(!res.ok || !res.body){
         return res.json().catch(function(){ return {}; }).then(function(d){
           throw new Error(d.error || ('HTTP ' + res.status));

@@ -17,7 +17,9 @@ Un servidor mínimo que emite SSE trozo a trozo, igual que Google:
 ```js
 // gemini-stub.mjs
 import http from 'node:http';
-const TEXTO = '**Respuesta de prueba.** Un párrafo cualquiera [1].';
+// El relleno tiene que ser inconfundible: nada de frases con aspecto clínico,
+// umbrales, dosis ni citas inventadas (regla del CLAUDE.md).
+const TEXTO = ('TEXTO DE PRUEBA, NO CLÍNICO. ').repeat(40);
 http.createServer((req, res) => {
   let b = ''; req.on('data', c => b += c);
   req.on('end', () => {
