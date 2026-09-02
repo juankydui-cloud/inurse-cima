@@ -211,6 +211,18 @@
     var refs = [];
     var answer = '';
 
+    /* Marcas de tiempo de la consulta, en consola. Miden lo único que le importa
+       a quien espera delante de la pantalla: cuánto tarda en aparecer la primera
+       palabra (primer token) y cuánto en terminar. Los tres números salen del
+       reloj del navegador, no de estimaciones. */
+    var tEnvio = performance.now();
+    var tPrimerToken = null;
+    function marca(etiqueta, ms){
+      console.log('[Javny · portada] ' + etiqueta + ': ' + Math.round(ms) + ' ms'
+        + ' · ' + new Date().toISOString());
+    }
+    marca('envío de la pregunta', 0);
+
     function applySources(sources){
       var list = (sources && sources.references) || [];
       refs = list.slice();
@@ -219,6 +231,7 @@
       body.innerHTML = renderMarkdown(answer, refs);
     }
     function finish(){
+      marca('respuesta completa', performance.now() - tEnvio);
       paint();
       body.insertAdjacentHTML('beforeend', renderRefs(refs));
       setPhase(panel, t('done'), 'done');
@@ -264,6 +277,10 @@
           applySources(evt.sources);
           if(refs.length) setPhase(panel, t('writing') + ' · ' + t('sourcesFound')(refs.length));
         } else if(evt.type === 'delta'){
+          if(tPrimerToken === null && (evt.text || '').trim()){
+            tPrimerToken = performance.now();
+            marca('primer token del streaming', tPrimerToken - tEnvio);
+          }
           answer = evt.text || '';
           paint();
         } else if(evt.type === 'done'){
