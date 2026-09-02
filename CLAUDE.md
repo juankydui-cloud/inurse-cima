@@ -35,6 +35,22 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   Instrumentación en el servidor: log por fuente (`europepmc=ok/820ms/8`) y
   **tiempo hasta el primer fragmento de Gemini**.
 
+- **F1c · La portada espera a las fuentes y responde corta y citada** (PR #144)
+  — medido en producción, las fuentes externas responden en **~950 ms**, así que
+  se esperan (tope `WAIT_SOURCES_MS`, 3 s) en vez de sacrificarlas: cuesta ~1 s y
+  la respuesta sale fundamentada. Si la espera se agota, se redacta solo con las
+  fichas y la respuesta lo dice en su primera línea; las referencias tardías se
+  adjuntan como "Evidencia relacionada" con nota de que no fundamentan el texto.
+  El prompt lleva las fichas como fuente **prioritaria** y la literatura como
+  **complementaria**, citando ambas en el texto.
+  **Respuesta concisa (2000-3000 caracteres) SOLO en la portada**, vía el
+  parámetro `conciso`; el chat del avatar no lo envía y mantiene su desarrollo
+  largo — al tocar el orquestador, comprobar siempre que sigue así.
+  El tope por fuente (`SOURCE_BUDGET_MS`, 2,5 s) debe quedar **por debajo** de la
+  espera global: siendo iguales competían y la fase se daba por buena justo al
+  expirar, informando "a tiempo" con cero referencias.
+  `EPMC_BASE_URL` apunta Europe PMC a un doble local para probar los dos caminos.
+
   **Diagnóstico abierto de latencia** — medido en producción antes de F1b:
   contexto 15 ms, primer token **34.584 ms**, respuesta completa **31 ms
   después**. Que el texto entero llegue en 31 ms significa que Gemini no emite
@@ -45,6 +61,10 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   `[Orquestador] Primer fragmento de Gemini a los N ms`: si marca decenas de
   miles, el tiempo es del modelo (revisar qué modelo corre en Render, si lleva
   razonamiento, y el tamaño del prompt), no de la orquestación.
+  Con el dato de las fuentes (~950 ms) queda descartado que las búsquedas
+  explicasen los 34 s: como mucho aportaban uno. La palanca que queda es la
+  **longitud de la respuesta** (F1c la baja a 2000-3000 caracteres), porque el
+  reloj del primer token corre hasta que el modelo termina de generar.
 - **P3.1 · Navegador NANDA · NOC · NIC** — overlay con 3 columnas enlazadas
   en escritorio y 3 pasos con migas de pan en móvil. Datos del diccionario
   NNN curado (`nnn_codes.json`, vínculos verificados; el resto pendientes
