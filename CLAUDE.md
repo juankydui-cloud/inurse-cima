@@ -75,6 +75,10 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   y el cliente recibe un evento `aviso`; si ya había texto en pantalla, el error
   sube tal cual (reintentar duplicaría la respuesta a media frase).
   `ANTHROPIC_API_KEY` en Render activa este camino; sin ella se usa Gemini.
+  **`ANTHROPIC_WORKSPACE_ID`**: una clave vinculada a identidad exige además la
+  cabecera `anthropic-workspace-id`, o la API responde 400. Se manda sólo si la
+  variable existe (con una clave normal sobra). El arranque lo dice en el log:
+  `[Anthropic] Cliente listo · workspace sí | no configurado`.
   `ANTHROPIC_MODEL` (por defecto `claude-opus-5`) y `ANTHROPIC_BASE_URL` (doble
   local en pruebas). La portada pide `effort: "low"`; el chat mantiene `"high"`.
   Log: `[Anthropic stream] N fragmentos · primero a los X ms · … · stop=…` —
