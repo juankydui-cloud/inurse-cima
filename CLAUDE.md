@@ -125,11 +125,18 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
 frentes. El primero ya está en `main`; quedan los dos siguientes:
 
 1. ~~**Streaming en la consulta de portada**~~ — hecho (PR #142, ver arriba).
-2. **Guion de sistema con modo consulta y modo emergencia** — el
-   `SYSTEM_PROMPT` de `sources/orchestrator.mjs` se bifurca según el
-   contexto: modo consulta (respuesta exhaustiva tipo UpToDate, como hoy)
-   y modo emergencia (prioriza brevedad y accionabilidad inmediata cuando
-   el contexto indica una situación crítica).
+2. ~~**Guion de sistema con modo consulta y modo emergencia**~~ — hecho
+   (PR #148). Vive en `sources/guion-clinico.mjs`, compartido por los dos
+   proveedores. **Emergencia**: situación urgente EN CURSO (lo delata que algo
+   está pasando, no que se pregunte por ello); 112 o equipo de parada primero,
+   luego UNA acción, sin bibliografía ni citas ni vigencia de guías; ante la
+   duda entre modos, emergencia. **Consulta** (por defecto): cada afirmación
+   atribuida a su ficha o su cita, fichas por delante de la bibliografía,
+   discrepancias señaladas, huecos de las fuentes dichos.
+   **Trampa al tocarlo**: el orquestador añade al contexto instrucciones de
+   estructura, extensión y citación `[n]` que contradicen al modo emergencia;
+   el guion declara que su formato prevalece sobre ellas. Si se quita esa
+   frase, el modo emergencia queda anulado en la práctica.
 3. **Function calling con las herramientas de la app** — que Javny pueda
    invocar directamente las fuentes/acciones de Enferix (buscador CIMA,
    escalas, terminología NNN, evidencia relacionada…) como *tools* de
