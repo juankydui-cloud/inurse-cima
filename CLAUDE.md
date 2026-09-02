@@ -6,9 +6,26 @@ respetar, y el estado de la tarea en curso.
 
 ## Estado de la rama principal
 
-**`main`** está al día con la **Prioridad 3** (PR #141, mergeado y ya
-desplegado en Render vía `autoDeploy: true`). Contiene:
+**`main`** está al día con el **Frente 1 de `javny-inteligente`** (PR #142,
+mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
+(PR #141). Contiene:
 
+- **F1 · Consulta de portada en streaming** — la caja `#nxAsk` del inicio
+  responde en su propio panel (`p33-consulta-portada`), en vez de abrir el
+  chat del avatar y enviar por el usuario. NDJSON contra
+  `/api/javny/chat/stream`; indicador de fases (`searching` → `writing`,
+  evento `phase` nuevo del orquestador); referencias al final, con las citas
+  `[n]` enlazadas solo cuando ese número existe en la lista del servidor.
+  Tope por fuente en la búsqueda (`SOURCE_BUDGET_MS`, 7 s): antes la
+  redacción esperaba a la última fuente en contestar.
+  La portada envía el **mismo contexto interno que el chat** (fichas,
+  vademécum, biblioteca, cercanos) reutilizando su recuperación, publicada
+  como `window.EnferixGuideRetrieve` — no una copia.
+  Latencia instrumentada: marcas en consola (envío / contexto / primer token /
+  fin) y `scripts/medir-latencia-javny.mjs`.
+  **El modo interactivo del avatar no cambia**, y así debe seguir.
+  Pendiente de medir: latencias reales con Gemini y fuentes externas; el
+  streaming se verificó con un doble local de la API (`GEMINI_BASE_URL`).
 - **P3.1 · Navegador NANDA · NOC · NIC** — overlay con 3 columnas enlazadas
   en escritorio y 3 pasos con migas de pan en móvil. Datos del diccionario
   NNN curado (`nnn_codes.json`, vínculos verificados; el resto pendientes
@@ -28,12 +45,10 @@ desplegado en Render vía `autoDeploy: true`). Contiene:
   de `p21-ficha-larga.js` ya no se quedan colgados de la ficha anterior al
   navegar entre fichas.
 
-**Próxima tarea — rama `javny-inteligente`**: mejora del asistente Javny en
-tres frentes:
+**Tarea en curso — `javny-inteligente`**: mejora del asistente Javny en tres
+frentes. El primero ya está en `main`; quedan los dos siguientes:
 
-1. **Streaming en la consulta de portada** — la caja de búsqueda/consulta
-   principal debe responder en streaming (como ya hace el chat), no con
-   una respuesta bloqueante.
+1. ~~**Streaming en la consulta de portada**~~ — hecho (PR #142, ver arriba).
 2. **Guion de sistema con modo consulta y modo emergencia** — el
    `SYSTEM_PROMPT` de `sources/orchestrator.mjs` se bifurca según el
    contexto: modo consulta (respuesta exhaustiva tipo UpToDate, como hoy)
@@ -45,8 +60,25 @@ tres frentes:
    Gemini en vez de solo recibir contexto ya ensamblado por
    `searchAllSources`.
 
-Aún sin empezar; se abrirá como rama nueva desde `main` cuando el usuario
-lo indique.
+Los frentes 2 y 3 aún sin empezar; se abren como rama nueva desde `main`
+cuando el usuario lo indique.
+
+**Detalle del frente 2 según el usuario**: modo emergencia se activa cuando el
+mensaje indica situación urgente **en curso** (parada, atragantamiento,
+inconsciencia, sangrado masivo) y responde corto, imperativo, paso a paso,
+**una acción por mensaje**, sin bibliografía ni menciones a vigencia de guías,
+priorizando avisar al 112 y las maniobras inmediatas. Modo consulta responde
+completo, citando siempre la ficha o fuente, y diciendo explícitamente cuándo
+algo no está en sus fuentes en vez de rellenar. El contenido clínico de ambos
+modos sale exclusivamente de las fuentes del orquestador.
+
+**Detalle del frente 3 según el usuario**: las herramientas son (1) calcular
+escalas llamando al **código validado de las calculadoras existentes** — el
+modelo solo extrae parámetros y presenta el resultado con su interpretación,
+jamás calcula él; (2) diluciones, vías y compatibilidades del formulario de
+fármacos; (3) interacciones vía la conexión CIMA existente; (4) enlazar la
+ficha o escala relevante de la app. Cada herramienta responde solo con datos
+reales de la app; si no hay dato, se dice que no está disponible.
 
 ## Convenciones del proyecto
 
