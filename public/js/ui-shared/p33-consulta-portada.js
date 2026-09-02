@@ -18,11 +18,12 @@
 
   var L = {
     es: {
-      searching:  'Preparando la consulta…',
-      writing:    'Redactando con las fichas de Enferix…',
+      searching:  'Buscando en las fuentes…',
+      writing:    'Redactando la respuesta…',
       done:       'Respuesta completa',
-      refs:       'Evidencia relacionada',
-      refsNota:   'Recuperada en paralelo mientras se redactaba. Es literatura sobre el tema, no la fuente de cada frase de arriba.',
+      refs:       'Referencias',
+      refsTarde:  'Evidencia relacionada',
+      refsNota:   'Llegó después de redactarse la respuesta, así que no respalda sus afirmaciones: es literatura sobre el tema.',
       openChat:   'Seguir en el chat de Javny',
       close:      'Cerrar',
       stop:       'Detener',
@@ -33,11 +34,12 @@
       aria:       'Respuesta de Javny a tu consulta'
     },
     ca: {
-      searching:  'Preparant la consulta…',
-      writing:    'Redactant amb les fitxes d\'Enferix…',
+      searching:  'Cercant a les fonts…',
+      writing:    'Redactant la resposta…',
       done:       'Resposta completa',
-      refs:       'Evidència relacionada',
-      refsNota:   'Recuperada en paral·lel mentre es redactava. És literatura sobre el tema, no la font de cada frase de dalt.',
+      refs:       'Referències',
+      refsTarde:  'Evidència relacionada',
+      refsNota:   'Va arribar després de redactar-se la resposta, així que no en fonamenta les afirmacions: és literatura sobre el tema.',
       openChat:   'Continuar al xat de Javny',
       close:      'Tancar',
       stop:       'Aturar',
@@ -102,12 +104,16 @@
     }).join('');
   }
 
-  function renderRefs(refs){
+  // aTiempo === false significa que la evidencia llegó DESPUÉS de redactarse la
+  // respuesta: entonces no puede presentarse como el respaldo de sus afirmaciones,
+  // porque el modelo no la tenía delante al escribir.
+  function renderRefs(refs, aTiempo){
     var list = (refs || []).filter(Boolean);
     if(!list.length) return '<div class="p33-refs-empty">' + esc(t('noRefs')) + '</div>';
+    var tarde = aTiempo === false;
     return '<div class="p33-refs">'
-      + '<h4 class="p33-refs-title">' + esc(t('refs')) + '</h4>'
-      + '<p class="p33-refs-nota">' + esc(t('refsNota')) + '</p>'
+      + '<h4 class="p33-refs-title">' + esc(tarde ? t('refsTarde') : t('refs')) + '</h4>'
+      + (tarde ? '<p class="p33-refs-nota">' + esc(t('refsNota')) + '</p>' : '')
       + '<ol class="p33-refs-list">'
       + list.map(function(r){
           var meta = [r.journal || r.source || '', r.year || ''].filter(Boolean).join(' · ');
@@ -267,9 +273,11 @@
     }
     marca('envío de la pregunta', 0);
 
-    function applySources(sources){
+    var refsATiempo = true;
+    function applySources(sources, aTiempo){
       var list = (sources && sources.references) || [];
       refs = list.slice();
+      if(aTiempo !== undefined) refsATiempo = aTiempo !== false;
     }
     function paint(){
       body.innerHTML = renderMarkdown(answer, refs);
@@ -277,7 +285,7 @@
     function finish(){
       marca('respuesta completa', performance.now() - tEnvio);
       paint();
-      body.insertAdjacentHTML('beforeend', renderRefs(refs));
+      body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
       setPhase(panel, t('done'), 'done');
       if(foot) foot.hidden = false;
       current = null;
@@ -297,7 +305,9 @@
         context: contexto,
         history: [],
         caseMemory: [],
-        route: {}
+        route: {},
+        // La portada responde corto y citado; el desarrollo largo es del chat.
+        conciso: true
       };
       var opts = {
         method: 'POST',
@@ -321,8 +331,13 @@
         if(evt.type === 'phase'){
           setPhase(panel, evt.phase === 'writing' ? t('writing') : t('searching'));
         } else if(evt.type === 'sources'){
-          applySources(evt.sources);
+          applySources(evt.sources, evt.aTiempo);
           if(refs.length) setPhase(panel, t('writing') + ' · ' + t('sourcesFound')(refs.length));
+          // Si llegan tarde (tras el texto), se repinta el bloque ya cerrado.
+          if(got && refs.length){
+            paint();
+            body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
+          }
         } else if(evt.type === 'delta'){
           if(tPrimerToken === null && (evt.text || '').trim()){
             tPrimerToken = performance.now();
@@ -331,7 +346,7 @@
           answer = evt.text || '';
           paint();
         } else if(evt.type === 'done'){
-          if(!refs.length) applySources(evt.sources);
+          if(!refs.length) applySources(evt.sources, evt.aTiempo);
           answer = (evt.answer || answer || '').trim();
           got = true;
         } else if(evt.type === 'error'){

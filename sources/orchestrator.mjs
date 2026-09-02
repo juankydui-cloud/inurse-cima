@@ -18,7 +18,17 @@ const GEMINI_BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.g
 // paralelo, pero la redacción no empieza hasta que responde la ÚLTIMA: sin tope,
 // una sola fuente lenta (hasta 18s en httpRequest) retrasa toda la respuesta.
 // Al agotarse, esa fuente se descarta y se redacta con las que sí llegaron.
-const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 5000);
+// Tope por fuente. Deliberadamente MENOR que la espera global de abajo: si
+// fueran iguales, ambas carreras terminaban a la vez y la fase de búsqueda se
+// daba por buena justo cuando en realidad había expirado, informando "a tiempo"
+// con cero referencias.
+const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 2500);
+
+// Espera máxima de la fase de búsqueda antes de empezar a redactar. Medido en
+// producción, las fuentes externas responden sobre los 950 ms, así que este tope
+// casi nunca se agota: se paga ~1 s a cambio de que la respuesta salga citada con
+// bibliografía. Si se agota, se redacta solo con las fichas y se dice en el texto.
+const WAIT_SOURCES_MS = Number(process.env.WAIT_SOURCES_MS || 3000);
 
 const SYSTEM_PROMPT = `Eres **Javny**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
 
@@ -375,7 +385,7 @@ async function searchAllSources(question, timings = []) {
 // que abarca todos los tipos de fuente. Es deliberadamente la misma lista y la misma
 // numeración que se envía al frontend (buildSourcesPayload) para que los números que
 // Gemini use al citar ([n]) coincidan exactamente con los que el cliente enlaza.
-function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments, cimaDrugs }, clientContext) {
+function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinicalTrials, semanticScholar, whoDocuments, cimaDrugs }, clientContext, opciones = {}) {
   let ctx = "";
   const refs = [];
   let n = 0;
@@ -514,28 +524,45 @@ function assembleContext(question, { articles, niceGuidelines, fdaDrug, clinical
   // esperar al usuario), el modelo escribe SIN literatura delante: pedirle citas
   // [n] en ese caso es pedirle que se las invente, que es justo lo que la regla
   // férrea del proyecto prohíbe.
+  // La extensión sólo se acota en la consulta de portada (opciones.conciso). El
+  // chat del avatar mantiene su desarrollo largo de siempre.
+  const extension = opciones.conciso
+    ? `\nEXTENSIÓN: entre 2000 y 3000 caracteres. Ve al grano: nada de introducciones ni de
+recapitulaciones. Prioriza lo accionable y lo que cambia la conducta clínica. El desarrollo
+extenso queda para el chat, no para esta respuesta.`
+    : "";
+
   if (n > 0) {
     ctx += `--- INSTRUCCIÓN ---
-Utiliza TODAS las fuentes anteriores para responder la siguiente pregunta clínica.
-Cita cada afirmación con el número entre corchetes indicado junto a cada fuente arriba: [1], [2], [3]...
+Responde la siguiente pregunta clínica combinando las dos clases de fuente de arriba:
+- Las FICHAS VALIDADAS DE iNURSE/Enferix son la fuente PRIORITARIA: mandan sobre el resto
+  cuando hablen del mismo punto. Cuando una afirmación salga de una ficha, dilo en el texto
+  nombrándola ("según la ficha de … de Enferix").
+- La literatura y las guías externas son evidencia COMPLEMENTARIA: cítalas con el número
+  entre corchetes que llevan arriba: [1], [2], [3]…
 Usa EXACTAMENTE esos números; no inventes ninguno ni cites uno que no exista en el contexto.
-Si una afirmación proviene de una ficha validada de Enferix, márcala como [Enferix-código] en vez de un número.
-Incluye un bloque de REFERENCIAS al final con formato bibliográfico completo, usando los mismos números.
+Cita en el propio texto, junto a la afirmación que respalda; no acumules las citas al final.
+NO escribas una lista de referencias al final: la aplicación la añade automáticamente.
 Si una fuente se contradice con otra, señálalo y prioriza la de mayor nivel de evidencia.
-Si las fuentes no cubren algún aspecto, indícalo explícitamente.
+Si las fuentes no cubren algún aspecto, indícalo explícitamente en vez de rellenar.${extension}
 
 PREGUNTA DEL USUARIO: ${question}`;
   } else {
+    // Sin literatura en el contexto, tanto si expiró la espera como si la búsqueda
+    // no trajo nada: en ambos casos el usuario tiene que saber que esta respuesta
+    // no lleva bibliografía detrás, y el modelo no puede citar números.
     ctx += `--- INSTRUCCIÓN ---
 Responde la siguiente pregunta clínica apoyándote ÚNICAMENTE en las fichas validadas de
 Enferix y demás contexto interno que aparece arriba, más tu conocimiento clínico general.
 En este contexto NO hay literatura externa recuperada, así que:
+- EMPIEZA con esta línea exacta, sola, antes del resto de la respuesta:
+  "Sin evidencia externa disponible en esta consulta: respuesta basada en las fichas validadas de Enferix."
 - NO cites números entre corchetes ([1], [2]...): no existe ninguna lista de referencias a la
   que puedan corresponder. Inventarlos sería atribuir una afirmación a una fuente inexistente.
 - Cuando una afirmación proceda de una ficha validada de Enferix, dilo con naturalidad en el
   texto, nombrando la ficha ("según la ficha de … de Enferix").
 - Cuando algo NO esté cubierto por el contexto interno, dilo explícitamente en vez de rellenar.
-No inventes dosis, umbrales, concentraciones ni protocolos.
+No inventes dosis, umbrales, concentraciones ni protocolos.${extension}
 
 PREGUNTA DEL USUARIO: ${question}`;
   }
@@ -728,7 +755,7 @@ export async function orchestrate({ question, context: clientContext, history, a
 // (fuentes en cuanto se resuelve la búsqueda, texto parcial a medida que Gemini lo
 // genera, y un evento final "done"). No escribe nada en la red directamente: eso lo
 // hace el llamador (server.mjs), que decide el formato de transporte (NDJSON).
-export async function orchestrateStream({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment }, onEvent) {
+export async function orchestrateStream({ question, context: clientContext, history, apiKey, model, caseMemory, route, attachment, conciso }, onEvent) {
   const key = apiKey || process.env.GEMINI_API_KEY || "";
   if (!key) {
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
@@ -736,68 +763,90 @@ export async function orchestrateStream({ question, context: clientContext, hist
 
   const t0 = Date.now();
 
-  // ── La generación NO espera a las fuentes externas ───────────────────────────
-  // Antes, la llamada al modelo iba después de searchAllSources: hasta que no
-  // respondía la última fuente no se escribía una sola letra, así que el usuario
-  // pagaba la búsqueda entera antes del primer token. Ahora el modelo arranca de
-  // inmediato con el contexto interno (fichas validadas de Enferix, vademécum y
-  // biblioteca), que el cliente ya trae montado, y las búsquedas externas corren
-  // en paralelo. Sus referencias se emiten cuando lleguen, y si no llegan a
-  // tiempo la respuesta sale igual: nunca la bloquean.
-  const { ctx: promptInterno } = assembleContext(question, {
-    articles: [], niceGuidelines: [], fdaDrug: null,
-    clinicalTrials: [], semanticScholar: [], whoDocuments: [], cimaDrugs: []
-  }, clientContext);
+  // ── Fuentes externas: se esperan, pero con reloj ─────────────────────────────
+  // Medido en producción, responden sobre los 950 ms, así que esperarlas cuesta
+  // ~1 s y a cambio la respuesta sale citada con bibliografía, que es el
+  // requisito. El tope (WAIT_SOURCES_MS, 3 s) existe sólo para que una fuente
+  // atascada no bloquee nunca: pasado ese tiempo se redacta con las fichas y la
+  // propia respuesta lo dice en su primera línea.
+  onEvent({ type: "phase", phase: "searching" });
 
-  onEvent({ type: "phase", phase: "writing" });
-
-  // Las búsquedas salen YA, sin await: se recogen más abajo.
   const timings = [];
-  let sourcesEmitidas = false;
-  const busquedas = searchAllSources(question, timings).then(resultados => {
-    const { refs } = assembleContext(question, resultados, clientContext);
-    const sources = buildSourcesPayload(refs, resultados);
-    // Se emiten en cuanto llegan, sin esperar a que el modelo termine: si las
-    // búsquedas ganan la carrera, el panel ya puede pintar la evidencia debajo
-    // del texto que todavía se está escribiendo.
-    onEvent({ type: "sources", sources });
-    sourcesEmitidas = true;
-    return { resultados, sources };
-  }).catch(err => {
+  const busquedas = searchAllSources(question, timings).catch(err => {
     console.error("[Orquestador] Las búsquedas externas fallaron:", err instanceof Error ? err.message : err);
-    return { resultados: null, sources: { references: [], queries: [], errors: ["Las fuentes externas no respondieron"] } };
+    return null;
   });
 
+  const aTiempo = await Promise.race([
+    busquedas,
+    new Promise(resolve => setTimeout(() => resolve(undefined), WAIT_SOURCES_MS))
+  ]);
+  const fuentesATiempo = aTiempo !== undefined && aTiempo !== null;
+  const msBusqueda = Date.now() - t0;
+
+  const vacio = {
+    articles: [], niceGuidelines: [], fdaDrug: null,
+    clinicalTrials: [], semanticScholar: [], whoDocuments: [], cimaDrugs: []
+  };
+  const { ctx: userPrompt, refs } = assembleContext(
+    question,
+    fuentesATiempo ? aTiempo : vacio,
+    clientContext,
+    { conciso: !!conciso }
+  );
+
+  // "A tiempo" de verdad significa que hay bibliografía dentro del prompt: una
+  // búsqueda que expira, o que responde sin resultados, deja al modelo escribiendo
+  // sin nada que citar, y eso el panel tiene que contarlo igual.
+  const conBibliografia = fuentesATiempo && refs.length > 0;
+
+  // Las referencias que van dentro del prompt se emiten ya, para que el panel las
+  // tenga listas cuando el modelo las cite en el texto.
+  let sources = conBibliografia
+    ? buildSourcesPayload(refs, aTiempo)
+    : { references: [], queries: [], errors: undefined };
+  onEvent({ type: "sources", sources, aTiempo: conBibliografia });
+  onEvent({ type: "phase", phase: "writing", sourceCount: refs.length, ms: msBusqueda });
+
   let tPrimerFragmento = null;
-  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), promptInterno, {
+  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
-    maxOutputTokens: 8192,
+    // La portada pide una respuesta corta; el chat mantiene su desarrollo largo.
+    maxOutputTokens: conciso ? 2048 : 8192,
     temperature: 0.3
   }, (fullText) => {
     if (tPrimerFragmento === null) {
       tPrimerFragmento = Date.now() - t0;
-      console.log(`[Orquestador] Primer fragmento de Gemini a los ${tPrimerFragmento} ms`);
+      console.log(`[Orquestador] Primer fragmento de Gemini a los ${tPrimerFragmento} ms (búsqueda: ${msBusqueda} ms)`);
     }
     onEvent({ type: "delta", text: fullText });
   });
 
-  // La respuesta ya está escrita; ahora se espera lo que quede de las búsquedas
-  // (con su propio tope), para adjuntar la evidencia relacionada al final.
-  const { sources } = await busquedas;
-  if (!sourcesEmitidas) onEvent({ type: "sources", sources });
+  // Si las fuentes llegaron tarde, se adjuntan igualmente como evidencia
+  // relacionada: el texto ya avisa de que se redactó sin ellas.
+  if (!conBibliografia) {
+    const tardias = await busquedas;
+    if (tardias) {
+      const { refs: refsTardias } = assembleContext(question, tardias, clientContext);
+      if (refsTardias.length) {
+        sources = buildSourcesPayload(refsTardias, tardias);
+        onEvent({ type: "sources", sources, aTiempo: false });
+      }
+    }
+  }
 
   const total = Date.now() - t0;
   console.log(`[Orquestador] Fuentes: ${timings.map(m => `${m.nombre}=${m.estado}/${m.ms}ms/${m.count}`).join(" ") || "ninguna"}`);
-  console.log(`[Orquestador] Total ${total} ms · primer fragmento ${tPrimerFragmento ?? "n/d"} ms · ${sources.references.length} referencias`);
+  console.log(`[Orquestador] Total ${total} ms · búsqueda ${msBusqueda} ms (${conBibliografia ? "con bibliografía en el prompt" : "SIN bibliografía: redactado solo con fichas"}) · primer fragmento ${tPrimerFragmento ?? "n/d"} ms · ${sources.references.length} referencias`);
 
   onEvent({
     type: "done",
     answer,
     sources,
     fetchedAt: new Date().toISOString(),
-    timings: { primerFragmentoMs: tPrimerFragmento, totalMs: total, fuentes: timings }
+    timings: { busquedaMs: msBusqueda, primerFragmentoMs: tPrimerFragmento, totalMs: total, conBibliografia, fuentes: timings }
   });
 }
 
