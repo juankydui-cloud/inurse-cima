@@ -20,10 +20,21 @@ export function anthropicDisponible() {
 
 let cliente = null;
 function getCliente() {
-  // maxRetries bajo a propósito: este endpoint es de latencia crítica y ya tiene
-  // su propio plan B (Gemini). Con los 2 reintentos por defecto, un fallo de
-  // Claude tardaba ~2 s en caer al otro proveedor; con uno, la mitad.
-  if (!cliente) cliente = new Anthropic({ maxRetries: 1 }); // la clave sale del entorno
+  if (!cliente) {
+    // Una clave vinculada a identidad exige además el workspace: sin esta
+    // cabecera la API responde 400 "anthropic-workspace-id is required when
+    // authenticating with an identity-linked API key". Con una clave normal la
+    // cabecera sobra, así que sólo se manda si la variable existe.
+    const workspaceId = (process.env.ANTHROPIC_WORKSPACE_ID || "").trim();
+    cliente = new Anthropic({
+      // maxRetries bajo a propósito: este endpoint es de latencia crítica y ya
+      // tiene su propio plan B (Gemini). Con los 2 reintentos por defecto, un
+      // fallo de Claude tardaba ~2 s en caer al otro proveedor; con uno, la mitad.
+      maxRetries: 1,                      // la clave sale del entorno
+      ...(workspaceId ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } } : {})
+    });
+    console.log(`[Anthropic] Cliente listo · workspace ${workspaceId ? "sí" : "no configurado"}`);
+  }
   return cliente;
 }
 
