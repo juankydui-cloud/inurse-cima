@@ -18,10 +18,11 @@
 
   var L = {
     es: {
-      searching:  'Buscando en las fuentes…',
-      writing:    'Redactando la respuesta…',
+      searching:  'Preparando la consulta…',
+      writing:    'Redactando con las fichas de Enferix…',
       done:       'Respuesta completa',
-      refs:       'Referencias',
+      refs:       'Evidencia relacionada',
+      refsNota:   'Recuperada en paralelo mientras se redactaba. Es literatura sobre el tema, no la fuente de cada frase de arriba.',
       openChat:   'Seguir en el chat de Javny',
       close:      'Cerrar',
       stop:       'Detener',
@@ -32,10 +33,11 @@
       aria:       'Respuesta de Javny a tu consulta'
     },
     ca: {
-      searching:  'Cercant a les fonts…',
-      writing:    'Redactant la resposta…',
+      searching:  'Preparant la consulta…',
+      writing:    'Redactant amb les fitxes d\'Enferix…',
       done:       'Resposta completa',
-      refs:       'Referències',
+      refs:       'Evidència relacionada',
+      refsNota:   'Recuperada en paral·lel mentre es redactava. És literatura sobre el tema, no la font de cada frase de dalt.',
       openChat:   'Continuar al xat de Javny',
       close:      'Tancar',
       stop:       'Aturar',
@@ -105,6 +107,7 @@
     if(!list.length) return '<div class="p33-refs-empty">' + esc(t('noRefs')) + '</div>';
     return '<div class="p33-refs">'
       + '<h4 class="p33-refs-title">' + esc(t('refs')) + '</h4>'
+      + '<p class="p33-refs-nota">' + esc(t('refsNota')) + '</p>'
       + '<ol class="p33-refs-list">'
       + list.map(function(r){
           var meta = [r.journal || r.source || '', r.year || ''].filter(Boolean).join(' · ');
