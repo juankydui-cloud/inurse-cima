@@ -24,8 +24,27 @@ mergeado y desplegado vía `autoDeploy: true`) y con la **Prioridad 3**
   Latencia instrumentada: marcas en consola (envío / contexto / primer token /
   fin) y `scripts/medir-latencia-javny.mjs`.
   **El modo interactivo del avatar no cambia**, y así debe seguir.
-  Pendiente de medir: latencias reales con Gemini y fuentes externas; el
-  streaming se verificó con un doble local de la API (`GEMINI_BASE_URL`).
+- **F1b · La generación no espera a las fuentes externas** (PR #143) — el
+  modelo arranca de inmediato con el contexto interno; las búsquedas corren en
+  paralelo con tope de 5 s por fuente (`SOURCE_BUDGET_MS`) y sus referencias se
+  emiten en cuanto llegan, sin bloquear nunca la respuesta.
+  Como al redactar no hay literatura delante, la instrucción del prompt se
+  bifurca: **sin literatura se le prohíbe citar `[n]`** (serían inventados) y se
+  le pide nombrar la ficha de Enferix; el bloque del panel se llama entonces
+  "Evidencia relacionada", con nota de que no respalda cada frase.
+  Instrumentación en el servidor: log por fuente (`europepmc=ok/820ms/8`) y
+  **tiempo hasta el primer fragmento de Gemini**.
+
+  **Diagnóstico abierto de latencia** — medido en producción antes de F1b:
+  contexto 15 ms, primer token **34.584 ms**, respuesta completa **31 ms
+  después**. Que el texto entero llegue en 31 ms significa que Gemini no emite
+  de forma incremental: entrega la respuesta ya terminada. Las búsquedas no lo
+  explicaban (estaban topadas). La reordenación de F1b quita del camino
+  crítico los segundos de búsqueda, pero **no bajará el primer token de 3 s si
+  el modelo sigue sin emitir hasta terminar**. Lo zanja la línea de log
+  `[Orquestador] Primer fragmento de Gemini a los N ms`: si marca decenas de
+  miles, el tiempo es del modelo (revisar qué modelo corre en Render, si lleva
+  razonamiento, y el tamaño del prompt), no de la orquestación.
 - **P3.1 · Navegador NANDA · NOC · NIC** — overlay con 3 columnas enlazadas
   en escritorio y 3 pasos con migas de pan en móvil. Datos del diccionario
   NNN curado (`nnn_codes.json`, vínculos verificados; el resto pendientes
