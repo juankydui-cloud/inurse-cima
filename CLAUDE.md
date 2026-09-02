@@ -126,6 +126,15 @@ lo indique.
 - El término de búsqueda en inglés (`evidenceQuery` en cada ficha) también
   es editorial: si no está, se envía el título ES tal cual. Nunca se
   autotraduce.
+- **Texto de relleno en dobles de prueba**: cuando se levante un doble/stub de
+  un modelo o de una fuente para probar (streaming, latencia, maquetación), su
+  texto debe ser **inconfundible como relleno**: `TEXTO DE PRUEBA, NO CLÍNICO`
+  repetido, o equivalente. Nunca frases con aspecto clínico, nunca umbrales ni
+  dosis, y **nunca citas ni referencias bibliográficas inventadas** — ni siquiera
+  plausibles. Una captura o un vídeo de prueba se enseña sin que nadie pueda
+  confundir su contenido con una respuesta real; una nota al pie que avise no
+  basta, porque lo que se recuerda es la pantalla. Regla del usuario (Juanky),
+  a raíz de un stub cuyo relleno imitaba una respuesta clínica citada.
 - Mismo principio para `evidenceDrugs` (array editorial de fármacos que la
   ficha nombra literalmente, p.ej. en su sección de tratamiento/reversión):
   las fuentes de fármacos (OpenFDA) se consultan SOLO por esos nombres,

@@ -85,6 +85,11 @@
   return {context:ctx.trim(),sources:sources};
  }
  function retrieve(qy){return retrieveDetailed(qy).context}
+ /* La consulta de portada (p33) necesita EXACTAMENTE esta recuperación, no una
+    copia suya: las fichas validadas son la fuente prioritaria y las dos vías de
+    consulta deben ver lo mismo. Se publica igual que window.EnferixLibraryRetrieve
+    hace con la biblioteca. No cambia nada del chat: solo da nombre a lo que ya había. */
+ window.EnferixGuideRetrieve=retrieveDetailed;
  function parseLibrarySources(context){
   var out=[],re=/### \[BIBLIOTECA VIRTUAL\] ([^\n]+)\nID: ([^ ·\n]+) · Bloque ([^ ·\n]+) · ([^\n]+)/g,m;
   while((m=re.exec(context||''))&&out.length<8)out.push({type:'library',title:m[1],id:m[2],meta:'Bloque '+m[3]+' · '+m[4]});
