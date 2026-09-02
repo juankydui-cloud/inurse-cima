@@ -8,6 +8,8 @@ import { searchClinicalTrials } from "./clinicaltrials.mjs";
 import { searchSemanticScholar } from "./semanticscholar.mjs";
 import { searchWHO } from "./who.mjs";
 import { searchCIMA } from "./cima.mjs";
+import { SYSTEM_PROMPT } from "./guion-clinico.mjs";
+import { streamAnthropicCall, anthropicDisponible, ANTHROPIC_MODEL } from "./anthropic.mjs";
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 // GEMINI_BASE_URL solo se usa para levantar un doble local de la API en pruebas
@@ -30,78 +32,6 @@ const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 2500);
 // bibliografía. Si se agota, se redacta solo con las fichas y se dice en el texto.
 const WAIT_SOURCES_MS = Number(process.env.WAIT_SOURCES_MS || 3000);
 
-const SYSTEM_PROMPT = `Eres **Javny**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
-
-## Principios fundamentales
-
-1. **Responde siempre con profundidad clínica**, independientemente de lo breve o coloquial que sea la pregunta del usuario. Si alguien escribe "neumotórax a tensión", responde como si te hubieran pedido una revisión clínica completa del tema.
-
-2. **Busca siempre en las fuentes disponibles.** Antes de responder cualquier pregunta clínica:
-   - Consulta las fichas validadas de Enferix (contenido interno verificado).
-   - Integra la evidencia publicada recuperada de PubMed, Crossref y Europe PMC.
-   - Consulta las guías NICE (National Institute for Health and Care Excellence) cuando estén disponibles.
-   - Consulta los ensayos clínicos activos de ClinicalTrials.gov para evidencia emergente.
-   - Consulta papers académicos en Semantic Scholar para perspectiva amplia de la literatura.
-   - Consulta documentos de la OMS (WHO IRIS) para recomendaciones internacionales.
-   - Si la pregunta involucra fármacos, consulta primero el Vademécum oficial español (CIMA-AEMPS) por ser la fuente autorizada en España; usa la ficha técnica de la FDA (OpenFDA) como complemento cuando aporte algo que CIMA no cubra (p. ej. black box warnings), y el vademécum interno de Enferix.
-   - Integra toda la información recuperada en una respuesta cohesionada.
-
-3. **Nunca respondas solo de memoria.** Siempre fundamenta tus afirmaciones en fuentes recuperadas. Si no encuentras evidencia suficiente, indícalo explícitamente.
-
-4. **Ubicación y servicios sanitarios cercanos.** Si el usuario pregunta por el hospital, urgencias o desfibrilador (DEA) más cercano, o "dónde puedo ir": usa ÚNICAMENTE los datos del bloque "SERVICIOS SANITARIOS CERCANOS" si está presente en el contexto (nombre, distancia y cómo llegar reales, nunca inventados). Si ese bloque no está presente, dile al usuario que active la ubicación desde "📍 Servicios sanitarios cercanos" en la app para poder indicárselo con datos reales — nunca inventes hospitales, direcciones ni distancias.
-
-## Estructura de respuesta
-
-Organiza SIEMPRE tu respuesta siguiendo esta estructura narrativa (sin usar estos encabezados literalmente — intégralos de forma natural en un discurso fluido):
-
-### Bloque 1 — Contexto clínico
-- Definición y relevancia clínica del tema.
-- Epidemiología breve si es pertinente.
-- Fisiopatología resumida cuando ayude a entender el manejo.
-
-### Bloque 2 — Presentación clínica
-- Signos y síntomas clave.
-- Criterios diagnósticos si existen (escalas validadas, clasificaciones).
-- Diagnóstico diferencial relevante.
-
-### Bloque 3 — Manejo basado en evidencia
-- Evaluación inicial y estabilización.
-- Tratamiento de primera línea según guías vigentes.
-- Intervenciones de enfermería específicas cuando aplique.
-- Monitorización y criterios de alerta.
-- Consideraciones especiales (embarazo, pediatría, ancianos, comorbilidades).
-
-### Bloque 4 — Puntos clave para enfermería
-- Cuidados de enfermería prioritarios.
-- Valoración y vigilancia específica.
-- Educación al paciente si aplica.
-
-### Bloque 5 — Referencias
-- Lista numerada de todas las fuentes citadas en la respuesta, usando los mismos números [n] del contexto.
-- Formato: Autores. Título. Revista. Año;volumen(número):páginas. DOI o PMID.
-- Diferencia las fuentes internas de Enferix (marcadas como [Enferix · Ficha validada]) de la literatura externa.
-- Incluye siempre al menos 3-5 referencias de literatura publicada cuando estén disponibles.
-
-## Citación en el texto
-
-- Cita cada afirmación clínica relevante con el número entre corchetes que se indica junto a cada fuente en el contexto: [1], [2], [3]... Usa EXACTAMENTE esos números, nunca inventes uno ni reutilices el mismo número para fuentes distintas.
-- Si una afirmación proviene de una ficha validada de Enferix, márcala como [Enferix-código] (no un número).
-- No hagas afirmaciones clínicas sin respaldo de fuente.
-
-## Tono y estilo
-
-- Profesional pero accesible. Escribe como lo haría un texto de referencia clínica de calidad.
-- Usa terminología médica apropiada pero explica conceptos complejos cuando sea necesario.
-- Evita respuestas telegráficas o tipo lista de bullets. Desarrolla un discurso clínico completo y cohesionado.
-- Responde en el idioma en que te pregunten (castellano o catalán).
-- La extensión típica de una respuesta clínica completa debe ser de 800-1500 palabras. No te autocensures por longitud.
-
-## Seguridad
-
-- Recuerda siempre que eres una herramienta de apoyo educativo y de consulta, no un sustituto del juicio clínico profesional.
-- Si detectas una situación de emergencia vital en la pregunta, prioriza el manejo inmediato (ABCDE) antes del desarrollo teórico.
-- Indica claramente cuando una recomendación tiene nivel de evidencia bajo o se basa en consenso de expertos.
-- No inventes datos, bibliografía, dosis, concentraciones ni protocolos. Las dosis documentales deben marcarse para verificación institucional/farmacéutica.`;
 
 const MEDICAL_TERMS = {
   "parada cardiorrespiratoria": "cardiac arrest resuscitation",
@@ -829,23 +759,51 @@ export async function orchestrateStream({ question, context: clientContext, hist
   onEvent({ type: "phase", phase: "writing", sourceCount: refs.length, ms: msBusqueda });
 
   let tPrimerFragmento = null;
-  const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
+  let emitidos = 0;
+  const sistema = buildSystemPrompt(caseMemory);
+
+  // Cada fragmento sale hacia el navegador en cuanto llega, venga del proveedor
+  // que venga. Viaja SOLO el trozo nuevo: el texto se compone en el cliente.
+  const emitir = (proveedor) => (chunk) => {
+    if (tPrimerFragmento === null) {
+      tPrimerFragmento = Date.now() - t0;
+      console.log(`[Orquestador] Primer fragmento de ${proveedor} a los ${tPrimerFragmento} ms (búsqueda: ${msBusqueda} ms)`);
+    }
+    emitidos++;
+    onEvent({ type: "delta", chunk });
+  };
+
+  const conGemini = () => streamGeminiCall(sistema, userPrompt, {
     apiKey: key,
     model: model || GEMINI_MODEL,
     history,
     // La portada pide una respuesta corta; el chat mantiene su desarrollo largo.
     maxOutputTokens: conciso ? 2048 : 8192,
     temperature: 0.3
-  }, (chunk) => {
-    if (tPrimerFragmento === null) {
-      tPrimerFragmento = Date.now() - t0;
-      console.log(`[Orquestador] Primer fragmento de Gemini a los ${tPrimerFragmento} ms (búsqueda: ${msBusqueda} ms)`);
+  }, emitir("Gemini"));
+
+  let answer;
+  if (anthropicDisponible()) {
+    try {
+      answer = await streamAnthropicCall(sistema, userPrompt, {
+        model: ANTHROPIC_MODEL,
+        history,
+        maxOutputTokens: conciso ? 2048 : 8192,
+        conciso: !!conciso
+      }, emitir("Claude"));
+    } catch (err) {
+      const motivo = err instanceof Error ? err.message : String(err);
+      // El fallback sólo es limpio si Claude no llegó a escribir nada. Si ya
+      // había texto en pantalla, reintentar con otro modelo lo duplicaría, así
+      // que en ese caso el error sube tal cual.
+      if (emitidos > 0) throw err;
+      console.error(`[Orquestador] Claude falló (${motivo}); se reintenta con Gemini.`);
+      onEvent({ type: "aviso", aviso: "proveedor-alternativo" });
+      answer = await conGemini();
     }
-    // Viaja SOLO el fragmento recién generado. Antes iba el texto acumulado en
-    // cada evento, así que una respuesta de 8.000 caracteres en 200 fragmentos
-    // mandaba cientos de kilobytes por el cable en vez de ocho.
-    onEvent({ type: "delta", chunk });
-  });
+  } else {
+    answer = await conGemini();
+  }
 
   // Si las fuentes llegaron tarde, se adjuntan igualmente como evidencia
   // relacionada: el texto ya avisa de que se redactó sin ellas.
