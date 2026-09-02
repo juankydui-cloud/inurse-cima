@@ -10,7 +10,15 @@ import { searchWHO } from "./who.mjs";
 import { searchCIMA } from "./cima.mjs";
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
-const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+// GEMINI_BASE_URL solo se usa para levantar un doble local de la API en pruebas
+// (ver docs/pruebas-streaming.md). En Render no está definida y se usa Google.
+const GEMINI_BASE = process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta/models";
+
+// Presupuesto por fuente en la fase de búsqueda. Las búsquedas ya se lanzan en
+// paralelo, pero la redacción no empieza hasta que responde la ÚLTIMA: sin tope,
+// una sola fuente lenta (hasta 18s en httpRequest) retrasa toda la respuesta.
+// Al agotarse, esa fuente se descarta y se redacta con las que sí llegaron.
+const SOURCE_BUDGET_MS = Number(process.env.SOURCE_BUDGET_MS || 7000);
 
 const SYSTEM_PROMPT = `Eres **Javny**, la asistente clínica de referencia de Enferix. Tu función es proporcionar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta clínica como UpToDate o Dr.Oracle.
 
@@ -246,6 +254,17 @@ const GUIDELINE_ORGS = [
   '"JBI" OR "Joanna Briggs Institute"'
 ];
 
+// Acota una búsqueda al presupuesto de la fase: si tarda más, se resuelve con el
+// valor vacío que espera cada consumidor en vez de bloquear al resto. La promesa
+// original se deja correr (su resultado llegará a la caché de cache.mjs y servirá
+// a la siguiente consulta), pero ya no se espera.
+function withBudget(promise, empty, ms = SOURCE_BUDGET_MS) {
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(empty), ms))
+  ]);
+}
+
 async function searchAllSources(question) {
   const queries = generateQueries(question);
   const guidelineQuery = `(${queries[0]}) AND (${GUIDELINE_ORGS.join(" OR ")})`;
@@ -255,17 +274,18 @@ async function searchAllSources(question) {
   // traducción a inglés de DRUG_NAMES (pensada para PubMed/OpenFDA).
   const cimaQuery = normalize(question).split(" ").filter(w => w.length > 3)[0] || queries[0];
 
+  const vacio = { items: [] };
   const searches = [
-    searchEuropePMC(queries[0], { limit: 8 }),
-    queries[1] ? searchPubMed(queries[1], { limit: 5 }) : Promise.resolve({ items: [] }),
-    searchCrossref(queries[0], { limit: 5 }),
-    searchPubMed(guidelineQuery, { limit: 5 }),
-    searchNICE(queries[0], { limit: 5 }),
-    drugName ? searchOpenFDA(drugName) : Promise.resolve(null),
-    searchClinicalTrials(queries[0], { limit: 5 }),
-    searchSemanticScholar(queries[0], { limit: 5 }),
-    searchWHO(queries[0], { limit: 5 }),
-    drugRelated ? searchCIMA(cimaQuery, { limit: 5 }) : Promise.resolve({ items: [] })
+    withBudget(searchEuropePMC(queries[0], { limit: 8 }), vacio),
+    queries[1] ? withBudget(searchPubMed(queries[1], { limit: 5 }), vacio) : Promise.resolve(vacio),
+    withBudget(searchCrossref(queries[0], { limit: 5 }), vacio),
+    withBudget(searchPubMed(guidelineQuery, { limit: 5 }), vacio),
+    withBudget(searchNICE(queries[0], { limit: 5 }), vacio),
+    drugName ? withBudget(searchOpenFDA(drugName), null) : Promise.resolve(null),
+    withBudget(searchClinicalTrials(queries[0], { limit: 5 }), vacio),
+    withBudget(searchSemanticScholar(queries[0], { limit: 5 }), vacio),
+    withBudget(searchWHO(queries[0], { limit: 5 }), vacio),
+    drugRelated ? withBudget(searchCIMA(cimaQuery, { limit: 5 }), vacio) : Promise.resolve(vacio)
   ];
 
   const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult] =
@@ -601,7 +621,9 @@ function buildSourcesPayload(refs, { queries, errors }) {
   };
 }
 
-async function prepareOrchestration(question, clientContext) {
+async function prepareOrchestration(question, clientContext, onPhase) {
+  const startedAt = Date.now();
+  if (onPhase) onPhase({ phase: "searching" });
   const searchResults = await searchAllSources(question);
   const { articles, niceGuidelines, fdaDrug, cimaDrugs, drugDetected, queries, errors } = searchResults;
   console.log(`[Orquestador] Queries: ${JSON.stringify(queries)} | Artículos: ${articles.length} | NICE: ${niceGuidelines.length} | FDA: ${fdaDrug ? "sí" : "no"} | CIMA: ${cimaDrugs.length}` +
@@ -609,6 +631,7 @@ async function prepareOrchestration(question, clientContext) {
     (errors.length ? ` | Errores: ${errors.join("; ")}` : ""));
 
   const { ctx, refs } = assembleContext(question, searchResults, clientContext);
+  if (onPhase) onPhase({ phase: "writing", sourceCount: refs.length, ms: Date.now() - startedAt });
   return {
     searchResults,
     userPrompt: ctx,
@@ -654,7 +677,11 @@ export async function orchestrateStream({ question, context: clientContext, hist
     throw new Error("No hay API Key de Gemini configurada. Añade GEMINI_API_KEY en las variables de entorno de Render.");
   }
 
-  const { userPrompt, sources } = await prepareOrchestration(question, clientContext);
+  // Las fases viajan como eventos propios para que el cliente pueda decir en qué
+  // punto está la consulta ("buscando en fuentes" / "redactando") desde el primer
+  // instante, en vez de quedarse en blanco hasta el primer fragmento de texto.
+  const { userPrompt, sources } = await prepareOrchestration(question, clientContext,
+    info => onEvent({ type: "phase", ...info }));
   onEvent({ type: "sources", sources });
 
   const answer = await streamGeminiCall(buildSystemPrompt(caseMemory), userPrompt, {
