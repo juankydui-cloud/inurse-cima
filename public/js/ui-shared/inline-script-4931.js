@@ -55,6 +55,12 @@
  try{ DIDX=DOCS.map(function(d){return {d:d,t:nrm(d.title+' '+d.tags+' '+d.summary+' '+d.sec.map(function(s){return s.h+' '+stripH(s.b)}).join(' '))}}); }catch(e){}
  try{ VIDX=VADEM.map(function(v){return {v:v,t:nrm(v.n+' '+v.a+' '+v.i+' '+v.cat)}}); }catch(e){}
  function retrieveDetailed(qy){
+  /* Una urgencia contada en lenguaje natural ("no responde y no respira") no
+     comparte palabras con los títulos de las fichas de soporte vital, así que
+     la búsqueda por solapamiento devolvía fichas ajenas. P3.4 traduce esas
+     frases a los términos con los que están escritas las fichas antes de
+     buscar; no cambia el contenido, sólo con qué palabras se busca. */
+  try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.expandir) qy=window.EnferixUrgencias.expandir(qy); }catch(e){}
   var toks=nrm(qy).split(/[^a-z0-9]+/).filter(function(w){return w.length>2&&!STOP[w]});
   var seen={},tk=[];toks.forEach(function(w){if(!seen[w]){seen[w]=1;tk.push(w)}});
   if(!tk.length)return {context:'',sources:[]};

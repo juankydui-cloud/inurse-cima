@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   P3.4 · Urgencias descritas en lenguaje natural
+   ---------------------------------------------------------------------------
+   Quien tiene una urgencia delante no escribe "parada cardiorrespiratoria":
+   escribe "no responde y no respira". La recuperación de fichas puntúa por
+   solapamiento de palabras con el título, las etiquetas y el cuerpo, así que
+   esas frases no enganchaban NADA de soporte vital.
+
+   Y no fallaban en silencio, que habría sido menos grave: al puntuar palabras
+   sueltas como "paciente" o "está", devolvían fichas ajenas con aspecto de
+   acierto. Medido antes de este arreglo:
+
+     "se ha desmayado y no reacciona" → MAGALDRATO | CITARABINA | MESNA
+     "está sangrando mucho"           → Estatus epiléptico | EHH | Estatus asmático
+
+   Eso metía ruido clínico en el contexto del modelo, que es peor que no
+   recuperar nada.
+
+   Aquí se traduce el lenguaje coloquial de urgencia a los términos con los que
+   están escritas las fichas, ANTES de buscar. No se inventa contenido: sólo se
+   cambia con qué palabras se busca.
+
+   La misma detección decide si la respuesta es de emergencia, para que el
+   panel no pinte bibliografía en mitad de una reanimación. Una sola definición
+   de "esto es una urgencia" para las dos cosas: si hubiera dos, acabarían
+   discrepando.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  function nrm(s){
+    return String(s || '').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  /* Cada entrada: cómo lo dice la gente → con qué palabras están escritas las
+     fichas. Los términos de la derecha se han comprobado contra los títulos
+     reales de public/data/guias.js; si se añade una entrada nueva, hay que
+     comprobar que engancha una ficha existente, no suponerlo. */
+  var URGENCIAS = [
+    {
+      clave: 'parada',
+      // "no respira" y "sin pulso" mandan aunque también se diga que no responde
+      re: /\bno\s+(respira|ventila)\b|\bsin\s+(pulso|respiracion|signos\s+de\s+vida)\b|\bno\s+tiene\s+pulso\b|\bparada\b|\bpcr\b|\bse\s+ha\s+parado\b|\bno\s+le\s+noto\s+el\s+pulso\b/,
+      terminos: 'parada cardiorrespiratoria RCP soporte vital reanimacion cardiopulmonar desfibrilacion compresiones'
+    },
+    {
+      clave: 'atragantamiento',
+      re: /\batragant/,
+      terminos: 'atragantamiento obstruccion de la via aerea por cuerpo extrano Heimlich soporte vital basico'
+    },
+    {
+      clave: 'atragantamiento',
+      re: /\bse\s+(esta\s+)?ahoga(ndo)?\b|\bse\s+le\s+ha\s+ido\s+por\s+otro\s+lado\b|\bno\s+puede\s+(respirar|tragar)\b.*\b(comi|trag|bocado|comida)/,
+      terminos: 'atragantamiento obstruccion de la via aerea cuerpo extrano soporte vital basico'
+    },
+    {
+      clave: 'inconsciencia',
+      re: /\bno\s+(responde|reacciona|contesta)\b|\binconsciente\b|\bse\s+ha\s+desmayado\b|\bse\s+ha\s+desvanecido\b|\bse\s+ha\s+desplomado\b|\bno\s+se\s+despierta\b|\bno\s+abre\s+los\s+ojos\b/,
+      terminos: 'paciente en coma inconsciencia soporte vital basico RCP valoracion nivel de consciencia Glasgow'
+    },
+    {
+      clave: 'hemorragia',
+      re: /\bsangra(ndo)?\b|\bsangre\b|\bhemorragia\b|\bse\s+desangra\b|\bno\s+para\s+de\s+sangrar\b/,
+      terminos: 'hemorragia shock hipovolemico control de la hemorragia transfusion masiva'
+    },
+    {
+      clave: 'convulsion',
+      re: /\bconvulsion(a|ando)?\b|\bconvulsiones\b|\bataque\s+epileptico\b|\ble\s+ha\s+dado\s+un\s+ataque\b|\bespasmos\b/,
+      terminos: 'convulsiones epilepsia estatus epileptico crisis comicial'
+    },
+    {
+      clave: 'anafilaxia',
+      re: /\banafilaxi/,
+      terminos: 'anafilaxia adrenalina intramuscular reaccion alergica grave'
+    },
+    {
+      clave: 'anafilaxia',
+      re: /\b(se\s+le\s+)?(hincha|ha\s+hinchado|esta\s+hinchando)\b.*\b(garganta|cara|labios|lengua)\b|\breaccion\s+alergica\s+grave\b/,
+      terminos: 'anafilaxia adrenalina intramuscular reaccion alergica grave'
+    }
+  ];
+
+  /* Devuelve { urgencia, claves, terminos } — claves en plural porque una frase
+     puede tocar dos cuadros a la vez ("no responde y no respira" es
+     inconsciencia + parada, y las dos fichas vienen bien). */
+  function detectar(texto){
+    var t = nrm(texto);
+    var claves = [], terminos = [];
+    for (var i = 0; i < URGENCIAS.length; i++){
+      if (URGENCIAS[i].re.test(t)){
+        if (claves.indexOf(URGENCIAS[i].clave) < 0) claves.push(URGENCIAS[i].clave);
+        terminos.push(URGENCIAS[i].terminos);
+      }
+    }
+    return { urgencia: claves.length > 0, claves: claves, terminos: terminos.join(' ') };
+  }
+
+  /* Detectar el cuadro clínico y detectar que está PASANDO son dos cosas
+     distintas, y confundirlas rompe una de las dos:
+       - "cómo se maneja un atragantamiento" → hay que buscar la ficha de
+         atragantamiento (expandir SÍ), pero es una consulta de estudio y su
+         respuesta lleva bibliografía como cualquier otra.
+       - "se está atragantando" → lo mismo para buscar, pero además es una
+         urgencia en curso, y ahí la bibliografía estorba.
+     Estas marcas delatan la pregunta teórica: quien tiene la urgencia delante
+     no escribe "en qué consiste". */
+  var TEORICA = /^\s*(como|que|cual(es)?|cuando|cuanto|por\s+que|para\s+que|en\s+que)\b|\bmanejo\s+de\b|\bprotocolo\b|\balgoritmo\b|\bdosis\s+de\b|\bexplica\b|\bdiferencia\b|\bdefinicion\b|\bcuidados\s+de\b|\bsignos\s+de\b|\bsintomas\s+de\b|\bindicaciones\b|\btratamiento\s+de\b/;
+
+  /* ¿Está ocurriendo ahora? Sólo entonces la respuesta es de emergencia. */
+  function enCurso(texto){
+    var d = detectar(texto);
+    if (!d.urgencia) return false;
+    return !TEORICA.test(nrm(texto));
+  }
+
+  /* Texto con el que buscar: el original más los términos clínicos. Se
+     conserva el original porque puede llevar datos que importan (la edad, el
+     fármaco implicado), y esos también deben pesar en la búsqueda. */
+  function expandir(texto){
+    var d = detectar(texto);
+    return d.urgencia ? (String(texto || '') + ' ' + d.terminos) : String(texto || '');
+  }
+
+  window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso };
+})();
