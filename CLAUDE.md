@@ -219,6 +219,22 @@ reales de la app; si no hay dato, se dice que no está disponible.
   fichas · X ms`.
 - El guion de Live es SUYO (`SYSTEM_INSTRUCTION` en su archivo), no el
   `guion-clinico.mjs` de la portada y el chat. Son dos textos distintos.
+- **`searchINurse` puntúa por coincidencia LITERAL de palabras** (+9 título,
+  +4 meta, +1 cuerpo) y con `includes` de subcadena: "fuente" casa dentro de
+  "fuentes". Por eso, al reprocharle a Javny que no tenía la fuente, ganaron los
+  documentos con esa palabra en el título y perdió Soporte Vital Básico.
+- **El cuadro clínico del caso persiste** (PR #152): se fija al reconocerse y
+  dura hasta `resetCase`. Cada turno busca por el cuadro, con el relato detrás.
+  Recalcularlo por turno hacía que la búsqueda siguiera a las palabras del
+  último turno, que en una sesión real son preguntas y reproches, no el cuadro.
+  **Una sesión de Live es UN caso**: tenerlo presente antes de tocar esto.
+- **La Biblioteca virtual mezcla contenido clínico con documentación del propio
+  producto**. Los documentos de producto se excluyen del índice clínico por su
+  **categoría editorial** ("Integración global, calidad y despliegue", 96 docs;
+  más las subcategorías de gobernanza), no por lista de títulos. **Ojo**: no
+  todo lo que lleva "fuente" en el título es documentación — "Fuentes ocultas de
+  hemorragia en trauma" y "Fuentes de células y acondicionamiento" (trasplante
+  hematopoyético) son clínicas, y excluirlas sería un error.
 - La transcripción por voz pasa por `sanitizeTranscript`, que normaliza los
   números de emergencia ("alumno uno dos" → 112).
 
