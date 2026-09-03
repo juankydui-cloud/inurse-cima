@@ -242,6 +242,10 @@ function resetCase(silent=false){
   }
 }
 function sanitizeTranscript(s){
+  /* El reconocimiento de voz transcribe "112" como "alumno uno dos". Se
+     normaliza aquí, que es por donde pasa TODO lo transcrito antes de llegar al
+     modelo, para que la indicación de avisar al 112 no se pierda. */
+  try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.normalizarEmergencias) s=window.EnferixUrgencias.normalizarEmergencias(s); }catch(e){}
   return String(s||'')
     .replace(/\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/gi,'[correo omitido]')
     .replace(/\b(?:dni|nie|nhc|nuhsa|historia\s*clinica|nombre|apellidos)\s*[:\-]?\s*[^\n,;]{2,50}/gi,'[identificador omitido]')
