@@ -81,6 +81,45 @@
     }
   ];
 
+  /* ── Ámbito de la ficha: ¿asistencia a pie de cama, o gestión? ──────────────
+     En una parada extrahospitalaria se coló la ficha de donación en asistolia
+     controlada (Maastricht III). No es un error de puntuación: esa ficha lleva
+     "soporte vital" en sus etiquetas —por la limitación del tratamiento de
+     soporte vital— y comparte vocabulario con la parada. Compite legítimamente
+     por léxico; lo que no tiene es aplicabilidad durante una reanimación.
+
+     El criterio NO es una lista de títulos prohibidos, que envejecería con el
+     catálogo: es el DOMINIO al que pertenece la ficha, leído en los campos que
+     declaran su identidad (título, etiquetas y fuente). Una ficha cuya identidad
+     se define por donación y trasplantes, coordinación, trámites, legislación o
+     gestión de la calidad es de ámbito organizativo, se llame como se llame, y
+     una ficha nueva del mismo dominio queda cubierta sin tocar nada.
+
+     Se exigen DOS marcadores distintos: con uno solo, una ficha clínica que
+     mencione de pasada "protocolo del centro" quedaría fuera sin merecerlo.
+
+     Esto NO borra nada del catálogo. La ficha se sigue encontrando al buscarla,
+     y en modo consulta compite como siempre. Sólo deja de competir cuando hay
+     una urgencia en curso. */
+  var GESTION = [
+    /\bdonacion(es)?\b|\bdonante(s)?\b/,
+    /\btrasplante(s)?\b|\breceptor(es)?\b|\bont\b/,
+    /\bcoordinacion\b|\bcoordinador(a|es)?\b/,
+    /\bcomite(s)?\b|\bcomision(es)?\b/,
+    /\blegislacion\b|\bnormativa\b|\bley(es)?\b|\bjuridic|\bjudicial\b|\bforense\b/,
+    /\btramite(s)?\b|\bgestion\b|\bacreditacion\b|\bauditoria\b|\bfacturacion\b/,
+    /\blista(s)?\s+de\s+espera\b|\blogistica\b|\bcircuito\s+administrativo\b/,
+    /\bdocencia\b|\bformacion\s+continuada\b|\binvestigacion\s+clinica\b/,
+    /\blimitacion\s+(del\s+)?(tratamiento|esfuerzo)\b|\bltsv\b|\badecuacion\s+del\s+esfuerzo\b/
+  ];
+
+  function esGestion(textoIdentidad){
+    var t = nrm(textoIdentidad);
+    var n = 0;
+    for (var i = 0; i < GESTION.length; i++) if (GESTION[i].test(t)) n++;
+    return n >= 2;
+  }
+
   /* Devuelve { urgencia, claves, terminos } — claves en plural porque una frase
      puede tocar dos cuadros a la vez ("no responde y no respira" es
      inconsciencia + parada, y las dos fichas vienen bien). */
@@ -122,5 +161,5 @@
     return d.urgencia ? (String(texto || '') + ' ' + d.terminos) : String(texto || '');
   }
 
-  window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso };
+  window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso, esGestion: esGestion };
 })();

@@ -363,7 +363,7 @@ function queryTokens(query){
 }
 function searchINurse(query,focus='all',limit=5){
   const tokens=queryTokens(query);const index=prepareKnowledge();
-  const scored=index.map(item=>{
+  let scored=index.map(item=>{
     let score=0;
     const title=norm(item.title),meta=norm(item.meta),full=item.searchable;
     tokens.forEach(t=>{
@@ -375,7 +375,18 @@ function searchINurse(query,focus='all',limit=5){
     if(focus==='guides'&&item.type==='Guía clínica')score+=3;
     if(focus==='library'&&item.type==='Biblioteca virtual')score+=3;
     return {item,score};
-  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,Math.max(1,Math.min(8,Number(limit)||5)));
+  }).filter(x=>x.score>0);
+  /* Live tiene su propia recuperación, así que el filtro de ámbito hay que
+     aplicarlo también aquí — con la MISMA definición de p34, no con una copia:
+     con dos criterios acabarían discrepando y Live serviría en una parada la
+     ficha que la portada ya descarta. Sólo actúa en urgencia en curso. */
+  try{
+    const U=window.EnferixUrgencias;
+    if(U&&U.enCurso&&U.esGestion&&U.enCurso(query)){
+      scored=scored.filter(x=>!U.esGestion([x.item.title,x.item.meta].join(' ')));
+    }
+  }catch(e){}
+  scored=scored.sort((a,b)=>b.score-a.score).slice(0,Math.max(1,Math.min(8,Number(limit)||5)));
   const sources=scored.map(x=>({title:x.item.title,meta:x.item.meta,type:x.item.type,id:x.item.id}));
   sources.forEach(s=>{
     if(!sourceHistory.some(old=>old.id===s.id&&old.type===s.type))sourceHistory.push(s);
