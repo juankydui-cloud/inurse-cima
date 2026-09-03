@@ -144,6 +144,24 @@ frentes. El primero ya está en `main`; quedan los dos siguientes:
    `enCurso()` separa la urgencia real de la consulta teórica sobre una
    urgencia ("cómo se maneja un atragantamiento"): con ella se decide no pintar
    bibliografía en el panel, y confundir ambas rompe una de las dos.
+   **P3.5 · ruido de recuperación** (PR #150). Dos criterios que conviene no
+   deshacer sin leer esto:
+   (a) **Ámbito de la ficha en emergencia**: en una parada se servía la ficha de
+   donación en asistolia (Maastricht III) — lleva "soporte vital" en sus tags
+   por la LTSV, así que competía por léxico, y la expansión de P3.4 la subía.
+   `esGestion()` la aparta SÓLO en urgencia en curso, por el **dominio**
+   declarado en título+tags+fuente (donación/trasplantes, coordinación,
+   legislación, trámites…), exigiendo **dos marcadores**: con uno, una ficha
+   clínica que cite "protocolo del centro" caería sin merecerlo. No es lista de
+   títulos (no envejece) y no borra nada del catálogo: en consulta compite igual.
+   Se aplica en las DOS recuperaciones — `retrieveDetailed` y el `searchINurse`
+   propio de Live — con la misma definición; duplicarla las haría discrepar.
+   (b) **Relevancia de las citas**: el filtro por término clínico se aplica SÓLO
+   a fuentes **generalistas** (Crossref, Semantic Scholar), que indexan todo el
+   DOI publicado y de donde salieron "manejo del maíz/suelo/soya". Europe PMC,
+   PubMed, NICE, OMS y ClinicalTrials pasan sin filtro: su corpus ya es
+   biomédico. Exigir el término a TODAS descartaba literatura válida en inglés
+   ("Management of hyperkalemia") cuando el término no está en `MEDICAL_TERMS`.
    **Trampa al tocarlo**: el orquestador añade al contexto instrucciones de
    estructura, extensión y citación `[n]` que contradicen al modo emergencia;
    el guion declara que su formato prevalece sobre ellas. Si se quita esa
