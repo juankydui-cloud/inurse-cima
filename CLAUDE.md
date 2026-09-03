@@ -192,6 +192,36 @@ fármacos; (3) interacciones vía la conexión CIMA existente; (4) enlazar la
 ficha o escala relevante de la app. Cada herramienta responde solo con datos
 reales de la app; si no hay dato, se dice que no está disponible.
 
+### Javny Live — lo que hay que saber antes de tocarlo
+
+- **Live tiene su PROPIA recuperación** (`searchINurse` en
+  `inurse-v26-live-js.js`), independiente de `retrieveDetailed`. Todo arreglo de
+  recuperación hay que aplicarlo en los dos sitios, reutilizando la definición
+  de `p34-urgencias-lenguaje.js`; duplicar el criterio los hace discrepar.
+- **`searchINurse` devuelve `{query, notice, resultados}`**, NO `{sources,
+  context}`. `resultados` son los *payload* (`titulo`, `fuente`, `resumen`,
+  `contenido`). Leer los campos equivocados no da error: da vacío, y en la
+  recuperación por turno eso significa inyectar "no hay fichas" siempre y dejar
+  a Javny sin poder indicar nada. Comprobar la forma antes de consumirla.
+- **La recuperación es determinista desde el PR #151**: la hace el código en
+  cada turno y se inyecta como contexto. La transcripción de entrada llega
+  MIENTRAS el usuario habla, y por ahí se engancha para que la búsqueda vaya por
+  delante de la respuesta. Antes era una *function call* que el modelo lanzaba
+  si le parecía, y en una parada la brevedad que le pide el guion ganaba: turnos
+  con indicaciones y el panel de fuentes vacío, de forma intermitente.
+- **Sin ficha aplicable, no hay indicación clínica**: el contexto inyectado se
+  lo prohíbe y le dice qué responder (no tengo la fuente, 112 o equipo de
+  parada, protocolo del centro). La comprobación NO puede ser posterior: en voz,
+  una indicación ya dicha no se retira.
+- Coste medido de la recuperación: **mediana 86 ms por turno**, máximo 110 ms;
+  índice 30 ms una vez por sesión. Es local, sin red.
+- Log auditable: `[Javny Live] turno completado · recuperación: sí/NO · N
+  fichas · X ms`.
+- El guion de Live es SUYO (`SYSTEM_INSTRUCTION` en su archivo), no el
+  `guion-clinico.mjs` de la portada y el chat. Son dos textos distintos.
+- La transcripción por voz pasa por `sanitizeTranscript`, que normaliza los
+  números de emergencia ("alumno uno dos" → 112).
+
 ## Convenciones del proyecto
 
 ### Frontend
