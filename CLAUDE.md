@@ -133,6 +133,17 @@ frentes. El primero ya está en `main`; quedan los dos siguientes:
    duda entre modos, emergencia. **Consulta** (por defecto): cada afirmación
    atribuida a su ficha o su cita, fichas por delante de la bibliografía,
    discrepancias señaladas, huecos de las fuentes dichos.
+   **P3.4 · urgencias en lenguaje natural** (PR #149): la recuperación de fichas
+   puntúa por solapamiento de palabras, así que "no responde y no respira" no
+   enganchaba soporte vital y, peor, devolvía fichas ajenas (MAGALDRATO,
+   Estatus epiléptico) por palabras vacías como "paciente" — ruido clínico en
+   el contexto, peor que no recuperar nada. `p34-urgencias-lenguaje.js` traduce
+   el coloquial de urgencia a los términos de las fichas ANTES de buscar; al
+   añadir una entrada nueva, **comprobar que engancha una ficha real** de
+   `guias.js`, no suponerlo. Expone `detectar`, `expandir` y `enCurso`.
+   `enCurso()` separa la urgencia real de la consulta teórica sobre una
+   urgencia ("cómo se maneja un atragantamiento"): con ella se decide no pintar
+   bibliografía en el panel, y confundir ambas rompe una de las dos.
    **Trampa al tocarlo**: el orquestador añade al contexto instrucciones de
    estructura, extensión y citación `[n]` que contradicen al modo emergencia;
    el guion declara que su formato prevalece sobre ellas. Si se quita esa
