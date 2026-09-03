@@ -60,7 +60,15 @@
      la búsqueda por solapamiento devolvía fichas ajenas. P3.4 traduce esas
      frases a los términos con los que están escritas las fichas antes de
      buscar; no cambia el contenido, sólo con qué palabras se busca. */
-  try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.expandir) qy=window.EnferixUrgencias.expandir(qy); }catch(e){}
+  var _emergencia=false;
+  try{
+    if(window.EnferixUrgencias){
+      /* enCurso se evalúa sobre la pregunta ORIGINAL: la expansión de abajo le
+         añade términos de urgencia y daría emergencia siempre. */
+      _emergencia=!!window.EnferixUrgencias.enCurso(qy);
+      if(window.EnferixUrgencias.expandir) qy=window.EnferixUrgencias.expandir(qy);
+    }
+  }catch(e){}
   var toks=nrm(qy).split(/[^a-z0-9]+/).filter(function(w){return w.length>2&&!STOP[w]});
   var seen={},tk=[];toks.forEach(function(w){if(!seen[w]){seen[w]=1;tk.push(w)}});
   if(!tk.length)return {context:'',sources:[]};
@@ -73,7 +81,17 @@
    return s;
   }
   var dd=DIDX.map(function(o){return {o:o,s:score(o.t,o.d.title)}})
-   .filter(function(x){return x.s>0}).sort(function(a,b){return b.s-a.s}).slice(0,8);
+   .filter(function(x){return x.s>0});
+  /* Durante una urgencia en curso, las fichas de ámbito organizativo (donación
+     y trasplantes, coordinación, trámites…) no compiten: comparten vocabulario
+     con la parada pero no se aplican durante una reanimación. Fuera de la
+     emergencia siguen compitiendo con normalidad. */
+  if(_emergencia&&window.EnferixUrgencias&&window.EnferixUrgencias.esGestion){
+   dd=dd.filter(function(x){
+    try{ return !window.EnferixUrgencias.esGestion([x.o.d.title,x.o.d.tags,x.o.d.source].join(' ')); }catch(e){ return true; }
+   });
+  }
+  dd=dd.sort(function(a,b){return b.s-a.s}).slice(0,8);
   var vv=VIDX.map(function(o){return {o:o,s:score(o.t,o.v.n)}})
    .filter(function(x){return x.s>0}).sort(function(a,b){return b.s-a.s}).slice(0,5);
   var ctx='',sources=[];

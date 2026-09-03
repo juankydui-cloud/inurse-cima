@@ -267,13 +267,76 @@ async function searchAllSources(question, timings = []) {
   const [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult] =
     await Promise.allSettled(searches);
 
+  // ── Anclaje clínico de la consulta ──────────────────────────────────────────
+  // "manejo de la hiperpotasemia" se manda a Crossref como texto libre, y
+  // "manejo" es una palabra de proceso que en español devuelve manejo del maíz,
+  // del suelo o de la soya. El término que identifica la consulta es el clínico
+  // ("hiperpotasemia"), no el de proceso, así que se exige que el resultado lo
+  // contenga —en castellano o en la traducción inglesa que ya usa el propio
+  // buscador—. No es una lista de temas prohibidos: es exigir que la referencia
+  // hable de lo que se ha preguntado.
+  const PALABRAS_DE_PROCESO = new Set([
+    "manejo", "tratamiento", "abordaje", "protocolo", "guia", "guias", "cuidados",
+    "atencion", "valoracion", "control", "seguimiento", "diagnostico", "paciente",
+    "pacientes", "adulto", "adultos", "clinica", "clinico", "hospitalario", "urgente",
+    "management", "treatment", "care", "approach", "guideline", "guidelines",
+    "patient", "patients", "clinical", "review", "study", "acute", "adult"
+  ]);
+
+  function anclasClinicas(pregunta, queriesGeneradas) {
+    const anclas = new Set();
+    // Términos clínicos de la propia pregunta
+    for (const w of normalize(pregunta).split(" ")) {
+      if (w.length > 4 && !PALABRAS_DE_PROCESO.has(w)) anclas.add(w);
+    }
+    // Y sus equivalentes en inglés: MEDICAL_TERMS es el mismo diccionario con el
+    // que se construyen las búsquedas, así que lo que se buscó es lo que se exige.
+    for (const [es, en] of Object.entries(MEDICAL_TERMS)) {
+      if (normalize(pregunta).includes(normalize(es))) {
+        for (const w of normalize(en).split(" ")) {
+          if (w.length > 4 && !PALABRAS_DE_PROCESO.has(w)) anclas.add(w);
+        }
+      }
+    }
+    for (const q of queriesGeneradas || []) {
+      for (const w of normalize(q).split(" ")) {
+        if (w.length > 4 && !PALABRAS_DE_PROCESO.has(w)) anclas.add(w);
+      }
+    }
+    return [...anclas];
+  }
+
+  const anclas = anclasClinicas(question, queries);
+
+  // Qué fuentes necesitan el filtro, y por qué sólo ellas. Europe PMC, PubMed,
+  // NICE, la OMS y ClinicalTrials indexan SÓLO literatura biomédica: lo que
+  // devuelven es clínico por construcción, aunque el título no repita el término
+  // de la consulta. Crossref y Semantic Scholar son generalistas —indexan todo
+  // el DOI publicado, agronomía incluida—, y de ahí salieron el maíz, el suelo
+  // y la soya. El criterio es esa propiedad del corpus, no una lista de temas
+  // prohibidos: no envejece y no hay que mantenerla.
+  const FUENTES_GENERALISTAS = new Set(["Crossref", "Semantic Scholar"]);
+
+  function esRelevante(item, sourceLabel) {
+    if (!FUENTES_GENERALISTAS.has(sourceLabel)) return true;
+    if (!anclas.length) return true;   // sin anclas clínicas no se filtra nada
+    const texto = normalize([item.title, item.abstract, item.journal, item.source].filter(Boolean).join(" "));
+    // Se compara por raíz para cubrir la morfología ("hiperpotasemia" /
+    // "hiperpotasemias"), sin cruzar idiomas: si la consulta va en castellano y
+    // el artículo en inglés, el anclaje llega por la traducción que MEDICAL_TERMS
+    // ya usó para BUSCAR, que es exactamente lo que se pidió a la fuente.
+    return anclas.some(a => texto.includes(a.slice(0, Math.max(5, Math.min(a.length, 8)))));
+  }
+
   const articles = [];
   const seen = new Set();
+  let descartados = 0;
 
   function addUnique(items, sourceLabel) {
     for (const item of items || []) {
       const key = item.doi || item.pmid || item.title;
       if (!key || seen.has(key)) continue;
+      if (!esRelevante(item, sourceLabel)) { descartados++; continue; }
       seen.add(key);
       articles.push({ ...item, retrievedFrom: sourceLabel });
     }
@@ -292,6 +355,8 @@ async function searchAllSources(question, timings = []) {
   const cimaDrugs = cimaResult.status === "fulfilled" ? (cimaResult.value?.items || []) : [];
 
   const allSettled = [pmcResult, pubmedResult, crossrefResult, guidelineResult, niceResult, fdaResult, ctResult, scholarResult, whoResult, cimaResult];
+
+  if (descartados) console.log(`[Orquestador] Referencias descartadas por no hablar de la consulta: ${descartados} (anclas: ${anclas.slice(0, 6).join(", ")})`);
 
   return {
     articles: articles.slice(0, 12),
