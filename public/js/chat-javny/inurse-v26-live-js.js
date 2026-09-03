@@ -235,6 +235,9 @@ function renderSources(){
 }
 function resetCase(silent=false){
   caseData={priority:'',patientSummary:'',immediateActions:[],missingData:[],redFlags:[],lastUpdate:''};
+  // El cuadro clínico se olvida con el caso: si no, el siguiente arrastraría el
+  // anterior y buscaría una parada en una consulta que ya no lo es.
+  try{ olvidarCuadro(); }catch(e){}
   sourceHistory=[];renderCase();renderSources();
   if(!silent)addLine('model','Caso cerrado. He borrado el contexto temporal. Puedes iniciar otro diciendo «Oye Javny».');
   if(ws&&ready){
@@ -276,6 +279,17 @@ function handleVoiceCommand(text){
 
 /* ---------------- Knowledge retrieval ---------------- */
 let knowledgeIndex=null;
+/* Documentación del producto, no contenido clínico. Por categoría/subcategoría
+   editorial, para que un documento nuevo del mismo tipo quede cubierto sin
+   tocar nada. */
+var CATEGORIAS_DE_PRODUCTO=/integracion\s+global|calidad\s+y\s+despliegue|gobernanza|catalogo\s+y\s+actualizacion|javny,?\s+gemini|backend,?\s+despliegue|accesibilidad,?\s+movil/i;
+function esDocumentacionInterna(f,block){
+  try{
+    const campos=norm([f&&f.categoria,f&&f.subcategoria,f&&f.tipo_elemento,block&&block.bloque].filter(Boolean).join(' '));
+    return CATEGORIAS_DE_PRODUCTO.test(campos);
+  }catch(e){ return false; }
+}
+
 function prepareKnowledge(){
   if(knowledgeIndex)return knowledgeIndex;
   const out=[];
@@ -304,6 +318,21 @@ function prepareKnowledge(){
     blocks.forEach(block=>{
       const items=block.fichas||block.herramientas||block.elementos||block.cards||[];
       items.forEach(f=>{
+        /* La Biblioteca virtual no es sólo contenido clínico: incluye la
+           documentación del propio producto —cómo se citan las fuentes, cómo se
+           controla la vigencia, cómo se despliega—. Esos documentos comparten
+           vocabulario con lo que un profesional dice cuando habla DE la app
+           ("no tienes la fuente") y ganaban la búsqueda por coincidencia
+           literal, desplazando al contenido clínico.
+
+           El criterio es la CATEGORÍA editorial que ya llevan, no una lista de
+           títulos: "Integración global, calidad y despliegue" agrupa los 96
+           documentos de producto (navegación, gobernanza, operación, datos, QA,
+           seguridad, accesibilidad, IA/RAG…), y las subcategorías de gobernanza
+           del contenido hacen lo propio. No se borran: siguen en la Biblioteca
+           y se abren desde ella; simplemente no son candidatas en una búsqueda
+           clínica. */
+        if(esDocumentacionInterna(f,block)) return;
         const title=f.titulo||f.title||f.nombre||'Sin título';
         const text=[title,block.bloque,f.categoria,f.subcategoria,f.etiquetas,flatten(f)].join(' ');
         out.push({
@@ -608,6 +637,37 @@ async function executeToolCall(toolCall){
    turno se mida en milisegundos. */
 var turnoRecuperado='', turnoTimer=null, turnoFichas=0, turnoMsTotal=0;
 
+/* ── El cuadro clínico del caso, no las palabras del turno ────────────────────
+   Una sesión de Live es UN caso. Quien la usa dice al principio lo que ve
+   ("una persona que no se mueve y parece que no respira") y luego habla de
+   otras cosas: pide repetir, pregunta, o le reprocha a Javny que no tenga la
+   fuente. Recalcular el cuadro en cada turno hacía que la búsqueda se fuera
+   detrás de las palabras del último turno: con "no tienes la fuente" ganaban
+   los documentos que llevan "fuente" en el título.
+
+   El cuadro se fija cuando se reconoce por primera vez y PERSISTE hasta que se
+   cierra el caso. A partir de ahí, en cada turno se busca por el cuadro
+   reconocido —los términos con los que están escritas las fichas— y no por la
+   coincidencia literal de lo que se acaba de decir. Si aparece un cuadro nuevo
+   (empieza a sangrar durante la reanimación), se añade. */
+var cuadroActivo={claves:[],terminos:''};
+
+function actualizarCuadro(texto){
+  try{
+    const U=window.EnferixUrgencias;
+    if(!U||!U.detectar) return;
+    const d=U.detectar(texto);
+    if(!d.urgencia) return;
+    let cambio=false;
+    d.claves.forEach(k=>{ if(cuadroActivo.claves.indexOf(k)<0){cuadroActivo.claves.push(k);cambio=true;} });
+    if(cambio){
+      cuadroActivo.terminos=(cuadroActivo.terminos+' '+d.terminos).replace(/\s+/g,' ').trim();
+      console.log(`[Javny Live] cuadro clínico del caso: ${cuadroActivo.claves.join(', ')}`);
+    }
+  }catch(e){}
+}
+function olvidarCuadro(){ cuadroActivo={claves:[],terminos:''}; }
+
 /* searchINurse devuelve {query, notice, resultados}, donde `resultados` son los
    payload de cada ficha ({titulo, fuente, resumen, contenido…}). NO devuelve
    `sources` ni `context`: leerlos daba siempre vacío y habría inyectado
@@ -639,22 +699,42 @@ function contextoDeFichas(res){
 
 /* Expuesta únicamente para poder medir el coste de la recuperación desde fuera
    (scripts/medir-latencia-javny.mjs y las pruebas). No la usa la sesión. */
-try{ window.__liveSearchParaMedir=function(q){ return searchINurse(q,'all',5); }; }catch(e){}
+try{
+  window.__liveSearchParaMedir=function(q){ return searchINurse(q,'all',5); };
+  // El camino COMPLETO del turno: fija el cuadro y busca como en la sesión real.
+  window.__liveTurnoParaMedir=function(q){
+    actualizarCuadro(q);
+    const consulta=cuadroActivo.terminos?(cuadroActivo.terminos+' '+q):q;
+    return searchINurse(consulta,'all',5);
+  };
+  window.__liveResetCuadro=function(){ olvidarCuadro(); };
+}catch(e){}
 
 function recuperarParaTurno(){
   const texto=sanitizeTranscript(currentUserText);
   if(!texto||texto.length<4) return;
   // Sin novedad respecto a lo ya recuperado en este turno, no se repite.
   if(texto===turnoRecuperado) return;
+  actualizarCuadro(texto);
   const t0=(performance&&performance.now)?performance.now():Date.now();
   let res=null;
-  try{ res=searchINurse(texto,'all',5); }catch(e){ res=null; }
+  /* Con un cuadro reconocido, se busca por él: el relato del turno se conserva
+     detrás (puede traer el fármaco, la dosis o el ritmo), pero quien manda es
+     el cuadro. Sin cuadro, se busca como siempre. */
+  const consulta=cuadroActivo.terminos ? (cuadroActivo.terminos+' '+texto) : texto;
+  try{ res=searchINurse(consulta,'all',5); }catch(e){ res=null; }
   const ms=Math.round(((performance&&performance.now)?performance.now():Date.now())-t0);
   turnoRecuperado=texto;
   turnoFichas=(res&&res.resultados&&res.resultados.length)||0;
   turnoMsTotal+=ms;
   sendWS({clientContent:{turns:[{role:'user',parts:[{text:contextoDeFichas(res)}]}],turnComplete:false}});
-  console.log(`[Javny Live] recuperación · ${turnoFichas} fichas · ${ms} ms · "${texto.slice(0,60)}"`);
+  /* Se registran los TÍTULOS, no sólo el número: la única forma de auditar esto
+     es la consola del navegador (Live no pasa por el servidor), y saber que hubo
+     5 fichas no dice si eran las correctas. */
+  const titulos=((res&&res.resultados)||[]).slice(0,3).map(f=>f.titulo||'?').join(' | ');
+  console.log(`[Javny Live] recuperación · ${turnoFichas} fichas · ${ms} ms`
+    +(cuadroActivo.claves.length?` · cuadro: ${cuadroActivo.claves.join(',')}`:' · sin cuadro')
+    +`\n   dijo: "${texto.slice(0,70)}"\n   fichas: ${titulos}`);
 }
 
 function recuperarPronto(){

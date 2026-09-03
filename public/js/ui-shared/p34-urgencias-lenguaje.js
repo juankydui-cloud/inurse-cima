@@ -42,7 +42,11 @@
       clave: 'parada',
       // "no respira" y "sin pulso" mandan aunque también se diga que no responde
       re: /\bno\s+(respira|ventila)\b|\bsin\s+(pulso|respiracion|signos\s+de\s+vida)\b|\bno\s+tiene\s+pulso\b|\bparada\b|\bpcr\b|\bse\s+ha\s+parado\b|\bno\s+le\s+noto\s+el\s+pulso\b/,
-      terminos: 'parada cardiorrespiratoria RCP soporte vital reanimacion cardiopulmonar desfibrilacion compresiones'
+      // Sin "desfibrilacion": en una parada recién presenciada lo primero es el
+      // soporte vital básico, y ese término hacía ganar a "Ritmos NO
+      // desfibrilables". La desfibrilación entra por su propia clave, cuando se
+      // menciona el ritmo o el aparato.
+      terminos: 'soporte vital basico RCP parada cardiorrespiratoria reanimacion cardiopulmonar compresiones'
     },
     {
       clave: 'atragantamiento',
