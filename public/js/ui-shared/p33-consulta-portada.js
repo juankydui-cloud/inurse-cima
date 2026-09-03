@@ -274,6 +274,11 @@
     marca('envío de la pregunta', 0);
 
     var refsATiempo = true;
+    /* En una urgencia en curso no se pinta bibliografía: quien está reanimando
+       no va a leerla, y ocupa el sitio de la siguiente acción. El orquestador
+       sigue recuperándola igual — esto es sólo lo que se muestra. */
+    var emergencia = false;
+    try { emergencia = !!(window.EnferixUrgencias && window.EnferixUrgencias.enCurso(question)); } catch(e){}
     function applySources(sources, aTiempo){
       var list = (sources && sources.references) || [];
       refs = list.slice();
@@ -285,7 +290,7 @@
     function finish(){
       marca('respuesta completa', performance.now() - tEnvio);
       paint();
-      body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
+      if(!emergencia) body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
       setPhase(panel, t('done'), 'done');
       if(foot) foot.hidden = false;
       current = null;
@@ -334,7 +339,7 @@
           applySources(evt.sources, evt.aTiempo);
           if(refs.length) setPhase(panel, t('writing') + ' · ' + t('sourcesFound')(refs.length));
           // Si llegan tarde (tras el texto), se repinta el bloque ya cerrado.
-          if(got && refs.length){
+          if(got && refs.length && !emergencia){
             paint();
             body.insertAdjacentHTML('beforeend', renderRefs(refs, refsATiempo));
           }
