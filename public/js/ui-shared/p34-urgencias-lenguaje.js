@@ -60,6 +60,15 @@
       terminos: 'paciente en coma inconsciencia soporte vital basico RCP valoracion nivel de consciencia Glasgow'
     },
     {
+      clave: 'parada',
+      // Turnos de seguimiento DENTRO de una parada: el ritmo que marca el
+      // monitor. Términos comprobados contra "RCP avanzado — Algoritmo universal
+      // con dosis", "Ritmos NO desfibrilables (Asistolia / AESP)" y
+      // "Desfibrilación y cardioversión".
+      re: /\bfibrilacion\s+ventricular\b|\btaquicardia\s+ventricular\s+sin\s+pulso\b|\bdesfibril|\basistolia\b|\baesp\b|\bactividad\s+electrica\s+sin\s+pulso\b|\bdea\b/,
+      terminos: 'RCP avanzado algoritmo desfibrilacion ritmos desfibrilables asistolia soporte vital'
+    },
+    {
       clave: 'hemorragia',
       re: /\bsangra(ndo)?\b|\bsangre\b|\bhemorragia\b|\bse\s+desangra\b|\bno\s+para\s+de\s+sangrar\b/,
       terminos: 'hemorragia shock hipovolemico control de la hemorragia transfusion masiva'
