@@ -60,6 +60,15 @@
       terminos: 'paciente en coma inconsciencia soporte vital basico RCP valoracion nivel de consciencia Glasgow'
     },
     {
+      clave: 'parada',
+      // Turnos de seguimiento DENTRO de una parada: el ritmo que marca el
+      // monitor. Términos comprobados contra "RCP avanzado — Algoritmo universal
+      // con dosis", "Ritmos NO desfibrilables (Asistolia / AESP)" y
+      // "Desfibrilación y cardioversión".
+      re: /\bfibrilacion\s+ventricular\b|\btaquicardia\s+ventricular\s+sin\s+pulso\b|\bdesfibril|\basistolia\b|\baesp\b|\bactividad\s+electrica\s+sin\s+pulso\b|\bdea\b/,
+      terminos: 'RCP avanzado algoritmo desfibrilacion ritmos desfibrilables asistolia soporte vital'
+    },
+    {
       clave: 'hemorragia',
       re: /\bsangra(ndo)?\b|\bsangre\b|\bhemorragia\b|\bse\s+desangra\b|\bno\s+para\s+de\s+sangrar\b/,
       terminos: 'hemorragia shock hipovolemico control de la hemorragia transfusion masiva'
@@ -80,6 +89,31 @@
       terminos: 'anafilaxia adrenalina intramuscular reaccion alergica grave'
     }
   ];
+
+  /* ── Números de emergencia dictados por voz ────────────────────────────────
+     El reconocimiento de voz transcribió "112" como "alumno uno dos": oye los
+     dígitos sueltos y los encaja en la palabra más probable de su vocabulario
+     general. Si eso llega al modelo, la indicación de avisar al 112 se pierde
+     o se convierte en ruido. Se normaliza ANTES de pasar el texto al modelo.
+
+     Se cubren las tres formas en que puede llegar cada número: la cifra, los
+     dígitos deletreados, y el número dicho entero. */
+  var NUMEROS_EMERGENCIA = [
+    { numero: '112', re: /\b(alumno\s+uno\s+dos|a\s*uno\s*uno\s*dos|uno\s+uno\s+dos|ciento\s+doce|cien\s+doce|112)\b/g },
+    { numero: '061', re: /\b(cero\s+sesenta\s+y\s+uno|cero\s+seis\s+uno|cero\s+sesenta\s*y?\s*uno|061)\b/g }
+  ];
+
+  function normalizarEmergencias(texto){
+    var t = String(texto || '');
+    for (var i = 0; i < NUMEROS_EMERGENCIA.length; i++){
+      // Se compara sin tildes pero se sustituye sobre el texto original, para no
+      // devolver al modelo un texto desacentuado.
+      var re = NUMEROS_EMERGENCIA[i].re;
+      var num = NUMEROS_EMERGENCIA[i].numero;
+      t = t.replace(new RegExp(re.source, 'gi'), num);
+    }
+    return t;
+  }
 
   /* ── Ámbito de la ficha: ¿asistencia a pie de cama, o gestión? ──────────────
      En una parada extrahospitalaria se coló la ficha de donación en asistolia
@@ -161,5 +195,5 @@
     return d.urgencia ? (String(texto || '') + ' ' + d.terminos) : String(texto || '');
   }
 
-  window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso, esGestion: esGestion };
+  window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso, esGestion: esGestion, normalizarEmergencias: normalizarEmergencias };
 })();

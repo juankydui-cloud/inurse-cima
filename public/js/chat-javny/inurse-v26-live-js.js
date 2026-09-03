@@ -242,6 +242,10 @@ function resetCase(silent=false){
   }
 }
 function sanitizeTranscript(s){
+  /* El reconocimiento de voz transcribe "112" como "alumno uno dos". Se
+     normaliza aquí, que es por donde pasa TODO lo transcrito antes de llegar al
+     modelo, para que la indicación de avisar al 112 no se pierda. */
+  try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.normalizarEmergencias) s=window.EnferixUrgencias.normalizarEmergencias(s); }catch(e){}
   return String(s||'')
     .replace(/\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/gi,'[correo omitido]')
     .replace(/\b(?:dni|nie|nhc|nuhsa|historia\s*clinica|nombre|apellidos)\s*[:\-]?\s*[^\n,;]{2,50}/gi,'[identificador omitido]')
@@ -355,6 +359,12 @@ const SYNONYMS={
   hipoglucemia:['glucosa baja','glucemia baja']
 };
 function queryTokens(query){
+  /* Live tokeniza por su cuenta, así que la traducción del coloquial de urgencia
+     (P3.4) hay que aplicarla también aquí: sin ella "no responde y no respira"
+     devolvía "Mecánica respiratoria" y "está sangrando mucho" devolvía "Dolor
+     torácico". Con la recuperación ya inyectándose en cada turno, servir la ficha
+     equivocada es peor que no servir ninguna. */
+  try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.expandir) query=window.EnferixUrgencias.expandir(query); }catch(e){}
   const n=norm(query);const tokens=n.split(/\s+/).filter(x=>x.length>2&&!STOP.has(x));
   Object.entries(SYNONYMS).forEach(([key,values])=>{
     if(n.includes(key)||values.some(v=>n.includes(v)))tokens.push(key,...values.flatMap(v=>v.split(' ')));
@@ -363,6 +373,20 @@ function queryTokens(query){
 }
 function searchINurse(query,focus='all',limit=5){
   const tokens=queryTokens(query);const index=prepareKnowledge();
+  /* En urgencia, el término clínico manda sobre el resto de la frase. Sin esto,
+     "está sangrando mucho por la herida del muslo" devolvía "Dolor torácico":
+     una ficha larga acumula +1 por cada palabra suelta del relato que aparezca
+     en su cuerpo y acaba superando a la ficha que sí trata la hemorragia. El
+     bonus se aplica sólo al TÍTULO y sólo con los términos que P3.4 ha
+     traducido, que son los que identifican el cuadro. */
+  let terminosUrgencia=[];
+  try{
+    const U=window.EnferixUrgencias;
+    if(U&&U.detectar){
+      const d=U.detectar(query);
+      if(d.urgencia) terminosUrgencia=norm(d.terminos).split(/\s+/).filter(x=>x.length>3);
+    }
+  }catch(e){}
   let scored=index.map(item=>{
     let score=0;
     const title=norm(item.title),meta=norm(item.meta),full=item.searchable;
@@ -372,6 +396,7 @@ function searchINurse(query,focus='all',limit=5){
       if(full.includes(t))score+=1;
     });
     if(norm(query)&&full.includes(norm(query)))score+=12;
+    if(terminosUrgencia.length&&terminosUrgencia.some(t=>title.includes(t)))score+=25;
     if(focus==='guides'&&item.type==='Guía clínica')score+=3;
     if(focus==='library'&&item.type==='Biblioteca virtual')score+=3;
     return {item,score};
@@ -500,7 +525,8 @@ Durante un caso:
 2. Da solo una a tres prioridades inmediatas por turno.
 3. Pregunta por el siguiente dato crítico que falta.
 4. Ante peligro vital, indica activar inmediatamente el circuito/equipo de emergencia local y seguir ABCDE y el protocolo institucional.
-5. Antes de dar orientación basada en protocolos DEBES llamar a search_inurse. Conserva la procedencia entre Guías clínicas y Biblioteca virtual.
+5. En cada turno recibirás un mensaje que empieza por "CONTEXTO DE ENFERIX PARA ESTE TURNO" con las fichas que la aplicación ha recuperado. Es tu fuente: apóyate en ella y nombra la ficha que uses. Conserva la procedencia entre Guías clínicas y Biblioteca virtual. Puedes llamar además a search_inurse si necesitas buscar otra cosa distinta.
+5b. Si ese mensaje dice que NO hay ficha aplicable, en ese turno NO des ninguna indicación clínica: ni maniobras, ni dosis, ni pasos de protocolo. Di que no tienes la fuente en la aplicación, indica llamar al 112 o activar el equipo de parada del centro, y remite al protocolo vigente. Pide el dato que falte para poder buscar de nuevo. Nunca respondas de memoria en lugar de decir que no tienes la fuente.
 6. El contenido interno puede proceder de documentación antigua. No lo presentes como guía actual y señala que debe contrastarse.
 7. No inventes dosis, concentraciones, energías, tiempos ni contraindicaciones. Solo menciona una dosis si aparece expresamente en la fuente devuelta, leyéndola despacio y diciendo que debe verificarse con la ficha técnica/protocolo vigente.
 8. Llama a update_case cuando cambie la prioridad, aparezca una señal de alarma, haya nuevas actuaciones o falten datos.
@@ -563,11 +589,89 @@ async function executeToolCall(toolCall){
   }
   if(responses.length)sendWS({toolResponse:{functionResponses:responses}});
 }
+/* ═══════════ Recuperación determinista por turno ═══════════════════════════
+   La búsqueda en Live era una function call: la lanzaba el modelo si le parecía.
+   La instrucción 5 del guion se lo pide, pero es una petición, no una garantía,
+   y en una parada la brevedad que también le pedimos gana. Resultado: turnos con
+   indicaciones de RCP y el panel de fuentes vacío, de forma intermitente.
+
+   Ahora la recuperación la hace el CÓDIGO en cada turno, y el resultado se
+   inyecta como contexto. La transcripción de entrada llega mientras el usuario
+   habla, así que la búsqueda va POR DELANTE de la respuesta, no detrás: cuando
+   el modelo empieza a generar ya tiene las fichas —o el aviso de que no las hay—.
+
+   Y ese aviso es la otra mitad: si no hay ficha aplicable, se le prohíbe dar
+   indicación clínica en ese turno. La comprobación no puede ser posterior,
+   porque en voz una indicación ya dicha no se puede retirar.
+
+   searchINurse es local (índice en memoria, sin red), de ahí que el coste por
+   turno se mida en milisegundos. */
+var turnoRecuperado='', turnoTimer=null, turnoFichas=0, turnoMsTotal=0;
+
+/* searchINurse devuelve {query, notice, resultados}, donde `resultados` son los
+   payload de cada ficha ({titulo, fuente, resumen, contenido…}). NO devuelve
+   `sources` ni `context`: leerlos daba siempre vacío y habría inyectado
+   "no hay fichas" en todos los turnos, dejando a Javny sin poder indicar nada. */
+function contextoDeFichas(res){
+  const fuentes=(res&&res.resultados)||[];
+  if(!fuentes.length){
+    return 'CONTEXTO DE ENFERIX PARA ESTE TURNO: la búsqueda en las fuentes de la '
+      +'aplicación NO ha devuelto ninguna ficha aplicable a lo que acaba de decir '
+      +'el usuario.\nPor tanto, en este turno NO des ninguna indicación clínica, ni '
+      +'maniobras, ni dosis, ni pasos de protocolo. Di que no tienes la fuente en '
+      +'la aplicación para esto, indica llamar al 112 o activar el equipo de parada '
+      +'del centro, y remite al protocolo vigente del centro. Puedes pedir el dato '
+      +'que falte para volver a buscar.';
+  }
+  const lista=fuentes.slice(0,4).map((f,i)=>{
+    const cuerpo=(f.contenido||[]).slice(0,4)
+      .map(sec=>`   · ${sec.heading||''}: ${String(sec.body||'').slice(0,420)}`).join('\n');
+    return `${i+1}. [${f.tipo_fuente||'Ficha'}] ${f.titulo||''}`
+      +(f.fuente?` · ${f.fuente}`:'')
+      +(f.resumen?`\n   ${f.resumen}`:'')
+      +(cuerpo?`\n${cuerpo}`:'');
+  }).join('\n');
+  return 'CONTEXTO DE ENFERIX PARA ESTE TURNO — fichas recuperadas de la aplicación:\n'
+    +lista.slice(0,5000)
+    +'\nApóyate en estas fichas para la indicación de este turno y nombra la que uses. '
+    +'Si lo que necesitas no está en ellas, dilo en vez de completarlo de memoria.';
+}
+
+/* Expuesta únicamente para poder medir el coste de la recuperación desde fuera
+   (scripts/medir-latencia-javny.mjs y las pruebas). No la usa la sesión. */
+try{ window.__liveSearchParaMedir=function(q){ return searchINurse(q,'all',5); }; }catch(e){}
+
+function recuperarParaTurno(){
+  const texto=sanitizeTranscript(currentUserText);
+  if(!texto||texto.length<4) return;
+  // Sin novedad respecto a lo ya recuperado en este turno, no se repite.
+  if(texto===turnoRecuperado) return;
+  const t0=(performance&&performance.now)?performance.now():Date.now();
+  let res=null;
+  try{ res=searchINurse(texto,'all',5); }catch(e){ res=null; }
+  const ms=Math.round(((performance&&performance.now)?performance.now():Date.now())-t0);
+  turnoRecuperado=texto;
+  turnoFichas=(res&&res.resultados&&res.resultados.length)||0;
+  turnoMsTotal+=ms;
+  sendWS({clientContent:{turns:[{role:'user',parts:[{text:contextoDeFichas(res)}]}],turnComplete:false}});
+  console.log(`[Javny Live] recuperación · ${turnoFichas} fichas · ${ms} ms · "${texto.slice(0,60)}"`);
+}
+
+function recuperarPronto(){
+  clearTimeout(turnoTimer);
+  // Corto a propósito: tiene que llegar antes de que el usuario deje de hablar.
+  turnoTimer=setTimeout(recuperarParaTurno,250);
+}
+
 function commitUserSoon(){
   clearTimeout(userCommitTimer);
   userCommitTimer=setTimeout(()=>{
     const clean=sanitizeTranscript(currentUserText);
     if(clean){
+      // Última pasada por si la frase terminó con datos que no estaban en el
+      // parcial con el que se buscó ("...y no respira").
+      clearTimeout(turnoTimer);
+      recuperarParaTurno();
       finalizeTemporary('user',clean);
       handleVoiceCommand(clean);
     }
@@ -583,6 +687,7 @@ function handleServerContent(sc){
     currentUserText=(currentUserText+' '+part).replace(/\s+/g,' ').trim();
     addLine('user',sanitizeTranscript(currentUserText),true);
     setStage('listening','Te escucho','Sigue hablando; Javny detectará automáticamente cuándo terminas.');
+    recuperarPronto();   // la búsqueda sale ya, mientras sigue hablando
     commitUserSoon();
   }
   if(sc.outputTranscription?.text){
@@ -598,6 +703,10 @@ function handleServerContent(sc){
   }
   if(sc.generationComplete)setStage('speaking','Javny está terminando','Escucha la indicación y aporta el siguiente dato.');
   if(sc.turnComplete){
+    // Queda registrado turno a turno para poder auditarlo después.
+    console.log(`[Javny Live] turno completado · recuperación: ${turnoRecuperado?'sí':'NO'}`
+      +` · ${turnoFichas} fichas · ${turnoMsTotal} ms de recuperación`);
+    turnoRecuperado='';turnoFichas=0;turnoMsTotal=0;
     if(currentModelText)finalizeTemporary('model',currentModelText);
     currentModelText='';
     setStage('listening','Te escucho','Continúa con la evolución del mismo caso.');
