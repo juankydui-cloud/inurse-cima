@@ -244,6 +244,16 @@ reales de la app; si no hay dato, se dice que no está disponible.
   personalización de alarmas" y esa ficha se quedaba el resto del turno.
   Reconocido el cuadro → inyecta ya, mientras habla; sin cuadro → espera al
   cierre. Contexto: 2 fichas y 2 secciones relevantes, ~1.200-1.600 B.
+- **Arranque inmediato en urgencia** (PR #154). Decisión firme del usuario: en
+  Live **manda el ritmo** — hablar antes con menos contexto vale más que tardar
+  y traerlo todo; la respuesta exhaustiva con bibliografía es de la portada, que
+  **no se toca**. Al reconocer el cuadro (~80 ms, con la transcripción parcial y
+  mientras el usuario habla) sale un mensaje de ~570 B con `turnComplete:true`
+  para que el modelo hable YA; el contexto va detrás. En urgencia el contexto
+  baja a **1 ficha** con fragmentos de 200 car.; en consulta siguen 2.
+  **La primera maniobra del arranque sale de la ficha recuperada, nunca de
+  memoria**, y sin ficha aplicable el arranque sólo activa el 112 y dice que no
+  hay fuente. Recortar contexto no recorta la regla de seguridad.
 - **Los dos orígenes traen el payload con campos DISTINTOS**: Guías da
   `contenido` (heading/body); Biblioteca da `definicion`, `alertas`,
   `valoracion_inicial`, `algoritmo`, `cuidados_enfermeria`,
