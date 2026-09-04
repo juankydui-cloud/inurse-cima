@@ -59,6 +59,13 @@ function norm(s){
   return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .toLowerCase().replace(/[^a-z0-9%/.,+\-\s]/g,' ').replace(/\s+/g,' ').trim();
 }
+/* P3.5 · Criterio de qué palabra identifica un tema clínico y de cuándo se
+   considera que aparece. Se aplica AQUÍ y no en las recuperaciones de consulta
+   (portada y chat del avatar), que se quedan como estaban por decisión de
+   Juanky. Consecuencia asumida: hoy Live y el chat pueden ordenar distinto la
+   misma pregunta. Si algún día se unifica, el criterio se toma de p35 y no se
+   copia. */
+const CO=window.EnferixCoincidencia;
 function stripHtml(s){
   const d=document.createElement('div');d.innerHTML=String(s||'');return (d.textContent||'').replace(/\s+/g,' ').trim();
 }
@@ -373,6 +380,13 @@ function prepareKnowledge(){
       });
     });
   }catch(e){console.warn('No se pudo indexar el catálogo de algoritmos',e)}
+  /* Índices de P3.5. Se calculan aquí, junto con el índice, y no en cada
+     búsqueda: son 1.800 fichas. */
+  out.forEach(o=>{
+    o.idx=CO.indice(o.searchable);
+    o.idxTitle=CO.indice(o.title);
+    o.idxMeta=CO.indice(o.meta);
+  });
   knowledgeIndex=out;
   return out;
 }
@@ -395,11 +409,19 @@ function queryTokens(query){
      torácico". Con la recuperación ya inyectándose en cada turno, servir la ficha
      equivocada es peor que no servir ninguna. */
   try{ if(window.EnferixUrgencias&&window.EnferixUrgencias.expandir) query=window.EnferixUrgencias.expandir(query); }catch(e){}
-  const n=norm(query);const tokens=n.split(/\s+/).filter(x=>x.length>2&&!STOP.has(x));
+  const T=CO.terminos(query);
+  const idxQuery=CO.indice(query);
+  /* Los sinónimos se comprueban por principio de palabra, no por subcadena:
+     "st" (del síndrome coronario) casaba dentro de "traqueoSTomía" y metía en
+     la búsqueda infarto, dolor torácico y coronario en una pregunta sobre
+     cuidados de traqueostomía. */
+  const extra=[];
   Object.entries(SYNONYMS).forEach(([key,values])=>{
-    if(n.includes(key)||values.some(v=>n.includes(v)))tokens.push(key,...values.flatMap(v=>v.split(' ')));
+    if(CO.casa(idxQuery,key)||values.some(v=>v.split(' ').every(w=>CO.casa(idxQuery,w))))
+      extra.push(key,...values.flatMap(v=>v.split(' ')));
   });
-  return [...new Set(tokens)];
+  const clinicos=[...new Set(T.clinicos.concat(extra.filter(w=>w.length>2&&!STOP.has(w)&&!CO.esProceso(w))))];
+  return {clinicos,proceso:T.proceso,hayClinicos:T.hayClinicos,todos:T.todos};
 }
 function searchINurse(query,focus='all',limit=5){
   const tokens=queryTokens(query);const index=prepareKnowledge();
@@ -414,18 +436,24 @@ function searchINurse(query,focus='all',limit=5){
     const U=window.EnferixUrgencias;
     if(U&&U.detectar){
       const d=U.detectar(query);
-      if(d.urgencia) terminosUrgencia=norm(d.terminos).split(/\s+/).filter(x=>x.length>3);
+      if(d.urgencia) terminosUrgencia=CO.normalizar(d.terminos).split(' ').filter(x=>x.length>3);
     }
   }catch(e){}
+  const frase=CO.normalizar(query);
   let scored=index.map(item=>{
-    let score=0;
-    const title=norm(item.title),meta=norm(item.meta),full=item.searchable;
-    tokens.forEach(t=>{
-      if(title.includes(t))score+=9;
-      if(meta.includes(t))score+=4;
-      if(full.includes(t))score+=1;
+    let score=0,cob=0,tit=false;
+    /* El término clínico decide; la palabra de proceso ("cuidados", "manejo",
+       "protocolo") sólo desempata. Con el mismo peso, "qué cuidados lleva una
+       sonda vesical" devolvía "Cuidados generales en ictus agudo". */
+    tokens.clinicos.forEach(t=>{
+      let dentro=false;
+      if(CO.casa(item.idxTitle,t)){score+=9;tit=true;dentro=true}
+      if(CO.casa(item.idxMeta,t)){score+=4;tit=true;dentro=true}
+      if(CO.casa(item.idx,t)){score+=1;dentro=true}
+      if(dentro)cob++;
     });
-    if(norm(query)&&full.includes(norm(query)))score+=12;
+    tokens.proceso.forEach(t=>{ if(CO.casa(item.idxTitle,t))score+=1; });
+    if(frase&&item.idx.indexOf(frase)>=0)score+=12;
     /* Coherencia con el CUADRO, no con un término suelto. El bonus era +25 por
        una sola coincidencia, y "obstrucción" es polisémica en medicina: con
        "atragantamiento" premiaba igual a "Obstrucción aguda de la vía aérea"
@@ -434,13 +462,18 @@ function searchINurse(query,focus='all',limit=5){
        (obstrucción, vía, aérea) y la hepática sólo uno. */
     if(terminosUrgencia.length){
       let casan=0;
-      terminosUrgencia.forEach(t=>{ if(title.includes(t)) casan++; });
+      terminosUrgencia.forEach(t=>{ if(CO.casa(item.idxTitle,t)) casan++; });
       if(casan>=2) score+=12*casan;
     }
     if(focus==='guides'&&item.type==='Guía clínica')score+=3;
     if(focus==='library'&&item.type==='Biblioteca virtual')score+=3;
-    return {item,score};
-  }).filter(x=>x.score>0);
+    /* Es del tema si el término clínico está en el título o la fuente, o si la
+       ficha menciona TODOS los términos de la pregunta. Con la recuperación
+       inyectándose en cada turno, servir una ficha que sólo nombra de pasada
+       una parte de lo preguntado es peor que no servir ninguna. */
+    const ok=tokens.hayClinicos?(tit||(cob>0&&cob===tokens.clinicos.length)):score>0;
+    return {item,score,ok};
+  }).filter(x=>x.ok);
   /* Live tiene su propia recuperación, así que el filtro de ámbito hay que
      aplicarlo también aquí — con la MISMA definición de p34, no con una copia:
      con dos criterios acabarían discrepando y Live serviría en una parada la
@@ -458,8 +491,8 @@ function searchINurse(query,focus='all',limit=5){
      seguridad que impide dar indicación. */
   if(terminosUrgencia.length){
     const coherentes=scored.filter(x=>{
-      const t=norm(x.item.title)+' '+norm(x.item.meta);
-      let casan=0; terminosUrgencia.forEach(k=>{ if(t.includes(k)) casan++; });
+      let casan=0;
+      terminosUrgencia.forEach(k=>{ if(CO.casa(x.item.idxTitle,k)||CO.casa(x.item.idxMeta,k)) casan++; });
       return casan>=2;
     });
     if(coherentes.length) scored=coherentes;
@@ -765,6 +798,7 @@ function contextoDeFichas(res){
    No las usa la sesión. */
 try{
   window.__liveSearchParaMedir=function(q){ return searchINurse(q,'all',5); };
+  window.__liveIndiceParaMedir=function(){ return prepareKnowledge(); };
   window.__liveTurnoParaMedir=function(q){
     actualizarCuadro(q);
     const consulta=cuadroActivo.terminos?(cuadroActivo.terminos+' '+q):q;

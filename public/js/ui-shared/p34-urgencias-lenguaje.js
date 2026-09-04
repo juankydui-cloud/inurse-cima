@@ -51,12 +51,20 @@
     {
       clave: 'atragantamiento',
       re: /\batragant/,
-      terminos: 'atragantamiento obstruccion de la via aerea por cuerpo extrano Heimlich soporte vital basico'
+      terminos: 'atragantamiento obstruccion de la via aerea por cuerpo extrano Heimlich',
+      // El soporte vital no identifica ESTE cuadro, pero es la ficha que lo
+      // cubre en el corpus de guías (donde no hay una de desobstrucción). Va
+      // como apoyo: entra en la búsqueda y no decide el orden. Como término del
+      // cuadro hacía ganar a "Soporte Vital Básico y RCP" —casa las tres
+      // palabras en su título— por encima de "Obstrucción aguda de la vía
+      // aérea", que es la ficha del cuadro.
+      apoyo: 'soporte vital basico'
     },
     {
       clave: 'atragantamiento',
       re: /\bse\s+(esta\s+)?ahoga(ndo)?\b|\bse\s+le\s+ha\s+ido\s+por\s+otro\s+lado\b|\bno\s+puede\s+(respirar|tragar)\b.*\b(comi|trag|bocado|comida)/,
-      terminos: 'atragantamiento obstruccion de la via aerea cuerpo extrano soporte vital basico'
+      terminos: 'atragantamiento obstruccion de la via aerea cuerpo extrano',
+      apoyo: 'soporte vital basico'
     },
     {
       clave: 'inconsciencia',
@@ -158,19 +166,26 @@
     return n >= 2;
   }
 
-  /* Devuelve { urgencia, claves, terminos } — claves en plural porque una frase
-     puede tocar dos cuadros a la vez ("no responde y no respira" es
-     inconsciencia + parada, y las dos fichas vienen bien). */
+  /* Devuelve { urgencia, claves, terminos, apoyo } — claves en plural porque
+     una frase puede tocar dos cuadros a la vez ("no responde y no respira" es
+     inconsciencia + parada, y las dos fichas vienen bien).
+
+     `terminos` identifica el CUADRO y por eso decide la coherencia y el orden;
+     `apoyo` son términos que sólo sirven para enganchar la ficha que lo cubre
+     en un corpus donde no hay una específica. Se buscan los dos, pero el apoyo
+     no puntúa para el cuadro: si lo hiciera, la ficha genérica adelantaría a la
+     del cuadro (medido con "Soporte Vital Básico y RCP" en el atragantamiento). */
   function detectar(texto){
     var t = nrm(texto);
-    var claves = [], terminos = [];
+    var claves = [], terminos = [], apoyo = [];
     for (var i = 0; i < URGENCIAS.length; i++){
       if (URGENCIAS[i].re.test(t)){
         if (claves.indexOf(URGENCIAS[i].clave) < 0) claves.push(URGENCIAS[i].clave);
         terminos.push(URGENCIAS[i].terminos);
+        if (URGENCIAS[i].apoyo) apoyo.push(URGENCIAS[i].apoyo);
       }
     }
-    return { urgencia: claves.length > 0, claves: claves, terminos: terminos.join(' ') };
+    return { urgencia: claves.length > 0, claves: claves, terminos: terminos.join(' '), apoyo: apoyo.join(' ') };
   }
 
   /* Detectar el cuadro clínico y detectar que está PASANDO son dos cosas
@@ -196,7 +211,9 @@
      fármaco implicado), y esos también deben pesar en la búsqueda. */
   function expandir(texto){
     var d = detectar(texto);
-    return d.urgencia ? (String(texto || '') + ' ' + d.terminos) : String(texto || '');
+    return d.urgencia
+      ? (String(texto || '') + ' ' + d.terminos + (d.apoyo ? ' ' + d.apoyo : '')).replace(/\s+/g, ' ')
+      : String(texto || '');
   }
 
   window.EnferixUrgencias = { detectar: detectar, expandir: expandir, enCurso: enCurso, esGestion: esGestion, normalizarEmergencias: normalizarEmergencias };
