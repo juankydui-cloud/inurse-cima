@@ -426,7 +426,17 @@ function searchINurse(query,focus='all',limit=5){
       if(full.includes(t))score+=1;
     });
     if(norm(query)&&full.includes(norm(query)))score+=12;
-    if(terminosUrgencia.length&&terminosUrgencia.some(t=>title.includes(t)))score+=25;
+    /* Coherencia con el CUADRO, no con un término suelto. El bonus era +25 por
+       una sola coincidencia, y "obstrucción" es polisémica en medicina: con
+       "atragantamiento" premiaba igual a "Obstrucción aguda de la vía aérea"
+       que a "síndrome de obstrucción sinusoidal" (hepática). Ahora cuenta
+       CUÁNTOS términos del cuadro casan: la de vía aérea casa tres
+       (obstrucción, vía, aérea) y la hepática sólo uno. */
+    if(terminosUrgencia.length){
+      let casan=0;
+      terminosUrgencia.forEach(t=>{ if(title.includes(t)) casan++; });
+      if(casan>=2) score+=12*casan;
+    }
     if(focus==='guides'&&item.type==='Guía clínica')score+=3;
     if(focus==='library'&&item.type==='Biblioteca virtual')score+=3;
     return {item,score};
@@ -441,6 +451,19 @@ function searchINurse(query,focus='all',limit=5){
       scored=scored.filter(x=>!U.esGestion([x.item.title,x.item.meta].join(' ')));
     }
   }catch(e){}
+  /* Con un cuadro reconocido, una ficha que sólo comparte UN término suelto no
+     es del cuadro: es un homónimo. Se descartan, salvo que el filtro se quede
+     sin nada, en cuyo caso se conserva el conjunto original —quedarse sin
+     fichas es peor, y para el caso de "ninguna aplicable" ya está la regla de
+     seguridad que impide dar indicación. */
+  if(terminosUrgencia.length){
+    const coherentes=scored.filter(x=>{
+      const t=norm(x.item.title)+' '+norm(x.item.meta);
+      let casan=0; terminosUrgencia.forEach(k=>{ if(t.includes(k)) casan++; });
+      return casan>=2;
+    });
+    if(coherentes.length) scored=coherentes;
+  }
   scored=scored.sort((a,b)=>b.score-a.score).slice(0,Math.max(1,Math.min(8,Number(limit)||5)));
   const sources=scored.map(x=>({title:x.item.title,meta:x.item.meta,type:x.item.type,id:x.item.id}));
   sources.forEach(s=>{
@@ -561,6 +584,7 @@ Durante un caso:
 7. No inventes dosis, concentraciones, energías, tiempos ni contraindicaciones. Solo menciona una dosis si aparece expresamente en la fuente devuelta, leyéndola despacio y diciendo que debe verificarse con la ficha técnica/protocolo vigente.
 8. Llama a update_case cuando cambie la prioridad, aparezca una señal de alarma, haya nuevas actuaciones o falten datos.
 9. No repitas nombres, DNI, números de historia, teléfonos ni otros identificadores.
+9b. En el panel del caso (update_case) recoge SÓLO lo que el usuario ha dicho, nunca lo inferido. Si dice "mi padre", el resumen es "padre del usuario", no "varón" ni una edad: el sexo y la edad no se han dicho. No completes sexo, edad, antecedentes ni diagnóstico a partir de suposiciones; deja el hueco o ponlo en datos pendientes. Lo que se muestra en pantalla se lee como dato del caso, y un dato inventado es peor que un hueco.
 10. Permite interrupciones. Si te interrumpen, detén la explicación y atiende al nuevo dato.
 Cuando el usuario diga “más breve”, responde en formato: AHORA / DESPUÉS / DIME.
 Cuando diga “repite”, repite únicamente la última instrucción.
