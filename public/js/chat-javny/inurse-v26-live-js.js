@@ -636,6 +636,7 @@ async function executeToolCall(toolCall){
    searchINurse es local (índice en memoria, sin red), de ahí que el coste por
    turno se mida en milisegundos. */
 var turnoRecuperado='', turnoTimer=null, turnoFichas=0, turnoMsTotal=0;
+var turnoInyectado=false, turnoCuadroInyectado='', turnoBytes=0;
 
 /* ── El cuadro clínico del caso, no las palabras del turno ────────────────────
    Una sesión de Live es UN caso. Quien la usa dice al principio lo que ve
@@ -683,39 +684,113 @@ function contextoDeFichas(res){
       +'del centro, y remite al protocolo vigente del centro. Puedes pedir el dato '
       +'que falte para volver a buscar.';
   }
-  const lista=fuentes.slice(0,4).map((f,i)=>{
-    const cuerpo=(f.contenido||[]).slice(0,4)
-      .map(sec=>`   · ${sec.heading||''}: ${String(sec.body||'').slice(0,420)}`).join('\n');
-    return `${i+1}. [${f.tipo_fuente||'Ficha'}] ${f.titulo||''}`
-      +(f.fuente?` · ${f.fuente}`:'')
-      +(f.resumen?`\n   ${f.resumen}`:'')
+  /* Sólo DOS fichas y sólo los fragmentos que vienen a cuento. Antes iban cinco
+     fichas con cuatro secciones completas cada una: ~5 KB por inyección, que en
+     voz se paga en silencio antes de la primera palabra. El modelo no necesita
+     la biblioteca entera para decir la siguiente maniobra; necesita el trozo que
+     la contiene. */
+  const claves=norm((cuadroActivo.terminos||'')+' '+(turnoRecuperado||'')).split(/\s+/).filter(x=>x.length>3);
+  /* Los dos orígenes traen el payload con campos distintos: las Guías clínicas
+     dan `contenido` (secciones con heading/body) y la Biblioteca virtual da
+     `definicion`, `alertas`, `valoracion_inicial`, `algoritmo`,
+     `cuidados_enfermeria` y `criterios_escalada`. Leer sólo los de guías dejaba
+     las fichas de biblioteca sin cuerpo —194 bytes de contexto—, y con eso el
+     modelo habría dicho que no tiene la fuente teniéndola. */
+  function seccionesDe(f){
+    if(Array.isArray(f.contenido)&&f.contenido.length) return f.contenido;
+    const bloques=[
+      ['Definición',f.definicion],
+      ['Alertas',f.alertas],
+      ['Valoración inicial',f.valoracion_inicial],
+      ['Algoritmo',f.algoritmo],
+      ['Cuidados de enfermería',f.cuidados_enfermeria],
+      ['Criterios de escalada',f.criterios_escalada]
+    ];
+    return bloques
+      .filter(([,v])=>v&&(Array.isArray(v)?v.length:String(v).trim()))
+      .map(([h,v])=>({heading:h,body:Array.isArray(v)?v.join('. '):String(v)}));
+  }
+  function trozosRelevantes(f){
+    const secs=seccionesDe(f);
+    if(!secs.length) return '';
+    // Cada sección puntúa por cuántas palabras del cuadro contiene.
+    const puntuadas=secs.map(sec=>{
+      const t=norm((sec.heading||'')+' '+(sec.body||''));
+      let n=0; claves.forEach(k=>{ if(t.includes(k)) n++; });
+      return {sec,n};
+    }).sort((a,b)=>b.n-a.n).slice(0,2);
+    return puntuadas.map(x=>`   · ${x.sec.heading||''}: ${String(x.sec.body||'').slice(0,260)}`).join('\n');
+  }
+  const lista=fuentes.slice(0,2).map((f,i)=>{
+    const cuerpo=trozosRelevantes(f);
+    return `${i+1}. ${f.titulo||''}`+((f.fuente||f.bloque)?` · ${f.fuente||f.bloque}`:'')
+      +((f.resumen||f.definicion)?`\n   ${String(f.resumen||f.definicion).slice(0,200)}`:'')
       +(cuerpo?`\n${cuerpo}`:'');
   }).join('\n');
-  return 'CONTEXTO DE ENFERIX PARA ESTE TURNO — fichas recuperadas de la aplicación:\n'
-    +lista.slice(0,5000)
-    +'\nApóyate en estas fichas para la indicación de este turno y nombra la que uses. '
-    +'Si lo que necesitas no está en ellas, dilo en vez de completarlo de memoria.';
+  return 'CONTEXTO DE ENFERIX PARA ESTE TURNO:\n'+lista
+    +'\nApóyate en esto y nombra la ficha que uses. Si lo que necesitas no está aquí, dilo.';
 }
 
-/* Expuesta únicamente para poder medir el coste de la recuperación desde fuera
-   (scripts/medir-latencia-javny.mjs y las pruebas). No la usa la sesión. */
+/* Expuestas únicamente para poder medir la recuperación desde fuera (pruebas).
+   No las usa la sesión. */
 try{
   window.__liveSearchParaMedir=function(q){ return searchINurse(q,'all',5); };
-  // El camino COMPLETO del turno: fija el cuadro y busca como en la sesión real.
   window.__liveTurnoParaMedir=function(q){
     actualizarCuadro(q);
     const consulta=cuadroActivo.terminos?(cuadroActivo.terminos+' '+q):q;
+    turnoRecuperado=q;
     return searchINurse(consulta,'all',5);
   };
   window.__liveResetCuadro=function(){ olvidarCuadro(); };
+  window.__liveContextoParaMedir=function(res){ return contextoDeFichas(res); };
+  // Replica exacta de las guardas reales de recuperarParaTurno, para medir el
+  // comportamiento del código y no una versión aproximada escrita en la prueba.
+  window.__liveDecidirInyeccion=function(texto,forzar){
+    actualizarCuadro(texto);
+    const hayCuadro=cuadroActivo.claves.length>0;
+    if(!forzar&&!hayCuadro) return {inyecta:false,motivo:'sin cuadro todavía'};
+    const cuadroAhora=cuadroActivo.claves.join(',');
+    if(turnoInyectado&&cuadroAhora===turnoCuadroInyectado) return {inyecta:false,motivo:'ya inyectado, mismo cuadro'};
+    const t0=performance.now();
+    const consulta=cuadroActivo.terminos?(cuadroActivo.terminos+' '+texto):texto;
+    turnoRecuperado=texto;
+    const res=searchINurse(consulta,'all',5);
+    const ms=+(performance.now()-t0).toFixed(1);
+    const carga=contextoDeFichas(res);
+    turnoInyectado=true; turnoCuadroInyectado=cuadroAhora;
+    return {inyecta:true,ms,bytes:carga.length,fichas:(res.resultados||[]).length,
+            top:(res.resultados||[])[0]?.titulo||'—',cuadro:cuadroAhora};
+  };
+  window.__liveResetTurno=function(){ turnoInyectado=false; turnoCuadroInyectado=''; turnoRecuperado=''; };
 }catch(e){}
 
-function recuperarParaTurno(){
+function recuperarParaTurno(forzar){
   const texto=sanitizeTranscript(currentUserText);
-  if(!texto||texto.length<4) return;
-  // Sin novedad respecto a lo ya recuperado en este turno, no se repite.
-  if(texto===turnoRecuperado) return;
+  if(!texto) return;
+  /* UNA sola inyección por turno. La transcripción llega en fragmentos y el
+     texto crece con cada uno; recuperar en todos suponía cuatro búsquedas y
+     ~17 KB de contexto por turno, con la última llegando justo al dejar de
+     hablar: ahí estaba el silencio. Ahora se espera a que la frase tenga
+     sustancia, se inyecta una vez, y sólo se repite si aparece un cuadro
+     clínico nuevo (empieza a sangrar durante la reanimación) o al cerrar el
+     turno si aún no se había inyectado nada.
+
+     Lo que decide CUÁNDO inyectar es el cuadro clínico, no una longitud: un
+     umbral por caracteres disparaba con la frase a medias —"una persona que no
+     se mueve" recuperaba "Seguridad y personalización de alarmas"— y esa ficha
+     se quedaba en el contexto el resto del turno.
+
+       · En cuanto se reconoce el cuadro (al oír "no respira"), se inyecta ya,
+         mientras el usuario sigue hablando: es el caso urgente y el que no
+         puede esperar.
+       · Sin cuadro reconocido, se espera al cierre del turno, que es cuando se
+         sabe qué se ha preguntado. Una consulta tranquila puede permitírselo.
+       · Si aparece un cuadro nuevo a mitad de turno, se vuelve a inyectar. */
   actualizarCuadro(texto);
+  const hayCuadro=cuadroActivo.claves.length>0;
+  if(!forzar&&!hayCuadro) return;
+  const cuadroAhora=cuadroActivo.claves.join(',');
+  if(turnoInyectado&&cuadroAhora===turnoCuadroInyectado) return;
   const t0=(performance&&performance.now)?performance.now():Date.now();
   let res=null;
   /* Con un cuadro reconocido, se busca por él: el relato del turno se conserva
@@ -727,7 +802,12 @@ function recuperarParaTurno(){
   turnoRecuperado=texto;
   turnoFichas=(res&&res.resultados&&res.resultados.length)||0;
   turnoMsTotal+=ms;
-  sendWS({clientContent:{turns:[{role:'user',parts:[{text:contextoDeFichas(res)}]}],turnComplete:false}});
+  turnoInyectado=true;
+  turnoCuadroInyectado=cuadroAhora;
+  const carga=contextoDeFichas(res);
+  turnoBytes+=carga.length;
+  sendWS({clientContent:{turns:[{role:'user',parts:[{text:carga}]}],turnComplete:false}});
+  marcarBuscando(false);
   /* Se registran los TÍTULOS, no sólo el número: la única forma de auditar esto
      es la consola del navegador (Live no pasa por el servidor), y saber que hubo
      5 fichas no dice si eran las correctas. */
@@ -737,7 +817,54 @@ function recuperarParaTurno(){
     +`\n   dijo: "${texto.slice(0,70)}"\n   fichas: ${titulos}`);
 }
 
+/* ── Señal de que está trabajando ────────────────────────────────────────────
+   Entre que dejas de hablar y que Javny suelta la primera palabra hay un hueco.
+   En voz, un silencio sin señal no se distingue de un cuelgue, y quien está
+   reanimando no puede quedarse dudando si el sistema sigue vivo.
+
+   Señal visual siempre; el aviso sonoro sólo si el hueco se alarga, para no
+   meter un pitido en cada turno de una conversación. */
+var buscandoDesde=0, avisoSonoroTimer=null;
+
+function marcarBuscando(activo){
+  try{
+    const panel=document.getElementById('v26StageTitle');
+    const sub=document.getElementById('v26StageText');
+    const overlay=document.getElementById('v26LiveOverlay');
+    if(overlay) overlay.classList.toggle('v26-buscando',!!activo);
+    if(activo){
+      buscandoDesde=Date.now();
+      if(panel) panel.textContent='Consultando las fichas…';
+      if(sub) sub.textContent='Javny está buscando en las guías de la aplicación antes de responder.';
+      clearTimeout(avisoSonoroTimer);
+      // Sólo si se alarga: por debajo de esto, la señal visual basta.
+      avisoSonoroTimer=setTimeout(pitidoDeEspera,1200);
+    }else{
+      clearTimeout(avisoSonoroTimer);
+    }
+  }catch(e){}
+}
+
+/* Tono corto y suave, sintetizado: no depende de ningún archivo y no compite
+   con la voz de Javny. */
+function pitidoDeEspera(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx=new Ctx();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.frequency.value=660; osc.type='sine';
+    gain.gain.setValueAtTime(0.0001,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.06,ctx.currentTime+0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.22);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime+0.24);
+    setTimeout(()=>{ try{ctx.close()}catch(e){} },400);
+  }catch(e){}
+}
+
 function recuperarPronto(){
+  if(!turnoInyectado) marcarBuscando(true);
   clearTimeout(turnoTimer);
   // Corto a propósito: tiene que llegar antes de que el usuario deje de hablar.
   turnoTimer=setTimeout(recuperarParaTurno,250);
@@ -751,7 +878,7 @@ function commitUserSoon(){
       // Última pasada por si la frase terminó con datos que no estaban en el
       // parcial con el que se buscó ("...y no respira").
       clearTimeout(turnoTimer);
-      recuperarParaTurno();
+      recuperarParaTurno(!turnoInyectado);   // fuerza sólo si el turno iba sin contexto
       finalizeTemporary('user',clean);
       handleVoiceCommand(clean);
     }
@@ -770,6 +897,10 @@ function handleServerContent(sc){
     recuperarPronto();   // la búsqueda sale ya, mientras sigue hablando
     commitUserSoon();
   }
+  if(sc.modelTurn?.parts||sc.outputTranscription?.text){
+    // Ya está hablando: se retira la señal de espera.
+    marcarBuscando(false);
+  }
   if(sc.outputTranscription?.text){
     currentModelText=(currentModelText+' '+sc.outputTranscription.text).replace(/\s+/g,' ').trim();
     addLine('model',currentModelText,true);
@@ -785,8 +916,8 @@ function handleServerContent(sc){
   if(sc.turnComplete){
     // Queda registrado turno a turno para poder auditarlo después.
     console.log(`[Javny Live] turno completado · recuperación: ${turnoRecuperado?'sí':'NO'}`
-      +` · ${turnoFichas} fichas · ${turnoMsTotal} ms de recuperación`);
-    turnoRecuperado='';turnoFichas=0;turnoMsTotal=0;
+      +` · ${turnoFichas} fichas · ${turnoMsTotal} ms · ${turnoBytes} B inyectados`);
+    turnoRecuperado='';turnoFichas=0;turnoMsTotal=0;turnoInyectado=false;turnoCuadroInyectado='';turnoBytes=0;
     if(currentModelText)finalizeTemporary('model',currentModelText);
     currentModelText='';
     setStage('listening','Te escucho','Continúa con la evolución del mismo caso.');
