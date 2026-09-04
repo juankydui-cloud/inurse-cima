@@ -238,6 +238,7 @@ function resetCase(silent=false){
   // El cuadro clínico se olvida con el caso: si no, el siguiente arrastraría el
   // anterior y buscaría una parada en una consulta que ya no lo es.
   try{ olvidarCuadro(); }catch(e){}
+  turnoArrancado=false;
   sourceHistory=[];renderCase();renderSources();
   if(!silent)addLine('model','Caso cerrado. He borrado el contexto temporal. Puedes iniciar otro diciendo «Oye Javny».');
   if(ws&&ready){
@@ -721,7 +722,12 @@ function contextoDeFichas(res){
     }).sort((a,b)=>b.n-a.n).slice(0,2);
     return puntuadas.map(x=>`   · ${x.sec.heading||''}: ${String(x.sec.body||'').slice(0,260)}`).join('\n');
   }
-  const lista=fuentes.slice(0,2).map((f,i)=>{
+  /* En urgencia basta LA ficha del cuadro: Live es para actuar y el ritmo manda.
+     En consulta tranquila se dejan dos, que puede permitírselo. La respuesta
+     exhaustiva con toda la bibliografía es del recuadro de la portada, que no se
+     toca y sigue recibiendo el contexto completo. */
+  const cuantas=cuadroActivo.claves.length?1:2;
+  const lista=fuentes.slice(0,cuantas).map((f,i)=>{
     const cuerpo=trozosRelevantes(f);
     return `${i+1}. ${f.titulo||''}`+((f.fuente||f.bloque)?` · ${f.fuente||f.bloque}`:'')
       +((f.resumen||f.definicion)?`\n   ${String(f.resumen||f.definicion).slice(0,200)}`:'')
@@ -743,6 +749,7 @@ try{
   };
   window.__liveResetCuadro=function(){ olvidarCuadro(); };
   window.__liveContextoParaMedir=function(res){ return contextoDeFichas(res); };
+  window.__liveArranqueParaMedir=function(res){ return arranqueUrgente(res); };
   // Replica exacta de las guardas reales de recuperarParaTurno, para medir el
   // comportamiento del código y no una versión aproximada escrita en la prueba.
   window.__liveDecidirInyeccion=function(texto,forzar){
@@ -763,6 +770,50 @@ try{
   };
   window.__liveResetTurno=function(){ turnoInyectado=false; turnoCuadroInyectado=''; turnoRecuperado=''; };
 }catch(e){}
+
+/* ── Arranque inmediato en urgencia ──────────────────────────────────────────
+   En una parada las primeras frases son siempre las mismas: activar el sistema
+   de emergencia y empezar a comprimir. No dependen de qué diga el resto del
+   relato, así que no tienen por qué esperar a nada. Live es para actuar; la
+   respuesta larga y con bibliografía es del recuadro de la portada.
+
+   El arranque sale en cuanto se reconoce el cuadro, con turnComplete para que
+   el modelo hable YA sin esperar a que el usuario termine la frase. El contexto
+   completo llega detrás, mientras sigue hablando.
+
+   La regla de seguridad NO se recorta: la primera acción se toma de la ficha
+   recuperada, no de memoria. Si la búsqueda no ha devuelto ficha aplicable, el
+   arranque se limita a activar el 112 y a decir que no tiene la fuente — que es
+   justo lo que manda la regla, dicho antes en vez de después. */
+var turnoArrancado=false;
+
+function primeraAccionDe(res){
+  const f=((res&&res.resultados)||[])[0];
+  if(!f) return '';
+  /* Se busca el primer paso accionable de la ficha, no un párrafo de contexto:
+     los encabezados de actuación inmediata son los que sirven aquí. */
+  const secs=(Array.isArray(f.contenido)&&f.contenido.length)?f.contenido:[];
+  const prioritaria=/actuaci|inmediat|inicial|algoritmo|secuencia|maniobra|primeros|abordaje|manejo/i;
+  const elegida=secs.find(x=>prioritaria.test(x.heading||''))||secs[0];
+  if(!elegida) return String(f.definicion||f.resumen||'').slice(0,220);
+  return String(elegida.body||'').slice(0,220);
+}
+
+function arranqueUrgente(res){
+  const ficha=((res&&res.resultados)||[])[0];
+  if(!ficha){
+    return 'URGENCIA EN CURSO y la búsqueda NO ha devuelto ficha aplicable. Di AHORA, '
+      +'en una sola frase corta: que active el 112 o el equipo de parada del centro, y '
+      +'que no tienes la fuente en la aplicación para la maniobra. No des ninguna '
+      +'indicación clínica más.';
+  }
+  return 'URGENCIA EN CURSO. Habla AHORA, sin esperar a nada más. Di sólo dos cosas, en '
+    +'frases muy cortas e imperativas: primero, que active el 112 o el equipo de parada '
+    +'del centro; segundo, la primera maniobra según la ficha "'+(ficha.titulo||'')+'":\n'
+    +primeraAccionDe(res)
+    +'\nNada más: ni contexto, ni bibliografía, ni explicaciones. El resto del contenido '
+    +'te llega enseguida.';
+}
 
 function recuperarParaTurno(forzar){
   const texto=sanitizeTranscript(currentUserText);
@@ -804,6 +855,17 @@ function recuperarParaTurno(forzar){
   turnoMsTotal+=ms;
   turnoInyectado=true;
   turnoCuadroInyectado=cuadroAhora;
+
+  /* Primero el arranque, que desbloquea el habla; el contexto va detrás. Sólo
+     en urgencia en curso y sólo una vez por caso: en una consulta tranquila no
+     hay nada que adelantar. */
+  if(hayCuadro&&!turnoArrancado){
+    turnoArrancado=true;
+    sendWS({clientContent:{turns:[{role:'user',parts:[{text:arranqueUrgente(res)}]}],turnComplete:true}});
+    marcarBuscando(false);
+    console.log('[Javny Live] arranque urgente enviado · '+((res&&res.resultados||[])[0]?.titulo||'sin ficha'));
+  }
+
   const carga=contextoDeFichas(res);
   turnoBytes+=carga.length;
   sendWS({clientContent:{turns:[{role:'user',parts:[{text:carga}]}],turnComplete:false}});
