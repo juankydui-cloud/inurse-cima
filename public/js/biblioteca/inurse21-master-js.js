@@ -4,6 +4,9 @@
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const norm=s=>String(s??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+/* P3.5 · una sola definición de qué palabra identifica un tema y de cuándo se
+   considera que aparece, compartida con la recuperación de guías y con Javny Live. */
+const CO=window.EnferixCoincidencia;
 const raw=JSON.parse(document.getElementById('inurse-master-21').textContent);
 const collection=b=>b.fichas||b.herramientas||b.elementos||b.cards||[];
 const titleOf=x=>x.titulo||x.nombre_generico||x.name||x.id;
@@ -78,7 +81,7 @@ function classifySpecialties(x){
 }
 
 const flat=[];
-raw.forEach(b=>{const n=b._numero_bloque;collection(b).forEach(x=>{const y=Object.assign({},x,{__block:n,__blockName:b.bloque||b.modulo||('Bloque '+n),__module:b.modulo||'',__version:b.version||'',__file:b._archivo_origen||''});y.__bucket=bucket(y);y.__title=titleOf(y);y.__summary=summaryOf(y);y.__search=norm([y.__title,y.__summary,subcatOf(y),JSON.stringify(y.etiquetas||[]),JSON.stringify(y.sinonimos_o_alias||[]),JSON.stringify(y.bloques_origen||[]),y.__blockName].join(' '));y.__systems=classifySystems(y);y.__specialties=classifySpecialties(y);y.__search+=' '+norm(y.__systems.map(id=>(systemDefs.find(d=>d.id===id)||{}).label||id).join(' '))+' '+norm(y.__specialties.map(id=>(specialtyDefs.find(d=>d.id===id)||{}).label||id).join(' '));flat.push(y)})});
+raw.forEach(b=>{const n=b._numero_bloque;collection(b).forEach(x=>{const y=Object.assign({},x,{__block:n,__blockName:b.bloque||b.modulo||('Bloque '+n),__module:b.modulo||'',__version:b.version||'',__file:b._archivo_origen||''});y.__bucket=bucket(y);y.__title=titleOf(y);y.__summary=summaryOf(y);y.__search=norm([y.__title,y.__summary,subcatOf(y),JSON.stringify(y.etiquetas||[]),JSON.stringify(y.sinonimos_o_alias||[]),JSON.stringify(y.bloques_origen||[]),y.__blockName].join(' '));y.__systems=classifySystems(y);y.__specialties=classifySpecialties(y);y.__search+=' '+norm(y.__systems.map(id=>(systemDefs.find(d=>d.id===id)||{}).label||id).join(' '))+' '+norm(y.__specialties.map(id=>(specialtyDefs.find(d=>d.id===id)||{}).label||id).join(' '));y.__idx=CO.indice(y.__search);y.__idxTitle=CO.indice(y.__title);y.__idxSub=CO.indice(subcatOf(y));flat.push(y)})});
 const byId=new Map(flat.map(x=>[x.id,x]));
 let favs=[];try{favs=JSON.parse(localStorage.getItem('inurse21_favs')||'[]')}catch(e){}
 let state={tab:'all',q:'',limit:70,selected:null,organize:'all',group:'all'};
@@ -194,15 +197,30 @@ $('#library21Btn').onclick=()=>open('all');$('#in21Close').onclick=close;$('#in2
 document.addEventListener('click',e=>{const a=e.target.closest('[data-in52-doc]');if(a){const id=a.getAttribute('data-in52-doc');if(byId.has(id)){e.preventDefault();e.stopImmediatePropagation();open();show(id);return}}const p=e.target.closest('[data-patodis]');if(p){const bits=p.dataset.patodis.split('|'),mid=pathMap.get(bits[1]);if(mid){e.preventDefault();e.stopImmediatePropagation();open('path');show(mid)}}},true);
 
 function retrieveLibraryForJavny(qy,limit=7){
-  const terms=norm(qy).split(/[^a-z0-9áéíóúüñ]+/).filter(w=>w.length>2&&!['para','como','cual','esta','este','esto','tiene','sobre','desde','entre','caso','paciente'].includes(w));
-  const unique=[...new Set(terms)];
-  if(!unique.length)return'';
+  /* Reparto y coincidencia según P3.5. Antes se puntuaba igual toda palabra y
+     se buscaba por subcadena: "cuidados del paciente con traqueostomía"
+     devolvía "Cinco elementos del consentimiento informado", porque "con" casa
+     dentro de "CONsentimiento", y "cuidados" pesaba tanto como el término que
+     identifica el tema. */
+  const T=CO.terminos(qy);
+  if(!T.todos.length)return'';
   const scored=flat.map(x=>{
-    let score=0;const title=norm(x.__title),sub=norm(subcatOf(x));
-    unique.forEach(t=>{if(title.includes(t))score+=7;if(sub.includes(t))score+=3;if(x.__search.includes(t))score+=1});
-    if(x.__block===17)score+=unique.some(t=>title.includes(t))?2:0;
-    return{x,score};
-  }).filter(z=>z.score>0).sort((a,b)=>b.score-a.score||a.x.__title.localeCompare(b.x.__title,'es')).slice(0,Math.max(1,limit||7));
+    let score=0,cob=0,tit=false;
+    T.clinicos.forEach(t=>{
+      let dentro=false;
+      if(CO.casa(x.__idxTitle,t)){score+=7;tit=true;dentro=true}
+      if(CO.casa(x.__idxSub,t)){score+=3;tit=true;dentro=true}
+      if(CO.casa(x.__idx,t)){score+=1;dentro=true}
+      if(dentro)cob++;
+    });
+    T.proceso.forEach(t=>{if(CO.casa(x.__idxTitle,t))score+=1});
+    if(x.__block===17)score+=T.clinicos.some(t=>CO.casa(x.__idxTitle,t))?2:0;
+    /* Es del tema si el término clínico está en el título o la subcategoría, o
+       si la ficha menciona TODOS los términos de la pregunta. Una mención de
+       paso a una parte de lo preguntado no la hace del tema. */
+    const ok=T.hayClinicos?(tit||(cob>0&&cob===T.clinicos.length)):score>0;
+    return{x,score,ok};
+  }).filter(z=>z.ok).sort((a,b)=>b.score-a.score||a.x.__title.localeCompare(b.x.__title,'es')).slice(0,Math.max(1,limit||7));
   return scored.map(z=>{
     const x=z.x;
     const content=plainItem(x).slice(0,1900);

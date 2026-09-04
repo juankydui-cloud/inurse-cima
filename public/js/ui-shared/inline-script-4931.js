@@ -50,10 +50,14 @@
 
  /* ---- recuperación sobre la base de la guía (DOCS/VADEM globales) ---- */
  function nrm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
- var STOP={de:1,la:1,el:1,en:1,y:1,a:1,los:1,las:1,un:1,una:1,que:1,se:1,con:1,por:1,para:1,del:1,al:1,es:1,su:1,sus:1,mas:1,'más':1,o:1,como:1,cual:1};
+ /* Los índices se preparan con P3.5: separadores en los bordes y todo lo que no
+    sea letra o dígito convertido en espacio, para que la coincidencia pueda
+    exigir principio de palabra. Se guarda también el índice del TÍTULO, que es
+    donde pesa el término clínico. */
+ var CO=window.EnferixCoincidencia;
  var DIDX=[],VIDX=[];
- try{ DIDX=DOCS.map(function(d){return {d:d,t:nrm(d.title+' '+d.tags+' '+d.summary+' '+d.sec.map(function(s){return s.h+' '+stripH(s.b)}).join(' '))}}); }catch(e){}
- try{ VIDX=VADEM.map(function(v){return {v:v,t:nrm(v.n+' '+v.a+' '+v.i+' '+v.cat)}}); }catch(e){}
+ try{ DIDX=DOCS.map(function(d){return {d:d,t:CO.indice(d.title+' '+d.tags+' '+d.summary+' '+d.sec.map(function(s){return s.h+' '+stripH(s.b)}).join(' ')),nt:CO.indice(d.title)}}); }catch(e){console.warn('Índice de guías',e)}
+ try{ VIDX=VADEM.map(function(v){return {v:v,t:CO.indice(v.n+' '+v.a+' '+v.i+' '+v.cat),nt:CO.indice(v.n)}}); }catch(e){console.warn('Índice de vademécum',e)}
  function retrieveDetailed(qy){
   /* Una urgencia contada en lenguaje natural ("no responde y no respira") no
      comparte palabras con los títulos de las fichas de soporte vital, así que
@@ -69,19 +73,36 @@
       if(window.EnferixUrgencias.expandir) qy=window.EnferixUrgencias.expandir(qy);
     }
   }catch(e){}
-  var toks=nrm(qy).split(/[^a-z0-9]+/).filter(function(w){return w.length>2&&!STOP[w]});
-  var seen={},tk=[];toks.forEach(function(w){if(!seen[w]){seen[w]=1;tk.push(w)}});
-  if(!tk.length)return {context:'',sources:[]};
-  function score(t,title){
-   var s=0,nt=nrm(title||'');
-   for(var i=0;i<tk.length;i++){
-    if(nt.indexOf(tk[i])>=0)s+=7;
-    if(t.indexOf(tk[i])>=0)s+=1;
+  /* El término clínico decide, la palabra de proceso desempata. "Cuidados",
+     "manejo" o "protocolo" están en decenas de títulos y no dicen nada del
+     tema: si puntúan como el término que sí lo identifica, "sonda vesical"
+     devuelve "Cuidados post-resucitación". P3.5 hace ese reparto una sola vez
+     para las tres recuperaciones internas. */
+  var T=CO.terminos(qy);
+  if(!T.todos.length)return {context:'',sources:[]};
+  function score(o){
+   var s=0,cob=0,tit=false;
+   for(var i=0;i<T.clinicos.length;i++){
+    var dentro=false;
+    if(CO.casa(o.nt,T.clinicos[i])){s+=7;tit=true;dentro=true}
+    if(CO.casa(o.t,T.clinicos[i])){s+=1;dentro=true}
+    if(dentro)cob++;
    }
-   return s;
+   for(var j=0;j<T.proceso.length;j++){
+    if(CO.casa(o.nt,T.proceso[j]))s+=1;
+   }
+   return {s:s,cob:cob,tit:tit};
   }
-  var dd=DIDX.map(function(o){return {o:o,s:score(o.t,o.d.title)}})
-   .filter(function(x){return x.s>0});
+  /* Qué ficha es "de este tema": la que lleva el término clínico en el TÍTULO,
+     o la que menciona TODOS los términos de la pregunta. Una mención de paso a
+     una parte de lo preguntado no basta — medido: "sonda vesical permanente"
+     sacaba ocho fichas que nombran la sonda de pasada (traumatismo medular,
+     hemorragia postparto, Broselow…) y ninguna trata el tema. Ahí lo correcto
+     es no devolver nada de guías: la ficha vive en la Biblioteca y de ella sale
+     el contexto. Una ficha ajena es peor que ninguna. */
+  function califica(r){ return T.hayClinicos ? (r.tit || (r.cob>0 && r.cob===T.clinicos.length)) : r.s>0; }
+  var dd=DIDX.map(function(o){var r=score(o);return {o:o,s:r.s,ok:califica(r)}})
+   .filter(function(x){return x.ok});
   /* Durante una urgencia en curso, las fichas de ámbito organizativo (donación
      y trasplantes, coordinación, trámites…) no compiten: comparten vocabulario
      con la parada pero no se aplican durante una reanimación. Fuera de la
@@ -92,8 +113,8 @@
    });
   }
   dd=dd.sort(function(a,b){return b.s-a.s}).slice(0,8);
-  var vv=VIDX.map(function(o){return {o:o,s:score(o.t,o.v.n)}})
-   .filter(function(x){return x.s>0}).sort(function(a,b){return b.s-a.s}).slice(0,5);
+  var vv=VIDX.map(function(o){var r=score(o);return {o:o,s:r.s,ok:califica(r)}})
+   .filter(function(x){return x.ok}).sort(function(a,b){return b.s-a.s}).slice(0,5);
   var ctx='',sources=[];
   dd.forEach(function(x){
    var d=x.o.d,body=d.sec.map(function(s){return (s.h?s.h+': ':'')+stripH(s.b)}).join(' ');
