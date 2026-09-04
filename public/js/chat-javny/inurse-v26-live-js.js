@@ -59,10 +59,12 @@ function norm(s){
   return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .toLowerCase().replace(/[^a-z0-9%/.,+\-\s]/g,' ').replace(/\s+/g,' ').trim();
 }
-/* P3.5 · Live tiene su propia recuperación, así que el criterio de qué palabra
-   identifica un tema y de cuándo se considera que aparece se toma de la misma
-   definición que usan las guías y la biblioteca. Con dos copias acabarían
-   discrepando, y Live serviría la ficha que el chat descarta. */
+/* P3.5 · Criterio de qué palabra identifica un tema clínico y de cuándo se
+   considera que aparece. Se aplica AQUÍ y no en las recuperaciones de consulta
+   (portada y chat del avatar), que se quedan como estaban por decisión de
+   Juanky. Consecuencia asumida: hoy Live y el chat pueden ordenar distinto la
+   misma pregunta. Si algún día se unifica, el criterio se toma de p35 y no se
+   copia. */
 const CO=window.EnferixCoincidencia;
 function stripHtml(s){
   const d=document.createElement('div');d.innerHTML=String(s||'');return (d.textContent||'').replace(/\s+/g,' ').trim();
@@ -378,9 +380,8 @@ function prepareKnowledge(){
       });
     });
   }catch(e){console.warn('No se pudo indexar el catálogo de algoritmos',e)}
-  /* Índices de P3.5 (una sola definición de coincidencia para las tres
-     recuperaciones internas). Se calculan aquí, con el índice, y no en cada
-     búsqueda: son 1.700 fichas. */
+  /* Índices de P3.5. Se calculan aquí, junto con el índice, y no en cada
+     búsqueda: son 1.800 fichas. */
   out.forEach(o=>{
     o.idx=CO.indice(o.searchable);
     o.idxTitle=CO.indice(o.title);

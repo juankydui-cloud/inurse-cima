@@ -1,47 +1,43 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════════════════
    P3.5 · Qué palabra identifica un tema clínico, y cómo se decide que casa
    ---------------------------------------------------------------------------
-   Las tres recuperaciones internas de Enferix (guías + vademécum en el chat y
-   la portada, biblioteca virtual, y el índice propio de Javny Live) puntuaban
-   igual todas las palabras de la pregunta y las buscaban como subcadena. Eso
-   producía dos fallos distintos, los dos medidos sobre el corpus real:
+   DÓNDE SE APLICA: sólo en la recuperación de Javny Live (searchINurse). Las
+   recuperaciones de consulta —guías + vademécum (EnferixGuideRetrieve) y
+   biblioteca virtual (EnferixLibraryRetrieve), que alimentan la portada y el
+   chat del avatar— se quedan como estaban por decisión de Juanky: la portada
+   no se toca. Y son las dos la misma función para la portada y para el chat
+   (invariante del proyecto: la portada envía el MISMO contexto interno que el
+   chat, reutilizando su recuperación), así que no se puede cambiar una sin
+   cambiar la otra.
+
+   QUÉ ARREGLA: la recuperación puntuaba igual todas las palabras de la
+   pregunta y las buscaba como subcadena. Medido sobre el corpus real, en Live:
+
+     "qué cuidados lleva una sonda vesical permanente"
+          → Cuidados generales en ictus agudo | Cuidados integrales del prematuro
+     "cuidados del paciente con traqueostomía"
+          → Dolor torácico y síndrome coronario agudo
+     "protocolo de úlceras por presión"
+          → Inmunosupresión después de trasplante cardíaco
+
+   Dos causas distintas:
 
    1 · La palabra de proceso gana a la palabra clínica. "Cuidados", "manejo" o
-       "protocolo" aparecen en decenas de títulos y no dicen NADA del tema, pero
-       puntuaban lo mismo que el término que sí lo identifica:
+       "protocolo" aparecen en decenas de títulos y no dicen NADA del tema,
+       pero puntuaban lo mismo que el término que sí lo identifica.
 
-         "qué cuidados lleva una sonda vesical permanente"
-              → Cuidados post-resucitación | Cuidados post-parada cardíaca
-         "manejo de la hiperpotasemia"
-              → EPOC: diagnóstico y manejo | Manejo prehospitalario del shock
-
-   2 · La subcadena engancha palabras que no están. Buscar por `indexOf` hace
-       que "presion" case dentro de "inmunoSUPRESION" y "st" (del síndrome
-       coronario, que la tabla de sinónimos usaba como clave) dentro de
-       "traqueoSTomia" — de ahí salía el infarto en una pregunta sobre
-       traqueostomía:
-
-         "cuidados del paciente con traqueostomía"
-              → Dolor torácico y síndrome coronario agudo
-         "protocolo de úlceras por presión"
-              → Inmunosupresión después de trasplante cardíaco
-
-       Aparte, cada recuperación llevaba su propia lista de palabras vacías, y
-       la de la Biblioteca no incluía "con", "del" ni "una": entraban como
-       término de búsqueda y devolvían "Cinco elementos del CONsentimiento
-       informado" o "Clasificación de la profundidad de UNA quemadura".
-
-   Aquí viven las dos decisiones, UNA sola vez. Si cada recuperación llevara su
-   copia acabarían discrepando, y Javny serviría en el chat la ficha que la
-   portada descarta.
+   2 · La subcadena engancha palabras que no están: "presion" casa dentro de
+       "inmunoSUPRESION", y "st" —clave de la tabla de sinónimos del síndrome
+       coronario— casa dentro de "traqueoSTomia". De ahí salía el infarto en
+       una pregunta sobre traqueostomía.
 
    `casa()` exige que la coincidencia empiece en un principio de palabra, no en
    cualquier posición: sigue cubriendo la morfología ("cuidado" casa
    "cuidados", "hiperpotasemia" casa "hiperpotasémica") sin cazar palabras
-   ajenas por su final. Ojo: al ser por principio de palabra y no por palabra
-   entera, un término corto sigue casando dentro de otro más largo que empiece
-   igual ("con" casa "consentimiento"); de eso se ocupa la lista de palabras
-   vacías, que ahora es una sola para las tres recuperaciones.
+   ajenas por su interior. Ojo: al ser por principio de palabra y no por
+   palabra entera, un término corto sigue casando dentro de otro más largo que
+   empiece igual ("con" casa "consentimiento"); de eso se ocupa la lista de
+   palabras vacías.
 
    Los índices se preparan con `indice()`, que convierte todo lo que no sea
    letra o dígito en separador — así "post-parada" sigue casando con "parada".
@@ -49,15 +45,18 @@
    No se inventa contenido ni se traduce nada: sólo cambia qué peso tiene cada
    palabra y cómo se decide que aparece.
 
-   Carga: este archivo debe ir ANTES que inline-script-4931.js,
-   inurse21-master-js.js e inurse-v26-live-js.js, que lo usan para construir
-   sus índices.
-   ═══════════════════════════════════════════════════════════════════════════ */
+   Si algún día se decide aplicar esto también a la consulta, el criterio sale
+   de aquí y no de una copia: con dos definiciones acabarían discrepando, y
+   Javny serviría en el chat la ficha que Live descarta.
+
+   Carga: este archivo debe ir ANTES que inurse-v26-live-js.js, que lo usa para
+   construir su índice.
+   ════════════════════════════════════════════════════════════════════════════ */
 (function(){
   'use strict';
 
-  /* Palabras vacías del castellano. Una sola lista: las tres recuperaciones
-     llevaban la suya y ninguna las cubría todas. */
+  /* Palabras vacías del castellano. Con coincidencia por principio de palabra
+     hacen más falta que antes: "con" casa dentro de "consentimiento". */
   var STOP = {};
   ('de la el los las un una unos unas y o u en con por para del al que se su sus ' +
    'es son ser esta este esto estos estas ese esa eso aquel aquella como cual ' +

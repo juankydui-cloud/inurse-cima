@@ -4,6 +4,9 @@
    que decidieron el arreglo y, sobre los TÍTULOS REALES del corpus, que el
    vocabulario engancha una ficha existente en vez de suponerlo.
 
+   El módulo se aplica sólo en la recuperación de Javny Live; la de consulta
+   (portada y chat) quedó como estaba por decisión del usuario.
+
      node scripts/prueba-coincidencia.mjs
 */
 import { readFileSync } from 'node:fs';
