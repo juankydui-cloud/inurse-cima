@@ -235,6 +235,23 @@ reales de la app; si no hay dato, se dice que no está disponible.
   todo lo que lleva "fuente" en el título es documentación — "Fuentes ocultas de
   hemorragia en trauma" y "Fuentes de células y acondicionamiento" (trasplante
   hematopoyético) son clínicas, y excluirlas sería un error.
+- **UNA sola inyección de contexto por turno** (PR #153). La transcripción llega
+  en fragmentos y el texto crece con cada uno; recuperar en todos daba 4
+  inyecciones y **17.185 B** por turno, la última justo al dejar de hablar — ese
+  era el silencio que rompía la inmediatez, no el coste de buscar (~80 ms).
+  El momento lo decide el **cuadro clínico**, nunca un umbral de longitud: con
+  "una persona que no se mueve" (26 car.) se recuperaba "Seguridad y
+  personalización de alarmas" y esa ficha se quedaba el resto del turno.
+  Reconocido el cuadro → inyecta ya, mientras habla; sin cuadro → espera al
+  cierre. Contexto: 2 fichas y 2 secciones relevantes, ~1.200-1.600 B.
+- **Los dos orígenes traen el payload con campos DISTINTOS**: Guías da
+  `contenido` (heading/body); Biblioteca da `definicion`, `alertas`,
+  `valoracion_inicial`, `algoritmo`, `cuidados_enfermeria`,
+  `criterios_escalada`. Leer sólo los de guías dejaba las fichas de biblioteca
+  sin cuerpo (194 B) y Javny habría dicho que no tiene la fuente teniéndola.
+- Señal de actividad mientras busca (clase `v26-buscando`), con aviso sonoro
+  sólo si la espera pasa de 1,2 s. En voz, un silencio sin señal no se distingue
+  de un cuelgue.
 - La transcripción por voz pasa por `sanitizeTranscript`, que normaliza los
   números de emergencia ("alumno uno dos" → 112).
 
