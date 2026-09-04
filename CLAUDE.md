@@ -254,6 +254,21 @@ reales de la app; si no hay dato, se dice que no está disponible.
   **La primera maniobra del arranque sale de la ficha recuperada, nunca de
   memoria**, y sin ficha aplicable el arranque sólo activa el 112 y dice que no
   hay fuente. Recortar contexto no recorta la regla de seguridad.
+- **Coherencia del cuadro, no término suelto** (PR #155). El bonus de urgencia
+  daba +25 por UNA coincidencia en el título y "obstrucción" es polisémica: con
+  "atragantamiento" el panel mostraba "síndrome de obstrucción sinusoidal"
+  (hepática). Ahora el bonus es proporcional (12 por término) y **exige dos**;
+  con cuadro reconocido, la ficha que sólo comparte un término se descarta por
+  homónima, con salvaguarda de conservar el conjunto si el filtro lo vacía.
+  Importa más desde que en urgencia se inyecta UNA ficha: si son pocas, tienen
+  que ser las buenas.
+  **Limitación conocida**: esto sólo actúa con cuadro de urgencia. En consulta
+  tranquila el ranking sigue siendo por palabras ("sonda vesical" → "Cuidados
+  generales en ictus agudo"). Pendiente, mismo patrón.
+- **El panel del caso recoge lo dicho, no lo inferido**: ponía "varón" cuando
+  sólo se había dicho "mi padre". Sexo, edad, antecedentes y diagnóstico no se
+  completan por suposición; hueco o datos pendientes. Lo que se muestra se lee
+  como dato del caso.
 - **Los dos orígenes traen el payload con campos DISTINTOS**: Guías da
   `contenido` (heading/body); Biblioteca da `definicion`, `alertas`,
   `valoracion_inicial`, `algoritmo`, `cuidados_enfermeria`,
