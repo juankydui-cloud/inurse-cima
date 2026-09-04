@@ -262,9 +262,41 @@ reales de la app; si no hay dato, se dice que no está disponible.
   homónima, con salvaguarda de conservar el conjunto si el filtro lo vacía.
   Importa más desde que en urgencia se inyecta UNA ficha: si son pocas, tienen
   que ser las buenas.
-  **Limitación conocida**: esto sólo actúa con cuadro de urgencia. En consulta
-  tranquila el ranking sigue siendo por palabras ("sonda vesical" → "Cuidados
-  generales en ictus agudo"). Pendiente, mismo patrón.
+- **El término clínico decide, la palabra de proceso desempata** (PR #156).
+  `p35-coincidencia-clinica.js` reúne dos decisiones: qué palabra identifica un
+  tema y cuándo se considera que aparece.
+  (a) La coincidencia empieza en **principio de palabra**, no en cualquier
+  posición: cubre la morfología ("cuidado" casa "cuidados") y deja de cazar
+  "presion" dentro de "inmunoSUPRESION" o "st" —clave de sinónimos del síndrome
+  coronario— dentro de "traqueoSTomia", de donde salía el infarto en una
+  pregunta sobre traqueostomía. Al ser por principio y no por palabra entera,
+  "con" sigue casando "consentimiento": de eso se ocupa la lista de vacías.
+  Los índices se preparan una vez con el propio índice de fichas (1.800), no en
+  cada búsqueda; por eso el turno de Live bajó de 110 a 59 ms.
+  (b) "Cuidados", "manejo" o "protocolo" están en decenas de títulos y no dicen
+  nada del tema: puntúan sólo como desempate. Una ficha entra si el término
+  clínico está en su título o su fuente, **o** si menciona TODOS los términos de
+  la pregunta; la mención de paso a una parte de lo preguntado no la hace del
+  tema. Sin ficha del tema no se devuelve ninguna.
+  (c) Vocabulario: "úlceras por presión" busca también "lesiones por presión",
+  que es como está escrito el corpus. **Al añadir una entrada, comprobar que
+  engancha un título real**, como en P3.4; `scripts/prueba-coincidencia.mjs` lo
+  verifica contra `guias.js` y la Biblioteca.
+  **Se aplica SÓLO en Live.** La recuperación de consulta se cambió, se midió y
+  se revirtió por decisión del usuario ("la portada no se toca"): portada y chat
+  del avatar comparten `EnferixGuideRetrieve` / `EnferixLibraryRetrieve` por
+  invariante del proyecto, así que no se puede cambiar una sin la otra.
+  Consecuencia asumida: **Live y el chat pueden ordenar distinto la misma
+  pregunta**. En consulta sigue mandando la palabra de proceso ("sonda vesical"
+  → "Cuidados post-resucitación"; "manejo de la sepsis" envía 8 fichas de guías
+  y sólo una trata la sepsis). Si algún día se unifica, el criterio se toma de
+  p35 y no se copia.
+- **Términos de urgencia: cuadro y apoyo** (PR #156). En `p34`, cada entrada
+  puede llevar `apoyo` además de `terminos`. "Soporte vital basico" engancha la
+  ficha que cubre el atragantamiento en las guías —no hay una de desobstrucción—
+  pero no identifica ese cuadro: como término del cuadro hacía ganar a "Soporte
+  Vital Básico y RCP" por encima de "Obstrucción aguda de la vía aérea". El
+  apoyo entra en la búsqueda y no decide el orden ni la coherencia.
 - **El panel del caso recoge lo dicho, no lo inferido**: ponía "varón" cuando
   sólo se había dicho "mi padre". Sexo, edad, antecedentes y diagnóstico no se
   completan por suposición; hueco o datos pendientes. Lo que se muestra se lee
