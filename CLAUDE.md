@@ -197,145 +197,80 @@ reales de la app; si no hay dato, se dice que no está disponible.
 
 ### Javny Live — lo que hay que saber antes de tocarlo
 
+**Live está revertido al estado anterior a la recuperación por turno** (5 de
+septiembre). Punto de vuelta: `40800db` (PR #150). Se deshacen los PR #151 a
+#157 **en Live** —y sólo en Live—: la recuperación determinista por turno, el
+contexto inyectado, la regla de "sin fuente no hay indicación", el cuadro
+clínico persistente, la inyección única con señal de actividad, el arranque
+inmediato en urgencia, el bonus de coherencia y el criterio de P3.5.
+
+**Por qué, en palabras del usuario**: "cada capa que añadimos ha degradado la
+fluidez, y la fluidez era el producto". Live es voz en la calle; una respuesta
+que tarda no es una respuesta.
+
+**Lo que vuelve con ello, y está asumido**: la búsqueda es otra vez una
+*function call* que el modelo lanza si le parece, y en una parada la brevedad
+que le pide el guion gana — turnos con indicaciones y el panel de fuentes
+vacío, de forma intermitente. Decisión consciente de Juanky, tomada sabiendo
+esto: se prefiere ese fallo a la pérdida de inmediatez. **No lo "arregles" otra
+vez sin hablarlo**: ese arreglo es exactamente lo que se acaba de revertir.
+
+El estado completo anterior al revert está en la rama
+**`respaldo/live-antes-del-revert`** (`3b5f624`), por si hay que recuperar algo
+puntual.
+
+Lo que sigue siendo cierto del Live actual:
+
 - **Live tiene su PROPIA recuperación** (`searchINurse` en
-  `inurse-v26-live-js.js`), independiente de `retrieveDetailed`. Todo arreglo de
-  recuperación hay que aplicarlo en los dos sitios, reutilizando la definición
-  de `p34-urgencias-lenguaje.js`; duplicar el criterio los hace discrepar.
+  `inurse-v26-live-js.js`), independiente de `retrieveDetailed`. La lanza el
+  modelo como herramienta (`search_inurse`), no el código.
 - **`searchINurse` devuelve `{query, notice, resultados}`**, NO `{sources,
   context}`. `resultados` son los *payload* (`titulo`, `fuente`, `resumen`,
-  `contenido`). Leer los campos equivocados no da error: da vacío, y en la
-  recuperación por turno eso significa inyectar "no hay fichas" siempre y dejar
-  a Javny sin poder indicar nada. Comprobar la forma antes de consumirla.
-- **La recuperación es determinista desde el PR #151**: la hace el código en
-  cada turno y se inyecta como contexto. La transcripción de entrada llega
-  MIENTRAS el usuario habla, y por ahí se engancha para que la búsqueda vaya por
-  delante de la respuesta. Antes era una *function call* que el modelo lanzaba
-  si le parecía, y en una parada la brevedad que le pide el guion ganaba: turnos
-  con indicaciones y el panel de fuentes vacío, de forma intermitente.
-- **Sin ficha aplicable, Javny HABLA** (PR #157, y es una vuelta atrás
-  deliberada sobre el PR #151). Decisión clínica de Juanky: Live es para la
-  calle, y quien llama no necesita saber si es sepsis o shock, sino qué hacer
-  ahora —posición, compresiones, avisar, no mover—. Ese criterio básico de
-  enfermería no sale de una ficha; callarlo no es seguridad, es inutilidad.
-  Sin ficha, el contexto inyectado le PIDE responder con el criterio general de
-  primeros auxilios, y le prohíbe expresamente decir que no tiene la fuente
-  para lo que es criterio básico.
-  **Lo que sigue exigiendo fuente**: dosis, medicación, pasos de un protocolo
-  específico del centro y actuaciones invasivas o de alto riesgo. Sólo ahí la
-  respuesta es decir que no está en la aplicación. La comprobación sigue sin
-  poder ser posterior: en voz, una dosis ya dicha no se retira.
-  **Las cifras del soporte vital básico** —ritmo y profundidad de las
-  compresiones, relación compresión-ventilación— son la maniobra, no una dosis,
-  y se dan sin ficha: una RCP sin su ritmo no es una indicación, es un silencio.
-  No alcanza a dosis de fármaco ni a energías de desfibrilación.
-  **Vale igual en la portada y el chat**, en MODO EMERGENCIA: una emergencia es
-  una emergencia esté donde esté el usuario. MODO CONSULTA intacto — ahí hay
-  tiempo, la pregunta es de conocimiento, y cada afirmación sigue atribuida a su
-  ficha o su cita.
-  **Trampa al tocar esto**: el orquestador mete en el contexto la instrucción
-  "cuando algo NO esté cubierto por el contexto interno, dilo explícitamente en
-  vez de rellenar", que en emergencia dice lo contrario. El guion declara
-  prevalecer también sobre ella; si se quita esa frase, el cambio queda anulado
-  y Javny vuelve a callarse.
-- Coste medido de la recuperación: **mediana 86 ms por turno**, máximo 110 ms;
-  índice 30 ms una vez por sesión. Es local, sin red.
-- Log auditable: `[Javny Live] turno completado · recuperación: sí/NO · N
-  fichas · X ms`.
-- El guion de Live es SUYO (`SYSTEM_INSTRUCTION` en su archivo), no el
-  `guion-clinico.mjs` de la portada y el chat. Son dos textos distintos.
-- **`searchINurse` puntúa por coincidencia LITERAL de palabras** (+9 título,
-  +4 meta, +1 cuerpo) y con `includes` de subcadena: "fuente" casa dentro de
-  "fuentes". Por eso, al reprocharle a Javny que no tenía la fuente, ganaron los
-  documentos con esa palabra en el título y perdió Soporte Vital Básico.
-- **El cuadro clínico del caso persiste** (PR #152): se fija al reconocerse y
-  dura hasta `resetCase`. Cada turno busca por el cuadro, con el relato detrás.
-  Recalcularlo por turno hacía que la búsqueda siguiera a las palabras del
-  último turno, que en una sesión real son preguntas y reproches, no el cuadro.
-  **Una sesión de Live es UN caso**: tenerlo presente antes de tocar esto.
-- **La Biblioteca virtual mezcla contenido clínico con documentación del propio
-  producto**. Los documentos de producto se excluyen del índice clínico por su
-  **categoría editorial** ("Integración global, calidad y despliegue", 96 docs;
-  más las subcategorías de gobernanza), no por lista de títulos. **Ojo**: no
-  todo lo que lleva "fuente" en el título es documentación — "Fuentes ocultas de
-  hemorragia en trauma" y "Fuentes de células y acondicionamiento" (trasplante
-  hematopoyético) son clínicas, y excluirlas sería un error.
-- **UNA sola inyección de contexto por turno** (PR #153). La transcripción llega
-  en fragmentos y el texto crece con cada uno; recuperar en todos daba 4
-  inyecciones y **17.185 B** por turno, la última justo al dejar de hablar — ese
-  era el silencio que rompía la inmediatez, no el coste de buscar (~80 ms).
-  El momento lo decide el **cuadro clínico**, nunca un umbral de longitud: con
-  "una persona que no se mueve" (26 car.) se recuperaba "Seguridad y
-  personalización de alarmas" y esa ficha se quedaba el resto del turno.
-  Reconocido el cuadro → inyecta ya, mientras habla; sin cuadro → espera al
-  cierre. Contexto: 2 fichas y 2 secciones relevantes, ~1.200-1.600 B.
-- **Arranque inmediato en urgencia** (PR #154). Decisión firme del usuario: en
-  Live **manda el ritmo** — hablar antes con menos contexto vale más que tardar
-  y traerlo todo; la respuesta exhaustiva con bibliografía es de la portada, que
-  **no se toca**. Al reconocer el cuadro (~80 ms, con la transcripción parcial y
-  mientras el usuario habla) sale un mensaje de ~570 B con `turnComplete:true`
-  para que el modelo hable YA; el contexto va detrás. En urgencia el contexto
-  baja a **1 ficha** con fragmentos de 200 car.; en consulta siguen 2.
-  **Con ficha, la primera maniobra del arranque sale de ella, nunca de memoria.**
-  Sin ficha ya no se limita al 112 (PR #157): da también la primera maniobra de
-  primeros auxilios que corresponda, sin dosis ni medicación. Recortar contexto
-  no recorta lo que de verdad protege.
-- **Coherencia del cuadro, no término suelto** (PR #155). El bonus de urgencia
-  daba +25 por UNA coincidencia en el título y "obstrucción" es polisémica: con
-  "atragantamiento" el panel mostraba "síndrome de obstrucción sinusoidal"
-  (hepática). Ahora el bonus es proporcional (12 por término) y **exige dos**;
-  con cuadro reconocido, la ficha que sólo comparte un término se descarta por
-  homónima, con salvaguarda de conservar el conjunto si el filtro lo vacía.
-  Importa más desde que en urgencia se inyecta UNA ficha: si son pocas, tienen
-  que ser las buenas.
-- **El término clínico decide, la palabra de proceso desempata** (PR #156).
-  `p35-coincidencia-clinica.js` reúne dos decisiones: qué palabra identifica un
-  tema y cuándo se considera que aparece.
-  (a) La coincidencia empieza en **principio de palabra**, no en cualquier
-  posición: cubre la morfología ("cuidado" casa "cuidados") y deja de cazar
-  "presion" dentro de "inmunoSUPRESION" o "st" —clave de sinónimos del síndrome
-  coronario— dentro de "traqueoSTomia", de donde salía el infarto en una
-  pregunta sobre traqueostomía. Al ser por principio y no por palabra entera,
-  "con" sigue casando "consentimiento": de eso se ocupa la lista de vacías.
-  Los índices se preparan una vez con el propio índice de fichas (1.800), no en
-  cada búsqueda; por eso el turno de Live bajó de 110 a 59 ms.
-  (b) "Cuidados", "manejo" o "protocolo" están en decenas de títulos y no dicen
-  nada del tema: puntúan sólo como desempate. Una ficha entra si el término
-  clínico está en su título o su fuente, **o** si menciona TODOS los términos de
-  la pregunta; la mención de paso a una parte de lo preguntado no la hace del
-  tema. Sin ficha del tema no se devuelve ninguna.
-  (c) Vocabulario: "úlceras por presión" busca también "lesiones por presión",
-  que es como está escrito el corpus. **Al añadir una entrada, comprobar que
-  engancha un título real**, como en P3.4; `scripts/prueba-coincidencia.mjs` lo
-  verifica contra `guias.js` y la Biblioteca.
-  **Se aplica SÓLO en Live.** La recuperación de consulta se cambió, se midió y
-  se revirtió por decisión del usuario ("la portada no se toca"): portada y chat
-  del avatar comparten `EnferixGuideRetrieve` / `EnferixLibraryRetrieve` por
-  invariante del proyecto, así que no se puede cambiar una sin la otra.
-  Consecuencia asumida: **Live y el chat pueden ordenar distinto la misma
-  pregunta**. En consulta sigue mandando la palabra de proceso ("sonda vesical"
-  → "Cuidados post-resucitación"; "manejo de la sepsis" envía 8 fichas de guías
-  y sólo una trata la sepsis). Si algún día se unifica, el criterio se toma de
-  p35 y no se copia.
-- **Términos de urgencia: cuadro y apoyo** (PR #156). En `p34`, cada entrada
-  puede llevar `apoyo` además de `terminos`. "Soporte vital basico" engancha la
-  ficha que cubre el atragantamiento en las guías —no hay una de desobstrucción—
-  pero no identifica ese cuadro: como término del cuadro hacía ganar a "Soporte
-  Vital Básico y RCP" por encima de "Obstrucción aguda de la vía aérea". El
-  apoyo entra en la búsqueda y no decide el orden ni la coherencia.
-- **El panel del caso recoge lo dicho, no lo inferido**: ponía "varón" cuando
-  sólo se había dicho "mi padre". Sexo, edad, antecedentes y diagnóstico no se
-  completan por suposición; hueco o datos pendientes. Lo que se muestra se lee
-  como dato del caso.
+  `contenido`). Leer los campos equivocados no da error: da vacío.
+- **Puntúa por coincidencia LITERAL de palabras** (+9 título, +4 meta, +1
+  cuerpo) y con `includes` de subcadena: "fuente" casa dentro de "fuentes", y
+  "presion" dentro de "inmunosupresion". El criterio de P3.5 que corregía esto
+  se fue con el revert; `p35-coincidencia-clinica.js` sigue en el repo y
+  cargado en `index.html`, pero **ya no lo usa nadie**.
+- **Ámbito de la ficha en urgencia** (PR #150, que es el punto de vuelta y por
+  tanto se queda): `esGestion()` aparta las fichas de dominio organizativo
+  (donación y trasplantes, coordinación, legislación) durante una urgencia en
+  curso, con la misma definición de `p34-urgencias-lenguaje.js` que usa la
+  portada. Duplicar el criterio las haría discrepar.
+- **Documentación de producto fuera del índice clínico** (rescatado del PR #152
+  al revertir). La Biblioteca mezcla contenido clínico con documentación del
+  propio producto, que comparte vocabulario con lo que un profesional dice
+  cuando habla DE la app ("no tienes la fuente") y ganaba la búsqueda. Se
+  excluye por **categoría editorial**, no por lista de títulos: 105 de las 1.676
+  fichas. **Ojo**: no todo lo que lleva "fuente" en el título es documentación
+  — "Fuentes ocultas de hemorragia en trauma" y "Fuentes de células y
+  acondicionamiento" son clínicas y siguen dentro (verificado contra el corpus).
+- **El panel del caso recoge lo dicho, no lo inferido** (regla 9b del guion,
+  rescatada al revertir): ponía "varón" cuando sólo se había dicho "mi padre".
+  Sexo, edad, antecedentes y diagnóstico no se completan por suposición; hueco o
+  datos pendientes. Lo que se muestra en pantalla se lee como dato del caso, y
+  un dato inventado es peor que un hueco aunque acierte.
+- **Los números de emergencia dictados por voz** (rescatado del PR #151):
+  `sanitizeTranscript` normaliza "alumno uno dos" → 112 llamando a
+  `normalizarEmergencias` de p34. El reconocimiento de voz oye los dígitos
+  sueltos y los encaja en la palabra más probable; si eso llega al modelo, la
+  indicación de avisar al 112 se pierde.
 - **Los dos orígenes traen el payload con campos DISTINTOS**: Guías da
   `contenido` (heading/body); Biblioteca da `definicion`, `alertas`,
   `valoracion_inicial`, `algoritmo`, `cuidados_enfermeria`,
-  `criterios_escalada`. Leer sólo los de guías dejaba las fichas de biblioteca
-  sin cuerpo (194 B) y Javny habría dicho que no tiene la fuente teniéndola.
-- Señal de actividad mientras busca (clase `v26-buscando`), con aviso sonoro
-  sólo si la espera pasa de 1,2 s. En voz, un silencio sin señal no se distingue
-  de un cuelgue.
-- La transcripción por voz pasa por `sanitizeTranscript`, que normaliza los
-  números de emergencia ("alumno uno dos" → 112).
+  `criterios_escalada`.
+- **La Biblioteca virtual no pasa por el servidor**: Live abre un WebSocket
+  directo del navegador a Google. Por eso su único log auditable es la consola
+  del navegador, y por eso una línea de Live nunca aparecerá en los registros de
+  Render.
+- El guion de Live es SUYO (`SYSTEM_INSTRUCTION` en su archivo), no el
+  `guion-clinico.mjs` de la portada y el chat. Son dos textos distintos.
+
+**Lo que NO se revirtió y sigue vivo en la portada y el chat**: la migración a
+Anthropic, el streaming, `guion-clinico.mjs` con sus dos modos —incluido el
+cambio del PR #157, por el que en MODO EMERGENCIA se responde con el criterio
+básico de primeros auxilios aunque no haya fuente—, y toda la recuperación de
+consulta. La portada no se toca.
 
 ## Convenciones del proyecto
 
