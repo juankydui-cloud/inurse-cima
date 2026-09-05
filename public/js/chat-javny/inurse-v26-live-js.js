@@ -612,9 +612,10 @@ Durante un caso:
 3. Pregunta por el siguiente dato crítico que falta.
 4. Ante peligro vital, indica activar inmediatamente el circuito/equipo de emergencia local y seguir ABCDE y el protocolo institucional.
 5. En cada turno recibirás un mensaje que empieza por "CONTEXTO DE ENFERIX PARA ESTE TURNO" con las fichas que la aplicación ha recuperado. Es tu fuente: apóyate en ella y nombra la ficha que uses. Conserva la procedencia entre Guías clínicas y Biblioteca virtual. Puedes llamar además a search_inurse si necesitas buscar otra cosa distinta.
-5b. Si ese mensaje dice que NO hay ficha aplicable, en ese turno NO des ninguna indicación clínica: ni maniobras, ni dosis, ni pasos de protocolo. Di que no tienes la fuente en la aplicación, indica llamar al 112 o activar el equipo de parada del centro, y remite al protocolo vigente. Pide el dato que falte para poder buscar de nuevo. Nunca respondas de memoria en lugar de decir que no tienes la fuente.
+5b. Si ese mensaje dice que NO hay ficha aplicable, NO te calles. Responde con el criterio general de enfermería para primeros auxilios y urgencias: avisar al 112 o al equipo de parada, posición de seguridad, RCP básica, desobstrucción de la vía aérea, control de una hemorragia, no mover a quien puede tener una lesión de columna, y en general qué hacer y qué no hacer ahora. Eso no necesita ficha: quien llama desde la calle necesita saber qué hacer, no que le digas que no tienes la fuente.
+5c. Lo que SÍ necesita ficha, y sin ella no se dice: dosis concretas, medicación, pasos de un protocolo específico del centro y actuaciones invasivas o de alto riesgo. Sólo si te preguntan por eso, di que no tienes el protocolo específico en la aplicación y remite al protocolo del centro o al 112. Fuera de eso, habla.
 6. El contenido interno puede proceder de documentación antigua. No lo presentes como guía actual y señala que debe contrastarse.
-7. No inventes dosis, concentraciones, energías, tiempos ni contraindicaciones. Solo menciona una dosis si aparece expresamente en la fuente devuelta, leyéndola despacio y diciendo que debe verificarse con la ficha técnica/protocolo vigente.
+7. No inventes dosis de fármacos, concentraciones, energías de desfibrilación ni contraindicaciones de un tratamiento. Solo menciona una dosis si aparece expresamente en la fuente devuelta, leyéndola despacio y diciendo que debe verificarse con la ficha técnica/protocolo vigente. Las cifras propias del soporte vital básico —ritmo y profundidad de las compresiones, relación compresión-ventilación— forman parte del criterio básico de primeros auxilios y sí puedes darlas aunque no haya ficha: una RCP sin su ritmo no es una indicación, es un silencio.
 8. Llama a update_case cuando cambie la prioridad, aparezca una señal de alarma, haya nuevas actuaciones o falten datos.
 9. No repitas nombres, DNI, números de historia, teléfonos ni otros identificadores.
 9b. En el panel del caso (update_case) recoge SÓLO lo que el usuario ha dicho, nunca lo inferido. Si dice "mi padre", el resumen es "padre del usuario", no "varón" ni una edad: el sexo y la edad no se han dicho. No completes sexo, edad, antecedentes ni diagnóstico a partir de suposiciones; deja el hueco o ponlo en datos pendientes. Lo que se muestra en pantalla se lee como dato del caso, y un dato inventado es peor que un hueco.
@@ -687,9 +688,11 @@ async function executeToolCall(toolCall){
    habla, así que la búsqueda va POR DELANTE de la respuesta, no detrás: cuando
    el modelo empieza a generar ya tiene las fichas —o el aviso de que no las hay—.
 
-   Y ese aviso es la otra mitad: si no hay ficha aplicable, se le prohíbe dar
-   indicación clínica en ese turno. La comprobación no puede ser posterior,
-   porque en voz una indicación ya dicha no se puede retirar.
+   Y ese aviso es la otra mitad, pero acotado: si no hay ficha aplicable, lo que
+   se le prohíbe son las dosis, la medicación, el protocolo específico y las
+   actuaciones invasivas o de alto riesgo — no el criterio básico de primeros
+   auxilios, que sí da. La comprobación tiene que ir por delante igual, porque
+   en voz una dosis ya dicha no se puede retirar.
 
    searchINurse es local (índice en memoria, sin red), de ahí que el coste por
    turno se mida en milisegundos. */
@@ -734,13 +737,28 @@ function olvidarCuadro(){ cuadroActivo={claves:[],terminos:''}; }
 function contextoDeFichas(res){
   const fuentes=(res&&res.resultados)||[];
   if(!fuentes.length){
+    /* Sin ficha, Javny NO se calla. Decisión clínica del usuario (Juanky), y
+       vuelta atrás deliberada sobre la regla estricta: Live es para la calle, y
+       en la calle nadie necesita saber si es sepsis o shock, sino qué hacer
+       ahora —posición, compresiones, avisar, no mover—. Ese criterio básico de
+       enfermería no sale de una ficha y callarlo no es seguridad, es
+       inutilidad.
+
+       La regla de "sin fuente no se habla" sigue viva donde de verdad protege:
+       dosis, medicación, protocolo específico y actuaciones invasivas o de alto
+       riesgo. Ahí, y sólo ahí, la respuesta es decir que no está en la
+       aplicación. */
     return 'CONTEXTO DE ENFERIX PARA ESTE TURNO: la búsqueda en las fuentes de la '
       +'aplicación NO ha devuelto ninguna ficha aplicable a lo que acaba de decir '
-      +'el usuario.\nPor tanto, en este turno NO des ninguna indicación clínica, ni '
-      +'maniobras, ni dosis, ni pasos de protocolo. Di que no tienes la fuente en '
-      +'la aplicación para esto, indica llamar al 112 o activar el equipo de parada '
-      +'del centro, y remite al protocolo vigente del centro. Puedes pedir el dato '
-      +'que falte para volver a buscar.';
+      +'el usuario.\nResponde igualmente, con el criterio general de enfermería para '
+      +'primeros auxilios y urgencias: avisar al 112 o al equipo de parada, posición, '
+      +'RCP básica, maniobras de desobstrucción, control de hemorragia, no mover ante '
+      +'sospecha de lesión de columna, y qué hacer y qué no hacer ahora. Eso no '
+      +'necesita ficha y es lo que hace falta.\nSin ficha NO des: dosis, medicación, '
+      +'pasos de un protocolo específico del centro, ni actuaciones invasivas o de alto '
+      +'riesgo. Si preguntan por eso, di que no tienes el protocolo específico en la '
+      +'aplicación y remite al protocolo del centro o al 112.\nNo digas que no tienes '
+      +'la fuente para lo que sí es criterio básico.';
   }
   /* Sólo DOS fichas y sólo los fragmentos que vienen a cuento. Antes iban cinco
      fichas con cuatro secciones completas cada una: ~5 KB por inyección, que en
@@ -839,10 +857,11 @@ try{
    el modelo hable YA sin esperar a que el usuario termine la frase. El contexto
    completo llega detrás, mientras sigue hablando.
 
-   La regla de seguridad NO se recorta: la primera acción se toma de la ficha
-   recuperada, no de memoria. Si la búsqueda no ha devuelto ficha aplicable, el
-   arranque se limita a activar el 112 y a decir que no tiene la fuente — que es
-   justo lo que manda la regla, dicho antes en vez de después. */
+   Con ficha recuperada, la primera acción se toma de ella. Sin ficha, el
+   arranque ya no se limita a activar el 112: da también la primera maniobra de
+   primeros auxilios que corresponda, con el criterio general de enfermería. Lo
+   que no se recorta es la parte de la regla que protege de verdad — ni dosis ni
+   medicación sin fuente —, dicha antes en vez de después. */
 var turnoArrancado=false;
 
 function primeraAccionDe(res){
@@ -860,10 +879,16 @@ function primeraAccionDe(res){
 function arranqueUrgente(res){
   const ficha=((res&&res.resultados)||[])[0];
   if(!ficha){
-    return 'URGENCIA EN CURSO y la búsqueda NO ha devuelto ficha aplicable. Di AHORA, '
-      +'en una sola frase corta: que active el 112 o el equipo de parada del centro, y '
-      +'que no tienes la fuente en la aplicación para la maniobra. No des ninguna '
-      +'indicación clínica más.';
+    /* Antes el arranque sin ficha se limitaba a activar el 112 y decir que no
+       había fuente. Ahora arranca igual con la maniobra básica que corresponda
+       al cuadro: es el momento en el que más falta hace y el criterio de
+       primeros auxilios no depende de una ficha. Lo que sigue prohibido aquí
+       es la dosis y la medicación. */
+    return 'URGENCIA EN CURSO y la búsqueda NO ha devuelto ficha aplicable. Habla AHORA '
+      +'igualmente, en dos frases muy cortas e imperativas: primero, que active el 112 o '
+      +'el equipo de parada del centro; segundo, la primera maniobra de primeros auxilios '
+      +'que corresponda a lo que ha descrito, con el criterio general de enfermería. Sin '
+      +'dosis y sin medicación. Nada de contexto ni de explicaciones.';
   }
   return 'URGENCIA EN CURSO. Habla AHORA, sin esperar a nada más. Di sólo dos cosas, en '
     +'frases muy cortas e imperativas: primero, que active el 112 o el equipo de parada '
