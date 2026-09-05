@@ -245,6 +245,11 @@ Lo que sigue siendo cierto del Live actual:
   fichas. **Ojo**: no todo lo que lleva "fuente" en el título es documentación
   — "Fuentes ocultas de hemorragia en trauma" y "Fuentes de células y
   acondicionamiento" son clínicas y siguen dentro (verificado contra el corpus).
+- **El panel del caso recoge lo dicho, no lo inferido** (regla 9b del guion,
+  rescatada al revertir): ponía "varón" cuando sólo se había dicho "mi padre".
+  Sexo, edad, antecedentes y diagnóstico no se completan por suposición; hueco o
+  datos pendientes. Lo que se muestra en pantalla se lee como dato del caso, y
+  un dato inventado es peor que un hueco aunque acierte.
 - **Los números de emergencia dictados por voz** (rescatado del PR #151):
   `sanitizeTranscript` normaliza "alumno uno dos" → 112 llamando a
   `normalizarEmergencias` de p34. El reconocimiento de voz oye los dígitos
