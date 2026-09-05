@@ -130,7 +130,10 @@ frentes. El primero ya está en `main`; quedan los dos siguientes:
    proveedores. **Emergencia**: situación urgente EN CURSO (lo delata que algo
    está pasando, no que se pregunte por ello); 112 o equipo de parada primero,
    luego UNA acción, sin bibliografía ni citas ni vigencia de guías; ante la
-   duda entre modos, emergencia. **Consulta** (por defecto): cada afirmación
+   duda entre modos, emergencia. **Sin fuente que cubra esa emergencia responde
+   igualmente**, con el criterio general de primeros auxilios (PR #157): sólo
+   dosis, medicación, protocolo específico e invasivo exigen fuente.
+   **Consulta** (por defecto): cada afirmación
    atribuida a su ficha o su cita, fichas por delante de la bibliografía,
    discrepancias señaladas, huecos de las fuentes dichos.
    **P3.4 · urgencias en lenguaje natural** (PR #149): la recuperación de fichas
@@ -209,10 +212,31 @@ reales de la app; si no hay dato, se dice que no está disponible.
   delante de la respuesta. Antes era una *function call* que el modelo lanzaba
   si le parecía, y en una parada la brevedad que le pide el guion ganaba: turnos
   con indicaciones y el panel de fuentes vacío, de forma intermitente.
-- **Sin ficha aplicable, no hay indicación clínica**: el contexto inyectado se
-  lo prohíbe y le dice qué responder (no tengo la fuente, 112 o equipo de
-  parada, protocolo del centro). La comprobación NO puede ser posterior: en voz,
-  una indicación ya dicha no se retira.
+- **Sin ficha aplicable, Javny HABLA** (PR #157, y es una vuelta atrás
+  deliberada sobre el PR #151). Decisión clínica de Juanky: Live es para la
+  calle, y quien llama no necesita saber si es sepsis o shock, sino qué hacer
+  ahora —posición, compresiones, avisar, no mover—. Ese criterio básico de
+  enfermería no sale de una ficha; callarlo no es seguridad, es inutilidad.
+  Sin ficha, el contexto inyectado le PIDE responder con el criterio general de
+  primeros auxilios, y le prohíbe expresamente decir que no tiene la fuente
+  para lo que es criterio básico.
+  **Lo que sigue exigiendo fuente**: dosis, medicación, pasos de un protocolo
+  específico del centro y actuaciones invasivas o de alto riesgo. Sólo ahí la
+  respuesta es decir que no está en la aplicación. La comprobación sigue sin
+  poder ser posterior: en voz, una dosis ya dicha no se retira.
+  **Las cifras del soporte vital básico** —ritmo y profundidad de las
+  compresiones, relación compresión-ventilación— son la maniobra, no una dosis,
+  y se dan sin ficha: una RCP sin su ritmo no es una indicación, es un silencio.
+  No alcanza a dosis de fármaco ni a energías de desfibrilación.
+  **Vale igual en la portada y el chat**, en MODO EMERGENCIA: una emergencia es
+  una emergencia esté donde esté el usuario. MODO CONSULTA intacto — ahí hay
+  tiempo, la pregunta es de conocimiento, y cada afirmación sigue atribuida a su
+  ficha o su cita.
+  **Trampa al tocar esto**: el orquestador mete en el contexto la instrucción
+  "cuando algo NO esté cubierto por el contexto interno, dilo explícitamente en
+  vez de rellenar", que en emergencia dice lo contrario. El guion declara
+  prevalecer también sobre ella; si se quita esa frase, el cambio queda anulado
+  y Javny vuelve a callarse.
 - Coste medido de la recuperación: **mediana 86 ms por turno**, máximo 110 ms;
   índice 30 ms una vez por sesión. Es local, sin red.
 - Log auditable: `[Javny Live] turno completado · recuperación: sí/NO · N
@@ -251,9 +275,10 @@ reales de la app; si no hay dato, se dice que no está disponible.
   mientras el usuario habla) sale un mensaje de ~570 B con `turnComplete:true`
   para que el modelo hable YA; el contexto va detrás. En urgencia el contexto
   baja a **1 ficha** con fragmentos de 200 car.; en consulta siguen 2.
-  **La primera maniobra del arranque sale de la ficha recuperada, nunca de
-  memoria**, y sin ficha aplicable el arranque sólo activa el 112 y dice que no
-  hay fuente. Recortar contexto no recorta la regla de seguridad.
+  **Con ficha, la primera maniobra del arranque sale de ella, nunca de memoria.**
+  Sin ficha ya no se limita al 112 (PR #157): da también la primera maniobra de
+  primeros auxilios que corresponda, sin dosis ni medicación. Recortar contexto
+  no recorta lo que de verdad protege.
 - **Coherencia del cuadro, no término suelto** (PR #155). El bonus de urgencia
   daba +25 por UNA coincidencia en el título y "obstrucción" es polisémica: con
   "atragantamiento" el panel mostraba "síndrome de obstrucción sinusoidal"
