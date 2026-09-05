@@ -168,27 +168,3 @@
   .v26-live-controls button{min-height:52px}
   .v26-command-grid{grid-template-columns:1fr}
 }
-
-/* P3.6 · Señal de que Javny está consultando las fichas antes de responder.
-   El silencio entre que el usuario deja de hablar y la primera palabra no debe
-   confundirse con un cuelgue. */
-#v26LiveOverlay.v26-buscando .v26-stage-ico,
-#v26LiveOverlay.v26-buscando #v26StageTitle{
-  animation: v26-latido 1.1s ease-in-out infinite;
-}
-#v26LiveOverlay.v26-buscando #v26StageTitle::after{
-  content:'';
-  display:inline-block;
-  width:.5em;height:.5em;margin-left:.45em;
-  border-radius:50%;
-  background:#33B6A6;
-  animation: v26-punto 1.1s ease-in-out infinite;
-}
-@keyframes v26-latido{ 0%,100%{opacity:1} 50%{opacity:.55} }
-@keyframes v26-punto{ 0%,100%{transform:scale(.6);opacity:.4} 50%{transform:scale(1);opacity:1} }
-@media (prefers-reduced-motion: reduce){
-  #v26LiveOverlay.v26-buscando .v26-stage-ico,
-  #v26LiveOverlay.v26-buscando #v26StageTitle,
-  #v26LiveOverlay.v26-buscando #v26StageTitle::after{ animation:none }
-  #v26LiveOverlay.v26-buscando #v26StageTitle::after{ opacity:1 }
-}
