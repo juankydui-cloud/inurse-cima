@@ -565,7 +565,7 @@ PREGUNTA DEL USUARIO: ${question}`;
   return { ctx, refs };
 }
 
-async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, maxOutputTokens = 8192, temperature = 0.3 } = {}) {
+export async function callGemini(systemPrompt, userPrompt, { apiKey, model, history, maxOutputTokens = 8192, temperature = 0.3 } = {}) {
   if (!apiKey) throw new Error("Falta la API Key de Gemini (GEMINI_API_KEY)");
 
   const contents = [];

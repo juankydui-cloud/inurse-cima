@@ -37,6 +37,32 @@ export async function initSchema() {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       PRIMARY KEY (user_id, key)
     );
+    -- Proyectos con Javny. "estructura" es la lista de apartados en jsonb
+    -- ([{id, titulo, orden, estado, contenido}, …]) y no una tabla propia:
+    -- en esta fase el índice se reordena/edita entero desde el cliente, y una
+    -- tabla aparte solo complicaría el guardado automático sin aportar nada
+    -- que hoy se consulte por separado. Si en una fase futura hace falta
+    -- buscar o filtrar por apartado, se separa entonces.
+    CREATE TABLE IF NOT EXISTS proyectos (
+      id UUID PRIMARY KEY,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      titulo TEXT NOT NULL,
+      tipo TEXT NOT NULL,
+      descripcion TEXT,
+      idioma TEXT NOT NULL DEFAULT 'Castellano',
+      tono TEXT,
+      destinatario TEXT,
+      normas_citacion TEXT,
+      extension_objetivo TEXT,
+      institucion_tutor TEXT,
+      fuentes JSONB NOT NULL DEFAULT '{}'::jsonb,
+      estado TEXT NOT NULL DEFAULT 'borrador',
+      estructura JSONB NOT NULL DEFAULT '[]'::jsonb,
+      version INTEGER NOT NULL DEFAULT 1,
+      creado TIMESTAMPTZ NOT NULL DEFAULT now(),
+      actualizado TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS idx_proyectos_user_id ON proyectos(user_id);
   `);
-  console.log("Esquema de base de datos verificado (users, sessions, user_data).");
+  console.log("Esquema de base de datos verificado (users, sessions, user_data, proyectos).");
 }
