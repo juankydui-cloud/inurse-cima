@@ -206,7 +206,7 @@ function handleEnhancedVoice(text){
   if(/^(abre |abrir |muestra |ve a |ir a )?(la )?(evidencia|literatura|estudios|pubmed|papers|articulos)$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('evidencia');acknowledge('🔬 Abriendo Evidencia');return true}
   if(/^(abre |abrir |muestra )?(los )?procedimientos$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('procedimientos');acknowledge('📝 Abriendo Procedimientos');return true}
   if(/^(abre |abrir |muestra )?(los )?algoritmos$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('algoritmos');acknowledge('🔀 Abriendo Algoritmos');return true}
-  if(/^(abre |abrir |muestra )?(los )?(proyectos|proyectos convive|convive)$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('proyectos');acknowledge('👥 Abriendo Proyectos ConVive');return true}
+  if(/^(abre |abrir |muestra )?(los )?(proyectos( con javny)?)$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('proyectos');acknowledge('👥 Abriendo Proyectos con Javny');return true}
   if(/^(abre |abrir |muestra )?(la )?(farmacologia|pharmacology)$/.test(c)&&window.EnferixOpenSection){window.EnferixOpenSection('farmaco');acknowledge('💊 Abriendo Farmacología');return true}
   // Fallback genérico: "abre/muestra/ve a <sección>" contra el registro de secciones
   if(/^(abre|abrir|muestra|muestrame|ve a|ir a|ensename|entra en)\b/.test(c)&&Array.isArray(window.INURSE_SECTIONS)){

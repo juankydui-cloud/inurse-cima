@@ -62,7 +62,7 @@
     {id:'procedimientos',t:'Procedimientos',       em:'📝', kw:'procedimientos tecnicas enfermeria paso a paso material checklist'},
     {id:'algoritmos',   t:'Algoritmos',            em:'🔀', kw:'algoritmos protocolos criticos actuacion pauta emergencia'},
     {id:'cercanos',     t:'Servicios cercanos',    em:'📍', kw:'hospital cercano dea desfibrilador urgencias mas cercano donde puedo ir ubicacion mapa geolocalizacion'},
-    {id:'proyectos',    t:'Proyectos ConVive',     em:'👥', kw:'proyectos convive documentos colaborativo trabajo equipo'}
+    {id:'proyectos',    t:'Proyectos con Javny',   em:'👥', kw:'proyectos documentos protocolos tfm tfg trabajo javny'}
   ];
   var SPECS = [
     {key:'cardio',    em:'❤️', t:'Cardiología',      sc:'#F43F5E'},

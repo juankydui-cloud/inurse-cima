@@ -272,6 +272,99 @@ cambio del PR #157, por el que en MODO EMERGENCIA se responde con el criterio
 básico de primeros auxilios aunque no haya fuente—, y toda la recuperación de
 consulta. La portada no se toca.
 
+### Proyectos con Javny — Fase 1
+
+Rehecho de arriba abajo (rama `claude/proyectos-javny-fase1`). Antes se
+llamaba "Proyectos ConVive" — el nombre viene de los tres sitios que llevaban
+el resto: el menú (`inline-script-17559.js`), el comando de voz
+(`inurse18-voice-js.js`) y la clave de localStorage
+`inurse_vivi_projects_v1`. Los tres se renombraron; la clave nueva es
+`enferix_proyectos_v2`, con migración automática desde la antigua.
+
+**Auditoría previa, para quien retome esto**: la app ya tenía un sistema de
+cuentas real y operativo antes de esta fase —`db.mjs`/`auth.mjs`, bcrypt,
+cookies de sesión, `/api/auth/register|login|logout|me`— y una sincronización
+GENÉRICA de localStorage (`window.EnferixCloud` en
+`public/js/core/inline-script-3125.js`, parchea `setItem`/`removeItem` y sube
+cualquier clave como blob a `user_data`). Esa sincronización sigue intacta y
+sigue cubriendo el resto de la app; Proyectos NO la usa, porque un blob no
+sirve para lo que pide esta fase (columnas, progreso calculable, borrar un
+proyecto suelto). Proyectos tiene su propia tabla.
+
+- **Tabla `proyectos`** (`db.mjs`), colgada de `user_id` (la tabla `users` que
+  ya existía). Columnas: `id, user_id, titulo, tipo, descripcion, idioma,
+  tono, destinatario, normas_citacion, extension_objetivo, institucion_tutor,
+  fuentes (jsonb), estado, estructura (jsonb: [{id,titulo,orden,estado,
+  contenido}]), version, creado, actualizado`. Acceso en `proyectos-db.mjs`,
+  SIEMPRE `WHERE id=$1 AND user_id=$2` — nunca se confía en el id del
+  proyecto solo.
+  **`descripcion` no estaba en la lista original del usuario** ("al menos
+  estas columnas"): se añadió porque las acciones de IA del editor (deuda de
+  abajo) la necesitan como contexto, igual que antes usaban `objective`.
+  **`attachments` y `versions` NO tienen columna** (fuera de alcance de esta
+  fase): viven solo en el objeto en memoria/localStorage y `paraGuardar()` los
+  descarta sin fallar al guardar en la nube — no sobreviven a un cambio de
+  dispositivo si el proyecto está en Postgres.
+  En Render, la base es `inurse-db` (Oregón), enlazada a mano desde el
+  dashboard — `DATABASE_URL` NO está en `render.yaml`.
+- **`/api/proyectos/estructura` (POST) no toca la base de datos ni exige
+  sesión**: es una llamada a modelo, como la consulta de portada, no una
+  operación sobre "mis proyectos". Usa `sources/proyectos-ia.mjs`: Anthropic
+  primero (`anthropicCall`, no streaming — es un JSON corto, no hay fragmento
+  que valga la pena emitir suelto) y Gemini de reserva con la clave del
+  servidor (`callGemini`, exportado desde `orchestrator.mjs` para esto). La
+  clave nunca vuelve al cliente.
+  Parte de la plantilla del tipo elegido y le pide al modelo que la ADAPTE a
+  la descripción, nunca que la invente — el prompt lleva la plantilla
+  numerada y pide entre `plantilla.length` y `plantilla.length+6` apartados.
+- **`sources/plantillas-proyectos.mjs`** es la única fuente de los 11 tipos de
+  documento (protocolo, procedimiento, cuidados NANDA·NOC·NIC, mejora,
+  sesión clínica, investigación, TFG, TFM, revisión bibliográfica, evento
+  adverso, libre). El cliente NO lleva su propia copia: pide el catálogo a
+  `GET /api/proyectos/tipos` (cacheable, estático) para construir el
+  `<select>`, así que no pueden desincronizarse. TFG/TFM/revisión comparten
+  plantilla (`ACADEMICA`), tal como se pidió.
+- **CRUD** en `server.mjs`: `GET/POST /api/proyectos`,
+  `GET/PUT/DELETE /api/proyectos/:id` (id por `pathname.split('/').pop()`,
+  como ya hacía `/api/cima/medicine/:id`). Todos exigen sesión + `DB_ENABLED`.
+  `PUT` es actualización PARCIAL: solo toca los campos presentes en el body,
+  para que el guardado automático no tenga que reenviar el proyecto entero.
+  **`estructura` se reemplaza entera en cada PUT** (no hay merge por
+  apartado): el cliente tiene que mandar siempre el `id` de cada apartado
+  existente, o el servidor le asigna uno nuevo y pierde la referencia.
+- **Persistencia con fallback**: si hay sesión (`GET /api/auth/me` ya
+  devuelve usuario), todo va a Postgres. Sin sesión, seguimos con
+  `localStorage['enferix_proyectos_v2']`, mismo formato que el servidor (un
+  solo tipo de objeto en todo el cliente, cero traducción de campos entre
+  modo local y modo nube). Al iniciar sesión con proyectos locales
+  pendientes, se suben uno a uno (`migrarNubeSiHaceFalta`); cada uno se marca
+  `_migrado` al conseguirlo, y el localStorage solo se borra cuando TODOS lo
+  consiguen — así un fallo a mitad no duplica nada al reintentar.
+- **Dictado**: el botón de la descripción (`in63DictDescripcion`) no
+  implementa su propio reconocimiento de voz. Lleva un id que empieza por
+  `in63Dict` dentro de un `.in63-field`, que es exactamente el patrón que ya
+  intercepta el listener global de voz en `inurse21-master-js.js`
+  (`document.addEventListener('click', ..., true)` + `EnferixVoiceManager`).
+  Es el mismo mecanismo que ya usaba —sin que nadie lo hubiera notado— el
+  dictado del título en la versión "ConVive".
+- **Paleta**: teal de Enferix, no la violeta/rosa/cian del prototipo de
+  referencia. Se retiró `v42-proyectos-glass.css` (el CSS de esa paleta).
+
+**Deuda técnica explícita, para la fase 2** (decisión del usuario: se deja así
+en esta fase, no se toca ahora): el resto de acciones de IA del editor de
+apartados —Buscar evidencia, Reorganizar índice, Borrador completo, Elevar a
+excelencia, y las del apartado individual (Desarrollar/Mejorar/Ampliar/
+Resumir/Bibliografía/prompt libre)— siguen llamando a Gemini **directamente
+desde el navegador** con la API key del propio usuario (`callAI()` en
+`inurse-projects-v1-js.js`), igual que antes de esta fase. Migrarlas a
+Anthropic/servidor, con el mismo patrón que `/api/proyectos/estructura`, es
+trabajo de la fase 2.
+
+**Fuera de alcance de esta fase** (son la "pantalla 2" del prototipo, no
+tocada): rediseño visual del editor de apartados, redacción real de
+contenido, historial de versiones y adjuntos persistentes en servidor,
+"Importar documento" (botón deshabilitado con tooltip "Próximamente").
+
 ## Convenciones del proyecto
 
 ### Frontend

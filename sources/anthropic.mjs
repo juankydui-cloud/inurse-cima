@@ -100,3 +100,37 @@ export async function streamAnthropicCall(systemPrompt, userPrompt, {
 
   return full.trim();
 }
+
+/**
+ * Llamada NO streaming, para respuestas cortas que el servidor necesita
+ * enteras antes de devolver nada al cliente (p.ej. la estructura de un
+ * proyecto: es un JSON pequeño, no hay fragmento que valga la pena emitir
+ * suelto). Usa el mismo cliente y las mismas reglas de negativa/vacío que
+ * streamAnthropicCall.
+ */
+export async function anthropicCall(systemPrompt, userPrompt, {
+  model, maxOutputTokens = 2048
+} = {}) {
+  const client = getCliente();
+  const mensaje = await client.messages.create({
+    model: model || ANTHROPIC_MODEL,
+    max_tokens: maxOutputTokens,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userPrompt }],
+    output_config: { effort: "low" }
+  });
+
+  if (mensaje.stop_reason === "refusal") {
+    const cat = mensaje.stop_details?.category || "sin categoría";
+    throw new Error(`Claude declinó responder a esta consulta (${cat}).`);
+  }
+  const texto = (mensaje.content || [])
+    .filter(bloque => bloque.type === "text")
+    .map(bloque => bloque.text)
+    .join("")
+    .trim();
+  if (!texto) {
+    throw new Error(`Claude devolvió una respuesta vacía (motivo: ${mensaje.stop_reason || "desconocido"}).`);
+  }
+  return texto;
+}
