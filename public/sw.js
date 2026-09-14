@@ -6,7 +6,7 @@
      y accesibles offline si ya se consultaron).
    - POST y cross-origin: pasan directos a la red (no se cachean).
 */
-const VERSION = "inurse-pwa-v9";
+const VERSION = "inurse-pwa-v10";
 const SHELL_CACHE = `${VERSION}-shell`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
