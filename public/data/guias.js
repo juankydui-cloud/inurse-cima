@@ -206,6 +206,52 @@ const DOCS = [
     ]
   },
   {
+    "id": "iam-definicion-2026",
+    "cat": "cardio",
+    "title": "Infarto de miocardio: clasificación y troponinas",
+    "source": "5ª Definición Universal del IAM · ESC/ACC/AHA/WHF 2026 (Glob Heart 21(1):64)",
+    "tags": "infarto iam definicion universal quinta 5 primario secundario relacionado con procedimiento troponina percentil 99 sexo minoca stemi nstemi lesion miocardica onda q angina inestable sca coronario",
+    "summary": "Desaparece la numeración por tipos: primario, secundario o relacionado con procedimiento. Troponina con percentil 99 específico por sexo y sin cifra fija.",
+    "sec": [
+      {
+        "h": "Se elimina la clasificación numérica",
+        "b": "<p>La 5ª Definición Universal retira los tipos 1, 2, 3, 4a, 4b, 4c y 5. Literal: <i>«The previous numerical classification of myocardial infarction has been replaced. Myocardial infarction is now classified into one of three clinical types»</i>.</p><ul><li><b>Infarto primario:</b> <i>«spontaneous presentation due to a primary acute coronary pathology»</i>.</li><li><b>Infarto secundario:</b> <i>«resulting from myocardial oxygen supply–demand imbalance due to another acute condition»</i>.</li><li><b>Infarto relacionado con procedimiento:</b> <i>«occurring as a complication of a percutaneous or surgical cardiac procedure»</i>.</li></ul><p>Motivo del cambio, literal: <i>«To reflect underlying pathophysiology, align with clinical evaluation, and enable consistent application»</i>.</p><p><small>Fuente: 5ª Definición Universal del IAM, 28/08/2026. Sustituye a la 4ª (2018).</small></p>"
+      },
+      {
+        "h": "⚠️ Correspondencia con los tipos antiguos — aquí es fácil equivocarse",
+        "b": "<ul><li><b>Tipo 1</b> (aterotrombosis) → <b>primario</b>, pero <b>se amplía</b>.</li><li><b>Tipo 2</b> (desequilibrio aporte/demanda) → <b>secundario</b>, y <b>se estrecha</b>.</li><li><b>Tipo 3</b> (muerte súbita) → <b>eliminado</b>.</li><li><b>Tipos 4a, 4b, 4c y 5</b> → <b>relacionado con procedimiento</b>, unificados.</li></ul><p><b>El infarto primario ya no es solo aterotrombosis.</b> Literal: <i>«Primary myocardial infarction — Includes all acute coronary pathologies: atherothrombosis; spontaneous coronary artery dissection; coronary embolism; vasospasm; and restenosis, stent thrombosis, or graft failure &gt;30 days from procedure»</i>.</p><p><b>Consecuencia práctica:</b> la <b>disección coronaria espontánea</b>, la <b>embolia coronaria</b> y el <b>vasoespasmo</b> eran tipo 2 en 2018 y ahora son <b>primario</b>, no secundario.</p><p>Tipo 3, literal: <i>«Term removed. Where myocardial infarction is the likely cause of death, clinical classification (primary, secondary, or procedure-related) should be applied, based on setting or post-mortem findings»</i>. Razón: <i>«Limited use in clinical practice»</i>.</p>"
+      },
+      {
+        "h": "Troponina: percentil 99 específico por sexo, y sin cifra fija",
+        "b": "<p><b>Lesión miocárdica aguda</b>, literal: <i>«a rise and/or fall in cardiac troponin I or T with at least one value above the sex-specific 99th percentile URL»</i>.</p><p>Motivo: <i>«Sex-specific thresholds are necessary to avoid a systematic bias and the under-recognition of myocardial injury in female patients»</i>. La guía señala que <i>«the URL in females is half the URL in males for cardiac troponin T»</i> en una población de referencia sana global.</p><p><b>Qué cambia respecto a 2018:</b> el percentil 99 no cambia; lo que cambia es que los umbrales por sexo pasan de estar <i>recomendados</i> con ensayos de alta sensibilidad a formar <b>parte de la definición</b>.</p><p><b>❌ No hay cifras en ng/L, y no debe haberlas en una ficha.</b> Literal: <i>«As cardiac troponin assays are not standardized by the manufacturers […] clinicians should refer to the International Federation of Clinical Chemistry and Laboratory Medicine Biomarkers Reference Tables and apply assay-specific thresholds in practice»</i>. <b>Usa siempre el valor del laboratorio de tu centro.</b></p>"
+      },
+      {
+        "h": "Trampa: los algoritmos rápidos 0/1 h no usan umbral por sexo",
+        "b": "<p>Literal: <i>«The thresholds used to triage patients with possible myocardial infarction in accelerated diagnostic pathways are often not based on the 99th percentile of the cardiac troponin assay and here uniform rather than sex-specific thresholds have been applied. […] It should be noted that these thresholds are used for risk stratification, rather than to define myocardial injury and confirm a final diagnosis of myocardial infarction»</i>.</p><p><b>Los algoritmos rápidos estratifican riesgo; los criterios diagnósticos definen el infarto.</b> No son lo mismo y no deben mezclarse.</p><p><b>Deltas:</b> por debajo o alrededor del percentil 99 se prefieren los valores absolutos a los relativos, y <i>«absolute delta values are assay-specific, and a cut-off value cannot be transferred from one assay to another»</i>.</p><p><b>Edad:</b> no hay umbrales ajustados. Dato útil: <i>«1 in 3 patients over 75 years with possible myocardial infarction have an elevated cardiac troponin concentration compared with 1 in 20 patients under 50 years old»</i>.</p>"
+      },
+      {
+        "h": "Lesión miocárdica crónica: criterio nuevo y cuantificado",
+        "b": "<p>Literal: <i>«Chronic myocardial injury is considered if two or more cardiac troponin I or T values are above the sex-specific 99th percentile URL when testing is performed in a stable clinical setting. Chronic myocardial injury is confirmed when a cardiac or non-cardiac condition associated with cardiac remodelling is identified and is excluded when the elevation in cardiac troponin is explained by analytical interference or reduced clearance»</i>.</p><p>El requisito de <b>dos o más valores en situación estable</b> es nuevo: la 4ª definición no lo cuantificaba.</p>"
+      },
+      {
+        "h": "MINOCA cambia de significado",
+        "b": "<p>Literal: <i>«The definition of MINOCA is updated to \u2018myocardial injury with non-obstructive coronary arteries\u2019 in recognition that this is a working rather than final diagnosis»</i>.</p><p>Antes decía <i>infarction</i>; ahora dice <b>injury</b>. Motivo: <i>«most patients are subsequently found to have a non-coronary cardiac (e.g. myocarditis, Takotsubo syndrome, cardiomyopathy) or non-cardiac cause (e.g. pulmonary embolism)»</i>.</p><p>Definición angiográfica: <i>«non-obstructive coronary arteries (no stenosis ≥50%) on coronary angiography»</i>.</p><p><b>Misma sigla, concepto distinto, y ahora es diagnóstico de trabajo, no final.</b></p>"
+      },
+      {
+        "h": "Infarto relacionado con procedimiento",
+        "b": "<p><b>Los múltiplos de troponina dejan de ser criterio diagnóstico.</b> Literal: <i>«The diagnosis of procedure-related myocardial infarction does not rely on cardiac biomarker thresholds and is comparable for percutaneous and surgical procedures»</i>. Los antiguos ×5 y ×10 de los tipos 4a y 5 <i>«were arbitrary»</i>.</p><p>Ahora los múltiplos solo orientan <b>cuándo pedir imagen</b>, y las cifras cambian: <i>«the diagnosis is likely with higher cardiac biomarker levels that have increased from pre-procedural levels and continue to rise at 6 h (e.g. &gt;5 times URL for intervention) and 24 h (e.g. &gt;35 times URL for surgery)»</i>. Ojo: <b>×35 en cirugía</b>, no ×10.</p><p><b>Procedimiento cardíaco</b>, definición: <i>«coronary angiography with or without intervention, structural cardiac intervention, or catheter ablation, and any open or minimally invasive cardiac surgical procedure, including CABG, valve replacement, or other procedures for structural heart conditions»</i>. Ventana de <b>30 días</b>.</p>"
+      },
+      {
+        "h": "Otros cambios que afectan al lenguaje de la ficha",
+        "b": "<ul><li><b>STEMI y NSTEMI se mantienen</b> como clasificación electrocardiográfica paralela, con códigos ICD-11 propios (BA41.0 y BA41.1).</li><li><b>La angina inestable se mantiene:</b> <i>«unstable angina has not disappeared from clinical practice and is still considered part of the spectrum of ACS»</i>.</li><li><b>«Infarto silente» pasa a «infarto no reconocido»</b> (<i>unrecognized</i>): <i>«the term \u2018silent\u2019 myocardial infarction can in some cases be misleading»</i>. Confirmación por imagen <i>«preferably with CMR with late gadolinium enhancement»</i>.</li><li><b>Enfermedad coronaria obstructiva</b>, definición cuantitativa: <i>«≥70% stenosis in an epicardial vessel by angiography (or ≥50% stenosis in an epicardial vessel that is flow-limiting on physiological assessment)»</i>.</li><li><b>Onda Q patológica</b>, vuelve la definición clásica: <i>«requires a Q-wave duration ≥40 ms and/or a depth of ≥25% of the R wave in the same lead»</i>.</li></ul>"
+      },
+      {
+        "h": "Enfoque enfermero",
+        "b": "<ul><li>Registrar la <b>hora exacta</b> de inicio del dolor y de cada extracción: el diagnóstico se apoya en el <b>ascenso o descenso seriado</b>, no en un valor aislado.</li><li>Al transmitir un resultado de troponina, decir <b>el valor y el límite del laboratorio</b>, no solo «elevada»: el umbral depende del ensayo y del sexo.</li><li>Cuidado al reutilizar cifras de troponina entre centros o entre ensayos distintos: no son transferibles.</li><li>Una troponina elevada no es sinónimo de infarto: puede ser lesión miocárdica de causa no coronaria.</li></ul>"
+      }
+    ]
+  },
+  {
     "id": "cardio-renal",
     "cat": "cardio",
     "title": "Cribado cardio-renal (ESC/ERA 2026)",
