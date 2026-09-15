@@ -7204,9 +7204,13 @@ var __enferix_escalas = (() => {
     },
     {
       id: "cat-epoc",
-      name: "Prueba de evaluaci\xF3n de la EPOC (CAT)",
-      shortName: "CAT",
-      description: "Cuantifica el impacto de los s\xEDntomas de la EPOC en la calidad de vida.",
+      // GOLD 2026 renombra el CAT™ a CAAT™ para poder usarlo en otras enfermedades
+      // de la vía aérea. Puntuación idéntica e intercambiable, así que se conserva
+      // el id y se mantiene «CAT» visible como alias: quien lo busque por el nombre
+      // de siempre tiene que encontrarlo.
+      name: "Prueba de evaluaci\xF3n de la v\xEDa a\xE9rea cr\xF3nica (CAAT, antes CAT)",
+      shortName: "CAAT",
+      description: "Cuantifica el impacto de los s\xEDntomas de la EPOC en la calidad de vida. Antes llamada CAT; GOLD 2026 la renombra a CAAT, con la misma puntuaci\xF3n.",
       category: CAT16,
       specialty: UCI3,
       inputs: [
@@ -7231,11 +7235,20 @@ var __enferix_escalas = (() => {
           secondary: `Impacto ${impacto}`,
           interpretation: score < 10 ? "Impacto bajo: la EPOC apenas limita la vida diaria." : score < 20 ? "Impacto medio: la EPOC es uno de los problemas m\xE1s importantes del paciente." : "Impacto alto o muy alto: la EPOC condiciona de forma importante la vida diaria; optimizar el tratamiento y valorar rehabilitaci\xF3n respiratoria.",
           level: score < 10 ? "ok" : score < 20 ? "warn" : "danger",
-          details: ["Un CAT \u2265 10 se usa como umbral de \xABm\xE1s s\xEDntomas\xBB en la clasificaci\xF3n GOLD.", "Una diferencia de 2 puntos se considera cl\xEDnicamente relevante."]
+          details: [
+            "Un CAAT \u2265 10 (antes CAT \u2265 10) se usa como umbral de \xABm\xE1s s\xEDntomas\xBB en la clasificaci\xF3n GOLD.",
+            "Una diferencia de 2 puntos se considera cl\xEDnicamente relevante."
+          ]
         };
       },
+      notes: [
+        "GOLD 2026, p.39: \xABCAT\u2122 has been renamed as the Chronic Airways Assessment Test CAAT\u2122. CAT\u2122 and CAAT\u2122 are equivalent, and the scores are interchangeable.\xBB",
+        "El CAAT de GOLD y el CAAT que cita GINA son la misma herramienta: ese es el motivo del cambio de nombre.",
+        "GINA advierte de que los puntos de corte y la diferencia m\xEDnima cl\xEDnicamente importante del CAAT no est\xE1n determinados todav\xEDa en asma."
+      ],
       references: [
-        "Jones PW, et al. Development and first validation of the COPD Assessment Test. Eur Respir J. 2009;34(3):648-54."
+        "Jones PW, et al. Development and first validation of the COPD Assessment Test. Eur Respir J. 2009;34(3):648-54.",
+        "GOLD 2026 Report v1.3 (8 diciembre 2025)."
       ]
     },
     {
