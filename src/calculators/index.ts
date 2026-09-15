@@ -32,6 +32,7 @@ import { urgencias } from './urgencias'
 import { medicinaFamilia } from './medicina-familia'
 import { cardiotoracica } from './cardiotoracica'
 import { enfermeria } from './enfermeria'
+import { escalas2026 } from './escalas-2026'
 
 /** Orden de las categorías en la pantalla principal. */
 export const CATEGORIES = [
@@ -207,6 +208,7 @@ const ALL: Calculator[] = [
   ...cardiotoracica,
   ...formulas,
   ...enfermeria,
+  ...escalas2026,
 ]
 
 export const CALCULATORS: Calculator[] = ALL.map((c) => {
