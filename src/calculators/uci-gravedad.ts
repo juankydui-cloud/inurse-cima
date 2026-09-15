@@ -522,9 +522,11 @@ export const uciGravedad: Calculator[] = [
     notes: [
       'NEWS2 no está validada en embarazadas, pacientes pediátricos ni en pacientes con limitación del esfuerzo terapéutico.',
       'La confusión de nueva aparición puntúa igual que la respuesta solo a la voz o al dolor.',
+      'En sospecha de sepsis, NICE NG253 (2025) usa el NEWS2 como criterio de cribado a partir de los 16 años, y cuenta la primera hora del antibiótico DESDE el cálculo de esta puntuación, no desde el triaje. Enferix sigue el bundle de Surviving Sepsis 2021, que criba con qSOFA y cuenta desde el reconocimiento: los dos marcos están contrastados en la ficha «Sepsis — Bundle 1 hora».',
     ],
     references: [
       'Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the assessment of acute-illness severity in the NHS. Londres, 2017.',
+      'NICE NG253. Suspected sepsis: recognition, diagnosis and early management. 2025.',
     ],
   },
   {
