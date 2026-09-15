@@ -7204,9 +7204,13 @@ var __enferix_escalas = (() => {
     },
     {
       id: "cat-epoc",
-      name: "Prueba de evaluaci\xF3n de la EPOC (CAT)",
-      shortName: "CAT",
-      description: "Cuantifica el impacto de los s\xEDntomas de la EPOC en la calidad de vida.",
+      // GOLD 2026 renombra el CAT™ a CAAT™ para poder usarlo en otras enfermedades
+      // de la vía aérea. Puntuación idéntica e intercambiable, así que se conserva
+      // el id y se mantiene «CAT» visible como alias: quien lo busque por el nombre
+      // de siempre tiene que encontrarlo.
+      name: "Prueba de evaluaci\xF3n de la v\xEDa a\xE9rea cr\xF3nica (CAAT, antes CAT)",
+      shortName: "CAAT",
+      description: "Cuantifica el impacto de los s\xEDntomas de la EPOC en la calidad de vida. Antes llamada CAT; GOLD 2026 la renombra a CAAT, con la misma puntuaci\xF3n.",
       category: CAT16,
       specialty: UCI3,
       inputs: [
@@ -7231,11 +7235,20 @@ var __enferix_escalas = (() => {
           secondary: `Impacto ${impacto}`,
           interpretation: score < 10 ? "Impacto bajo: la EPOC apenas limita la vida diaria." : score < 20 ? "Impacto medio: la EPOC es uno de los problemas m\xE1s importantes del paciente." : "Impacto alto o muy alto: la EPOC condiciona de forma importante la vida diaria; optimizar el tratamiento y valorar rehabilitaci\xF3n respiratoria.",
           level: score < 10 ? "ok" : score < 20 ? "warn" : "danger",
-          details: ["Un CAT \u2265 10 se usa como umbral de \xABm\xE1s s\xEDntomas\xBB en la clasificaci\xF3n GOLD.", "Una diferencia de 2 puntos se considera cl\xEDnicamente relevante."]
+          details: [
+            "Un CAAT \u2265 10 (antes CAT \u2265 10) se usa como umbral de \xABm\xE1s s\xEDntomas\xBB en la clasificaci\xF3n GOLD.",
+            "Una diferencia de 2 puntos se considera cl\xEDnicamente relevante."
+          ]
         };
       },
+      notes: [
+        "GOLD 2026, p.39: \xABCAT\u2122 has been renamed as the Chronic Airways Assessment Test CAAT\u2122. CAT\u2122 and CAAT\u2122 are equivalent, and the scores are interchangeable.\xBB",
+        "El CAAT de GOLD y el CAAT que cita GINA son la misma herramienta: ese es el motivo del cambio de nombre.",
+        "GINA advierte de que los puntos de corte y la diferencia m\xEDnima cl\xEDnicamente importante del CAAT no est\xE1n determinados todav\xEDa en asma."
+      ],
       references: [
-        "Jones PW, et al. Development and first validation of the COPD Assessment Test. Eur Respir J. 2009;34(3):648-54."
+        "Jones PW, et al. Development and first validation of the COPD Assessment Test. Eur Respir J. 2009;34(3):648-54.",
+        "GOLD 2026 Report v1.3 (8 diciembre 2025)."
       ]
     },
     {
@@ -17151,6 +17164,424 @@ var __enferix_escalas = (() => {
     }
   ];
 
+  // src/calculators/escalas-2026.ts
+  var GERIATRIA = "Geriatr\xEDa, fragilidad y salud mental";
+  var ENF2 = ["Enfermer\xEDa"];
+  var si = (id, label, p = 1) => ({ id, type: "boolean", label, points: p });
+  var escalas2026 = [
+    {
+      id: "braden-q",
+      name: "Braden Q (riesgo de UPP pedi\xE1trica)",
+      shortName: "Braden Q",
+      description: "Riesgo de \xFAlceras por presi\xF3n en el paciente pedi\xE1trico. A menor puntuaci\xF3n, mayor riesgo.",
+      category: "Neonatolog\xEDa y pediatr\xEDa",
+      specialty: ["Pediatr\xEDa", "Enfermer\xEDa"],
+      inputs: [
+        { id: "mov", type: "select", label: "Movilidad", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Completamente inm\xF3vil" },
+          { value: 2, label: "2 \u2014 Muy limitada" },
+          { value: 3, label: "3 \u2014 Ligeramente limitada" },
+          { value: 4, label: "4 \u2014 Sin limitaciones" }
+        ] },
+        { id: "act", type: "select", label: "Actividad", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Encamado" },
+          { value: 2, label: "2 \u2014 En silla" },
+          { value: 3, label: "3 \u2014 Deambula ocasionalmente" },
+          { value: 4, label: "4 \u2014 Deambula con frecuencia" }
+        ] },
+        { id: "sen", type: "select", label: "Percepci\xF3n sensorial", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Completamente limitada" },
+          { value: 2, label: "2 \u2014 Muy limitada" },
+          { value: 3, label: "3 \u2014 Ligeramente limitada" },
+          { value: 4, label: "4 \u2014 Sin alteraciones" }
+        ] },
+        { id: "hum", type: "select", label: "Humedad", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Piel constantemente h\xFAmeda" },
+          { value: 2, label: "2 \u2014 Muy h\xFAmeda" },
+          { value: 3, label: "3 \u2014 Ocasionalmente h\xFAmeda" },
+          { value: 4, label: "4 \u2014 Raramente h\xFAmeda" }
+        ] },
+        { id: "fri", type: "select", label: "Fricci\xF3n y cizallamiento", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Problema significativo" },
+          { value: 2, label: "2 \u2014 Problema" },
+          { value: 3, label: "3 \u2014 Problema potencial" },
+          { value: 4, label: "4 \u2014 Sin problema aparente" }
+        ] },
+        { id: "nut", type: "select", label: "Nutrici\xF3n", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Muy pobre" },
+          { value: 2, label: "2 \u2014 Inadecuada" },
+          { value: 3, label: "3 \u2014 Adecuada" },
+          { value: 4, label: "4 \u2014 Excelente" }
+        ] },
+        { id: "per", type: "select", label: "Perfusi\xF3n tisular y oxigenaci\xF3n", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Extremadamente comprometida" },
+          { value: 2, label: "2 \u2014 Comprometida" },
+          { value: 3, label: "3 \u2014 Adecuada" },
+          { value: 4, label: "4 \u2014 Excelente" }
+        ] }
+      ],
+      compute: (v) => {
+        const t = sum(v, ["mov", "act", "sen", "hum", "fri", "nut", "per"]);
+        return {
+          main: String(t),
+          mainUnit: "puntos (7\u201328)",
+          interpretation: t <= 16 ? "\u{1F534} Riesgo de UPP \u2014 medidas de prevenci\xF3n activas." : t <= 22 ? "\u{1F7E0} Riesgo moderado \u2014 reforzar prevenci\xF3n y reevaluar." : "\u{1F7E2} Riesgo bajo \u2014 mantener vigilancia.",
+          level: t <= 16 ? "danger" : t <= 22 ? "warn" : "ok",
+          details: [
+            "Al rev\xE9s que Norton o EMINA: aqu\xED a MENOR puntuaci\xF3n, MAYOR riesgo.",
+            "El corte m\xE1s difundido es \u226416; algunos centros usan \u226422 para no perder casos."
+          ]
+        };
+      }
+    },
+    {
+      id: "downton",
+      name: "Escala de Downton (riesgo de ca\xEDdas)",
+      shortName: "Downton",
+      description: "Riesgo de ca\xEDda. Cada factor presente suma un punto.",
+      category: GERIATRIA,
+      specialty: ENF2,
+      inputs: [
+        si("cai", "Ca\xEDdas previas"),
+        si("m1", "Toma tranquilizantes o sedantes"),
+        si("m2", "Toma diur\xE9ticos"),
+        si("m3", "Toma hipotensores (no diur\xE9ticos)"),
+        si("m4", "Toma antiparkinsonianos"),
+        si("m5", "Toma antidepresivos"),
+        si("m6", "Otros medicamentos"),
+        si("s1", "D\xE9ficit visual"),
+        si("s2", "D\xE9ficit auditivo"),
+        si("s3", "Afectaci\xF3n de extremidades (ictus, amputaci\xF3n\u2026)"),
+        si("men", "Estado mental confuso"),
+        si("dea", "Deambulaci\xF3n insegura (con ayuda) o imposible")
+      ],
+      compute: (v) => {
+        const t = sum(v, ["cai", "m1", "m2", "m3", "m4", "m5", "m6", "s1", "s2", "s3", "men", "dea"]);
+        return {
+          main: String(t),
+          mainUnit: "puntos",
+          interpretation: t >= 3 ? "\u{1F534} Alto riesgo de ca\xEDda \u2014 activar medidas de prevenci\xF3n seg\xFAn el protocolo del centro." : "\u{1F7E2} Bajo riesgo \u2014 vigilancia habitual; reevaluar si cambia la medicaci\xF3n o la movilidad.",
+          level: t >= 3 ? "danger" : "ok",
+          details: ["Punto de corte de referencia: 3 o m\xE1s puntos = alto riesgo."]
+        };
+      }
+    },
+    {
+      id: "tinetti",
+      name: "Escala de Tinetti (equilibrio y marcha)",
+      shortName: "Tinetti",
+      description: "Riesgo de ca\xEDdas por alteraci\xF3n del equilibrio y de la marcha (POMA).",
+      category: GERIATRIA,
+      specialty: ENF2,
+      inputs: [
+        { id: "e1", type: "select", label: "Equilibrio sentado", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Se inclina o desliza" },
+          { value: 1, label: "1 \u2014 Firme y seguro" }
+        ] },
+        { id: "e2", type: "select", label: "Levantarse", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Incapaz sin ayuda" },
+          { value: 1, label: "1 \u2014 Capaz usando los brazos" },
+          { value: 2, label: "2 \u2014 Capaz sin usar los brazos" }
+        ] },
+        { id: "e3", type: "select", label: "Intentos de levantarse", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Incapaz sin ayuda" },
+          { value: 1, label: "1 \u2014 Capaz en m\xE1s de un intento" },
+          { value: 2, label: "2 \u2014 Capaz a la primera" }
+        ] },
+        { id: "e4", type: "select", label: "Equilibrio inmediato de pie (primeros 5 s)", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Inestable" },
+          { value: 1, label: "1 \u2014 Estable con apoyo" },
+          { value: 2, label: "2 \u2014 Estable sin apoyo" }
+        ] },
+        { id: "e5", type: "select", label: "Equilibrio de pie", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Inestable" },
+          { value: 1, label: "1 \u2014 Estable con base amplia o apoyo" },
+          { value: 2, label: "2 \u2014 Base estrecha sin apoyo" }
+        ] },
+        { id: "e6", type: "select", label: "Empuj\xF3n en el estern\xF3n (3 veces)", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Empieza a caerse" },
+          { value: 1, label: "1 \u2014 Se tambalea, se agarra" },
+          { value: 2, label: "2 \u2014 Firme" }
+        ] },
+        { id: "e7", type: "select", label: "Ojos cerrados", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Inestable" },
+          { value: 1, label: "1 \u2014 Estable" }
+        ] },
+        { id: "e8", type: "select", label: "Giro de 360\xB0", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Pasos discontinuos e inestable" },
+          { value: 1, label: "1 \u2014 Pasos continuos o estable" },
+          { value: 2, label: "2 \u2014 Continuos y estable" }
+        ] },
+        { id: "e9", type: "select", label: "Sentarse", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Inseguro, calcula mal la distancia" },
+          { value: 1, label: "1 \u2014 Usa los brazos o movimiento brusco" },
+          { value: 2, label: "2 \u2014 Seguro y suave" }
+        ] },
+        { id: "m1", type: "select", label: "Inicio de la marcha", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Duda o titubea" },
+          { value: 1, label: "1 \u2014 Sin titubeo" }
+        ] },
+        si("m2a", "Pie derecho: sobrepasa al izquierdo en el balanceo"),
+        si("m2b", "Pie derecho: se despega completamente del suelo"),
+        si("m2c", "Pie izquierdo: sobrepasa al derecho en el balanceo"),
+        si("m2d", "Pie izquierdo: se despega completamente del suelo"),
+        { id: "m3", type: "select", label: "Simetr\xEDa del paso", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Longitud desigual" },
+          { value: 1, label: "1 \u2014 Sim\xE9trica" }
+        ] },
+        { id: "m4", type: "select", label: "Continuidad de los pasos", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Paradas o discontinuidad" },
+          { value: 1, label: "1 \u2014 Continuos" }
+        ] },
+        { id: "m5", type: "select", label: "Trayectoria", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Desviaci\xF3n marcada" },
+          { value: 1, label: "1 \u2014 Desviaci\xF3n leve o usa ayuda" },
+          { value: 2, label: "2 \u2014 Recta sin ayuda" }
+        ] },
+        { id: "m6", type: "select", label: "Tronco", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Balanceo marcado o usa ayuda" },
+          { value: 1, label: "1 \u2014 Flexiona rodillas o abre brazos" },
+          { value: 2, label: "2 \u2014 Sin balanceo ni ayuda" }
+        ] },
+        { id: "m7", type: "select", label: "Postura al caminar", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Talones separados" },
+          { value: 1, label: "1 \u2014 Talones casi se tocan" }
+        ] }
+      ],
+      compute: (v) => {
+        const eq = sum(v, ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9"]);
+        const ma = sum(v, ["m1", "m2a", "m2b", "m2c", "m2d", "m3", "m4", "m5", "m6", "m7"]);
+        const t = eq + ma;
+        return {
+          main: String(t),
+          mainUnit: "puntos (0\u201328)",
+          secondary: `Equilibrio ${eq}/16 \xB7 Marcha ${ma}/12`,
+          interpretation: t < 19 ? "\u{1F534} Riesgo alto de ca\xEDdas." : t <= 23 ? "\u{1F7E0} Riesgo moderado de ca\xEDdas." : "\u{1F7E2} Riesgo bajo de ca\xEDdas.",
+          level: t < 19 ? "danger" : t <= 23 ? "warn" : "ok",
+          details: ["<19 alto \xB7 19-23 moderado \xB7 \u226524 bajo.", "La longitud y altura del paso son cuatro observaciones (dos por pie), no una."]
+        };
+      }
+    },
+    {
+      id: "pfeiffer",
+      name: "Cuestionario de Pfeiffer (SPMSQ)",
+      shortName: "Pfeiffer",
+      description: "Cribado de deterioro cognitivo. Se cuentan los ERRORES, no los aciertos.",
+      category: GERIATRIA,
+      specialty: ENF2,
+      inputs: [
+        si("p1", "1. \xBFQu\xE9 d\xEDa es hoy? (d\xEDa, mes, a\xF1o) \u2014 falla"),
+        si("p2", "2. \xBFQu\xE9 d\xEDa de la semana es hoy? \u2014 falla"),
+        si("p3", "3. \xBFD\xF3nde estamos ahora? \u2014 falla"),
+        si("p4", "4. \xBFCu\xE1l es su n\xFAmero de tel\xE9fono o direcci\xF3n? \u2014 falla"),
+        si("p5", "5. \xBFCu\xE1ntos a\xF1os tiene? \u2014 falla"),
+        si("p6", "6. \xBFD\xF3nde naci\xF3? \u2014 falla"),
+        si("p7", "7. \xBFC\xF3mo se llama el rey / presidente actual? \u2014 falla"),
+        si("p8", "8. \xBFC\xF3mo se llamaba el anterior? \u2014 falla"),
+        si("p9", "9. Primer apellido de su madre \u2014 falla"),
+        si("p10", "10. Reste de 3 en 3 desde 20 \u2014 falla"),
+        { id: "esc", type: "select", label: "Ajuste por nivel de estudios", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "Estudios primarios o medios (sin ajuste)" },
+          { value: -1, label: "Baja escolarizaci\xF3n (se permite 1 error m\xE1s)" },
+          { value: 1, label: "Estudios superiores (se permite 1 error menos)" }
+        ] }
+      ],
+      compute: (v) => {
+        const e = sum(v, ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"]);
+        const aj = e + (v.esc ?? 0);
+        return {
+          main: String(e),
+          mainUnit: "errores (0\u201310)",
+          secondary: (v.esc ?? 0) !== 0 ? `Ajustado: ${aj} errores` : void 0,
+          secondaryLabel: (v.esc ?? 0) !== 0 ? "Por escolarizaci\xF3n" : void 0,
+          interpretation: aj <= 2 ? "\u{1F7E2} Funci\xF3n intelectual normal." : aj <= 4 ? "\u{1F7E1} Deterioro cognitivo leve." : aj <= 7 ? "\u{1F7E0} Deterioro cognitivo moderado." : "\u{1F534} Deterioro cognitivo severo.",
+          level: aj <= 2 ? "ok" : aj <= 4 ? "info" : aj <= 7 ? "warn" : "danger",
+          details: ["Marca cada pregunta que el paciente FALLE.", "Es un cribado, no un diagn\xF3stico."]
+        };
+      }
+    },
+    {
+      id: "lawton-brody",
+      name: "\xCDndice de Lawton-Brody (AIVD)",
+      shortName: "Lawton-Brody",
+      description: "Autonom\xEDa en las actividades instrumentales de la vida diaria.",
+      category: GERIATRIA,
+      specialty: ENF2,
+      inputs: [
+        { id: "sex", type: "select", label: "Sexo (determina los \xEDtems que punt\xFAan)", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "Mujer \u2014 punt\xFAan los 8 \xEDtems" },
+          { value: 0, label: "Hombre \u2014 versi\xF3n cl\xE1sica de 5 \xEDtems" }
+        ] },
+        si("tel", "Usa el tel\xE9fono de forma aut\xF3noma"),
+        si("com", "Hace la compra"),
+        si("cui", "Prepara la comida"),
+        si("cas", "Cuida la casa"),
+        si("rop", "Lava la ropa"),
+        si("tra", "Usa transportes"),
+        si("med", "Maneja su medicaci\xF3n"),
+        si("din", "Maneja el dinero")
+      ],
+      compute: (v) => {
+        const mujer = (v.sex ?? 1) === 1;
+        const t = mujer ? sum(v, ["tel", "com", "cui", "cas", "rop", "tra", "med", "din"]) : sum(v, ["tel", "com", "tra", "med", "din"]);
+        const max = mujer ? 8 : 5;
+        const pct = t / max;
+        return {
+          main: String(t),
+          mainUnit: `puntos (0\u2013${max})`,
+          interpretation: pct >= 1 ? "\u{1F7E2} Independiente para las actividades instrumentales." : pct >= 0.75 ? "\u{1F7E1} Dependencia ligera." : pct >= 0.5 ? "\u{1F7E0} Dependencia moderada." : pct >= 0.25 ? "\u{1F534} Dependencia severa." : "\u{1F534} Dependencia total.",
+          level: pct >= 1 ? "ok" : pct >= 0.75 ? "info" : pct >= 0.5 ? "warn" : "danger",
+          details: mujer ? ["Marca cada actividad que realice de forma aut\xF3noma."] : [
+            "La versi\xF3n masculina original no punt\xFAa cocinar, cuidar la casa ni lavar la ropa.",
+            "Es un criterio de los a\xF1os 60 y hoy se discute; si en tu centro se punt\xFAan los 8 \xEDtems, usa la opci\xF3n \xABMujer\xBB."
+          ]
+        };
+      }
+    },
+    {
+      id: "ramsay",
+      name: "Escala de Ramsay (nivel de sedaci\xF3n)",
+      shortName: "Ramsay",
+      description: "Profundidad de la sedaci\xF3n, de ansioso a sin respuesta.",
+      category: "Neurol\xF3gico, sedaci\xF3n y gravedad",
+      specialty: ["Medicina Intensiva", "Enfermer\xEDa"],
+      inputs: [
+        { id: "r", type: "select", label: "Nivel observado", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "1 \u2014 Ansioso, agitado o inquieto" },
+          { value: 2, label: "2 \u2014 Colaborador, orientado y tranquilo" },
+          { value: 3, label: "3 \u2014 Dormido, responde solo a \xF3rdenes" },
+          { value: 4, label: "4 \u2014 Dormido, respuesta r\xE1pida a est\xEDmulo glabelar o auditivo intenso" },
+          { value: 5, label: "5 \u2014 Dormido, respuesta perezosa a est\xEDmulo glabelar o auditivo intenso" },
+          { value: 6, label: "6 \u2014 Sin respuesta" }
+        ] }
+      ],
+      compute: (v) => {
+        const r = v.r ?? 1;
+        return {
+          main: String(r),
+          mainUnit: "/ 6",
+          interpretation: r === 1 ? "\u{1F7E0} Sedaci\xF3n insuficiente." : r <= 3 ? "\u{1F7E2} Nivel de sedaci\xF3n adecuado para la mayor\xEDa de situaciones." : r <= 5 ? "\u{1F7E0} Sedaci\xF3n profunda \u2014 revisar si est\xE1 indicada." : "\u{1F534} Sedaci\xF3n excesiva \u2014 replantear la pauta.",
+          level: r === 1 ? "warn" : r <= 3 ? "ok" : r <= 5 ? "warn" : "danger"
+        };
+      }
+    },
+    {
+      id: "escid",
+      name: "ESCID (dolor en paciente no comunicativo)",
+      shortName: "ESCID",
+      description: "Conductas indicadoras de dolor en el paciente cr\xEDtico no comunicativo con ventilaci\xF3n mec\xE1nica.",
+      category: "Dolor",
+      specialty: ["Medicina Intensiva", "Enfermer\xEDa"],
+      inputs: [
+        { id: "fac", type: "select", label: "Musculatura facial", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Relajada" },
+          { value: 1, label: "1 \u2014 En tensi\xF3n, ce\xF1o fruncido" },
+          { value: 2, label: "2 \u2014 Ce\xF1o fruncido habitual, dientes apretados" }
+        ] },
+        { id: "tra", type: "select", label: "Tranquilidad", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Tranquilo, movimientos normales" },
+          { value: 1, label: "1 \u2014 Movimientos ocasionales de inquietud" },
+          { value: 2, label: "2 \u2014 Movimientos frecuentes, cabeza o extremidades" }
+        ] },
+        { id: "ton", type: "select", label: "Tono muscular", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Normal" },
+          { value: 1, label: "1 \u2014 Aumentado, flexi\xF3n de dedos" },
+          { value: 2, label: "2 \u2014 R\xEDgido" }
+        ] },
+        { id: "vm", type: "select", label: "Adaptaci\xF3n a la ventilaci\xF3n mec\xE1nica", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Tolera la ventilaci\xF3n" },
+          { value: 1, label: "1 \u2014 Tose, pero tolera" },
+          { value: 2, label: "2 \u2014 Lucha contra el respirador" }
+        ] },
+        { id: "con", type: "select", label: "Confortabilidad", dropdown: true, noPoints: true, options: [
+          { value: 0, label: "0 \u2014 Confortable, tranquilo" },
+          { value: 1, label: "1 \u2014 Se tranquiliza al tacto o la voz" },
+          { value: 2, label: "2 \u2014 Dif\xEDcil de confortar" }
+        ] }
+      ],
+      compute: (v) => {
+        const t = sum(v, ["fac", "tra", "ton", "vm", "con"]);
+        return {
+          main: String(t),
+          mainUnit: "puntos (0\u201310)",
+          interpretation: t === 0 ? "\u{1F7E2} Sin dolor." : t <= 3 ? "\u{1F7E1} Dolor leve." : t <= 6 ? "\u{1F7E0} Dolor moderado \u2014 valorar analgesia." : "\u{1F534} Dolor intenso \u2014 analgesia y reevaluar.",
+          level: t === 0 ? "ok" : t <= 3 ? "info" : t <= 6 ? "warn" : "danger",
+          details: ["Adaptaci\xF3n espa\xF1ola de la escala de Campbell para pacientes con ventilaci\xF3n mec\xE1nica: sustituye la respuesta verbal por la adaptaci\xF3n al respirador."]
+        };
+      }
+    },
+    {
+      id: "eat-10",
+      name: "EAT-10 (cribado de disfagia)",
+      shortName: "EAT-10",
+      description: "Cribado de alteraci\xF3n de la degluci\xF3n. Lo responde el propio paciente.",
+      category: "Valoraci\xF3n enfermera",
+      specialty: ENF2,
+      inputs: [
+        "Mi problema para tragar me ha llevado a perder peso",
+        "Interfiere con mi capacidad para comer fuera de casa",
+        "Tragar l\xEDquidos me supone un esfuerzo extra",
+        "Tragar s\xF3lidos me supone un esfuerzo extra",
+        "Tragar pastillas me supone un esfuerzo extra",
+        "Tragar es doloroso",
+        "El placer de comer se ve afectado",
+        "Cuando trago, la comida se pega en mi garganta",
+        "Toso cuando como",
+        "Tragar es estresante"
+      ].map((label, i) => ({
+        id: `q${i + 1}`,
+        type: "select",
+        label: `${i + 1}. ${label}`,
+        dropdown: true,
+        noPoints: true,
+        options: [
+          { value: 0, label: "0 \u2014 Ning\xFAn problema" },
+          { value: 1, label: "1" },
+          { value: 2, label: "2" },
+          { value: 3, label: "3" },
+          { value: 4, label: "4 \u2014 Problema serio" }
+        ]
+      })),
+      compute: (v) => {
+        const t = sum(v, ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]);
+        return {
+          main: String(t),
+          mainUnit: "puntos (0\u201340)",
+          interpretation: t >= 3 ? "\u{1F534} Posible alteraci\xF3n de la degluci\xF3n \u2014 valorar con exploraci\xF3n cl\xEDnica (MECV-V) o derivar." : "\u{1F7E2} Sin datos de disfagia en el cribado.",
+          level: t >= 3 ? "danger" : "ok",
+          details: ["Punto de corte: 3 o m\xE1s puntos.", "Es un cribado; no sustituye a la exploraci\xF3n."]
+        };
+      }
+    },
+    {
+      id: "cormack-lehane",
+      name: "Cormack-Lehane (visi\xF3n laringosc\xF3pica)",
+      shortName: "Cormack-Lehane",
+      description: "Grado de visi\xF3n de la glotis en la laringoscopia directa.",
+      category: "V\xEDa a\xE9rea",
+      specialty: ["Anestesiolog\xEDa"],
+      inputs: [
+        { id: "c", type: "select", label: "Grado observado", dropdown: true, noPoints: true, options: [
+          { value: 1, label: "I \u2014 Se ve toda la glotis" },
+          { value: 2, label: "II \u2014 Parte posterior de la glotis o solo aritenoides" },
+          { value: 3, label: "III \u2014 Solo se ve la epiglotis" },
+          { value: 4, label: "IV \u2014 No se ve la epiglotis ni la glotis" }
+        ] }
+      ],
+      compute: (v) => {
+        const c = v.c ?? 1;
+        const rom = ["", "I", "II", "III", "IV"][c] ?? "\u2014";
+        return {
+          main: rom,
+          mainUnit: "grado",
+          interpretation: c <= 2 ? "\u{1F7E2} Intubaci\xF3n habitualmente sin dificultad." : c === 3 ? "\u{1F7E0} Intubaci\xF3n dif\xEDcil \u2014 considerar gu\xEDa, videolaringoscopio o cambio de dispositivo." : "\u{1F534} Intubaci\xF3n muy dif\xEDcil \u2014 algoritmo de v\xEDa a\xE9rea dif\xEDcil y pedir ayuda.",
+          level: c <= 2 ? "ok" : c === 3 ? "warn" : "danger",
+          details: ["Es un hallazgo de la laringoscopia, no una predicci\xF3n previa: para eso est\xE1 el Mallampati."]
+        };
+      }
+    }
+  ];
+
   // src/calculators/index.ts
   var CATEGORIES = [
     "Gravedad en UCI y sepsis",
@@ -17317,7 +17748,8 @@ var __enferix_escalas = (() => {
     ...medicinaFamilia,
     ...cardiotoracica,
     ...formulas,
-    ...enfermeria
+    ...enfermeria,
+    ...escalas2026
   ];
   var CALCULATORS = ALL.map((c) => {
     const extra = EXTRA_SPECIALTIES[c.id];

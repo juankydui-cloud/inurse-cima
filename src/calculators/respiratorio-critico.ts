@@ -591,9 +591,14 @@ export const respiratorioCritico: Calculator[] = [
   },
   {
     id: 'cat-epoc',
-    name: 'Prueba de evaluación de la EPOC (CAT)',
-    shortName: 'CAT',
-    description: 'Cuantifica el impacto de los síntomas de la EPOC en la calidad de vida.',
+    // GOLD 2026 renombra el CAT™ a CAAT™ para poder usarlo en otras enfermedades
+    // de la vía aérea. Puntuación idéntica e intercambiable, así que se conserva
+    // el id y se mantiene «CAT» visible como alias: quien lo busque por el nombre
+    // de siempre tiene que encontrarlo.
+    name: 'Prueba de evaluación de la vía aérea crónica (CAAT, antes CAT)',
+    shortName: 'CAAT',
+    description:
+      'Cuantifica el impacto de los síntomas de la EPOC en la calidad de vida. Antes llamada CAT; GOLD 2026 la renombra a CAAT, con la misma puntuación.',
     category: CAT,
     specialty: UCI,
     inputs: [
@@ -623,11 +628,20 @@ export const respiratorioCritico: Calculator[] = [
               ? 'Impacto medio: la EPOC es uno de los problemas más importantes del paciente.'
               : 'Impacto alto o muy alto: la EPOC condiciona de forma importante la vida diaria; optimizar el tratamiento y valorar rehabilitación respiratoria.',
         level: score < 10 ? 'ok' : score < 20 ? 'warn' : 'danger',
-        details: ['Un CAT ≥ 10 se usa como umbral de «más síntomas» en la clasificación GOLD.', 'Una diferencia de 2 puntos se considera clínicamente relevante.'],
+        details: [
+          'Un CAAT ≥ 10 (antes CAT ≥ 10) se usa como umbral de «más síntomas» en la clasificación GOLD.',
+          'Una diferencia de 2 puntos se considera clínicamente relevante.',
+        ],
       }
     },
+    notes: [
+      'GOLD 2026, p.39: «CAT™ has been renamed as the Chronic Airways Assessment Test CAAT™. CAT™ and CAAT™ are equivalent, and the scores are interchangeable.»',
+      'El CAAT de GOLD y el CAAT que cita GINA son la misma herramienta: ese es el motivo del cambio de nombre.',
+      'GINA advierte de que los puntos de corte y la diferencia mínima clínicamente importante del CAAT no están determinados todavía en asma.',
+    ],
     references: [
       'Jones PW, et al. Development and first validation of the COPD Assessment Test. Eur Respir J. 2009;34(3):648-54.',
+      'GOLD 2026 Report v1.3 (8 diciembre 2025).',
     ],
   },
   {
