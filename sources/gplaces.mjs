@@ -72,6 +72,12 @@ export async function searchNearbyHospitals(lat, lon, { radius = 5000 } = {}) {
   const body = {
     includedTypes: ["hospital"],
     maxResultCount: 20,
+    // Sin rankPreference, Places ordena por POPULARITY. Como solo devuelve 20
+    // resultados, los 20 más "populares" del radio pueden no incluir el más
+    // cercano, y ordenarlos después por distancia en el servidor no lo arregla:
+    // el que falta ya no ha venido. En una búsqueda de urgencias lo único que
+    // importa es cuál está más cerca, así que se pide DISTANCE explícitamente.
+    rankPreference: "DISTANCE",
     languageCode: "es",
     regionCode: "ES",
     locationRestriction: {
