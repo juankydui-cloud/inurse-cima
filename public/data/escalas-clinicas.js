@@ -6286,10 +6286,12 @@ var __enferix_escalas = (() => {
       },
       notes: [
         "NEWS2 no est\xE1 validada en embarazadas, pacientes pedi\xE1tricos ni en pacientes con limitaci\xF3n del esfuerzo terap\xE9utico.",
-        "La confusi\xF3n de nueva aparici\xF3n punt\xFAa igual que la respuesta solo a la voz o al dolor."
+        "La confusi\xF3n de nueva aparici\xF3n punt\xFAa igual que la respuesta solo a la voz o al dolor.",
+        "En sospecha de sepsis, NICE NG253 (2025) usa el NEWS2 como criterio de cribado a partir de los 16 a\xF1os, y cuenta la primera hora del antibi\xF3tico DESDE el c\xE1lculo de esta puntuaci\xF3n, no desde el triaje. Enferix sigue el bundle de Surviving Sepsis 2021, que criba con qSOFA y cuenta desde el reconocimiento: los dos marcos est\xE1n contrastados en la ficha \xABSepsis \u2014 Bundle 1 hora\xBB."
       ],
       references: [
-        "Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the assessment of acute-illness severity in the NHS. Londres, 2017."
+        "Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the assessment of acute-illness severity in the NHS. Londres, 2017.",
+        "NICE NG253. Suspected sepsis: recognition, diagnosis and early management. 2025."
       ]
     },
     {
