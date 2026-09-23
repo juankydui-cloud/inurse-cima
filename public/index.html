@@ -227,8 +227,8 @@
 <!-- Stack de Floating Buttons -->
 <div class="fab-stack">
   <button class="fab-atlas" id="atlasFab" title="Atlas ECG · Referencia de trazados">🫀</button>
-  <button class="fab-ecg" id="ecgFab" title="Reto del Electro (Gemini Vision)">📟</button>
-  <button class="fab-rx" id="rxFab" title="Diagnóstico por Imagen (Gemini Vision)">🩻</button>
+  <button class="fab-ecg" id="ecgFab" title="Reto del Electro (lectura con Javny)">📟</button>
+  <button class="fab-rx" id="rxFab" title="Diagnóstico por Imagen (lectura con Javny)">🩻</button>
   <button class="fab-rec" id="recFab" title="Reconocimiento por voz avanzado">🎙️</button>
   <button class="fab" id="askFab">✨ Preguntar a la IA</button>
 </div>
@@ -291,18 +291,18 @@
         <button class="qmic" id="ecgMic">🎙️</button>
       </div>
       
-      <button class="qsend" id="ecgSend" style="background:linear-gradient(135deg,#10B981,#06B6D4)">Analizar trazado con Gemini</button>
+      <button class="qsend" id="ecgSend" style="background:linear-gradient(135deg,#10B981,#06B6D4)">Analizar trazado con Javny</button>
       <div id="ecgResult"></div>
     </div>
   </div>
 </div>
 
-<!-- Modal Diagnóstico por Imagen (Rayos X · Gemini Vision) -->
+<!-- Modal Diagnóstico por Imagen (Rayos X · lectura con Javny) -->
 <div class="overlay" id="rxOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Diagnóstico por Imagen">
     <div class="modal-head">
       <div class="mh-ico" style="background:linear-gradient(135deg,#8B5CF6,#6366F1)">🩻</div>
-      <h2>Diagnóstico por Imagen <small>Análisis de radiografías con Gemini Vision</small></h2>
+      <h2>Diagnóstico por Imagen <small>Lectura orientativa de imagen con Javny</small></h2>
       <button class="modal-close" id="rxClose" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body">
@@ -318,7 +318,7 @@
         <button class="qmic" id="rxMic">🎙️</button>
       </div>
 
-      <button class="qsend" id="rxSend" style="background:linear-gradient(135deg,#8B5CF6,#6366F1)">Analizar imagen con Gemini</button>
+      <button class="qsend" id="rxSend" style="background:linear-gradient(135deg,#8B5CF6,#6366F1)">Analizar imagen con Javny</button>
       <div id="rxResult"></div>
       <div style="margin-top:12px;font-size:11px;line-height:1.5;color:var(--muted,#94a3b8)">Herramienta de apoyo orientativo y educativo. No sustituye el informe del radiólogo ni el juicio del médico responsable.</div>
     </div>

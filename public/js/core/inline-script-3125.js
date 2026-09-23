@@ -979,15 +979,30 @@ function saveApiKey(val){
   document.querySelectorAll(".api-key-box").forEach(el => el.style.display = "none");
   toast("Clave guardada");
 }
+/* La caja de clave del modal sólo tiene sentido si el servidor NO puede
+   responder: la consulta, la explicación de fármaco y las lecturas de imagen
+   van ya por el servidor con su propia clave. Se pregunta una vez y se
+   recuerda; mientras no se sepa, se deja como estaba para no parpadear.
+   Quien necesite la clave para lo que aún depende de ella (el editor de
+   Proyectos, Javny 2.0) la tiene en Ajustes, que tiene su propio campo. */
+let servidorResponde = null;
+function servidorPuedeResponder(){
+  if(servidorResponde !== null) return Promise.resolve(servidorResponde);
+  return fetch('/api/javny/health')
+    .then(r => r.ok ? r.json() : {})
+    .then(d => { servidorResponde = !!(d.geminiConfigured || d.imagenConfigurada || d.farmacoConfigurado); return servidorResponde; })
+    .catch(() => { servidorResponde = false; return false; });
+}
 function checkApiKeyUI(){
   const key = store.get("guiaHJ23_apikey");
   document.querySelectorAll(".api-key-input").forEach(input => input.value = key || "");
-  document.querySelectorAll(".api-key-box").forEach(el => el.style.display = key ? "none" : "flex");
+  servidorPuedeResponder().then(puede => {
+    document.querySelectorAll(".api-key-box").forEach(el => el.style.display = (key || puede) ? "none" : "flex");
+  });
 }
 
 /* ---------- asistente AI ---------- */
 const overlay=$("#overlay"),qinput=$("#qinput"),qsendBtn=$("#qsendBtn"),qmicBtn=$("#qmicBtn"),modalBody=$("#modalBody");
-const KB=DOCS.map(d=>`### ${d.title} (${d.source})\n`+d.sec.map(s=>s.h+": "+stripHTML(s.b)).join("\n")).join("\n\n");
 function openModal(){overlay.classList.add("show");checkApiKeyUI();setTimeout(()=>qinput.focus(),200)}
 function closeModal(){overlay.classList.remove("show");stopSpeak()}
 let autoVoice=store.get("guiaHJ23_autovoice")==="1";
@@ -1029,49 +1044,81 @@ qsendBtn.onclick=ask;
 qinput.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}};
 document.addEventListener("click",e=>{const ex=e.target.closest(".ex");if(ex){qinput.value=ex.textContent;qinput.oninput();ask()}});
 
+/* Consulta del modal, contra el orquestador del servidor.
+   Antes montaba aquí su propio guion de sistema con TODAS las fichas
+   concatenadas (KB) y llamaba a Google desde el navegador con la clave del
+   usuario: sin clave no respondía, y con ella daba una respuesta distinta a
+   la del chat y la portada, porque el guion era otro. Ahora usa el mismo
+   camino que ellos, así que el guion clínico es uno solo
+   (sources/guion-clinico.mjs) y las fichas las recupera EnferixGuideRetrieve
+   en vez de ir enteras en el prompt.
+
+   Se usa /api/javny/chat/stream y no /api/javny/chat porque el no-streaming
+   sigue siendo sólo de Gemini: con ANTHROPIC_API_KEY como único proveedor
+   fallaría. El texto se acumula aquí y se pinta al terminar, que es lo que
+   espera renderAnswer(). */
+function contextoInternoJavny(q){
+  var guides='', library='';
+  try{ if(typeof window.EnferixGuideRetrieve==='function') guides=(window.EnferixGuideRetrieve(q)||{}).context||''; }catch(e){}
+  try{ if(typeof window.EnferixLibraryRetrieve==='function') library=window.EnferixLibraryRetrieve(q,8)||''; }catch(e){}
+  return {guides:guides, library:library, nearby:''};
+}
+
+/* Consulta al orquestador del servidor, en streaming NDJSON.
+   Expuesta como global porque la usan los DOS caminos que llegan al modal:
+   ask() y el interceptor de Javny 2.0 (inurse52-javny-js.js), que se carga
+   después de este archivo. Si cada uno montara la suya, volveríamos a tener
+   respuestas distintas según qué capa atienda el mismo botón.
+
+   Se usa /api/javny/chat/stream y no /api/javny/chat porque el no-streaming
+   sigue siendo sólo de Gemini: con ANTHROPIC_API_KEY como único proveedor
+   fallaría. El texto se acumula aquí y se devuelve entero. */
+window.EnferixConsultaServidor = async function(question, contextoExtra){
+  const contexto = Object.assign(contextoInternoJavny(question), contextoExtra||{});
+  const r = await fetch('/api/javny/chat/stream',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:question, context:contexto, history:[], caseMemory:[], route:{}})
+  });
+  if(!r.ok||!r.body){
+    const d = await r.json().catch(()=>({}));
+    throw new Error(d.error||('El servidor respondió HTTP '+r.status));
+  }
+  const reader=r.body.getReader(), dec=new TextDecoder('utf-8');
+  let buf='', answer='', hecho=false, fallo=null;
+  function linea(l){
+    l=l.trim(); if(!l)return;
+    let evt; try{evt=JSON.parse(l)}catch(e){return}
+    // El evento delta trae SÓLO el trozo nuevo; el texto se acumula aquí,
+    // igual que en la portada, el chat del avatar y javny-publico.html.
+    if(evt.type==='delta') answer+=evt.chunk||'';
+    else if(evt.type==='done'){ answer=(evt.answer||answer||'').trim(); hecho=true; }
+    else if(evt.type==='error') fallo=evt.error||'Error del servidor';
+  }
+  for(;;){
+    const {done,value}=await reader.read();
+    if(done){ const resto=buf.trim(); if(resto)linea(resto); break; }
+    buf+=dec.decode(value,{stream:true});
+    const ls=buf.split('\n'); buf=ls.pop();
+    for(const l of ls) linea(l);
+  }
+  if(fallo) throw new Error(fallo);
+  if(!hecho||!answer) throw new Error('El servidor terminó la respuesta sin texto.');
+  return answer;
+};
+
+/* Consulta del modal. Antes montaba aquí su propio guion de sistema con TODAS
+   las fichas concatenadas (KB) y llamaba a Google desde el navegador con la
+   clave del usuario: sin clave no respondía, y con ella daba una respuesta
+   distinta a la del chat y la portada, porque el guion era otro. */
 async function ask(){
   const q=qinput.value.trim();if(!q)return;
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   stopSpeak();qsendBtn.disabled=true;
   modalBody.innerHTML=`<div style="font-weight:700;margin-bottom:12px">"${q}"</div><div class="thinking">Buscando en tus guías <span class="dots"><span></span><span></span><span></span></span></div>`;
   modalBody.scrollTop=0;
-  
-  const sys=`Eres Javny, la asistente clínica de referencia de Enferix. Tu función es dar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta como UpToDate. Responde en español (o catalán si así te preguntan). No atribuyas contenido al Hospital Joan XXIII, Hospital Juan XXIII, HJ23 ni a otra institución concreta salvo petición expresa.
-
-Responde siempre con profundidad clínica, incluso a preguntas breves. No respondas solo de memoria: fundamenta tus afirmaciones en las fuentes integradas. Si falta evidencia, indícalo explícitamente.
-
-Integra toda la información disponible: fichas clínicas validadas de Enferix, protocolos, vademécum, repositorio oficial, documentos adjuntos y conocimiento clínico general. Da preferencia a recomendaciones oficiales y vigentes. Cuando haya diferencias entre fuentes, explícalas brevemente. No inventes datos, dosis, valores ni hallazgos. Si los datos proceden de fichas CIMA-AEMPS, indícalo.
-
-Cita cada afirmación clínica relevante con [1], [2]… remitiendo a una lista de referencias al final. Marca las fuentes internas como [Enferix · Ficha validada] y las externas con: Autores. Título. Revista. Año. PMID/DOI. No fabriques referencias: cita solo lo que aparezca en el contenido integrado.
-
-Para una consulta clínica amplia, desarrolla un discurso narrativo fluido que recorra de forma natural: contexto clínico (definición, epidemiología, fisiopatología breve), presentación clínica (signos, criterios diagnósticos, diagnóstico diferencial), manejo basado en evidencia (valoración, tratamiento de primera línea, monitorización, consideraciones especiales), puntos clave para enfermería (cuidados, vigilancia, educación al paciente) y la lista numerada de fuentes con su procedencia. Varía el orden y redacción según la pregunta; no repitas una plantilla idéntica cada vez.
-
-En casos clínicos concretos prioriza: valoración inmediata (ABCDE si riesgo vital), datos relevantes y faltantes, señales de alarma, actuaciones priorizadas, cuidados de enfermería e incertidumbres.
-
-En fármacos: indicación, vía, preparación si consta, dosis (marcada para verificación), contraindicaciones, interacciones, efectos adversos y vigilancia enfermera.
-
-Para preguntas puntuales, responde de forma directa y proporcionada. Para proyectos o dudas no clínicas, actúa como asistente general experto.
-
-Si existe riesgo vital, prioriza la actuación inmediata. Distingue información confirmada de orientaciones y limitaciones.
-
-CONTENIDO INTEGRADO DISPONIBLE:
-${KB}`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [{ text: `Pregunta del usuario: ${q}` }] }],
-        generationConfig: { temperature: 0.25, maxOutputTokens: 8192 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se obtuvo respuesta de la IA.";
-    renderAnswer(q,answer);
-  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderAnswer(q, await window.EnferixConsultaServidor(q));
+  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ No se ha podido responder: ${escaparTexto(err.message)}</div>`}
   finally{qsendBtn.disabled=false}
 }
 function mdToHtml(text){
@@ -1191,52 +1238,38 @@ function renderEcg(answer){
   sb.onclick=()=>{if(speakingBtn===sb){stopSpeak();return}sb.textContent="⏹ Parar";speak(answer,sb)};
   if(autoVoice){sb.textContent="⏹ Parar";speak(answer,sb)}
 }
+/* Lectura de imagen clínica contra el servidor.
+   La sistemática de lectura (el guion del ECG y el de la radiografía) vive
+   SÓLO en sources/imagen-clinica.mjs. Antes estaba aquí, en el navegador, y se
+   llamaba a Google con la clave que el usuario se hubiera pegado en Ajustes:
+   quien no tuviera clave propia veía "Introduce tu Gemini API Key primero" y
+   no podía analizar nada. Duplicar el guion en el cliente para conservar ese
+   camino haría que la lectura cambiase según por dónde entrase, así que el
+   camino directo se ha retirado entero. */
+function escaparTexto(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+async function analizarImagenClinica(tipo, imagen, contexto){
+  const r = await fetch('/api/javny/imagen', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ tipo, data: imagen.data, media: imagen.media, contexto: contexto || '' })
+  });
+  const data = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error || ('El servidor respondió HTTP '+r.status));
+  if(!data.answer) throw new Error('El servidor devolvió una respuesta vacía.');
+  return data.answer;
+}
+
 ecgSend.onclick=async()=>{
   if(!ecgImage){toast("Primero añade la foto del electro");return}
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   const guess=ecgGuess.value.trim();ecgSend.disabled=true;
   const result=$("#ecgResult");result.innerHTML=`<div class="thinking">Analizando el trazado <span class="dots"><span></span><span></span><span></span></span></div>`;
-  
-  const sys=`Eres Javny, asistente experta en lectura sistemática de electrocardiogramas para profesionales sanitarios. Analiza la imagen con profundidad, sin ser escueta y sin atribuir la información a ningún hospital. Utiliza todo el conocimiento clínico disponible y el contexto de Enferix. No inventes mediciones que no puedan estimarse en la imagen.
-
-RESPUESTA OBLIGATORIA, POR APARTADOS:
-1. Identificación, calidad y técnica: número de derivaciones visibles, artefactos, calibración y velocidad si se aprecian, y limitaciones de la fotografía.
-2. Frecuencia: método utilizado y frecuencia aproximada.
-3. Ritmo: regularidad, presencia de ondas P, relación P-QRS y conclusión razonada.
-4. Eje eléctrico: orientación aproximada usando I y aVF cuando sean valorables.
-5. Intervalos: PR, anchura del QRS y QT/QTc. Da valores aproximados solo si la calidad permite medirlos y señala si son normales o anómalos.
-6. Morfología: ondas P, progresión de R, ondas Q patológicas, voltajes, hipertrofias, bloqueos de rama, hemibloqueos, preexcitación y marcapasos si procede.
-7. ST y onda T: elevación o descenso, derivaciones afectadas, distribución territorial, cambios recíprocos y alteraciones de repolarización.
-8. Arritmias y hallazgos especiales: extrasístoles, fibrilación/flutter, taquicardias, bradicardias, bloqueos AV y patrones compatibles con alteraciones electrolíticas u otros síndromes.
-9. Impresión electrocardiográfica: conclusión principal y diagnósticos diferenciales, explicando qué hallazgos la sustentan.
-10. Gravedad y actuación: signos que requieren valoración urgente, monitorización, ECG seriados, analítica o aviso inmediato.
-11. Enfoque enfermero: comprobaciones técnicas, constantes, síntomas asociados, accesos, medicación relevante, vigilancia y comunicación estructurada.
-12. Comparación con la hipótesis aportada: confirma, corrige o matiza con respeto y explica por qué.
-
-Si una parte no es evaluable, escribe "no valorable en esta imagen" en lugar de omitirla. Responde en español, con títulos claros y suficiente detalle. No cierres la respuesta de forma prematura. Termina con: "Lectura orientativa y educativa. La interpretación definitiva requiere el trazado original, el contexto clínico y la valoración del profesional responsable."`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [
-          { inlineData: { mimeType: ecgImage.media, data: ecgImage.data } },
-          { text: guess ? `Hipótesis o contexto aportado: "${guess}". Realiza el análisis completo del electrocardiograma.` : `Realiza el análisis completo de este electrocardiograma.` }
-        ]}],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 5000 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No he podido interpretar la imagen.";
-    renderEcg(answer);
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderEcg(await analizarImagenClinica('ecg', ecgImage, guess));
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar el trazado: ${escaparTexto(e.message)}</div>`}
   finally{ecgSend.disabled=false}
 };
 
-/* ===== Diagnóstico por Imagen (Rayos X · Gemini Vision) ===== */
+/* ===== Diagnóstico por Imagen (Rayos X · lectura con Javny) ===== */
 const rxOverlay=$("#rxOverlay"),rxFile=$("#rxFile"),rxDrop=$("#rxDrop"),rxGuess=$("#rxGuess"),rxMic=$("#rxMic"),rxSend=$("#rxSend");
 let rxImage=null;
 function openRx(){rxOverlay.classList.add("show");checkApiKeyUI()}
@@ -1273,62 +1306,11 @@ function renderRx(answer){
 }
 rxSend.onclick=async()=>{
   if(!rxImage){toast("Primero añade la foto de la imagen");return}
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   const guess=rxGuess.value.trim();rxSend.disabled=true;
   const result=$("#rxResult");result.innerHTML=`<div class="thinking">Analizando la imagen <span class="dots"><span></span><span></span><span></span></span></div>`;
-
-  const kb=`REPOSITORIO DE REFERENCIA (síntesis para orientar la lectura):
-- Rx de tórax, sistemática: técnica (penetración, inspiración, rotación) y recorrido A-vía aérea/tráquea, B-mediastino y silueta cardíaca (índice cardiotorácico), C-parénquima por tercios comparando lados, D-pleura y senos, E-hueso y partes blandas, y dispositivos.
-- Patrón alveolar: opacidad algodonosa con broncograma aéreo (neumonía, edema, hemorragia). Patrón intersticial: retículo o vidrio deslustrado (edema intersticial, fibrosis, infección atípica).
-- Atelectasia: pérdida de volumen, cisuras y mediastino desviados HACIA la lesión. Hemitórax opaco: si el mediastino va hacia el opaco, atelectasia; si va al lado contrario, derrame masivo o masa.
-- Derrame pleural: borramiento del seno costofrénico, menisco; masivo desvía mediastino al lado sano.
-- Neumotórax: línea de pleura visceral con ausencia de trama por fuera; a tensión desvía el mediastino al lado contrario (urgencia).
-- Nódulo solitario: benigno si bordes lisos y calcio central y estable; maligno si espiculado, grande o crece.
-- Insuficiencia cardíaca/edema: cardiomegalia, redistribución, líneas B de Kerley, alas de mariposa, derrame.
-- Condensación neumónica: consolidación lobar con broncograma; signo de la silueta localiza el lóbulo.
-- Abdomen simple: neumoperitoneo (aire libre subdiafragmático, signo de Rigler) = perforación; obstrucción (asas dilatadas, niveles; delgado central con válvulas conniventes, colon periférico con haustras).
-- Rx ósea: revisar cortical, línea de fractura, alineación y partes blandas; en niños vigilar fisis; dos proyecciones.
-- Dispositivos: TET 2-4 cm sobre carina; vía central en cava superior; SNG en cámara gástrica; buscar neumotórax tras vía central.`;
-
-  const sys=`Eres Javny, asistente experta en análisis sistemático de imágenes radiológicas para profesionales sanitarios. Realiza una lectura completa, estructurada y prudente. No atribuyas la información a ningún hospital. Integra el repositorio de Enferix y tu conocimiento clínico general. Describe únicamente lo que sea visible; no inventes hallazgos ni datos clínicos.
-${kb}
-
-RESPUESTA OBLIGATORIA, POR APARTADOS:
-1. Tipo de estudio y región anatómica: modalidad, proyección, lateralidad y posición si pueden determinarse.
-2. Calidad técnica: penetración/exposición, inspiración, rotación, centrado, artefactos y limitaciones.
-3. Revisión sistemática completa:
-- En tórax: vía aérea y tráquea; mediastino e hilios; silueta cardíaca; campos pulmonares por zonas; pleura y senos costofrénicos; diafragma; huesos y partes blandas; dispositivos.
-- En abdomen: patrón gaseoso, dilatación, niveles, aire libre, calcificaciones, masas, estructuras óseas y dispositivos.
-- En aparato locomotor: alineación, cortical, trabeculado, articulaciones, partes blandas y signos de fractura/luxación.
-- En otras imágenes: aplica la sistemática apropiada al estudio visible.
-4. Hallazgos positivos: localización, extensión, distribución y signos asociados.
-5. Hallazgos negativos relevantes: menciona los signos urgentes que no se observan cuando puedan valorarse.
-6. Impresión diagnóstica: posibilidad principal y diagnóstico diferencial razonado.
-7. Gravedad: hallazgos que exigen valoración inmediata o comunicación urgente.
-8. Correlación clínica: síntomas, antecedentes, analítica o pruebas que ayudarían a confirmar o descartar.
-9. Enfoque enfermero: monitorización, observación, preparación, medidas de seguridad y cuándo avisar al equipo médico.
-10. Comparación con la sospecha aportada: confirma, corrige o matiza explicando los motivos.
-
-Si la imagen no permite valorar un apartado, indícalo expresamente. Responde en español con títulos claros y suficiente detalle; no seas escueta ni termines a mitad. Termina con: "Lectura orientativa y educativa. No sustituye el informe radiológico, la imagen original ni la valoración clínica del equipo responsable."`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [
-          { inlineData: { mimeType: rxImage.media, data: rxImage.data } },
-          { text: guess ? `Contexto o sospecha aportada: "${guess}". Realiza el análisis radiológico completo.` : `Realiza el análisis radiológico completo de esta imagen.` }
-        ]}],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 5000 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No he podido interpretar la imagen.";
-    renderRx(answer);
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderRx(await analizarImagenClinica('rx', rxImage, guess));
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar la imagen: ${escaparTexto(e.message)}</div>`}
   finally{rxSend.disabled=false}
 };
 
@@ -1431,51 +1413,30 @@ function speakVadeDrug(idx, btn){
   speak(txt, btn);
 }
 
+/* El guion farmacológico vive SÓLO en sources/farmaco-ia.mjs. Antes estaba
+   aquí y la llamada salía del navegador con la clave del usuario: sin clave,
+   el panel decía "Introduce tu Gemini API Key para que te explique el fármaco"
+   y no explicaba nada. */
 async function explainVadeDrug(idx){
   const e=VADEM[idx];
-  const apiKey=store.get("guiaHJ23_apikey")||"";
   openModal();
-  if(!apiKey){modalBody.innerHTML=`<div class="placeholder-ans">⚠️ Introduce tu Gemini API Key para que te explique el fármaco.</div>`;return}
   stopSpeak();
   modalBody.innerHTML=`<div style="font-weight:700;margin-bottom:12px">💊 ${e.n}</div><div class="thinking">Preparando la explicación de fármaco <span class="dots"><span></span><span></span><span></span></span></div>`;
   modalBody.scrollTop=0;
-  
-  const sys=`Eres Javny, asistente experta en farmacología para profesionales sanitarios. Explica el fármaco de forma completa y práctica, usando la ficha integrada y conocimiento farmacológico general fiable. No atribuyas la información a ningún hospital.
-
-Incluye, cuando proceda:
-- Grupo farmacológico y mecanismo de acción.
-- Indicaciones principales y usos relevantes.
-- Presentaciones, vías y administración.
-- Posología orientativa solo cuando conste de forma fiable; diferencia adulto, pediatría, insuficiencia renal/hepática y situaciones especiales si aplica.
-- Preparación, dilución, compatibilidad, velocidad y estabilidad si son relevantes para enfermería y están disponibles.
-- Contraindicaciones, precauciones e interacciones importantes.
-- Reacciones adversas frecuentes y graves.
-- Monitorización antes, durante y después.
-- Signos de toxicidad, actuación ante incidentes y educación al paciente.
-- Puntos críticos de seguridad y consejo enfermero práctico.
-
-Distingue claramente lo que procede de la ficha integrada de lo que es orientación general. No inventes dosis ni diluciones. Responde en español, con títulos y listas, y no seas escueta.
-Finaliza con: "Información farmacológica de apoyo. Verifica siempre la ficha técnica vigente, la prescripción, la compatibilidad, el protocolo local y la situación clínica del paciente."
-
-FICHA INTEGRADA DEL FÁRMACO:
-Nombre: ${e.n}
-Acción: ${e.a || ''}
-Indicaciones: ${e.i || ''}
-Posología: ${e.p || ''}
-Contraindicaciones: ${e.c || ''}
-Reacciones adversas: ${e.r || ''}
-Fuente: ${e.source || ''}`;
-
   try{
-    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`,{
+    const r=await fetch('/api/javny/farmaco',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:[{parts:[{text:`Explica de forma completa el fármaco ${e.n}.`}]}],generationConfig:{temperature:0.2,maxOutputTokens:4096}})
+      body:JSON.stringify({ficha:{
+        nombre:e.n, accion:e.a||'', indicaciones:e.i||'', posologia:e.p||'',
+        contraindicaciones:e.c||'', reacciones:e.r||'', fuente:e.source||''
+      }})
     });
-    const data=await response.json();
-    const answer=data.candidates?.[0]?.content?.parts?.[0]?.text||"No se obtuvo respuesta de la IA.";
-    renderAnswer("💊 "+e.n,answer);
-  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error||('El servidor respondió HTTP '+r.status));
+    if(!data.answer) throw new Error('El servidor devolvió una respuesta vacía.');
+    renderAnswer("💊 "+e.n,data.answer);
+  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ No se ha podido explicar el fármaco: ${escaparTexto(err.message)}</div>`}
 }
 
 function openVade(){
