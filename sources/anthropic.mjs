@@ -107,6 +107,10 @@ export async function streamAnthropicCall(systemPrompt, userPrompt, {
  * proyecto: es un JSON pequeño, no hay fragmento que valga la pena emitir
  * suelto). Usa el mismo cliente y las mismas reglas de negativa/vacío que
  * streamAnthropicCall.
+ *
+ * `userPrompt` admite además un ARRAY de bloques de contenido, que es como se
+ * manda una imagen ([{type:"image",...},{type:"text",...}]) en la lectura de
+ * ECG y radiología. Con una cadena se comporta exactamente igual que antes.
  */
 export async function anthropicCall(systemPrompt, userPrompt, {
   model, maxOutputTokens = 2048

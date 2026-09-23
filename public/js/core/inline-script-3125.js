@@ -1191,52 +1191,38 @@ function renderEcg(answer){
   sb.onclick=()=>{if(speakingBtn===sb){stopSpeak();return}sb.textContent="⏹ Parar";speak(answer,sb)};
   if(autoVoice){sb.textContent="⏹ Parar";speak(answer,sb)}
 }
+/* Lectura de imagen clínica contra el servidor.
+   La sistemática de lectura (el guion del ECG y el de la radiografía) vive
+   SÓLO en sources/imagen-clinica.mjs. Antes estaba aquí, en el navegador, y se
+   llamaba a Google con la clave que el usuario se hubiera pegado en Ajustes:
+   quien no tuviera clave propia veía "Introduce tu Gemini API Key primero" y
+   no podía analizar nada. Duplicar el guion en el cliente para conservar ese
+   camino haría que la lectura cambiase según por dónde entrase, así que el
+   camino directo se ha retirado entero. */
+function escaparImagen(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+async function analizarImagenClinica(tipo, imagen, contexto){
+  const r = await fetch('/api/javny/imagen', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ tipo, data: imagen.data, media: imagen.media, contexto: contexto || '' })
+  });
+  const data = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error || ('El servidor respondió HTTP '+r.status));
+  if(!data.answer) throw new Error('El servidor devolvió una respuesta vacía.');
+  return data.answer;
+}
+
 ecgSend.onclick=async()=>{
   if(!ecgImage){toast("Primero añade la foto del electro");return}
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   const guess=ecgGuess.value.trim();ecgSend.disabled=true;
   const result=$("#ecgResult");result.innerHTML=`<div class="thinking">Analizando el trazado <span class="dots"><span></span><span></span><span></span></span></div>`;
-  
-  const sys=`Eres Javny, asistente experta en lectura sistemática de electrocardiogramas para profesionales sanitarios. Analiza la imagen con profundidad, sin ser escueta y sin atribuir la información a ningún hospital. Utiliza todo el conocimiento clínico disponible y el contexto de Enferix. No inventes mediciones que no puedan estimarse en la imagen.
-
-RESPUESTA OBLIGATORIA, POR APARTADOS:
-1. Identificación, calidad y técnica: número de derivaciones visibles, artefactos, calibración y velocidad si se aprecian, y limitaciones de la fotografía.
-2. Frecuencia: método utilizado y frecuencia aproximada.
-3. Ritmo: regularidad, presencia de ondas P, relación P-QRS y conclusión razonada.
-4. Eje eléctrico: orientación aproximada usando I y aVF cuando sean valorables.
-5. Intervalos: PR, anchura del QRS y QT/QTc. Da valores aproximados solo si la calidad permite medirlos y señala si son normales o anómalos.
-6. Morfología: ondas P, progresión de R, ondas Q patológicas, voltajes, hipertrofias, bloqueos de rama, hemibloqueos, preexcitación y marcapasos si procede.
-7. ST y onda T: elevación o descenso, derivaciones afectadas, distribución territorial, cambios recíprocos y alteraciones de repolarización.
-8. Arritmias y hallazgos especiales: extrasístoles, fibrilación/flutter, taquicardias, bradicardias, bloqueos AV y patrones compatibles con alteraciones electrolíticas u otros síndromes.
-9. Impresión electrocardiográfica: conclusión principal y diagnósticos diferenciales, explicando qué hallazgos la sustentan.
-10. Gravedad y actuación: signos que requieren valoración urgente, monitorización, ECG seriados, analítica o aviso inmediato.
-11. Enfoque enfermero: comprobaciones técnicas, constantes, síntomas asociados, accesos, medicación relevante, vigilancia y comunicación estructurada.
-12. Comparación con la hipótesis aportada: confirma, corrige o matiza con respeto y explica por qué.
-
-Si una parte no es evaluable, escribe "no valorable en esta imagen" en lugar de omitirla. Responde en español, con títulos claros y suficiente detalle. No cierres la respuesta de forma prematura. Termina con: "Lectura orientativa y educativa. La interpretación definitiva requiere el trazado original, el contexto clínico y la valoración del profesional responsable."`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [
-          { inlineData: { mimeType: ecgImage.media, data: ecgImage.data } },
-          { text: guess ? `Hipótesis o contexto aportado: "${guess}". Realiza el análisis completo del electrocardiograma.` : `Realiza el análisis completo de este electrocardiograma.` }
-        ]}],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 5000 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No he podido interpretar la imagen.";
-    renderEcg(answer);
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderEcg(await analizarImagenClinica('ecg', ecgImage, guess));
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar el trazado: ${escaparImagen(e.message)}</div>`}
   finally{ecgSend.disabled=false}
 };
 
-/* ===== Diagnóstico por Imagen (Rayos X · Gemini Vision) ===== */
+/* ===== Diagnóstico por Imagen (Rayos X · lectura con Javny) ===== */
 const rxOverlay=$("#rxOverlay"),rxFile=$("#rxFile"),rxDrop=$("#rxDrop"),rxGuess=$("#rxGuess"),rxMic=$("#rxMic"),rxSend=$("#rxSend");
 let rxImage=null;
 function openRx(){rxOverlay.classList.add("show");checkApiKeyUI()}
@@ -1273,62 +1259,11 @@ function renderRx(answer){
 }
 rxSend.onclick=async()=>{
   if(!rxImage){toast("Primero añade la foto de la imagen");return}
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   const guess=rxGuess.value.trim();rxSend.disabled=true;
   const result=$("#rxResult");result.innerHTML=`<div class="thinking">Analizando la imagen <span class="dots"><span></span><span></span><span></span></span></div>`;
-
-  const kb=`REPOSITORIO DE REFERENCIA (síntesis para orientar la lectura):
-- Rx de tórax, sistemática: técnica (penetración, inspiración, rotación) y recorrido A-vía aérea/tráquea, B-mediastino y silueta cardíaca (índice cardiotorácico), C-parénquima por tercios comparando lados, D-pleura y senos, E-hueso y partes blandas, y dispositivos.
-- Patrón alveolar: opacidad algodonosa con broncograma aéreo (neumonía, edema, hemorragia). Patrón intersticial: retículo o vidrio deslustrado (edema intersticial, fibrosis, infección atípica).
-- Atelectasia: pérdida de volumen, cisuras y mediastino desviados HACIA la lesión. Hemitórax opaco: si el mediastino va hacia el opaco, atelectasia; si va al lado contrario, derrame masivo o masa.
-- Derrame pleural: borramiento del seno costofrénico, menisco; masivo desvía mediastino al lado sano.
-- Neumotórax: línea de pleura visceral con ausencia de trama por fuera; a tensión desvía el mediastino al lado contrario (urgencia).
-- Nódulo solitario: benigno si bordes lisos y calcio central y estable; maligno si espiculado, grande o crece.
-- Insuficiencia cardíaca/edema: cardiomegalia, redistribución, líneas B de Kerley, alas de mariposa, derrame.
-- Condensación neumónica: consolidación lobar con broncograma; signo de la silueta localiza el lóbulo.
-- Abdomen simple: neumoperitoneo (aire libre subdiafragmático, signo de Rigler) = perforación; obstrucción (asas dilatadas, niveles; delgado central con válvulas conniventes, colon periférico con haustras).
-- Rx ósea: revisar cortical, línea de fractura, alineación y partes blandas; en niños vigilar fisis; dos proyecciones.
-- Dispositivos: TET 2-4 cm sobre carina; vía central en cava superior; SNG en cámara gástrica; buscar neumotórax tras vía central.`;
-
-  const sys=`Eres Javny, asistente experta en análisis sistemático de imágenes radiológicas para profesionales sanitarios. Realiza una lectura completa, estructurada y prudente. No atribuyas la información a ningún hospital. Integra el repositorio de Enferix y tu conocimiento clínico general. Describe únicamente lo que sea visible; no inventes hallazgos ni datos clínicos.
-${kb}
-
-RESPUESTA OBLIGATORIA, POR APARTADOS:
-1. Tipo de estudio y región anatómica: modalidad, proyección, lateralidad y posición si pueden determinarse.
-2. Calidad técnica: penetración/exposición, inspiración, rotación, centrado, artefactos y limitaciones.
-3. Revisión sistemática completa:
-- En tórax: vía aérea y tráquea; mediastino e hilios; silueta cardíaca; campos pulmonares por zonas; pleura y senos costofrénicos; diafragma; huesos y partes blandas; dispositivos.
-- En abdomen: patrón gaseoso, dilatación, niveles, aire libre, calcificaciones, masas, estructuras óseas y dispositivos.
-- En aparato locomotor: alineación, cortical, trabeculado, articulaciones, partes blandas y signos de fractura/luxación.
-- En otras imágenes: aplica la sistemática apropiada al estudio visible.
-4. Hallazgos positivos: localización, extensión, distribución y signos asociados.
-5. Hallazgos negativos relevantes: menciona los signos urgentes que no se observan cuando puedan valorarse.
-6. Impresión diagnóstica: posibilidad principal y diagnóstico diferencial razonado.
-7. Gravedad: hallazgos que exigen valoración inmediata o comunicación urgente.
-8. Correlación clínica: síntomas, antecedentes, analítica o pruebas que ayudarían a confirmar o descartar.
-9. Enfoque enfermero: monitorización, observación, preparación, medidas de seguridad y cuándo avisar al equipo médico.
-10. Comparación con la sospecha aportada: confirma, corrige o matiza explicando los motivos.
-
-Si la imagen no permite valorar un apartado, indícalo expresamente. Responde en español con títulos claros y suficiente detalle; no seas escueta ni termines a mitad. Termina con: "Lectura orientativa y educativa. No sustituye el informe radiológico, la imagen original ni la valoración clínica del equipo responsable."`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [
-          { inlineData: { mimeType: rxImage.media, data: rxImage.data } },
-          { text: guess ? `Contexto o sospecha aportada: "${guess}". Realiza el análisis radiológico completo.` : `Realiza el análisis radiológico completo de esta imagen.` }
-        ]}],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 5000 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No he podido interpretar la imagen.";
-    renderRx(answer);
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderRx(await analizarImagenClinica('rx', rxImage, guess));
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar la imagen: ${escaparImagen(e.message)}</div>`}
   finally{rxSend.disabled=false}
 };
 
