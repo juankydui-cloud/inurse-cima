@@ -979,15 +979,30 @@ function saveApiKey(val){
   document.querySelectorAll(".api-key-box").forEach(el => el.style.display = "none");
   toast("Clave guardada");
 }
+/* La caja de clave del modal sólo tiene sentido si el servidor NO puede
+   responder: la consulta, la explicación de fármaco y las lecturas de imagen
+   van ya por el servidor con su propia clave. Se pregunta una vez y se
+   recuerda; mientras no se sepa, se deja como estaba para no parpadear.
+   Quien necesite la clave para lo que aún depende de ella (el editor de
+   Proyectos, Javny 2.0) la tiene en Ajustes, que tiene su propio campo. */
+let servidorResponde = null;
+function servidorPuedeResponder(){
+  if(servidorResponde !== null) return Promise.resolve(servidorResponde);
+  return fetch('/api/javny/health')
+    .then(r => r.ok ? r.json() : {})
+    .then(d => { servidorResponde = !!(d.geminiConfigured || d.imagenConfigurada || d.farmacoConfigurado); return servidorResponde; })
+    .catch(() => { servidorResponde = false; return false; });
+}
 function checkApiKeyUI(){
   const key = store.get("guiaHJ23_apikey");
   document.querySelectorAll(".api-key-input").forEach(input => input.value = key || "");
-  document.querySelectorAll(".api-key-box").forEach(el => el.style.display = key ? "none" : "flex");
+  servidorPuedeResponder().then(puede => {
+    document.querySelectorAll(".api-key-box").forEach(el => el.style.display = (key || puede) ? "none" : "flex");
+  });
 }
 
 /* ---------- asistente AI ---------- */
 const overlay=$("#overlay"),qinput=$("#qinput"),qsendBtn=$("#qsendBtn"),qmicBtn=$("#qmicBtn"),modalBody=$("#modalBody");
-const KB=DOCS.map(d=>`### ${d.title} (${d.source})\n`+d.sec.map(s=>s.h+": "+stripHTML(s.b)).join("\n")).join("\n\n");
 function openModal(){overlay.classList.add("show");checkApiKeyUI();setTimeout(()=>qinput.focus(),200)}
 function closeModal(){overlay.classList.remove("show");stopSpeak()}
 let autoVoice=store.get("guiaHJ23_autovoice")==="1";
@@ -1029,49 +1044,81 @@ qsendBtn.onclick=ask;
 qinput.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}};
 document.addEventListener("click",e=>{const ex=e.target.closest(".ex");if(ex){qinput.value=ex.textContent;qinput.oninput();ask()}});
 
+/* Consulta del modal, contra el orquestador del servidor.
+   Antes montaba aquí su propio guion de sistema con TODAS las fichas
+   concatenadas (KB) y llamaba a Google desde el navegador con la clave del
+   usuario: sin clave no respondía, y con ella daba una respuesta distinta a
+   la del chat y la portada, porque el guion era otro. Ahora usa el mismo
+   camino que ellos, así que el guion clínico es uno solo
+   (sources/guion-clinico.mjs) y las fichas las recupera EnferixGuideRetrieve
+   en vez de ir enteras en el prompt.
+
+   Se usa /api/javny/chat/stream y no /api/javny/chat porque el no-streaming
+   sigue siendo sólo de Gemini: con ANTHROPIC_API_KEY como único proveedor
+   fallaría. El texto se acumula aquí y se pinta al terminar, que es lo que
+   espera renderAnswer(). */
+function contextoInternoJavny(q){
+  var guides='', library='';
+  try{ if(typeof window.EnferixGuideRetrieve==='function') guides=(window.EnferixGuideRetrieve(q)||{}).context||''; }catch(e){}
+  try{ if(typeof window.EnferixLibraryRetrieve==='function') library=window.EnferixLibraryRetrieve(q,8)||''; }catch(e){}
+  return {guides:guides, library:library, nearby:''};
+}
+
+/* Consulta al orquestador del servidor, en streaming NDJSON.
+   Expuesta como global porque la usan los DOS caminos que llegan al modal:
+   ask() y el interceptor de Javny 2.0 (inurse52-javny-js.js), que se carga
+   después de este archivo. Si cada uno montara la suya, volveríamos a tener
+   respuestas distintas según qué capa atienda el mismo botón.
+
+   Se usa /api/javny/chat/stream y no /api/javny/chat porque el no-streaming
+   sigue siendo sólo de Gemini: con ANTHROPIC_API_KEY como único proveedor
+   fallaría. El texto se acumula aquí y se devuelve entero. */
+window.EnferixConsultaServidor = async function(question, contextoExtra){
+  const contexto = Object.assign(contextoInternoJavny(question), contextoExtra||{});
+  const r = await fetch('/api/javny/chat/stream',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:question, context:contexto, history:[], caseMemory:[], route:{}})
+  });
+  if(!r.ok||!r.body){
+    const d = await r.json().catch(()=>({}));
+    throw new Error(d.error||('El servidor respondió HTTP '+r.status));
+  }
+  const reader=r.body.getReader(), dec=new TextDecoder('utf-8');
+  let buf='', answer='', hecho=false, fallo=null;
+  function linea(l){
+    l=l.trim(); if(!l)return;
+    let evt; try{evt=JSON.parse(l)}catch(e){return}
+    // El evento delta trae SÓLO el trozo nuevo; el texto se acumula aquí,
+    // igual que en la portada, el chat del avatar y javny-publico.html.
+    if(evt.type==='delta') answer+=evt.chunk||'';
+    else if(evt.type==='done'){ answer=(evt.answer||answer||'').trim(); hecho=true; }
+    else if(evt.type==='error') fallo=evt.error||'Error del servidor';
+  }
+  for(;;){
+    const {done,value}=await reader.read();
+    if(done){ const resto=buf.trim(); if(resto)linea(resto); break; }
+    buf+=dec.decode(value,{stream:true});
+    const ls=buf.split('\n'); buf=ls.pop();
+    for(const l of ls) linea(l);
+  }
+  if(fallo) throw new Error(fallo);
+  if(!hecho||!answer) throw new Error('El servidor terminó la respuesta sin texto.');
+  return answer;
+};
+
+/* Consulta del modal. Antes montaba aquí su propio guion de sistema con TODAS
+   las fichas concatenadas (KB) y llamaba a Google desde el navegador con la
+   clave del usuario: sin clave no respondía, y con ella daba una respuesta
+   distinta a la del chat y la portada, porque el guion era otro. */
 async function ask(){
   const q=qinput.value.trim();if(!q)return;
-  const apiKey = store.get("guiaHJ23_apikey") || "";
-  if(!apiKey){toast("⚠️ Introduce tu Gemini API Key primero");return}
   stopSpeak();qsendBtn.disabled=true;
   modalBody.innerHTML=`<div style="font-weight:700;margin-bottom:12px">"${q}"</div><div class="thinking">Buscando en tus guías <span class="dots"><span></span><span></span><span></span></span></div>`;
   modalBody.scrollTop=0;
-  
-  const sys=`Eres Javny, la asistente clínica de referencia de Enferix. Tu función es dar respuestas clínicas exhaustivas, basadas en evidencia, al nivel de una herramienta profesional de consulta como UpToDate. Responde en español (o catalán si así te preguntan). No atribuyas contenido al Hospital Joan XXIII, Hospital Juan XXIII, HJ23 ni a otra institución concreta salvo petición expresa.
-
-Responde siempre con profundidad clínica, incluso a preguntas breves. No respondas solo de memoria: fundamenta tus afirmaciones en las fuentes integradas. Si falta evidencia, indícalo explícitamente.
-
-Integra toda la información disponible: fichas clínicas validadas de Enferix, protocolos, vademécum, repositorio oficial, documentos adjuntos y conocimiento clínico general. Da preferencia a recomendaciones oficiales y vigentes. Cuando haya diferencias entre fuentes, explícalas brevemente. No inventes datos, dosis, valores ni hallazgos. Si los datos proceden de fichas CIMA-AEMPS, indícalo.
-
-Cita cada afirmación clínica relevante con [1], [2]… remitiendo a una lista de referencias al final. Marca las fuentes internas como [Enferix · Ficha validada] y las externas con: Autores. Título. Revista. Año. PMID/DOI. No fabriques referencias: cita solo lo que aparezca en el contenido integrado.
-
-Para una consulta clínica amplia, desarrolla un discurso narrativo fluido que recorra de forma natural: contexto clínico (definición, epidemiología, fisiopatología breve), presentación clínica (signos, criterios diagnósticos, diagnóstico diferencial), manejo basado en evidencia (valoración, tratamiento de primera línea, monitorización, consideraciones especiales), puntos clave para enfermería (cuidados, vigilancia, educación al paciente) y la lista numerada de fuentes con su procedencia. Varía el orden y redacción según la pregunta; no repitas una plantilla idéntica cada vez.
-
-En casos clínicos concretos prioriza: valoración inmediata (ABCDE si riesgo vital), datos relevantes y faltantes, señales de alarma, actuaciones priorizadas, cuidados de enfermería e incertidumbres.
-
-En fármacos: indicación, vía, preparación si consta, dosis (marcada para verificación), contraindicaciones, interacciones, efectos adversos y vigilancia enfermera.
-
-Para preguntas puntuales, responde de forma directa y proporcionada. Para proyectos o dudas no clínicas, actúa como asistente general experto.
-
-Si existe riesgo vital, prioriza la actuación inmediata. Distingue información confirmada de orientaciones y limitaciones.
-
-CONTENIDO INTEGRADO DISPONIBLE:
-${KB}`;
-
   try{
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sys }] },
-        contents: [{ parts: [{ text: `Pregunta del usuario: ${q}` }] }],
-        generationConfig: { temperature: 0.25, maxOutputTokens: 8192 }
-      })
-    });
-    const data = await response.json();
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se obtuvo respuesta de la IA.";
-    renderAnswer(q,answer);
-  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    renderAnswer(q, await window.EnferixConsultaServidor(q));
+  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ No se ha podido responder: ${escaparTexto(err.message)}</div>`}
   finally{qsendBtn.disabled=false}
 }
 function mdToHtml(text){
@@ -1199,7 +1246,7 @@ function renderEcg(answer){
    no podía analizar nada. Duplicar el guion en el cliente para conservar ese
    camino haría que la lectura cambiase según por dónde entrase, así que el
    camino directo se ha retirado entero. */
-function escaparImagen(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function escaparTexto(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 async function analizarImagenClinica(tipo, imagen, contexto){
   const r = await fetch('/api/javny/imagen', {
     method:'POST',
@@ -1218,7 +1265,7 @@ ecgSend.onclick=async()=>{
   const result=$("#ecgResult");result.innerHTML=`<div class="thinking">Analizando el trazado <span class="dots"><span></span><span></span><span></span></span></div>`;
   try{
     renderEcg(await analizarImagenClinica('ecg', ecgImage, guess));
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar el trazado: ${escaparImagen(e.message)}</div>`}
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar el trazado: ${escaparTexto(e.message)}</div>`}
   finally{ecgSend.disabled=false}
 };
 
@@ -1263,7 +1310,7 @@ rxSend.onclick=async()=>{
   const result=$("#rxResult");result.innerHTML=`<div class="thinking">Analizando la imagen <span class="dots"><span></span><span></span><span></span></span></div>`;
   try{
     renderRx(await analizarImagenClinica('rx', rxImage, guess));
-  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar la imagen: ${escaparImagen(e.message)}</div>`}
+  }catch(e){result.innerHTML=`<div class="placeholder-ans">❌ No se ha podido analizar la imagen: ${escaparTexto(e.message)}</div>`}
   finally{rxSend.disabled=false}
 };
 
@@ -1366,51 +1413,30 @@ function speakVadeDrug(idx, btn){
   speak(txt, btn);
 }
 
+/* El guion farmacológico vive SÓLO en sources/farmaco-ia.mjs. Antes estaba
+   aquí y la llamada salía del navegador con la clave del usuario: sin clave,
+   el panel decía "Introduce tu Gemini API Key para que te explique el fármaco"
+   y no explicaba nada. */
 async function explainVadeDrug(idx){
   const e=VADEM[idx];
-  const apiKey=store.get("guiaHJ23_apikey")||"";
   openModal();
-  if(!apiKey){modalBody.innerHTML=`<div class="placeholder-ans">⚠️ Introduce tu Gemini API Key para que te explique el fármaco.</div>`;return}
   stopSpeak();
   modalBody.innerHTML=`<div style="font-weight:700;margin-bottom:12px">💊 ${e.n}</div><div class="thinking">Preparando la explicación de fármaco <span class="dots"><span></span><span></span><span></span></span></div>`;
   modalBody.scrollTop=0;
-  
-  const sys=`Eres Javny, asistente experta en farmacología para profesionales sanitarios. Explica el fármaco de forma completa y práctica, usando la ficha integrada y conocimiento farmacológico general fiable. No atribuyas la información a ningún hospital.
-
-Incluye, cuando proceda:
-- Grupo farmacológico y mecanismo de acción.
-- Indicaciones principales y usos relevantes.
-- Presentaciones, vías y administración.
-- Posología orientativa solo cuando conste de forma fiable; diferencia adulto, pediatría, insuficiencia renal/hepática y situaciones especiales si aplica.
-- Preparación, dilución, compatibilidad, velocidad y estabilidad si son relevantes para enfermería y están disponibles.
-- Contraindicaciones, precauciones e interacciones importantes.
-- Reacciones adversas frecuentes y graves.
-- Monitorización antes, durante y después.
-- Signos de toxicidad, actuación ante incidentes y educación al paciente.
-- Puntos críticos de seguridad y consejo enfermero práctico.
-
-Distingue claramente lo que procede de la ficha integrada de lo que es orientación general. No inventes dosis ni diluciones. Responde en español, con títulos y listas, y no seas escueta.
-Finaliza con: "Información farmacológica de apoyo. Verifica siempre la ficha técnica vigente, la prescripción, la compatibilidad, el protocolo local y la situación clínica del paciente."
-
-FICHA INTEGRADA DEL FÁRMACO:
-Nombre: ${e.n}
-Acción: ${e.a || ''}
-Indicaciones: ${e.i || ''}
-Posología: ${e.p || ''}
-Contraindicaciones: ${e.c || ''}
-Reacciones adversas: ${e.r || ''}
-Fuente: ${e.source || ''}`;
-
   try{
-    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`,{
+    const r=await fetch('/api/javny/farmaco',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:[{parts:[{text:`Explica de forma completa el fármaco ${e.n}.`}]}],generationConfig:{temperature:0.2,maxOutputTokens:4096}})
+      body:JSON.stringify({ficha:{
+        nombre:e.n, accion:e.a||'', indicaciones:e.i||'', posologia:e.p||'',
+        contraindicaciones:e.c||'', reacciones:e.r||'', fuente:e.source||''
+      }})
     });
-    const data=await response.json();
-    const answer=data.candidates?.[0]?.content?.parts?.[0]?.text||"No se obtuvo respuesta de la IA.";
-    renderAnswer("💊 "+e.n,answer);
-  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ Error al conectar con Gemini. Revisa tu conexión o tu API Key.</div>`}
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error||('El servidor respondió HTTP '+r.status));
+    if(!data.answer) throw new Error('El servidor devolvió una respuesta vacía.');
+    renderAnswer("💊 "+e.n,data.answer);
+  }catch(err){modalBody.innerHTML=`<div class="placeholder-ans">❌ No se ha podido explicar el fármaco: ${escaparTexto(err.message)}</div>`}
 }
 
 function openVade(){

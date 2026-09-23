@@ -8,10 +8,8 @@
    usar el lector de electros aunque el servidor tuviera claves de sobra.
    Ahora la llamada la hace el servidor, como el resto de Javny.
 
-   Mismo patrón que proyectos-ia.mjs: Anthropic primero si hay clave y Gemini
-   de reserva con la clave del servidor. No hay streaming que proteger a
-   medias — es una respuesta entera o ninguna —, así que el fallback no lleva
-   la restricción de "sólo si no se emitió texto" del chat.
+   La elección de proveedor (Claude primero, Gemini de reserva) la hace
+   ia-fallback.mjs, compartido con la explicación de fármaco.
 
    Los dos guiones son los MISMOS que estaban en el cliente, trasladados
    literalmente: son contenido clínico editorial (la sistemática de lectura y
@@ -19,8 +17,7 @@
    reescribirlos al mover el código habría cambiado la respuesta sin que
    nadie lo hubiera pedido.
    ═══════════════════════════════════════════════════════════════════════════ */
-import { anthropicCall, anthropicDisponible, ANTHROPIC_MODEL } from "./anthropic.mjs";
-import { callGemini, GEMINI_MODEL } from "./orchestrator.mjs";
+import { generarConFallback, proveedorDisponible } from "./ia-fallback.mjs";
 
 // Los únicos formatos que aceptan las dos APIs de visión. El laboratorio de
 // imagen del cliente (inurse-rxecg-v04-js.js) reprocesa siempre a JPEG, pero
@@ -97,7 +94,7 @@ export function tiposDeImagen() {
 }
 
 export function imagenDisponible() {
-  return anthropicDisponible() || Boolean(process.env.GEMINI_API_KEY);
+  return proveedorDisponible();
 }
 
 /**
@@ -116,54 +113,14 @@ export async function analizarImagen({ tipo, data, media, contexto }) {
   const mediaType = MEDIA_VALIDOS.has(media) ? media : "image/jpeg";
   const ctx = String(contexto || "").trim();
   const instruccion = ctx ? modo.conContexto(ctx) : modo.sinContexto;
-  const t0 = Date.now();
-
-  if (anthropicDisponible()) {
-    try {
-      const answer = await anthropicCall(modo.sistema, [
-        { type: "image", source: { type: "base64", media_type: mediaType, data } },
-        { type: "text", text: instruccion }
-      ], { model: ANTHROPIC_MODEL, maxOutputTokens: 5000 });
-      console.log(`[Imagen ${tipo}] Claude · ${answer.length} caracteres · ${Date.now() - t0} ms`);
-      return { answer, proveedor: "anthropic" };
-    } catch (err) {
-      const motivo = err instanceof Error ? err.message : String(err);
-      console.error(`[Imagen ${tipo}] Claude falló (${motivo}); se reintenta con Gemini.`);
-    }
-  }
-
-  const answer = await conGemini(modo.sistema, instruccion, data, mediaType);
-  console.log(`[Imagen ${tipo}] Gemini · ${answer.length} caracteres · ${Date.now() - t0} ms`);
-  return { answer, proveedor: "gemini" };
-}
-
-// callGemini() del orquestador sólo manda texto, así que la parte de visión se
-// arma aquí con la misma forma que usaba el cliente (inlineData + texto).
-async function conGemini(sistema, instruccion, data, mediaType) {
-  const apiKey = process.env.GEMINI_API_KEY || "";
-  if (!apiKey) {
-    throw new Error("No hay ningún proveedor de IA configurado en el servidor (falta ANTHROPIC_API_KEY o GEMINI_API_KEY).");
-  }
-  const base = process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com";
-  const url = `${base}/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: sistema }] },
-      contents: [{ parts: [
-        { inlineData: { mimeType: mediaType, data } },
-        { text: instruccion }
-      ] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 5000 }
-    })
+  const { texto, proveedor } = await generarConFallback({
+    sistema: modo.sistema,
+    contenido: [
+      { type: "image", source: { type: "base64", media_type: mediaType, data } },
+      { type: "text", text: instruccion }
+    ],
+    maxOutputTokens: 5000,
+    etiqueta: `Imagen ${tipo}`
   });
-  const json = await resp.json().catch(() => ({}));
-  if (!resp.ok) {
-    throw new Error(json?.error?.message || `Gemini respondió HTTP ${resp.status}`);
-  }
-  const texto = (json?.candidates?.[0]?.content?.parts || [])
-    .map(p => p.text || "").join("").trim();
-  if (!texto) throw new Error("Gemini devolvió una respuesta vacía.");
-  return texto;
+  return { answer: texto, proveedor };
 }
