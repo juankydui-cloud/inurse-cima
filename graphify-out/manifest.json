@@ -1,0 +1,122 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1785124862.1037905,
+    "ast_hash": "250f6cd4a14f456b3b5d04b108f2f5a4",
+    "semantic_hash": "250f6cd4a14f456b3b5d04b108f2f5a4"
+  },
+  "cache.mjs": {
+    "mtime": 1785078887.1828475,
+    "ast_hash": "d53661e41138b4fe8fec9f82451e15e9",
+    "semantic_hash": "d53661e41138b4fe8fec9f82451e15e9"
+  },
+  "package.json": {
+    "mtime": 1784236674.0,
+    "ast_hash": "a1c44f876e1ddae5edbef1452256774a",
+    "semantic_hash": "a1c44f876e1ddae5edbef1452256774a"
+  },
+  "public/data/diluciones.js": {
+    "mtime": 1785125829.8245966,
+    "ast_hash": "728b262dddec6a4ee1427b14beecc0b9",
+    "semantic_hash": "728b262dddec6a4ee1427b14beecc0b9"
+  },
+  "public/data/escalas.js": {
+    "mtime": 1785124695.5857782,
+    "ast_hash": "7be247d9b38b7ec43cb2d14cec0cb7dd",
+    "semantic_hash": "7be247d9b38b7ec43cb2d14cec0cb7dd"
+  },
+  "public/data/guias.js": {
+    "mtime": 1785125855.5476403,
+    "ast_hash": "ab9097d7a0ad41b1e1eac8a6b11c4142",
+    "semantic_hash": "ab9097d7a0ad41b1e1eac8a6b11c4142"
+  },
+  "public/data/vademecum.js": {
+    "mtime": 1785125814.754558,
+    "ast_hash": "e2b3f126e3eed2affb97b326b065a5b7",
+    "semantic_hash": "e2b3f126e3eed2affb97b326b065a5b7"
+  },
+  "public/manifest.json": {
+    "mtime": 1785083820.3611047,
+    "ast_hash": "82fa51eed1951a08a773631f210f3702",
+    "semantic_hash": "82fa51eed1951a08a773631f210f3702"
+  },
+  "public/sw.js": {
+    "mtime": 1785125976.0047066,
+    "ast_hash": "fe89a5817bb05da9cb6fa449e1d521bf",
+    "semantic_hash": "fe89a5817bb05da9cb6fa449e1d521bf"
+  },
+  "server.mjs": {
+    "mtime": 1785078887.209135,
+    "ast_hash": "6cf4c4459b70c39f07b6020dc8efd1ed",
+    "semantic_hash": "6cf4c4459b70c39f07b6020dc8efd1ed"
+  },
+  "sources/clinicaltrials.mjs": {
+    "mtime": 1785078887.209287,
+    "ast_hash": "84deb333919eeef4caeb2eb5cdb92d1d",
+    "semantic_hash": "84deb333919eeef4caeb2eb5cdb92d1d"
+  },
+  "sources/crossref.mjs": {
+    "mtime": 1785078887.2093801,
+    "ast_hash": "06c4b4fa9c8f6553969bb4cdb0562a43",
+    "semantic_hash": "06c4b4fa9c8f6553969bb4cdb0562a43"
+  },
+  "sources/nice.mjs": {
+    "mtime": 1785078887.2094615,
+    "ast_hash": "bea1ef12d60865dad16d312b3dc4f9f8",
+    "semantic_hash": "bea1ef12d60865dad16d312b3dc4f9f8"
+  },
+  "sources/openfda.mjs": {
+    "mtime": 1785078887.209539,
+    "ast_hash": "151132ebc45173dd53e90889c6acd995",
+    "semantic_hash": "151132ebc45173dd53e90889c6acd995"
+  },
+  "sources/orchestrator.mjs": {
+    "mtime": 1785078887.2103407,
+    "ast_hash": "f23c49696d2863dc068379a15a754625",
+    "semantic_hash": "f23c49696d2863dc068379a15a754625"
+  },
+  "sources/pubmed.mjs": {
+    "mtime": 1785078887.2104304,
+    "ast_hash": "5febdef9f639dce25d0a5565d1966ff2",
+    "semantic_hash": "5febdef9f639dce25d0a5565d1966ff2"
+  },
+  "sources/semanticscholar.mjs": {
+    "mtime": 1785078887.2105064,
+    "ast_hash": "e7bc2f8e011ca9497965144099f0d4b1",
+    "semantic_hash": "e7bc2f8e011ca9497965144099f0d4b1"
+  },
+  "sources/who.mjs": {
+    "mtime": 1785078887.2105825,
+    "ast_hash": "97065c60ba3728f9405ce655ef34d78f",
+    "semantic_hash": "97065c60ba3728f9405ce655ef34d78f"
+  },
+  "public/evidencia.html": {
+    "mtime": 1784333420.8759305,
+    "ast_hash": "6d9b2df454f3615a596ee9afc83a2560",
+    "semantic_hash": "6d9b2df454f3615a596ee9afc83a2560"
+  },
+  "public/literatura.html": {
+    "mtime": 1785078887.205006,
+    "ast_hash": "a8b70ac6b132284fe28e1b6f4769172a",
+    "semantic_hash": "a8b70ac6b132284fe28e1b6f4769172a"
+  },
+  "render.yaml": {
+    "mtime": 1785078887.2077203,
+    "ast_hash": "dafa8e797704de88691beb9c72cb8d17",
+    "semantic_hash": "dafa8e797704de88691beb9c72cb8d17"
+  },
+  "public/icon-192.png": {
+    "mtime": 1785083799.9403787,
+    "ast_hash": "df728de24ebe6c4a7b76cb80aadf4c96",
+    "semantic_hash": "df728de24ebe6c4a7b76cb80aadf4c96"
+  },
+  "public/icon-512-maskable.png": {
+    "mtime": 1785083800.087168,
+    "ast_hash": "3c53eb778f9a6668781f1a292cadf911",
+    "semantic_hash": "3c53eb778f9a6668781f1a292cadf911"
+  },
+  "public/icon-512.png": {
+    "mtime": 1785083800.0405865,
+    "ast_hash": "b31225b6e0b0173cc7e6e51ce0b02b7b",
+    "semantic_hash": "b31225b6e0b0173cc7e6e51ce0b02b7b"
+  }
+}
